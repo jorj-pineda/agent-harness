@@ -101,6 +101,14 @@ python -m evals.run --providers ollama,anthropic
 - **No comments that restate code.** Comments only for _why_ — a constraint, a workaround, a non-obvious invariant. Never a WHAT comment on a well-named function.
 - **Commits: imperative mood, present tense.** "Add confidence scoring" not "Added" or "Adds".
 
+## Deferred (revisit when there's a real need)
+
+Scope expansions we considered but postponed. Revisit only when a concrete use case forces them — premature abstractions here would be pure overhead.
+
+- **Router fallback / retry across providers.** `ProviderRouter` is a plain dispatch table today. Adding failover (primary flakes → try backup) needs real error patterns to design against; don't speculate on shape.
+- **Embedder routing through the router.** Only one consumer (RAG tool) and it takes an embedder directly. Add a second consumer before indirecting.
+- **Per-provider ToolSpec translation as a shared layer.** Each provider converts `ToolSpec` into its own tool-call format internally — lifting that into a shared mapper only pays off if translation grows non-trivial.
+
 ## Out of scope (explicitly)
 
 Things that sound like they belong but don't — noting them here so we don't accidentally build them:
