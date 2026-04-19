@@ -6,7 +6,9 @@ This is a portfolio project — architectural decisions should be defensible in 
 
 ## Current status
 
-Pre-scaffold. Decisions locked 2026-04-18. Next step: repo scaffold (pyproject.toml, folder skeleton, pytest).
+Step 5a complete as of 2026-04-19. Read-only SQL tools landed on `tools/sql.py` via a `build_sql_tools(db_path)` factory, with 20 tests in `tests/test_tools_sql.py`. Test suite: **116 passed**, ruff clean.
+
+Next up: **5b — RAG tool** (Chroma nearest-neighbor query returning chunks with citations). See `TODO.md` for the full remaining work and the handoff brief for the next session.
 
 ## Architecture
 
@@ -45,7 +47,7 @@ Primary target: **RTX 4070 laptop, 8GB VRAM**. Every default must run comfortabl
 
 ## Critical rules
 
-1. **No agent frameworks.** No LangChain, LlamaIndex, LangGraph, CrewAI, Haystack. Building the loop from scratch is the *point*. If you catch yourself wanting a framework helper, write the 10 lines yourself — the code is the portfolio.
+1. **No agent frameworks.** No LangChain, LlamaIndex, LangGraph, CrewAI, Haystack. Building the loop from scratch is the _point_. If you catch yourself wanting a framework helper, write the 10 lines yourself — the code is the portfolio.
 2. **Provider abstraction is sacred.** The harness must not `import ollama` or `import anthropic` anywhere outside `providers/`. Adding a new backend should be a single-file change.
 3. **Always web-fetch when a local/open-weights model is discussed.** Versions and sizes change monthly. Never answer from training knowledge about Gemma/Llama/Qwen/etc. specs.
 4. **SQL tool is read-only.** Separate DB connection with a read-only SQLite pragma; queries parameterized; row limit enforced server-side; no DDL/DML tokens in generated SQL. Log every query.
@@ -96,7 +98,7 @@ python -m evals.run --providers ollama,anthropic
 - **Pydantic models at layer boundaries.** Tool inputs/outputs, API requests/responses, Message/Turn/Session — all Pydantic. No stringly-typed dicts flowing across modules.
 - **Async all the way from API down to providers.** Ollama and cloud providers are I/O-bound; the harness loop is async.
 - **Line length 100.** Formatter: `ruff format`. Linter: `ruff check` with a strict ruleset.
-- **No comments that restate code.** Comments only for *why* — a constraint, a workaround, a non-obvious invariant. Never a WHAT comment on a well-named function.
+- **No comments that restate code.** Comments only for _why_ — a constraint, a workaround, a non-obvious invariant. Never a WHAT comment on a well-named function.
 - **Commits: imperative mood, present tense.** "Add confidence scoring" not "Added" or "Adds".
 
 ## Out of scope (explicitly)
@@ -111,6 +113,6 @@ Things that sound like they belong but don't — noting them here so we don't ac
 
 ## Links
 
-- FocusKPI role this project supports: Junior AI/ML Engineer — applications go to `danz@focuskpi.com` with resume, GitHub, and a 3–6 paragraph write-up of one project. The README of this repo *is* that write-up draft.
+- FocusKPI role this project supports: Junior AI/ML Engineer — applications go to `danz@focuskpi.com` with resume, GitHub, and a 3–6 paragraph write-up of one project. The README of this repo _is_ that write-up draft.
 - Gemma 4 model card: https://ai.google.dev/gemma/docs/core/model_card_4
 - Ollama library: https://ollama.com/library/gemma4

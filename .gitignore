@@ -59,3 +59,7 @@ Thumbs.db
 # Logs
 *.log
 logs/
+
+# mds
+CLAUDE.md
+TODO.md
