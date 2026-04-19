@@ -1,0 +1,61 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+build/
+dist/
+*.egg
+
+# Virtualenvs
+.venv/
+venv/
+env/
+
+# uv
+.uv/
+
+# Testing / coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+.mypy_cache/
+.ruff_cache/
+
+# Secrets
+.env
+.env.local
+.env.*.local
+
+# Data artifacts (kept out of git; seed scripts regenerate)
+data/*.db
+data/*.sqlite
+data/*.sqlite3
+data/chroma/
+!data/corpus/
+
+# Eval artifacts
+evals/report.md
+evals/runs/
+
+# VCR cassettes: committed by default so CI can run offline
+# (override here if you need to ignore a specific subdir)
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
