@@ -182,6 +182,21 @@ async def test_embed_returns_vectors() -> None:
     assert vectors == [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]]
 
 
+async def test_embed_http_error_wraps_in_provider_error() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(500, json={"error": "boom"}, request=request)
+
+    provider = OllamaProvider(
+        host="http://fake",
+        model="gemma4",
+        embed_model="nomic-embed-text",
+        transport=httpx.MockTransport(handler),
+    )
+
+    with pytest.raises(ProviderError):
+        await provider.embed(["hi"])
+
+
 def test_ollama_satisfies_both_protocols() -> None:
     provider = OllamaProvider(host="http://fake", model="gemma4", embed_model="nomic-embed-text")
     assert isinstance(provider, ChatProvider)
