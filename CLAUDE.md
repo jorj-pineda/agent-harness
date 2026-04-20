@@ -6,9 +6,9 @@ This is a portfolio project — architectural decisions should be defensible in 
 
 ## Current status
 
-Step 5a complete as of 2026-04-19. Read-only SQL tools landed on `tools/sql.py` via a `build_sql_tools(db_path)` factory, with 20 tests in `tests/test_tools_sql.py`. Test suite: **116 passed**, ruff clean.
+Steps 1–8 merged as of 2026-04-20. Provider code (step 9) is written and tested but cassette infrastructure is missing. Test suite: **236 passed**, ruff + mypy clean on the core layers.
 
-Next up: **5b — RAG tool** (Chroma nearest-neighbor query returning chunks with citations). See `TODO.md` for the full remaining work and the handoff brief for the next session.
+Remaining: **9 (cassettes), 10 (FastAPI), 11 (evals), 12 (Docker + README)** — being worked in parallel across three Claude Opus 4.7 instances (Claude Code, Antigravity, Cursor). See `TODO.md` for branch assignments, file scopes, and merge order.
 
 ## Architecture
 
@@ -100,6 +100,17 @@ python -m evals.run --providers ollama,anthropic
 - **Line length 100.** Formatter: `ruff format`. Linter: `ruff check` with a strict ruleset.
 - **No comments that restate code.** Comments only for _why_ — a constraint, a workaround, a non-obvious invariant. Never a WHAT comment on a well-named function.
 - **Commits: imperative mood, present tense.** "Add confidence scoring" not "Added" or "Adds".
+
+## Parallel collaboration (when multiple agents are active)
+
+When Jorge is running several Claude instances at once (Claude Code, Antigravity, Cursor), coordination is enforced by file-scope discipline, not locking. Rules:
+
+- **Check `TODO.md` first** for the current assignment table. Pick up the step assigned to your host; don't reach outside that scope.
+- **Stay in your file scope.** Each step lists the files it's allowed to touch. Drive-by edits in other layers cause merge pain — stop and ping Jorge instead.
+- **Claude Code owns `TODO.md` and `CLAUDE.md`.** Other agents record decisions in commit messages; Claude Code syncs the docs.
+- **`pyproject.toml` edits are additive only** — append to a step-labeled block (`# step-10 api`, etc.). No reorders, no re-pins of existing deps.
+- **Merge order is fixed by dependency chain** (see TODO.md). Whoever finishes first rebases, not merges out of order.
+- **Pause-per-substep still applies** within each branch: summary + commit message + Jorge's greenlight before moving on.
 
 ## Deferred (revisit when there's a real need)
 
