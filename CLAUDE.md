@@ -108,6 +108,9 @@ Scope expansions we considered but postponed. Revisit only when a concrete use c
 - **Router fallback / retry across providers.** `ProviderRouter` is a plain dispatch table today. Adding failover (primary flakes → try backup) needs real error patterns to design against; don't speculate on shape.
 - **Embedder routing through the router.** Only one consumer (RAG tool) and it takes an embedder directly. Add a second consumer before indirecting.
 - **Per-provider ToolSpec translation as a shared layer.** Each provider converts `ToolSpec` into its own tool-call format internally — lifting that into a shared mapper only pays off if translation grows non-trivial.
+- **LLM-judge confidence.** `Grounder` today uses a deterministic heuristic (`top_score * coverage * health`). An LLM self-assessment judge could plug in behind the same `Grounder.ground()` interface once the heuristic baseline underperforms on evals — but self-reports are systematically over-confident, so validate on scenarios before swapping.
+- **Per-sentence citation attribution.** Grounding emits citations at the turn level (which chunks the answer draws from). Mapping individual claims to specific chunks needs a post-generation pass (spans, NLI, or a cited-output schema) — defer until the eval harness has a faithfulness metric that rewards it.
+- **Rewriting the answer on escalation.** Today `escalated=True` is a flag; the raw answer is preserved so the API layer owns presentation. Swapping in a templated "I'm not sure — let me hand you off" message is a UX decision, not a harness one.
 
 ## Out of scope (explicitly)
 

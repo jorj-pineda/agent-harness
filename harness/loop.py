@@ -28,6 +28,7 @@ from typing import Any
 from providers.base import ChatMessage, ChatProvider
 from tools import ToolError, ToolRegistry
 
+from .grounding import Grounder
 from .state import Session, ToolCallRecord, Turn, TurnResponse
 
 log = logging.getLogger(__name__)
@@ -59,11 +60,14 @@ async def run_turn(
     provider: ChatProvider,
     registry: ToolRegistry,
     max_iterations: int = DEFAULT_MAX_ITERATIONS,
+    grounder: Grounder | None = None,
 ) -> TurnResponse:
     """Drive one user turn to completion via ReAct + tool dispatch.
 
     Mutates `session` in place (appends to `messages` and `turns`) and
-    returns the rule-#5 payload.
+    returns the rule-#5 payload. When `grounder` is provided, fills in
+    `confidence` / `citations` / `escalated` from the turn's tool-call
+    history; otherwise those fields stay at their defaults.
     """
     turn = Turn(user_input=user_input)
     session.turns.append(turn)
@@ -72,6 +76,7 @@ async def run_turn(
     tool_specs = registry.as_tool_specs()
     start = _now_ms()
     final_answer = ""
+    max_iterations_reached = False
 
     for _ in range(max_iterations):
         response = await provider.chat(session.messages, tools=tool_specs)
@@ -117,6 +122,7 @@ async def run_turn(
             )
     else:
         final_answer = MAX_ITERATIONS_STUB
+        max_iterations_reached = True
         log.warning(
             "harness=run_turn max_iterations=%d reached without final answer",
             max_iterations,
@@ -125,8 +131,21 @@ async def run_turn(
     turn.final_answer = final_answer
     turn.finished_at = datetime.now(UTC)
 
+    grounding = (
+        grounder.ground(
+            answer=final_answer,
+            tool_calls=turn.tool_calls,
+            max_iterations_reached=max_iterations_reached,
+        )
+        if grounder is not None
+        else None
+    )
+
     return TurnResponse(
         answer=final_answer,
+        confidence=grounding.confidence if grounding else None,
+        citations=list(grounding.citations) if grounding else [],
+        escalated=grounding.escalated if grounding else False,
         tool_calls=list(turn.tool_calls),
         provider=provider.name,
         latency_ms=_now_ms() - start,
