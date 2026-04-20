@@ -37,6 +37,7 @@ log = logging.getLogger(__name__)
 
 MEMORY_SCHEMA_PATH = Path(__file__).parent.parent / "data" / "memory_schema.sql"
 DEFAULT_LIST_LIMIT = 20
+FACTS_HEADING = "Known facts about the user:"
 
 
 class Fact(BaseModel):
@@ -103,6 +104,24 @@ class FactStore:
             (user_id, limit),
         ).fetchall()
         return [Fact(**dict(r)) for r in rows]
+
+    def format_for_system_prompt(
+        self,
+        user_id: str,
+        limit: int = DEFAULT_LIST_LIMIT,
+    ) -> str:
+        """Render a user's facts as a system-prompt injection block.
+
+        Returns "" when the user has no facts so the API layer can
+        concatenate unconditionally. Facts are listed most-recent first,
+        matching `list()`.
+        """
+        facts = self.list(user_id, limit=limit)
+        if not facts:
+            return ""
+        lines = [FACTS_HEADING]
+        lines.extend(f"- {f.fact}" for f in facts)
+        return "\n".join(lines)
 
     def close(self) -> None:
         self._conn.close()

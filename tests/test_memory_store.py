@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from memory import Fact, FactStore
+from memory import FACTS_HEADING, Fact, FactStore
 
 
 @pytest.fixture
@@ -152,3 +152,61 @@ def test_fact_model_is_json_serializable(store: FactStore) -> None:
     (fact,) = store.list("alice")
     parsed = Fact.model_validate_json(fact.model_dump_json())
     assert parsed == fact
+
+
+# ─── format_for_system_prompt ──────────────────────────────────────────────
+
+
+def test_format_for_system_prompt_returns_empty_when_user_has_no_facts(
+    store: FactStore,
+) -> None:
+    assert store.format_for_system_prompt("alice") == ""
+
+
+def test_format_for_system_prompt_renders_heading_and_bulleted_facts(
+    store: FactStore,
+) -> None:
+    store.add("alice", "fact one")
+    store.add("alice", "fact two")
+
+    block = store.format_for_system_prompt("alice")
+
+    assert block == f"{FACTS_HEADING}\n- fact two\n- fact one"
+
+
+def test_format_for_system_prompt_lists_most_recent_first(store: FactStore) -> None:
+    for fact in ("oldest", "middle", "newest"):
+        store.add("alice", fact)
+
+    block = store.format_for_system_prompt("alice")
+
+    lines = block.splitlines()
+    assert lines[0] == FACTS_HEADING
+    assert lines[1:] == ["- newest", "- middle", "- oldest"]
+
+
+def test_format_for_system_prompt_respects_limit(store: FactStore) -> None:
+    for i in range(5):
+        store.add("alice", f"fact-{i}")
+
+    block = store.format_for_system_prompt("alice", limit=2)
+
+    assert block.splitlines()[1:] == ["- fact-4", "- fact-3"]
+
+
+def test_format_for_system_prompt_isolates_by_user_id(store: FactStore) -> None:
+    store.add("alice", "alice-fact")
+    store.add("bob", "bob-fact")
+
+    assert store.format_for_system_prompt("alice") == f"{FACTS_HEADING}\n- alice-fact"
+    assert store.format_for_system_prompt("bob") == f"{FACTS_HEADING}\n- bob-fact"
+
+
+def test_format_for_system_prompt_rejects_empty_user_id(store: FactStore) -> None:
+    with pytest.raises(ValueError, match="user_id"):
+        store.format_for_system_prompt("")
+
+
+def test_format_for_system_prompt_rejects_non_positive_limit(store: FactStore) -> None:
+    with pytest.raises(ValueError, match="limit"):
+        store.format_for_system_prompt("alice", limit=0)
