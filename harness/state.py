@@ -73,7 +73,7 @@ class Session(BaseModel):
 class TurnResponse(BaseModel):
     """The rule-#5 payload shipped on every response.
 
-    `confidence` / `citations` fill in at step 7 (grounding layer).
+    `confidence` / `citations` / `escalated` fill in at step 7 (grounding).
     `memory_writes` fills in at step 8 (memory layer). Their defaults keep
     the wire shape stable from step 6 onward.
     """
@@ -81,6 +81,7 @@ class TurnResponse(BaseModel):
     answer: str
     confidence: float | None = None
     citations: list[str] = Field(default_factory=list)
+    escalated: bool = False
     tool_calls: list[ToolCallRecord] = Field(default_factory=list)
     memory_writes: list[str] = Field(default_factory=list)
     provider: str
