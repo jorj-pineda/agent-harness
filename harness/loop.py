@@ -29,6 +29,7 @@ from providers.base import ChatMessage, ChatProvider
 from tools import ToolError, ToolRegistry
 
 from .grounding import Grounder
+from .memory import harvest_memory_writes
 from .state import Session, ToolCallRecord, Turn, TurnResponse
 
 log = logging.getLogger(__name__)
@@ -130,6 +131,7 @@ async def run_turn(
 
     turn.final_answer = final_answer
     turn.finished_at = datetime.now(UTC)
+    turn.memory_writes = harvest_memory_writes(turn.tool_calls)
 
     grounding = (
         grounder.ground(
@@ -147,6 +149,7 @@ async def run_turn(
         citations=list(grounding.citations) if grounding else [],
         escalated=grounding.escalated if grounding else False,
         tool_calls=list(turn.tool_calls),
+        memory_writes=list(turn.memory_writes),
         provider=provider.name,
         latency_ms=_now_ms() - start,
     )
