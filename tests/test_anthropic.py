@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 from collections.abc import Callable
 from typing import Any
 
@@ -304,3 +305,37 @@ def test_anthropic_satisfies_chat_protocol_only() -> None:
     provider = AnthropicProvider(api_key="test", model="claude-sonnet-4-6")
     assert isinstance(provider, ChatProvider)
     assert not isinstance(provider, Embedder)
+
+
+# ---------------------------------------------------------------------------
+# Live tests — require a real Anthropic API key (pytest -m live)
+# ---------------------------------------------------------------------------
+
+_has_anthropic_key = pytest.mark.skipif(
+    not os.environ.get("ANTHROPIC_API_KEY", ""),
+    reason="ANTHROPIC_API_KEY not set — set it to run live Anthropic tests",
+)
+
+
+@pytest.mark.live
+@_has_anthropic_key
+async def test_live_anthropic_chat() -> None:
+    """Smoke test: send a one-turn chat to the real Anthropic API.
+
+    Run with: ANTHROPIC_API_KEY=sk-... pytest -m live -k anthropic
+    This is the call that the anthropic_chat_plain cassette was derived from.
+    """
+    provider = AnthropicProvider(
+        api_key=os.environ["ANTHROPIC_API_KEY"],
+        model="claude-sonnet-4-6",
+    )
+    try:
+        resp = await provider.chat(
+            [ChatMessage(role="user", content="Reply with exactly one word: hello")],
+            max_tokens=16,
+        )
+        assert resp.content.strip() != ""
+        assert resp.finish_reason in ("stop", "length")
+        assert "claude" in resp.model
+    finally:
+        await provider.aclose()

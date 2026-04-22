@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 from collections.abc import Callable
 from typing import Any
 
@@ -280,3 +281,55 @@ def test_ollama_satisfies_both_protocols() -> None:
     provider = OllamaProvider(host="http://fake", model="gemma4", embed_model="nomic-embed-text")
     assert isinstance(provider, ChatProvider)
     assert isinstance(provider, Embedder)
+
+
+# ---------------------------------------------------------------------------
+# Live tests — require a running Ollama instance (pytest -m live)
+# ---------------------------------------------------------------------------
+
+_ollama_reachable = pytest.mark.skipif(
+    not os.environ.get("OLLAMA_HOST", ""),
+    reason="OLLAMA_HOST not set — set it to run live Ollama tests",
+)
+
+
+@pytest.mark.live
+@_ollama_reachable
+async def test_live_ollama_chat() -> None:
+    """Smoke test: send a one-turn chat to a real Ollama instance.
+
+    Run with: OLLAMA_HOST=http://localhost:11434 pytest -m live -k ollama
+    This is the call that the ollama_chat_plain cassette was derived from.
+    """
+    provider = OllamaProvider(
+        host=os.environ["OLLAMA_HOST"],
+        model="gemma4",
+        embed_model="nomic-embed-text",
+    )
+    try:
+        resp = await provider.chat(
+            [ChatMessage(role="user", content="Reply with exactly one word: hello")],
+            max_tokens=16,
+        )
+        assert resp.content.strip() != ""
+        assert resp.finish_reason in ("stop", "length")
+        assert resp.model == "gemma4"
+    finally:
+        await provider.aclose()
+
+
+@pytest.mark.live
+@_ollama_reachable
+async def test_live_ollama_embed() -> None:
+    """Smoke test: embed two strings via a real Ollama instance."""
+    provider = OllamaProvider(
+        host=os.environ["OLLAMA_HOST"],
+        model="gemma4",
+        embed_model="nomic-embed-text",
+    )
+    try:
+        vectors = await provider.embed(["hello", "world"])
+        assert len(vectors) == 2
+        assert all(len(v) > 0 for v in vectors)
+    finally:
+        await provider.aclose()

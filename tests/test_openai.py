@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 from collections.abc import Callable
 from typing import Any
 
@@ -194,3 +195,37 @@ def test_openai_satisfies_chat_protocol_only() -> None:
     provider = OpenAIProvider(api_key="test", model="gpt-4o")
     assert isinstance(provider, ChatProvider)
     assert not isinstance(provider, Embedder)
+
+
+# ---------------------------------------------------------------------------
+# Live tests — require a real OpenAI API key (pytest -m live)
+# ---------------------------------------------------------------------------
+
+_has_openai_key = pytest.mark.skipif(
+    not os.environ.get("OPENAI_API_KEY", ""),
+    reason="OPENAI_API_KEY not set — set it to run live OpenAI tests",
+)
+
+
+@pytest.mark.live
+@_has_openai_key
+async def test_live_openai_chat() -> None:
+    """Smoke test: send a one-turn chat to the real OpenAI API.
+
+    Run with: OPENAI_API_KEY=sk-... pytest -m live -k openai
+    This is the call that the openai_chat_plain cassette was derived from.
+    """
+    provider = OpenAIProvider(
+        api_key=os.environ["OPENAI_API_KEY"],
+        model="gpt-4o",
+    )
+    try:
+        resp = await provider.chat(
+            [ChatMessage(role="user", content="Reply with exactly one word: hello")],
+            max_tokens=16,
+        )
+        assert resp.content.strip() != ""
+        assert resp.finish_reason in ("stop", "length")
+        assert "gpt" in resp.model
+    finally:
+        await provider.aclose()
