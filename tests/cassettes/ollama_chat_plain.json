@@ -1,0 +1,43 @@
+[
+  {
+    "key": "POST http://fake/api/chat 02a04b2e66c05a54",
+    "request": {
+      "body": {
+        "json": {
+          "messages": [
+            {
+              "content": "hi",
+              "role": "user"
+            }
+          ],
+          "model": "gemma4",
+          "options": {
+            "temperature": 0.0
+          },
+          "stream": false
+        }
+      },
+      "method": "POST",
+      "url": "http://fake/api/chat"
+    },
+    "response": {
+      "body": {
+        "json": {
+          "done": true,
+          "done_reason": "stop",
+          "eval_count": 3,
+          "message": {
+            "content": "hello there",
+            "role": "assistant"
+          },
+          "model": "gemma4",
+          "prompt_eval_count": 9
+        }
+      },
+      "headers": {
+        "content-type": "application/json"
+      },
+      "status": 200
+    }
+  }
+]

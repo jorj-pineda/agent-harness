@@ -1,0 +1,50 @@
+[
+  {
+    "key": "POST https://api.openai.com/v1/chat/completions c2aad926285a93ff",
+    "request": {
+      "body": {
+        "json": {
+          "messages": [
+            {
+              "content": "hi",
+              "role": "user"
+            }
+          ],
+          "model": "gpt-4o",
+          "temperature": 0.0
+        }
+      },
+      "method": "POST",
+      "url": "https://api.openai.com/v1/chat/completions"
+    },
+    "response": {
+      "body": {
+        "json": {
+          "choices": [
+            {
+              "finish_reason": "stop",
+              "index": 0,
+              "message": {
+                "content": "hello there",
+                "role": "assistant"
+              }
+            }
+          ],
+          "created": 1234567890,
+          "id": "chatcmpl_01",
+          "model": "gpt-4o",
+          "object": "chat.completion",
+          "usage": {
+            "completion_tokens": 3,
+            "prompt_tokens": 9,
+            "total_tokens": 12
+          }
+        }
+      },
+      "headers": {
+        "content-type": "application/json"
+      },
+      "status": 200
+    }
+  }
+]

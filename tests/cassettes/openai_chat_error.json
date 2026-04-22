@@ -1,0 +1,35 @@
+[
+  {
+    "key": "POST https://api.openai.com/v1/chat/completions c2aad926285a93ff",
+    "request": {
+      "body": {
+        "json": {
+          "messages": [
+            {
+              "content": "hi",
+              "role": "user"
+            }
+          ],
+          "model": "gpt-4o",
+          "temperature": 0.0
+        }
+      },
+      "method": "POST",
+      "url": "https://api.openai.com/v1/chat/completions"
+    },
+    "response": {
+      "body": {
+        "json": {
+          "error": {
+            "message": "boom",
+            "type": "invalid_request_error"
+          }
+        }
+      },
+      "headers": {
+        "content-type": "application/json"
+      },
+      "status": 400
+    }
+  }
+]

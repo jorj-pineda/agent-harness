@@ -1,0 +1,70 @@
+[
+  {
+    "key": "POST http://fake/api/chat 2f0db1de640087e4",
+    "request": {
+      "body": {
+        "json": {
+          "messages": [
+            {
+              "content": "how many rows?",
+              "role": "user"
+            }
+          ],
+          "model": "gemma4",
+          "options": {
+            "temperature": 0.0
+          },
+          "stream": false,
+          "tools": [
+            {
+              "function": {
+                "description": "read-only SQL",
+                "name": "sql_query",
+                "parameters": {
+                  "properties": {
+                    "sql": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "function"
+            }
+          ]
+        }
+      },
+      "method": "POST",
+      "url": "http://fake/api/chat"
+    },
+    "response": {
+      "body": {
+        "json": {
+          "done": true,
+          "done_reason": "stop",
+          "eval_count": 7,
+          "message": {
+            "content": "",
+            "role": "assistant",
+            "tool_calls": [
+              {
+                "function": {
+                  "arguments": {
+                    "sql": "SELECT 1"
+                  },
+                  "name": "sql_query"
+                }
+              }
+            ]
+          },
+          "model": "gemma4",
+          "prompt_eval_count": 42
+        }
+      },
+      "headers": {
+        "content-type": "application/json"
+      },
+      "status": 200
+    }
+  }
+]
