@@ -16,6 +16,7 @@ dependencies = [
     "anthropic>=0.40",
     "openai>=1.54",
     "chromadb>=0.5.20",
+    # step-11 evals
     "pyyaml>=6.0",
     "structlog>=24.4",
 ]

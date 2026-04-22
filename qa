@@ -1,0 +1,230 @@
+[33mcommit 44a8937477bdc61c2d30d704a12bfc5c10624898[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeat/eval-harness[m[33m)[m
+Author: jorj-pineda <jorgepineda0310@gmail.com>
+Date:   Mon Apr 20 15:54:25 2026 -0500
+
+    Add scorers for faithfulness, correctness, memory recall, escalation
+
+[33mcommit 5609b3d216b7a29a03fcd483bc5903efcb9e2944[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m, [m[1;32mfeat/provider-cassettes[m[33m)[m
+Author: jorj-pineda <jorgepineda0310@gmail.com>
+Date:   Mon Apr 20 15:28:48 2026 -0500
+
+    Refresh status docs and define parallel-agent coordination rules
+
+[33mcommit 1150827a7cf5c1a2c8ade5e4d820540cc8633d74[m
+Merge: 52eaf61 99f5596
+Author: Jorge Pineda <jorgepineda0310@gmail.com>
+Date:   Mon Apr 20 15:12:33 2026 -0500
+
+    Merge pull request #7 from jorj-pineda/feat/memory-layer
+    
+    Feat/memory layer
+
+[33mcommit 99f5596062d5468259480123abd88986347271ae[m[33m ([m[1;31morigin/feat/memory-layer[m[33m)[m
+Author: jorj-pineda <jorgepineda0310@gmail.com>
+Date:   Mon Apr 20 15:11:20 2026 -0500
+
+    Add FactStore.format_for_system_prompt for API-layer injection
+
+[33mcommit 7764952cbadbc41bec8fa40fe3089a2b1b735737[m
+Author: jorj-pineda <jorgepineda0310@gmail.com>
+Date:   Mon Apr 20 15:04:18 2026 -0500
+
+    Wire memory_writes into run_turn via harvest_memory_writes
+
+[33mcommit 9e04bdc1cfcd4ef0d24d10b7c11733c2b3c07a3f[m
+Author: jorj-pineda <jorgepineda0310@gmail.com>
+Date:   Sun Apr 19 21:26:26 2026 -0500
+
+    Add remember_facat and recall_fact tools with per-user closer
+
+[33mcommit 97d8b73f85190c1b5dece4f2125ef5e10d8251f1[m
+Author: jorj-pineda <jorgepineda0310@gmail.com>
+Date:   Sun Apr 19 21:14:11 2026 -0500
+
+    Add factstore with SQLite-backend per user personalization memory
+
+[33mcommit 52eaf61674ead50bf1e9239c0dc67e1cf2a2fbdb[m
+Merge: 571b3ab a479774
+Author: Jorge Pineda <jorgepineda0310@gmail.com>
+Date:   Sun Apr 19 20:37:19 2026 -0500
+
+    Merge pull request #6 from jorj-pineda/feat/grounding-layer
+    
+    Added grounding layer with deterministic confidence scoring and citat…
+
+[33mcommit a4797740025b5b65723058a29fe3e78a6058f5c8[m[33m ([m[1;31morigin/feat/grounding-layer[m[33m)[m
+Author: jorj-pineda <jorgepineda0310@gmail.com>
+Date:   Sun Apr 19 20:36:39 2026 -0500
+
+    Added grounding layer with deterministic confidence scoring and citation harvesting
+
+[33mcommit 571b3ab2118445dcfccd6aae0931c58f430d4ffe[m
+Merge: a32f791 13591de
+Author: Jorge Pineda <jorgepineda0310@gmail.com>
+Date:   Sun Apr 19 18:35:31 2026 -0500
+
+    Merge pull request #5 from jorj-pineda/feat/harness-core
+    
+    Feat/harness core
+
+[33mcommit 13591de3fd6ea8e38664c30467bb0660a70d7920[m[33m ([m[1;31morigin/feat/harness-core[m[33m)[m
+Author: jorj-pineda <jorgepineda0310@gmail.com>
+Date:   Sun Apr 19 18:34:31 2026 -0500
+
+    Add provider router with name-based dispatch and default resolution
+
+[33mcommit 3e0d61f20929512a3dca752c7f0f58bff053fa9d[m
+Author: jorj-pineda <jorgepineda0310@gmail.com>
+Date:   Sun Apr 19 18:13:46 2026 -0500
+
+    Add ReAct loop driving provider + tool dispatch to final answer
+
+[33mcommit 4c49f0270ba079b4b317423f4378ce810c98d15c[m
+Author: jorj-pineda <jorgepineda0310@gmail.com>
+Date:   Sun Apr 19 16:13:51 2026 -0500
+
+    Added harness state models (Session, Turn, TurnResponse
+
+[33mcommit a32f791a1eb8dbb53318b36d025521f6e17bea6e[m
+Merge: cc8d99a 8b24114
+Author: Jorge Pineda <jorgepineda0310@gmail.com>
+Date:   Sun Apr 19 16:03:21 2026 -0500
+
+    Merge pull request #4 from jorj-pineda/feat/sql-and-rag-tools
+    
+    feat/sql and rag tools
+
+[33mcommit 8b24114d0eb6bbd0ec97cf56810a6dd0e1795210[m[33m ([m[1;31morigin/feat/sql-and-rag-tools[m[33m)[m
+Author: jorj-pineda <jorgepineda0310@gmail.com>
+Date:   Sun Apr 19 16:02:29 2026 -0500
+
+    Add integration smoke test for combined SQL + RAG registry
+
+[33mcommit a1e18bcedcfc52e33b7b22f3f2fc7a995093d949[m
+Author: jorj-pineda <jorgepineda0310@gmail.com>
+Date:   Sun Apr 19 15:16:14 2026 -0500
+
+    Add RAG search_docs tool over Chroma with citation metadata
+
+[33mcommit 24ca020e33669835246236743c1368444e5765f4[m
+Author: jorj-pineda <jorgepineda0310@gmail.com>
+Date:   Sun Apr 19 14:01:46 2026 -0500
+
+    Add read only SQL touch bound to db_path facotry
+
+[33mcommit cc8d99ab5c0dd35492fff52c875d0f2adc330e19[m
+Merge: bfc1460 90f7c8e
+Author: Jorge Pineda <jorgepineda0310@gmail.com>
+Date:   Sun Apr 19 12:49:09 2026 -0500
+
+    Merge pull request #3 from jorj-pineda/feat/data-layer
+    
+    feat/data layer
+
+[33mcommit 90f7c8e7de8fe347e8c1ae61f57b0de417de2ad1[m[33m ([m[1;31morigin/feat/data-layer[m[33m)[m
+Author: jorj-pineda <jorgepineda0310@gmail.com>
+Date:   Sun Apr 19 12:44:47 2026 -0500
+
+    Added chroma embedding pipeline with deterministic fake test embedder
+
+[33mcommit 5570bcafaa02c5a4dbd2bccefe54edc6d7376bbc[m
+Author: jorj-pineda <jorgepineda0310@gmail.com>
+Date:   Sun Apr 19 00:14:29 2026 -0500
+
+    Add support doc corpus and markdown-to-chunks loader
+
+[33mcommit 6f433bd4e100feb8553ca73a607dbe19ca27f56b[m
+Author: jorj-pineda <jorgepineda0310@gmail.com>
+Date:   Sat Apr 18 23:41:26 2026 -0500
+
+    Add deterministic seed script for mock support dataset
+
+[33mcommit 064f510efad09370be2d2df35d58a3c27ffa7094[m
+Author: jorj-pineda <jorgepineda0310@gmail.com>
+Date:   Sat Apr 18 23:05:21 2026 -0500
+
+    Added SQList schema & read-only/read-write connection helpers
+
+[33mcommit bfc1460b123bc01ae982b9e59536037995786f3c[m
+Merge: 216fa89 fc06b2e
+Author: Jorge Pineda <jorgepineda0310@gmail.com>
+Date:   Sat Apr 18 22:26:09 2026 -0500
+
+    Merge pull request #2 from jorj-pineda/feat/tool-registry
+    
+    feat/tool registry
+
+[33mcommit fc06b2e6368563241b676e6ecf5bbaf521f87d7d[m[33m ([m[1;31morigin/feat/tool-registry[m[33m)[m
+Author: jorj-pineda <jorgepineda0310@gmail.com>
+Date:   Sat Apr 18 22:24:18 2026 -0500
+
+    Add provider-bridge round trip tests for decorator built tools
+
+[33mcommit ad2627a0d415d9fa212797ee25f0cf2c422a20e9[m
+Author: jorj-pineda <jorgepineda0310@gmail.com>
+Date:   Sat Apr 18 22:21:05 2026 -0500
+
+    Add toolregistery.invoke with validation, async/sync dispatch, timeout
+
+[33mcommit f2a31802b5c149d94c1723db043b02748ec6c11c[m
+Author: jorj-pineda <jorgepineda0310@gmail.com>
+Date:   Sat Apr 18 22:13:39 2026 -0500
+
+    Added @tool decorator with signature-based schema
+
+[33mcommit 991f508ba7bd6bf3657a014d878f48622d173067[m
+Author: jorj-pineda <jorgepineda0310@gmail.com>
+Date:   Sat Apr 18 22:01:20 2026 -0500
+
+    Added tool registry types and container
+
+[33mcommit 216fa890ea2b7c9f595e301cc70de60783058ec2[m
+Merge: 20766f8 385cbcd
+Author: Jorge Pineda <jorgepineda0310@gmail.com>
+Date:   Sat Apr 18 21:53:27 2026 -0500
+
+    Merge pull request #1 from jorj-pineda/feat/step-02-provider-abstraction
+    
+    feat/step 02 provider abstraction
+
+[33mcommit 385cbcd04152b96da977084fb431a7e9c21b9b8a[m[33m ([m[1;31morigin/feat/step-02-provider-abstraction[m[33m)[m
+Author: jorj-pineda <jorgepineda0310@gmail.com>
+Date:   Sat Apr 18 21:47:46 2026 -0500
+
+    Tighten provider coverage and env template
+
+[33mcommit 5a9e8eea4faa61e7e4fa40da9e81e17c366c383b[m
+Author: jorj-pineda <jorgepineda0310@gmail.com>
+Date:   Sat Apr 18 21:29:52 2026 -0500
+
+    Add openAI provider & backend factory
+
+[33mcommit ba8be04cbf69e71e62a459d61f61a6e411b0febd[m
+Author: jorj-pineda <jorgepineda0310@gmail.com>
+Date:   Sat Apr 18 21:15:24 2026 -0500
+
+    Add anthropics provider implementation
+
+[33mcommit 7bb14d665a20c50caba32fa081125d7c03b58dba[m
+Author: jorj-pineda <jorgepineda0310@gmail.com>
+Date:   Sat Apr 18 20:56:13 2026 -0500
+
+    Add Ollama provider implementation
+
+[33mcommit bc7e72eb136758e6f3e68ee346b6533b19a8d21d[m
+Author: jorj-pineda <jorgepineda0310@gmail.com>
+Date:   Sat Apr 18 20:45:46 2026 -0500
+
+    Add VCR-style cassette transport for httpx tests
+
+[33mcommit eb8528a96d6ecf0abca5f8fef5376906cc658f99[m
+Author: jorj-pineda <jorgepineda0310@gmail.com>
+Date:   Sat Apr 18 20:42:14 2026 -0500
+
+    Add provider base types and protocols
+
+[33mcommit 20766f8b2d82ef8740201db6542e7d0ee365ebad[m
+Author: jorj-pineda <jorgepineda0310@gmail.com>
+Date:   Sat Apr 18 20:18:44 2026 -0500
+
+    Initial scaffold: pyproject, folder skel, config
