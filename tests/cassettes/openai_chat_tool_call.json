@@ -1,0 +1,77 @@
+[
+  {
+    "key": "POST https://api.openai.com/v1/chat/completions 56ff5a4bc22155ff",
+    "request": {
+      "body": {
+        "json": {
+          "messages": [
+            {
+              "content": "how many?",
+              "role": "user"
+            }
+          ],
+          "model": "gpt-4o",
+          "temperature": 0.0,
+          "tools": [
+            {
+              "function": {
+                "description": "read-only SQL",
+                "name": "sql_query",
+                "parameters": {
+                  "properties": {
+                    "sql": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "function"
+            }
+          ]
+        }
+      },
+      "method": "POST",
+      "url": "https://api.openai.com/v1/chat/completions"
+    },
+    "response": {
+      "body": {
+        "json": {
+          "choices": [
+            {
+              "finish_reason": "tool_calls",
+              "index": 0,
+              "message": {
+                "content": null,
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "function": {
+                      "arguments": "{\"sql\": \"SELECT 1\"}",
+                      "name": "sql_query"
+                    },
+                    "id": "call_abc",
+                    "type": "function"
+                  }
+                ]
+              }
+            }
+          ],
+          "created": 1234567890,
+          "id": "chatcmpl_02",
+          "model": "gpt-4o",
+          "object": "chat.completion",
+          "usage": {
+            "completion_tokens": 7,
+            "prompt_tokens": 42,
+            "total_tokens": 49
+          }
+        }
+      },
+      "headers": {
+        "content-type": "application/json"
+      },
+      "status": 200
+    }
+  }
+]

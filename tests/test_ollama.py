@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Callable
 from typing import Any
 
 import httpx
@@ -8,6 +9,11 @@ import pytest
 
 from providers.base import ChatMessage, ChatProvider, Embedder, ProviderError, ToolSpec
 from providers.ollama import OllamaProvider
+from tests._cassette import CassetteTransport
+
+# ---------------------------------------------------------------------------
+# Original inline-mock helpers (kept for tests that verify request-body shape)
+# ---------------------------------------------------------------------------
 
 
 def _chat_response(payload: dict[str, Any]) -> httpx.MockTransport:
@@ -22,6 +28,79 @@ def _chat_response(payload: dict[str, Any]) -> httpx.MockTransport:
     transport = httpx.MockTransport(handler)
     transport.captured = captured  # type: ignore[attr-defined]
     return transport
+
+
+# ---------------------------------------------------------------------------
+# Cassette-backed happy-path tests
+# ---------------------------------------------------------------------------
+
+
+async def test_cassette_chat_plain_text(
+    cassette: Callable[..., CassetteTransport],
+) -> None:
+    transport = cassette("ollama_chat_plain")
+    provider = OllamaProvider(
+        host="http://fake",
+        model="gemma4",
+        embed_model="nomic-embed-text",
+        transport=transport,
+    )
+
+    resp = await provider.chat([ChatMessage(role="user", content="hi")])
+
+    assert resp.content == "hello there"
+    assert resp.tool_calls == []
+    assert resp.finish_reason == "stop"
+    assert resp.usage.prompt_tokens == 9
+    assert resp.usage.completion_tokens == 3
+    assert resp.model == "gemma4"
+    assert resp.latency_ms >= 0.0
+
+
+async def test_cassette_chat_tool_call(
+    cassette: Callable[..., CassetteTransport],
+) -> None:
+    transport = cassette("ollama_chat_tool_call")
+    provider = OllamaProvider(
+        host="http://fake",
+        model="gemma4",
+        embed_model="nomic-embed-text",
+        transport=transport,
+    )
+    tool = ToolSpec(
+        name="sql_query",
+        description="read-only SQL",
+        parameters_schema={"type": "object", "properties": {"sql": {"type": "string"}}},
+    )
+
+    resp = await provider.chat([ChatMessage(role="user", content="how many rows?")], tools=[tool])
+
+    assert resp.finish_reason == "tool_use"
+    assert len(resp.tool_calls) == 1
+    call = resp.tool_calls[0]
+    assert call.name == "sql_query"
+    assert call.arguments == {"sql": "SELECT 1"}
+    assert call.id.startswith("call_")
+
+
+async def test_cassette_chat_http_error(
+    cassette: Callable[..., CassetteTransport],
+) -> None:
+    transport = cassette("ollama_chat_error")
+    provider = OllamaProvider(
+        host="http://fake",
+        model="gemma4",
+        embed_model="nomic-embed-text",
+        transport=transport,
+    )
+
+    with pytest.raises(ProviderError):
+        await provider.chat([ChatMessage(role="user", content="hi")])
+
+
+# ---------------------------------------------------------------------------
+# Inline-mock tests (verify request body shape and edge cases)
+# ---------------------------------------------------------------------------
 
 
 async def test_chat_plain_text_response() -> None:

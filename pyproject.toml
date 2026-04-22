@@ -93,6 +93,7 @@ addopts = [
 ]
 markers = [
     "slow: integration/eval tests that hit real providers or large corpora",
+    "live: tests that require a real API key / network access (skipped in CI via -m 'not live')",
 ]
 
 [tool.coverage.run]
