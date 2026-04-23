@@ -1,0 +1,51 @@
+# Two services: a local Ollama runtime and the FastAPI harness.
+# Chroma is intentionally NOT a separate service — the harness uses
+# chromadb.PersistentClient (in-process), so the corpus lives on the
+# app container's data volume, not in a Chroma server.
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: agent-harness-ollama
+    restart: unless-stopped
+    volumes:
+      - ollama_models:/root/.ollama
+    environment:
+      # q8_0 KV cache cuts a 32k context from ~15GB to ~5GB — the difference
+      # between Gemma 4 E4B fitting on an 8GB-VRAM laptop and OOM-ing.
+      OLLAMA_KV_CACHE_TYPE: q8_0
+    # No host port published by default; the app reaches Ollama over the
+    # compose network. Uncomment to expose for local debugging:
+    # ports:
+    #   - "11434:11434"
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: agent-harness-app
+    restart: unless-stopped
+    depends_on:
+      - ollama
+    env_file:
+      # Optional: provider keys + tunables live here. Without it, the app
+      # starts with built-in defaults (Ollama only, no Anthropic/OpenAI).
+      - path: .env
+        required: false
+    environment:
+      # Override .env's localhost default — inside the compose network the
+      # Ollama service is reachable by its service name.
+      OLLAMA_HOST: http://ollama:11434
+      # Pin data paths to the mounted volume so SQLite + Chroma survive
+      # container rebuilds.
+      SQLITE_DB_PATH: /app/data/support.db
+      CHROMA_PATH: /app/data/chroma
+      MEMORY_DB_PATH: /app/data/memory.db
+    volumes:
+      - app_data:/app/data
+    ports:
+      - "8000:8000"
+
+volumes:
+  ollama_models:
+  app_data:
