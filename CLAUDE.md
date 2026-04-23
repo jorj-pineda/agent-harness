@@ -6,9 +6,9 @@ This is a portfolio project — architectural decisions should be defensible in 
 
 ## Current status
 
-Steps 1–8 merged as of 2026-04-20. Provider code (step 9) is written and tested but cassette infrastructure is missing. Test suite: **236 passed**, ruff + mypy clean on the core layers.
+Steps 1–11 merged as of 2026-04-23. Test suite: **293 passed**, ruff + mypy clean on the core layers.
 
-Remaining: **9 (cassettes), 10 (FastAPI), 11 (evals), 12 (Docker + README)** — being worked in parallel across three Claude Opus 4.7 instances (Claude Code, Antigravity, Cursor). See `TODO.md` for branch assignments, file scopes, and merge order.
+Remaining: **12 (Docker + README)** — final wrap-up. README pulls its headline table from `evals/report.md`.
 
 ## Architecture
 
@@ -122,6 +122,7 @@ Scope expansions we considered but postponed. Revisit only when a concrete use c
 - **LLM-judge confidence.** `Grounder` today uses a deterministic heuristic (`top_score * coverage * health`). An LLM self-assessment judge could plug in behind the same `Grounder.ground()` interface once the heuristic baseline underperforms on evals — but self-reports are systematically over-confident, so validate on scenarios before swapping.
 - **Per-sentence citation attribution.** Grounding emits citations at the turn level (which chunks the answer draws from). Mapping individual claims to specific chunks needs a post-generation pass (spans, NLI, or a cited-output schema) — defer until the eval harness has a faithfulness metric that rewards it.
 - **Rewriting the answer on escalation.** Today `escalated=True` is a flag; the raw answer is preserved so the API layer owns presentation. Swapping in a templated "I'm not sure — let me hand you off" message is a UX decision, not a harness one.
+- **Session persistence.** Sessions live in an in-memory `dict[session_id, Session]` inside the FastAPI process. Survives neither restarts nor a multi-worker deployment. Swap for Redis or a `sessions` SQLite table when the demo grows beyond a single uvicorn process.
 
 ## Out of scope (explicitly)
 
