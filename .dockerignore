@@ -1,0 +1,25 @@
+.git
+.gitignore
+.venv
+.env
+.idea
+.vscode
+.ruff_cache
+.mypy_cache
+.pytest_cache
+__pycache__
+**/__pycache__
+*.pyc
+*.pyo
+*.pyd
+
+tests
+qa
+evals/report.md
+
+uv.lock
+TODO.md
+
+# Local data — rebuilt inside the container on the named volume.
+data/*.db
+data/chroma/
