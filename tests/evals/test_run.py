@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import asyncio
+import os
 from collections import defaultdict
 from pathlib import Path
 
+import pytest
 import yaml
 
 from evals import run as runner
@@ -68,9 +70,8 @@ def test_full_matrix_runs_end_to_end_across_two_providers(tmp_path: Path) -> Non
 
     assert len(results) == len(scenarios) * len(providers)
     assert {r.provider for r in results} == set(providers)
-    # The scripted FakeProvider shares responses across labels, so each
-    # scenario's score is identical between the two providers — this is the
-    # current state of the harness before step-9 cassettes diverge outputs.
+    # Offline FakeProvider shares responses across labels, so each scenario's
+    # score is identical between providers — use --live for real divergence.
     for p in providers:
         subset = [r for r in results if r.provider == p]
         assert len(subset) == len(scenarios)
@@ -168,3 +169,38 @@ def test_scripted_search_returns_empty_when_queue_is_exhausted() -> None:
     tool = runner._build_scripted_search_tool([])
     result = asyncio.run(tool.fn(runner._ScriptedSearchInput(query="anything")))
     assert result == []
+
+
+# ─── live eval (optional) ─────────────────────────────────────────────────
+
+
+_ollama_reachable = pytest.mark.skipif(
+    not os.environ.get("OLLAMA_HOST", ""),
+    reason="OLLAMA_HOST not set — set it to run live eval tests",
+)
+
+
+@pytest.mark.live
+@_ollama_reachable
+def test_live_matrix_runs_one_scenario(tmp_path: Path) -> None:
+    """Smoke: one scenario against real Ollama via evals.run --live path.
+
+    Run with: OLLAMA_HOST=http://localhost:11434 pytest -m live -k live_matrix
+    """
+    from api.settings import get_settings
+
+    scenarios = [_load()[0]]
+    settings = get_settings()
+    results = asyncio.run(
+        run_matrix(
+            scenarios,
+            ["ollama"],
+            workdir=tmp_path,
+            escalation_threshold=DEFAULT_ESCALATION_THRESHOLD,
+            live=True,
+            settings=settings,
+        )
+    )
+    assert len(results) == 1
+    assert results[0].provider == "ollama"
+    assert results[0].answer.strip() != ""

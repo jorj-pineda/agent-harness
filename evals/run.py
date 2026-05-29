@@ -5,13 +5,15 @@ step doesn't block on step 10's merge. Each scenario runs against every
 provider passed on the CLI.
 
 Provider handling:
-    The per-provider cassette work lives on `feat/provider-cassettes`
-    (step 9). Until those cassettes land, every named provider replays
-    the same scripted responses from `scenarios.yaml` through a
-    `FakeProvider` whose `name` attribute is the provider label. The
-    report columns therefore match until real cassettes diverge the
-    outputs — swapping them in is a single call-site change inside
-    `_build_provider`.
+    Default (offline): every named provider replays the same scripted
+    responses from `scenarios.yaml` through a `FakeProvider` whose
+    `name` attribute is the provider label — report columns match by
+    construction. Pass `--live` to call real backends instead; scores
+    become non-deterministic and provider columns can diverge.
+
+    Unit-test cassettes in `tests/cassettes/` (plain / tool-call / error
+    per backend) exercise provider wire format only — they do not cover
+    the 30 eval scenarios and are not replayed here.
 
 Tools:
     * `search_docs` is scripted: it dequeues pre-canned hits from the
@@ -38,13 +40,16 @@ from typing import Any, cast
 import yaml
 from pydantic import BaseModel
 
+from api.settings import Settings, get_settings
 from evals.scorers import correctness, escalation, faithfulness, memory_recall
 from harness.grounding import Grounder
 from harness.loop import run_turn
 from harness.state import Session
 from memory import FactStore
+from providers import create_chat_provider
 from providers.base import (
     ChatMessage,
+    ChatProvider,
     FinishReason,
     ProviderResponse,
     ToolCall,
@@ -169,9 +174,62 @@ def _build_responses(raw: list[dict[str, Any]]) -> list[ProviderResponse]:
 
 
 def _build_provider(name: str, scenario: dict[str, Any]) -> FakeProvider:
-    # Per-provider overrides land here when cassettes arrive; until then
-    # every provider shares the scenario's single `responses:` script.
     return FakeProvider(name, _build_responses(scenario["responses"]))
+
+
+def _build_live_provider(name: str, settings: Settings) -> ChatProvider:
+    """Construct a real ChatProvider from `.env` / environment settings."""
+    timeout = float(settings.request_timeout_seconds)
+    match name:
+        case "ollama":
+            return create_chat_provider(
+                "ollama",
+                host=settings.ollama_host,
+                model=settings.ollama_model,
+                embed_model=settings.ollama_embed_model,
+                timeout_seconds=timeout,
+            )
+        case "anthropic":
+            if not settings.anthropic_api_key:
+                raise SystemExit(f"--live requires ANTHROPIC_API_KEY for provider {name!r}")
+            return create_chat_provider(
+                "anthropic",
+                api_key=settings.anthropic_api_key,
+                model=settings.anthropic_model,
+                timeout_seconds=timeout,
+            )
+        case "openai":
+            if not settings.openai_api_key:
+                raise SystemExit(f"--live requires OPENAI_API_KEY for provider {name!r}")
+            return create_chat_provider(
+                "openai",
+                api_key=settings.openai_api_key,
+                model=settings.openai_model,
+                timeout_seconds=timeout,
+            )
+        case _:
+            raise SystemExit(f"Unknown provider {name!r} (expected ollama, anthropic, openai)")
+
+
+def _validate_live_providers(providers: list[str], settings: Settings) -> None:
+    for name in providers:
+        match name:
+            case "ollama":
+                continue
+            case "anthropic":
+                if not settings.anthropic_api_key:
+                    raise SystemExit(f"--live requires ANTHROPIC_API_KEY for provider {name!r}")
+            case "openai":
+                if not settings.openai_api_key:
+                    raise SystemExit(f"--live requires OPENAI_API_KEY for provider {name!r}")
+            case _:
+                raise SystemExit(f"Unknown provider {name!r} (expected ollama, anthropic, openai)")
+
+
+async def _close_provider(provider: ChatProvider) -> None:
+    aclose = getattr(provider, "aclose", None)
+    if aclose is not None:
+        await aclose()
 
 
 # ─── Scenario execution ────────────────────────────────────────────────────
@@ -183,8 +241,17 @@ async def _run_one(
     provider_name: str,
     db_path: Path,
     grounder: Grounder,
+    live: bool = False,
+    settings: Settings | None = None,
 ) -> ScenarioResult:
     user_id = scenario.get("user_id") or "eval_user"
+    if live:
+        if settings is None:
+            raise ValueError("settings required when live=True")
+        provider: ChatProvider = _build_live_provider(provider_name, settings)
+    else:
+        provider = _build_provider(provider_name, scenario)
+
     store = FactStore(db_path)
     try:
         for fact in scenario.get("seed_facts") or []:
@@ -195,7 +262,6 @@ async def _run_one(
         registry.register(_build_scripted_search_tool(queued_hits))
         register_memory_tools(registry, store=store, user_id=user_id)
 
-        provider = _build_provider(provider_name, scenario)
         session = Session(user_id=user_id)
         response = await run_turn(
             session=session,
@@ -206,6 +272,8 @@ async def _run_one(
         )
     finally:
         store.close()
+        if live:
+            await _close_provider(provider)
 
     expected = scenario.get("expected") or {}
     return ScenarioResult(
@@ -228,8 +296,12 @@ async def run_matrix(
     *,
     workdir: Path,
     escalation_threshold: float = DEFAULT_ESCALATION_THRESHOLD,
+    live: bool = False,
+    settings: Settings | None = None,
 ) -> list[ScenarioResult]:
     """Run every (scenario x provider) pair and return results in order."""
+    if live and settings is None:
+        raise ValueError("settings required when live=True")
     grounder = Grounder(escalation_threshold=escalation_threshold)
     results: list[ScenarioResult] = []
     for scenario_idx, scenario in enumerate(scenarios):
@@ -240,6 +312,8 @@ async def run_matrix(
                 provider_name=provider_name,
                 db_path=db_path,
                 grounder=grounder,
+                live=live,
+                settings=settings,
             )
             results.append(res)
     return results
@@ -274,22 +348,30 @@ def render_report(
     providers: list[str],
     *,
     escalation_threshold: float,
+    live: bool = False,
 ) -> str:
     lines: list[str] = []
     lines.append("# Eval Report")
     lines.append("")
+    mode = "live backends" if live else "scripted FakeProvider (offline)"
     lines.append(
         f"Full scenario matrix ({len(results)} results) against "
-        f"{len(providers)} providers, escalation threshold = "
+        f"{len(providers)} providers ({mode}), escalation threshold = "
         f"{escalation_threshold:.2f}."
     )
     lines.append("")
-    lines.append(
-        "Providers run through a scripted `FakeProvider` until cassette "
-        "infrastructure from `feat/provider-cassettes` lands; until then "
-        "per-provider rows share the same scripted responses and differ "
-        "only by label."
-    )
+    if live:
+        lines.append(
+            "Live run: real providers were called. Tool retrieval stayed "
+            "scripted for RAG determinism, but LLM answers vary — scores "
+            "are not comparable to the README headline table."
+        )
+    else:
+        lines.append(
+            "Offline run: every provider replays the same `responses:` "
+            "script from `scenarios.yaml`, so per-provider rows match by "
+            "construction. Use `--live` for real provider comparison."
+        )
     lines.append("")
     lines.append("## Summary")
     lines.append("")
@@ -382,6 +464,14 @@ def _parse_args(argv: list[str] | None) -> argparse.Namespace:
         default=DEFAULT_ESCALATION_THRESHOLD,
         help="Confidence threshold below which a turn is escalated (0-1).",
     )
+    parser.add_argument(
+        "--live",
+        action="store_true",
+        help=(
+            "Call real providers (requires API keys / Ollama). Scores are "
+            "non-deterministic; default offline mode uses FakeProvider."
+        ),
+    )
     return parser.parse_args(argv)
 
 
@@ -397,6 +487,11 @@ def main(argv: list[str] | None = None) -> int:
     report_path = Path(args.report)
     report_path.parent.mkdir(parents=True, exist_ok=True)
 
+    settings: Settings | None = None
+    if args.live:
+        settings = get_settings()
+        _validate_live_providers(providers, settings)
+
     with tempfile.TemporaryDirectory(prefix="eval_mem_") as tmp_str:
         tmp = Path(tmp_str)
         results = asyncio.run(
@@ -405,10 +500,17 @@ def main(argv: list[str] | None = None) -> int:
                 providers,
                 workdir=tmp,
                 escalation_threshold=args.escalation_threshold,
+                live=args.live,
+                settings=settings,
             )
         )
 
-    report = render_report(results, providers, escalation_threshold=args.escalation_threshold)
+    report = render_report(
+        results,
+        providers,
+        escalation_threshold=args.escalation_threshold,
+        live=args.live,
+    )
     report_path.write_text(report, encoding="utf-8")
 
     total = len(results)

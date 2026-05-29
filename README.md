@@ -34,7 +34,19 @@ The eval harness drives [harness/loop.run_turn](harness/loop.py) directly across
 | `anthropic` | 30        | 1.000        | 0.497       | 1.000         | 1.000           |
 | `openai`    | 30        | 1.000        | 0.497       | 1.000         | 1.000           |
 
-Today every provider replays the same scripted responses through a `FakeProvider` (the per-provider VCR-style cassettes from step 9 are in place for the unit tests but the eval matrix still shares scripts) — so the columns match by construction. The point of the matrix isn't yet "which model is better"; it's that the harness produces the same shaped, scoreable envelope no matter which backend ran the turn. The 0.497 mean correctness is held down by the off-topic and prompt-injection categories, where a "good" answer is a refusal rather than a high-overlap match against a gold string. **Escalation accuracy is 100%**: every low-confidence scenario tripped the threshold and every high-confidence one did not. That's the load-bearing claim of the grounding layer, and it's the metric a support team would actually act on.
+Today every provider replays the same scripted responses through a `FakeProvider` — so the columns match by construction. The point of the matrix isn't yet "which model is better"; it's that the harness produces the same shaped, scoreable envelope no matter which backend label ran the turn.
+
+**Two layers of provider testing, intentionally separate:**
+
+| Layer | What it exercises | Where |
+|-------|-------------------|-------|
+| **Eval matrix (default)** | 30 support scenarios × scorers; offline `FakeProvider` scripts from `scenarios.yaml` | `python -m evals.run --providers ollama,anthropic,openai` |
+| **Provider unit tests** | Wire format (plain chat, tool call, HTTP error) per backend | `tests/cassettes/*.json` replayed in CI |
+| **Live eval (optional)** | Real LLM calls; scores vary run-to-run | `python -m evals.run --live --providers ollama` (requires Ollama / API keys) |
+
+The VCR cassettes do **not** cover eval scenario shapes — wiring them into the matrix would need ~90 scenario-specific recordings. For provider comparison against gold answers, use `--live`; for CI and the README headline table, use the default offline mode.
+
+The 0.497 mean correctness is held down by the off-topic and prompt-injection categories, where a "good" answer is a refusal rather than a high-overlap match against a gold string. **Escalation accuracy is 100%**: every low-confidence scenario tripped the threshold and every high-confidence one did not. That's the load-bearing claim of the grounding layer, and it's the metric a support team would actually act on.
 
 ## Run it
 
