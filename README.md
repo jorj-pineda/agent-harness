@@ -46,25 +46,31 @@ Today every provider replays the same scripted responses through a `FakeProvider
 
 The VCR cassettes do **not** cover eval scenario shapes — wiring them into the matrix would need ~90 scenario-specific recordings. For provider comparison against gold answers, use `--live`; for CI and the README headline table, use the default offline mode.
 
-The 0.497 mean correctness is held down by the off-topic and prompt-injection categories, where a "good" answer is a refusal rather than a high-overlap match against a gold string. **Escalation accuracy is 100%**: every low-confidence scenario tripped the threshold and every high-confidence one did not. That's the load-bearing claim of the grounding layer, and it's the metric a support team would actually act on.
+The 0.497 mean correctness is held down by the off-topic and prompt-injection categories, where a "good" answer is a refusal rather than a high-overlap match against a gold string. **Escalation accuracy is 100%**: every low-confidence scenario tripped the threshold and every high-confidence one did not. That's the load-bearing claim of the grounding layer, and it's the metric a support team would actually act on. (Offline eval uses threshold **0.50**; the API default is **0.55** — both produce 100% escalation accuracy on the current scenarios.)
 
 ## Run it
 
 The full stack is two services: a local Ollama runtime and the FastAPI app. Chroma is *not* a separate service — the harness uses `chromadb.PersistentClient` (in-process), so the corpus rides on the app container's data volume rather than a Chroma server.
 
-```bash
-docker compose up --build
+**Step-by-step demo walkthrough:** [demo.md](demo.md) (model pulls, memory requirements, troubleshooting).
 
-# in another shell, pull the models into the running Ollama container
+Compose starts Ollama but **does not auto-download models** — pull `gemma4` and `nomic-embed-text` into the Ollama container after `up`. On Docker Desktop without GPU, allocate **≥ 12 GB RAM** or Gemma 4 may OOM on `/chat`.
+
+```bash
+docker compose up --build -d
+
+# pull models into the running Ollama container (one-time per ollama_models volume)
 docker exec agent-harness-ollama ollama pull gemma4
 docker exec agent-harness-ollama ollama pull nomic-embed-text
 
-# seed the support DB and embed the doc corpus
+# seed the support DB and embed the doc corpus (one-time per app_data volume)
 docker exec agent-harness-app python -m data.seed
 docker exec agent-harness-app python -m data.embed
 
 # hit the API
-curl -X POST http://localhost:8000/sessions
+curl -X POST http://localhost:8000/sessions \
+  -H 'content-type: application/json' \
+  -d '{"user_id":"u1"}'
 curl -X POST http://localhost:8000/chat \
   -H 'content-type: application/json' \
   -d '{"user_id":"u1","session_id":"<id>","message":"what is your return window?"}'
@@ -85,8 +91,8 @@ python -m data.seed
 python -m data.embed
 
 uvicorn api.server:app --reload
-pytest                                        # 293 tests, ruff + mypy clean
-python -m evals.run --providers ollama        # regenerate evals/report.md
+pytest -m "not live"                            # 289 pass, 4 live skips
+python -m evals.run --providers ollama,anthropic,openai   # offline; update README if metrics change
 ```
 
 ## What's deferred (and why)
