@@ -6,9 +6,11 @@ This is a portfolio project — architectural decisions should be defensible in 
 
 ## Current status
 
-Steps 1–11 merged as of 2026-04-23. Test suite: **293 passed**, ruff + mypy clean on the core layers.
+Steps 1–12 merged as of 2026-04-23 (Docker + README, PR #11). Post-MVP demo hardening on `feat/demo-readiness` (2026-05): `demo.md`, eval `--live` path, Chroma typing fix.
 
-Remaining: **12 (Docker + README)** — final wrap-up. README pulls its headline table from `evals/report.md`.
+Test suite: **293 collected** (289 pass + 4 live-provider skips in default CI). `ruff` clean; `mypy --strict` clean on core layers (`harness`, `grounding`, `memory`, `tools`, `providers`).
+
+README is the FocusKPI write-up and holds the **offline eval headline table**. `evals/report.md` is gitignored — regenerate with `python -m evals.run` and update README if metrics change.
 
 ## Architecture
 
@@ -51,8 +53,8 @@ Primary target: **RTX 4070 laptop, 8GB VRAM**. Every default must run comfortabl
 2. **Provider abstraction is sacred.** The harness must not `import ollama` or `import anthropic` anywhere outside `providers/`. Adding a new backend should be a single-file change.
 3. **Always web-fetch when a local/open-weights model is discussed.** Versions and sizes change monthly. Never answer from training knowledge about Gemma/Llama/Qwen/etc. specs.
 4. **SQL tool is read-only.** Separate DB connection with a read-only SQLite pragma; queries parameterized; row limit enforced server-side; no DDL/DML tokens in generated SQL. Log every query.
-5. **Every response ships with metadata.** `{answer, confidence, citations, tool_calls, memory_writes, provider, latency_ms}` — not just a string. The eval harness depends on this shape.
-6. **Determinism in tests.** Provider calls in tests go through a recorded-response fake (VCR-style cassettes in `tests/cassettes/`). Never hit live APIs in CI.
+5. **Every response ships with metadata.** `{answer, confidence, citations, escalated, tool_calls, memory_writes, provider, latency_ms}` — not just a string. The eval harness depends on this shape.
+6. **Determinism in tests.** Provider calls in tests go through a recorded-response fake (VCR-style cassettes in `tests/cassettes/`). Never hit live APIs in CI. Eval matrix defaults to offline `FakeProvider`; use `evals.run --live` only for optional manual provider comparison.
 7. **Secrets live in `.env`**, loaded via `pydantic-settings`. `.env.example` is committed, `.env` is gitignored. No hardcoded keys, ever.
 
 ## Eval harness
@@ -61,19 +63,24 @@ The eval suite is not optional — it's the differentiator for the job pitch. Mi
 
 - `evals/scenarios.yaml` — ~30 scripted support conversations covering: grounded factual Q&A, personalization recall across sessions, off-topic refusal, low-confidence escalation triggers, adversarial prompt injection attempts.
 - `evals/scorers.py` — faithfulness (every factual claim covered by a cited chunk), correctness (vs gold answer), memory-recall accuracy, escalation precision/recall.
-- `evals/run.py` — runs the full matrix (every scenario × every provider), emits `evals/report.md` with a provider-comparison table.
+- `evals/run.py` — runs the full matrix (every scenario × every provider). Default: offline `FakeProvider` (deterministic, CI-safe). `--live` calls real backends. Emits `evals/report.md`.
 
-The README's headline table comes from `evals/report.md`. If you change the harness, re-run evals and commit the new report.
+The README headline table is the committed offline snapshot. `evals/report.md` is gitignored. Re-run default evals after harness changes; update README if metrics shift. Eval runner default escalation threshold is **0.50**; the API default is **0.55** (`CONFIDENCE_ESCALATION_THRESHOLD`).
 
 ## Commands
 
-Filled in as we build. Placeholder entries:
-
 ```bash
 # install
-uv sync                          # or: pip install -e .
+uv sync --extra dev              # or: pip install -e .[dev]
 
-# pull local models
+# docker demo (see demo.md)
+docker compose up --build -d
+docker exec agent-harness-ollama ollama pull gemma4
+docker exec agent-harness-ollama ollama pull nomic-embed-text
+docker exec agent-harness-app python -m data.seed
+docker exec agent-harness-app python -m data.embed
+
+# pull local models (dev without Docker)
 ollama pull gemma4               # Gemma 4 E4B
 ollama pull nomic-embed-text
 
@@ -85,11 +92,14 @@ python -m data.embed
 uvicorn api.server:app --reload
 
 # tests
-pytest
-pytest -m "not slow"             # skip eval integration tests
+pytest -m "not live"             # CI default; skips live provider tests
+pytest -m live                   # optional: real Ollama / API keys
 
-# evals
-python -m evals.run --providers ollama,anthropic
+# evals (offline — README headline table)
+python -m evals.run --providers ollama,anthropic,openai
+
+# evals (live — non-deterministic, manual only)
+python -m evals.run --live --providers ollama
 ```
 
 ## Conventions
@@ -105,12 +115,10 @@ python -m evals.run --providers ollama,anthropic
 
 When Jorge is running several Claude instances at once (Claude Code, Antigravity, Cursor), coordination is enforced by file-scope discipline, not locking. Rules:
 
-- **Check `TODO.md` first** for the current assignment table. Pick up the step assigned to your host; don't reach outside that scope.
-- **Stay in your file scope.** Each step lists the files it's allowed to touch. Drive-by edits in other layers cause merge pain — stop and ping Jorge instead.
-- **Claude Code owns `TODO.md` and `CLAUDE.md`.** Other agents record decisions in commit messages; Claude Code syncs the docs.
+- **Stay in your file scope.** Drive-by edits in other layers cause merge pain — stop and ping Jorge instead.
+- **Claude Code owns `CLAUDE.md`.** Other agents record decisions in commit messages; Claude Code syncs the docs.
 - **`pyproject.toml` edits are additive only** — append to a step-labeled block (`# step-10 api`, etc.). No reorders, no re-pins of existing deps.
-- **Merge order is fixed by dependency chain** (see TODO.md). Whoever finishes first rebases, not merges out of order.
-- **Pause-per-substep still applies** within each branch: summary + commit message + Jorge's greenlight before moving on.
+- **Pause-per-substep still applies** on large branches: summary + commit message + Jorge's greenlight before moving on.
 
 ## Deferred (revisit when there's a real need)
 
