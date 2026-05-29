@@ -14,7 +14,7 @@ harness can share a single open collection across many tool invocations.
 from __future__ import annotations
 
 import logging
-from typing import Any, Protocol
+from typing import Any, Protocol, cast
 
 import chromadb
 from pydantic import BaseModel, Field
@@ -71,11 +71,16 @@ def build_rag_tool(
         [vector] = await embedder.embed([args.query])
 
         where = {"category": args.category} if args.category is not None else None
-        response = collection.query(
-            query_embeddings=[vector],
-            n_results=args.k,
-            where=where,
-            include=["documents", "metadatas", "distances"],
+        # Chroma's query() stubs disagree with runtime shapes across versions;
+        # cast at the boundary keeps mypy strict without pulling chromadb internals.
+        response = cast(
+            dict[str, list[list[Any]]],
+            collection.query(
+                query_embeddings=cast(Any, [vector]),
+                n_results=args.k,
+                where=cast(Any, where),
+                include=["documents", "metadatas", "distances"],
+            ),
         )
 
         ids = response["ids"][0]
