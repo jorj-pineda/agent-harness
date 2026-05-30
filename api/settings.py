@@ -49,6 +49,12 @@ class Settings(BaseSettings):
     # Grounding
     confidence_escalation_threshold: float = Field(default=0.55, ge=0.0, le=1.0)
 
+    # Coding agent (Phase 4)
+    require_verification_before_finish: bool = Field(
+        default=False,
+        description="Escalate when the turn finishes without a successful verification command.",
+    )
+
     # Logging
     log_level: str = "INFO"
 

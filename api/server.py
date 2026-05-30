@@ -230,6 +230,7 @@ def _register_routes(app: FastAPI) -> None:
             registry=registry,
             max_iterations=settings.max_tool_iterations,
             grounder=components.grounder,
+            require_verification_before_finish=settings.require_verification_before_finish,
         )
 
 

@@ -87,6 +87,7 @@ disallow_untyped_defs = false
 minversion = "8.0"
 asyncio_mode = "auto"
 testpaths = ["tests"]
+norecursedirs = ["fixtures", ".git", ".venv", "node_modules"]
 addopts = [
     "-ra",
     "--strict-markers",

@@ -84,6 +84,37 @@ async def test_git_status_on_initialized_repo(git_repo: Path) -> None:
     assert "tracked.txt" in result["stdout"] or result["stdout"] == ""
 
 
+async def test_write_file_jailed_to_workspace(workspace: Workspace, registry: ToolRegistry) -> None:
+    result = await registry.invoke(
+        "write_file",
+        {"path": "new_module.py", "content": "VALUE = 1\n"},
+    )
+    assert result["path"] == "new_module.py"
+    assert (workspace.root / "new_module.py").read_text(encoding="utf-8") == "VALUE = 1\n"
+
+
+async def test_write_file_rejects_escape(registry: ToolRegistry) -> None:
+    with pytest.raises(ToolError, match="escapes workspace"):
+        await registry.invoke(
+            "write_file",
+            {"path": "../../../tmp/evil.py", "content": "x"},
+        )
+
+
+async def test_run_command_pytest_on_fixture(workspace: Workspace, registry: ToolRegistry) -> None:
+    result = await registry.invoke(
+        "run_command",
+        {"argv": ["pytest", "test_calc.py", "-q"]},
+    )
+    assert result["argv"] == ["pytest", "test_calc.py", "-q"]
+    assert result["success"] is False  # divide bug in fixture
+
+
+async def test_run_command_rejects_disallowed_executable(registry: ToolRegistry) -> None:
+    with pytest.raises(ToolError, match="not allowlisted"):
+        await registry.invoke("run_command", {"argv": ["bash", "-c", "echo hi"]})
+
+
 def test_build_code_tools_exposes_every_tool(workspace: Workspace) -> None:
     names = {t.name for t in build_code_tools(workspace)}
     assert names == {
@@ -93,4 +124,6 @@ def test_build_code_tools_exposes_every_tool(workspace: Workspace) -> None:
         "tree",
         "git_status",
         "git_diff",
+        "write_file",
+        "run_command",
     }

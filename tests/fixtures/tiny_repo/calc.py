@@ -6,4 +6,4 @@ def add(a: int, b: int) -> int:
 
 
 def divide(a: int, b: int) -> float:
-    return a / b
+    return 0.0  # intentional bug — Phase 4 e2e tests fix with write_file + pytest

@@ -31,6 +31,12 @@ MAX_LIST_ENTRIES = 200
 MAX_TREE_ENTRIES = 300
 GREP_TIMEOUT_S = 10.0
 GIT_TIMEOUT_S = 15.0
+RUN_COMMAND_TIMEOUT_S = 120.0
+MAX_WRITE_BYTES = 512_000
+MAX_COMMAND_OUTPUT_CHARS = 32_000
+
+ALLOWED_ROOT_COMMANDS = frozenset({"pytest", "ruff", "mypy", "git", "python"})
+ALLOWED_GIT_SUBCOMMANDS = frozenset({"diff", "status", "show"})
 
 
 class ReadFileInput(BaseModel):
@@ -74,6 +80,22 @@ class GitDiffInput(BaseModel):
 
 class GitStatusInput(BaseModel):
     pass
+
+
+class WriteFileInput(BaseModel):
+    path: str = Field(..., min_length=1, description="Repo-relative file path to write.")
+    content: str = Field(..., description="Full file contents (UTF-8).")
+
+
+class RunCommandInput(BaseModel):
+    argv: list[str] = Field(
+        ...,
+        min_length=1,
+        description=(
+            "Command argv list, e.g. ['pytest', 'test_calc.py']. First token must be "
+            "allowlisted (pytest, ruff, mypy, git, python -m pytest)."
+        ),
+    )
 
 
 def _workspace_error(exc: WorkspaceError) -> ToolError:
@@ -186,6 +208,52 @@ def build_code_tools(workspace: Workspace) -> list[Tool]:
                 raise _workspace_error(exc) from exc
         return _run_git(workspace, cmd)
 
+    def write_file(args: WriteFileInput) -> dict[str, Any]:
+        log.info("code_tool=write_file path=%s bytes=%d", args.path, len(args.content.encode()))
+        try:
+            target = workspace.resolve(args.path, must_exist=False)
+        except WorkspaceError as exc:
+            raise _workspace_error(exc) from exc
+        if target.is_dir():
+            raise ToolError(f"Refusing to write a directory path: {args.path}")
+
+        encoded = args.content.encode("utf-8")
+        if len(encoded) > MAX_WRITE_BYTES:
+            raise ToolError(f"Content exceeds {MAX_WRITE_BYTES} bytes.")
+
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(encoded)
+        rel = workspace.relative_str(target)
+        return {"path": rel, "bytes_written": len(encoded)}
+
+    def run_command(args: RunCommandInput) -> dict[str, Any]:
+        log.info("code_tool=run_command argv=%s", args.argv)
+        argv = [str(token) for token in args.argv]
+        _validate_command_argv(argv)
+        executable = argv[0]
+        if shutil.which(executable) is None:
+            raise ToolError(f"Command not found on PATH: {executable}")
+
+        try:
+            proc = subprocess.run(  # noqa: S603 — argv validated against allowlist; cwd jailed
+                argv,
+                cwd=str(workspace.root),
+                capture_output=True,
+                text=True,
+                timeout=RUN_COMMAND_TIMEOUT_S,
+                check=False,
+            )
+        except subprocess.TimeoutExpired as exc:
+            raise ToolError(f"run_command timed out after {RUN_COMMAND_TIMEOUT_S}s") from exc
+
+        return {
+            "argv": argv,
+            "exit_code": proc.returncode,
+            "stdout": _truncate_output(proc.stdout),
+            "stderr": _truncate_output(proc.stderr),
+            "success": proc.returncode == 0,
+        }
+
     return [
         Tool(
             name="read_file",
@@ -231,13 +299,56 @@ def build_code_tools(workspace: Workspace) -> list[Tool]:
             input_model=GitDiffInput,
             fn=git_diff,
         ),
+        Tool(
+            name="write_file",
+            description=(
+                "Replace a UTF-8 text file under the workspace with new content. "
+                "Creates parent directories as needed. Returns bytes written."
+            ),
+            input_model=WriteFileInput,
+            fn=write_file,
+        ),
+        Tool(
+            name="run_command",
+            description=(
+                "Run an allowlisted verification command in the workspace root "
+                "(pytest, ruff, mypy, git diff/status/show, python -m pytest). "
+                "Returns exit_code, stdout, stderr, and success flag."
+            ),
+            input_model=RunCommandInput,
+            fn=run_command,
+        ),
     ]
 
 
 def register_code_tools(registry: ToolRegistry, *, workspace: Workspace) -> None:
-    """Register read-only code tools on the given registry."""
+    """Register code tools (read, write, verify) on the given registry."""
     for tool in build_code_tools(workspace):
         registry.register(tool)
+
+
+def _validate_command_argv(argv: list[str]) -> None:
+    if not argv:
+        raise ToolError("argv must not be empty")
+    for token in argv:
+        if not token or "\n" in token or "\x00" in token:
+            raise ToolError("argv tokens must be non-empty single-line strings")
+
+    root = argv[0]
+    if root not in ALLOWED_ROOT_COMMANDS:
+        raise ToolError(f"Command not allowlisted: {root!r}")
+
+    if root == "git":
+        if len(argv) < 2 or argv[1] not in ALLOWED_GIT_SUBCOMMANDS:
+            raise ToolError("git subcommand not allowlisted (diff, status, show)")
+    elif root == "python" and (len(argv) < 3 or argv[1] != "-m" or argv[2] != "pytest"):
+        raise ToolError("python is only allowed as: python -m pytest ...")
+
+
+def _truncate_output(text: str) -> str:
+    if len(text) <= MAX_COMMAND_OUTPUT_CHARS:
+        return text
+    return text[:MAX_COMMAND_OUTPUT_CHARS] + "\n...(truncated)"
 
 
 def _grep_ripgrep(
