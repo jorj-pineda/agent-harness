@@ -1,8 +1,11 @@
-"""Long-term personalization fact store.
+"""Long-term engineering memory store.
 
-SQLite-backed, per-user keyed. The agent writes via the `remember_fact`
-tool and reads via `recall_facts` (both wired in `tools/memory.py`); the
-API layer will also read for automatic system-prompt injection.
+SQLite-backed, per-user keyed. The agent writes via `remember_fact` / `remember`
+and reads via `recall_facts` / `recall` (wired in `tools/memory.py`); the API
+layer reads for automatic system-prompt injection.
+
+Notes capture durable engineering context — stack choices, repo conventions,
+review preferences — not ephemeral chat state.
 
 Design choices worth calling out:
 
@@ -37,11 +40,12 @@ log = logging.getLogger(__name__)
 
 MEMORY_SCHEMA_PATH = Path(__file__).parent.parent / "data" / "memory_schema.sql"
 DEFAULT_LIST_LIMIT = 20
-FACTS_HEADING = "Known facts about the user:"
+FACTS_HEADING = "Engineering memory for this developer (persists across sessions):"
 
 
 class Fact(BaseModel):
-    """One persisted personalization fact about a user."""
+    """One persisted engineering note about a user/developer."""
+
 
     id: int
     user_id: str
@@ -110,11 +114,10 @@ class FactStore:
         user_id: str,
         limit: int = DEFAULT_LIST_LIMIT,
     ) -> str:
-        """Render a user's facts as a system-prompt injection block.
+        """Render a user's engineering notes as a system-prompt injection block.
 
-        Returns "" when the user has no facts so the API layer can
-        concatenate unconditionally. Facts are listed most-recent first,
-        matching `list()`.
+        Returns "" when the user has no notes so the API layer can concatenate
+        unconditionally. Notes are listed most-recent first, matching `list()`.
         """
         facts = self.list(user_id, limit=limit)
         if not facts:

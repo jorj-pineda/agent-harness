@@ -45,6 +45,17 @@ def test_harvest_returns_empty_for_no_tool_calls() -> None:
     assert harvest_memory_writes([]) == []
 
 
+def test_harvest_accepts_remember_alias() -> None:
+    calls = [
+        ToolCallRecord(
+            name="remember",
+            arguments={"note": "prefer async"},
+            result={"stored": True, "fact": "prefer async"},
+        )
+    ]
+    assert harvest_memory_writes(calls) == ["prefer async"]
+
+
 def test_harvest_ignores_non_memory_tools() -> None:
     calls = [
         ToolCallRecord(name="lookup_order", arguments={}, result={"id": 1}),
