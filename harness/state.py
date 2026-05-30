@@ -65,6 +65,10 @@ class Session(BaseModel):
 
     session_id: str = Field(default_factory=_uuid)
     user_id: str | None = None
+    workspace_root: str | None = Field(
+        default=None,
+        description="Absolute sandbox root for code tools (Phase 2+); set at session creation.",
+    )
     messages: list[ChatMessage] = Field(default_factory=list)
     turns: list[Turn] = Field(default_factory=list)
     created_at: datetime = Field(default_factory=_utcnow)
@@ -84,5 +88,13 @@ class TurnResponse(BaseModel):
     escalated: bool = False
     tool_calls: list[ToolCallRecord] = Field(default_factory=list)
     memory_writes: list[str] = Field(default_factory=list)
+    files_touched: list[str] = Field(
+        default_factory=list,
+        description="Repo-relative paths edited this turn (coding agent; populated in Phase 4+).",
+    )
+    verification_ran: bool = Field(
+        default=False,
+        description="True when an allowlisted verification command succeeded this turn.",
+    )
     provider: str
     latency_ms: float

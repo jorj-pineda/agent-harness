@@ -32,6 +32,47 @@ def test_create_session_rejects_empty_user_id(harness: Harness) -> None:
     assert resp.status_code == 422
 
 
+def test_create_session_with_workspace_root(harness: Harness, tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    resp = harness.client.post(
+        "/sessions",
+        json={"user_id": "u-ws", "workspace_root": str(repo)},
+    )
+    assert resp.status_code == 200, resp.text
+    session_id = resp.json()["session_id"]
+
+    harness.provider.script(make_response(content="ok"))
+    chat_resp = harness.client.post(
+        "/chat",
+        json={"user_id": "u-ws", "session_id": session_id, "message": "hi"},
+    )
+    assert chat_resp.status_code == 200, chat_resp.text
+    messages_seen, _ = harness.provider.calls[-1]
+    assert messages_seen[0].role == "system"
+    assert f"Workspace root: {repo.resolve()}" in messages_seen[0].content
+
+
+def test_create_session_rejects_invalid_workspace_root(harness: Harness, tmp_path: Path) -> None:
+    missing = tmp_path / "no-such-dir"
+    resp = harness.client.post(
+        "/sessions",
+        json={"user_id": "u-1", "workspace_root": str(missing)},
+    )
+    assert resp.status_code == 400
+    assert "not a directory" in resp.json()["detail"]
+
+
+def test_create_session_rejects_workspace_root_file(harness: Harness, tmp_path: Path) -> None:
+    f = tmp_path / "not-a-dir.txt"
+    f.write_text("x", encoding="utf-8")
+    resp = harness.client.post(
+        "/sessions",
+        json={"user_id": "u-1", "workspace_root": str(f)},
+    )
+    assert resp.status_code == 400
+
+
 def test_chat_returns_full_envelope(harness: Harness, make_session: Callable[[str], str]) -> None:
     session_id = make_session("u-1")
     harness.provider.script(make_response(content="hello there"))
@@ -52,6 +93,8 @@ def test_chat_returns_full_envelope(harness: Harness, make_session: Callable[[st
     assert body["citations"] == []
     assert body["escalated"] is False
     assert body["confidence"] is None  # no search_docs call → ungrounded
+    assert body["files_touched"] == []
+    assert body["verification_ran"] is False
 
 
 def test_chat_404_when_session_unknown(harness: Harness) -> None:

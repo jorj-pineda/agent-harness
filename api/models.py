@@ -14,6 +14,14 @@ from harness.state import TurnResponse
 
 class CreateSessionRequest(BaseModel):
     user_id: str = Field(..., min_length=1, description="Stable per-user identifier.")
+    workspace_root: str | None = Field(
+        default=None,
+        min_length=1,
+        description=(
+            "Optional absolute path to the repo sandbox. Resolved and stored on the session; "
+            "code tools (Phase 2+) jail all paths under this root."
+        ),
+    )
 
 
 class CreateSessionResponse(BaseModel):

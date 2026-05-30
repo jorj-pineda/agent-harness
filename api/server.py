@@ -31,6 +31,7 @@ import logging
 from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
+from pathlib import Path
 
 import chromadb
 from fastapi import FastAPI, HTTPException, Request
@@ -54,11 +55,19 @@ from .settings import Settings, get_settings
 log = logging.getLogger(__name__)
 
 BASE_SYSTEM_PROMPT = (
-    "You are a customer-support assistant. Use the available tools to look up "
-    "customer, order, and product data; search the support documentation for "
-    "policy questions; and remember durable facts about the user across sessions. "
-    "Cite documentation chunks you draw from when answering policy questions. "
-    "Decline politely if a question is outside the support scope."
+    "You are a senior software engineering agent. Work in the configured workspace "
+    "when one is set; otherwise use the tools available to you.\n\n"
+    "Contract:\n"
+    "- Read before you edit — inspect relevant files and cite paths (and line ranges "
+    "when known) for claims about the codebase.\n"
+    "- Prefer minimal, focused diffs over broad rewrites; match existing conventions.\n"
+    "- Run verification (tests, lint, type-check) before claiming a task is done.\n"
+    "- Remember durable engineering facts (stack choices, conventions, review preferences) "
+    "across sessions via the memory tools.\n"
+    "- Decline unsafe or out-of-scope requests (destructive shell, secrets exfiltration, "
+    "unbounded refactors).\n\n"
+    "Support lookup tools (SQL, doc search) may still be registered during the coding-agent "
+    "pivot — prefer code-oriented reasoning when the task is about the repository."
 )
 
 
@@ -171,12 +180,14 @@ def _register_routes(app: FastAPI) -> None:
     @app.post("/sessions", response_model=CreateSessionResponse)
     async def create_session(req: CreateSessionRequest, request: Request) -> CreateSessionResponse:
         components: Components = request.app.state.components
-        session = Session(user_id=req.user_id)
+        workspace_root = _resolve_workspace_root(req.workspace_root)
+        session = Session(user_id=req.user_id, workspace_root=workspace_root)
         components.sessions[session.session_id] = session
         log.info(
-            "api=create_session user_id=%s session_id=%s",
+            "api=create_session user_id=%s session_id=%s workspace_root=%s",
             req.user_id,
             session.session_id,
+            workspace_root,
         )
         return CreateSessionResponse(session_id=session.session_id)
 
@@ -191,7 +202,12 @@ def _register_routes(app: FastAPI) -> None:
         if session.user_id != req.user_id:
             raise HTTPException(status_code=403, detail="Session does not belong to this user_id")
 
-        _refresh_facts_system_message(session, components.fact_store, req.user_id)
+        _refresh_facts_system_message(
+            session,
+            components.fact_store,
+            req.user_id,
+            workspace_root=session.workspace_root,
+        )
 
         registry = _build_registry(components=components, settings=settings, user_id=req.user_id)
 
@@ -223,10 +239,25 @@ def _build_registry(
     return registry
 
 
+def _resolve_workspace_root(raw: str | None) -> str | None:
+    """Resolve an optional client path to an absolute directory for the session."""
+    if raw is None:
+        return None
+    resolved = Path(raw).expanduser().resolve()
+    if not resolved.is_dir():
+        raise HTTPException(
+            status_code=400,
+            detail=f"workspace_root is not a directory: {resolved}",
+        )
+    return str(resolved)
+
+
 def _refresh_facts_system_message(
     session: Session,
     fact_store: FactStore,
     user_id: str,
+    *,
+    workspace_root: str | None,
 ) -> None:
     """Replace (or insert) the facts system message at index 0.
 
@@ -234,8 +265,13 @@ def _refresh_facts_system_message(
     `format_for_system_prompt` returns "" when the user has no facts, so the
     concatenation stays unconditional.
     """
+    blocks = [BASE_SYSTEM_PROMPT]
+    if workspace_root:
+        blocks.append(f"Workspace root: {workspace_root}")
     facts_block = fact_store.format_for_system_prompt(user_id)
-    content = BASE_SYSTEM_PROMPT + (f"\n\n{facts_block}" if facts_block else "")
+    if facts_block:
+        blocks.append(facts_block)
+    content = "\n\n".join(blocks)
     message = ChatMessage(role="system", content=content)
     if session.messages and session.messages[0].role == "system":
         session.messages[0] = message
