@@ -10,6 +10,7 @@ from pydantic import BaseModel
 from harness.grounding import (
     DEFAULT_MAX_CITATIONS,
     ERROR_HEALTH_PENALTY,
+    GREP_HIT_EVIDENCE_SCORE,
     MAX_ITERATION_HEALTH_PENALTY,
     Grounder,
     GroundingResult,
@@ -58,6 +59,89 @@ def test_non_retrieval_tool_calls_still_leave_confidence_none() -> None:
 
     assert result.confidence is None
     assert result.escalated is False
+
+
+def _read_file_call(result: object, *, error: str | None = None) -> ToolCallRecord:
+    return ToolCallRecord(
+        name="read_file",
+        arguments={"path": "calc.py"},
+        result=result,
+        error=error,
+    )
+
+
+def _grep_call(result: object, *, error: str | None = None) -> ToolCallRecord:
+    return ToolCallRecord(
+        name="grep_repo",
+        arguments={"pattern": "def"},
+        result=result,
+        error=error,
+    )
+
+
+def test_read_file_yields_file_line_citations_and_high_confidence() -> None:
+    g = Grounder(escalation_threshold=0.5)
+    read_result = {
+        "path": "calc.py",
+        "start_line": 4,
+        "end_line": 6,
+        "content": "def add(a: int, b: int) -> int:\n    return a + b",
+    }
+
+    result = g.ground(answer="add sums integers", tool_calls=[_read_file_call(read_result)])
+
+    assert result.citations == ["calc.py:4-6"]
+    assert result.confidence == pytest.approx(1.0)
+    assert result.escalated is False
+
+
+def test_grep_repo_yields_single_line_citations() -> None:
+    g = Grounder(escalation_threshold=0.5)
+    hits = [
+        {"path": "calc.py", "line": 4, "text": "def add(a: int, b: int) -> int:"},
+        {"path": "calc.py", "line": 8, "text": "def divide(a: int, b: int) -> float:"},
+    ]
+
+    result = g.ground(answer="two functions", tool_calls=[_grep_call(hits)])
+
+    assert result.citations == ["calc.py:4", "calc.py:8"]
+    assert result.confidence == pytest.approx(GREP_HIT_EVIDENCE_SCORE)
+    assert result.escalated is False
+
+
+def test_empty_grep_with_no_rag_escalates() -> None:
+    g = Grounder(escalation_threshold=0.5)
+
+    result = g.ground(answer="nothing found", tool_calls=[_grep_call([])])
+
+    assert result.confidence == 0.0
+    assert result.citations == []
+    assert result.escalated is True
+
+
+def test_read_file_error_triggers_escalation_when_no_other_hits() -> None:
+    g = Grounder(escalation_threshold=0.5)
+
+    result = g.ground(
+        answer="x",
+        tool_calls=[_read_file_call(result=None, error="Path not found")],
+    )
+
+    assert result.confidence == 0.0
+    assert result.escalated is True
+
+
+def test_code_and_rag_evidence_merge_in_one_turn() -> None:
+    g = Grounder(escalation_threshold=0.5)
+    rag = _search_call([_hit("returns#window", 0.9)])
+    code = _read_file_call({"path": "calc.py", "start_line": 1, "end_line": 2, "content": "..."})
+
+    result = g.ground(answer="mixed", tool_calls=[rag, code])
+
+    assert "returns#window" in result.citations
+    assert "calc.py:1-2" in result.citations
+    assert result.confidence is not None
+    assert result.confidence > 0.5
 
 
 def test_high_scoring_retrieval_yields_high_confidence_and_citations() -> None:
@@ -365,3 +449,52 @@ async def test_run_turn_passes_max_iterations_signal_to_grounder() -> None:
     # 0.9 * 1.0 coverage * 0.5 max-iter penalty = 0.45 → below threshold
     assert resp.confidence == pytest.approx(0.9 * MAX_ITERATION_HEALTH_PENALTY)
     assert resp.escalated is True
+
+
+class _ReadFileInput(BaseModel):
+    path: str
+
+
+def _stub_read_file_tool(result: dict[str, object]) -> Tool:
+    async def read_file(args: _ReadFileInput) -> dict[str, object]:
+        return result
+
+    return Tool(
+        name="read_file",
+        description="stub",
+        input_model=_ReadFileInput,
+        fn=read_file,
+    )
+
+
+async def test_run_turn_with_read_file_grounds_file_line_citations() -> None:
+    read_result = {
+        "path": "calc.py",
+        "start_line": 4,
+        "end_line": 5,
+        "content": "def add(a: int, b: int) -> int:\n    return a + b",
+    }
+    provider = _FakeProvider(
+        [
+            _response(
+                tool_calls=[ToolCall(id="t1", name="read_file", arguments={"path": "calc.py"})],
+                finish_reason="tool_use",
+            ),
+            _response(content="calc.py defines add."),
+        ]
+    )
+    registry = ToolRegistry()
+    registry.register(_stub_read_file_tool(read_result))
+
+    resp = await run_turn(
+        session=Session(),
+        user_input="what is in calc.py?",
+        provider=provider,
+        registry=registry,
+        grounder=Grounder(escalation_threshold=0.5),
+    )
+
+    assert resp.answer == "calc.py defines add."
+    assert resp.citations == ["calc.py:4-5"]
+    assert resp.confidence == pytest.approx(1.0)
+    assert resp.escalated is False
