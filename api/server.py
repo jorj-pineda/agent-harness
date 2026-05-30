@@ -45,9 +45,11 @@ from memory import FactStore
 from providers import create_chat_provider, create_embedder
 from providers.base import ChatMessage, ChatProvider, Embedder
 from tools import ToolRegistry
+from tools.code import register_code_tools
 from tools.memory import register_memory_tools
 from tools.rag import register_rag_tool
 from tools.sql import register_sql_tools
+from workspace import Workspace
 
 from .models import ChatRequest, ChatResponse, CreateSessionRequest, CreateSessionResponse
 from .settings import Settings, get_settings
@@ -209,7 +211,12 @@ def _register_routes(app: FastAPI) -> None:
             workspace_root=session.workspace_root,
         )
 
-        registry = _build_registry(components=components, settings=settings, user_id=req.user_id)
+        registry = _build_registry(
+            components=components,
+            settings=settings,
+            user_id=req.user_id,
+            workspace_root=session.workspace_root,
+        )
 
         try:
             provider = components.router.resolve(req.provider)
@@ -231,11 +238,14 @@ def _build_registry(
     components: Components,
     settings: Settings,
     user_id: str,
+    workspace_root: str | None = None,
 ) -> ToolRegistry:
     registry = ToolRegistry()
     register_sql_tools(registry, db_path=settings.sqlite_db_path)
     register_rag_tool(registry, collection=components.collection, embedder=components.embedder)
     register_memory_tools(registry, store=components.fact_store, user_id=user_id)
+    if workspace_root is not None:
+        register_code_tools(registry, workspace=Workspace(root=Path(workspace_root)))
     return registry
 
 

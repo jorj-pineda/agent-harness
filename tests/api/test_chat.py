@@ -35,6 +35,7 @@ def test_create_session_rejects_empty_user_id(harness: Harness) -> None:
 def test_create_session_with_workspace_root(harness: Harness, tmp_path: Path) -> None:
     repo = tmp_path / "repo"
     repo.mkdir()
+    (repo / "main.py").write_text("print('hi')\n", encoding="utf-8")
     resp = harness.client.post(
         "/sessions",
         json={"user_id": "u-ws", "workspace_root": str(repo)},
@@ -48,9 +49,12 @@ def test_create_session_with_workspace_root(harness: Harness, tmp_path: Path) ->
         json={"user_id": "u-ws", "session_id": session_id, "message": "hi"},
     )
     assert chat_resp.status_code == 200, chat_resp.text
-    messages_seen, _ = harness.provider.calls[-1]
+    messages_seen, tools = harness.provider.calls[-1]
     assert messages_seen[0].role == "system"
     assert f"Workspace root: {repo.resolve()}" in messages_seen[0].content
+    tool_names = {t.name for t in (tools or [])}
+    assert "read_file" in tool_names
+    assert "grep_repo" in tool_names
 
 
 def test_create_session_rejects_invalid_workspace_root(harness: Harness, tmp_path: Path) -> None:
