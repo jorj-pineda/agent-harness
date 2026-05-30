@@ -1,29 +1,12 @@
 """Eval runner: scenarios.yaml x providers -> report.md.
 
-Drives `harness.loop.run_turn` directly — skips the FastAPI layer so this
-step doesn't block on step 10's merge. Each scenario runs against every
-provider passed on the CLI.
+Drives `harness.loop.run_turn` directly. Default (offline) mode replays
+scripted provider responses and scripted code-tool results from
+`scenarios.yaml` through a `FakeProvider`. Pass `--live` for real backends.
 
-Provider handling:
-    Default (offline): every named provider replays the same scripted
-    responses from `scenarios.yaml` through a `FakeProvider` whose
-    `name` attribute is the provider label — report columns match by
-    construction. Pass `--live` to call real backends instead; scores
-    become non-deterministic and provider columns can diverge.
-
-    Unit-test cassettes in `tests/cassettes/` (plain / tool-call / error
-    per backend) exercise provider wire format only — they do not cover
-    the 30 eval scenarios and are not replayed here.
-
-Tools:
-    * `search_docs` is scripted: it dequeues pre-canned hits from the
-      scenario so retrieval is deterministic and the evals run offline.
-    * `remember_fact` / `recall_facts` use a real tmp `FactStore`, so
-      personalization recall actually exercises the memory layer.
-
-Output:
-    Markdown report at `evals/report.md` (configurable). Sections:
-    summary averages, per-category breakdown, per-scenario details.
+Coding scenarios script `read_file`, `grep_repo`, `write_file`, and
+`run_command` via per-invocation result queues in `tool_results`. Memory
+tools use a real tmp `FactStore`.
 """
 
 from __future__ import annotations
@@ -41,7 +24,14 @@ import yaml
 from pydantic import BaseModel
 
 from api.settings import Settings, get_settings
-from evals.scorers import correctness, escalation, faithfulness, memory_recall
+from evals.scorers import (
+    code_faithfulness,
+    correctness,
+    escalation,
+    memory_recall,
+    patch_correctness,
+    verification_score,
+)
 from harness.grounding import Grounder
 from harness.loop import run_turn
 from harness.state import Session
@@ -57,6 +47,12 @@ from providers.base import (
 )
 from tools import ToolRegistry
 from tools.base import Tool
+from tools.code import (
+    GrepRepoInput,
+    ReadFileInput,
+    RunCommandInput,
+    WriteFileInput,
+)
 from tools.memory import register_memory_tools
 
 log = logging.getLogger(__name__)
@@ -66,6 +62,13 @@ DEFAULT_REPORT_PATH = Path(__file__).parent / "report.md"
 DEFAULT_ESCALATION_THRESHOLD = 0.5
 DEFAULT_PROVIDERS = "ollama,anthropic"
 
+SCRIPTED_TOOL_INPUTS: dict[str, type[BaseModel]] = {
+    "read_file": ReadFileInput,
+    "grep_repo": GrepRepoInput,
+    "write_file": WriteFileInput,
+    "run_command": RunCommandInput,
+}
+
 
 @dataclass(frozen=True)
 class ScenarioResult:
@@ -74,7 +77,9 @@ class ScenarioResult:
     scenario_id: str
     category: str
     provider: str
-    faithfulness: float
+    code_faithfulness: float
+    patch_correctness: float
+    verification: float
     correctness: float
     memory_recall: float
     escalation_correct: bool
@@ -83,44 +88,86 @@ class ScenarioResult:
     latency_ms: float
 
 
-# ─── Scripted tool + provider ──────────────────────────────────────────────
-
-
 class _ScriptedSearchInput(BaseModel):
-    """Mirror of the real search_docs signature so scripted calls validate."""
-
     query: str
     k: int = 4
     category: str | None = None
 
 
-def _build_scripted_search_tool(queued_hits: list[list[dict[str, Any]]]) -> Tool:
-    """A search_docs tool that pops the next list of hits from a queue.
+def _build_scripted_queue_tool(
+    name: str,
+    *,
+    description: str,
+    input_model: type[BaseModel],
+    queued_results: list[Any],
+) -> Tool:
+    """Tool that pops the next canned result from a queue on each invocation."""
 
-    `queued_hits` is mutated in place — each invocation consumes one entry.
-    Running dry returns `[]` so scenarios that retry don't explode on an
-    IndexError; the grounder then treats it as a zero-hit retrieval.
-    """
-
-    async def search_docs(args: _ScriptedSearchInput) -> list[dict[str, Any]]:
-        if not queued_hits:
-            return []
-        return queued_hits.pop(0)
+    async def handler(args: BaseModel) -> Any:
+        _ = args
+        if not queued_results:
+            if name == "grep_repo":
+                return []
+            if name == "run_command":
+                return {
+                    "argv": [],
+                    "exit_code": 1,
+                    "stdout": "",
+                    "stderr": "scripted queue exhausted",
+                    "success": False,
+                }
+            return {}
+        return queued_results.pop(0)
 
     return Tool(
-        name="search_docs",
-        description="Scripted search_docs for eval scenarios.",
-        input_model=_ScriptedSearchInput,
-        fn=search_docs,
+        name=name,
+        description=description,
+        input_model=input_model,
+        fn=handler,
     )
 
 
-class FakeProvider:
-    """Scripted ChatProvider: pops pre-canned responses per chat() call.
+def _build_scripted_search_tool(queued_hits: list[list[dict[str, Any]]]) -> Tool:
+    return _build_scripted_queue_tool(
+        "search_docs",
+        description="Scripted search_docs for eval scenarios.",
+        input_model=_ScriptedSearchInput,
+        queued_results=queued_hits,
+    )
 
-    `name` is set to the provider label so `TurnResponse.provider` matches
-    whatever the scenario matrix is running against.
-    """
+
+def _build_eval_registry(
+    scenario: dict[str, Any],
+    *,
+    store: FactStore,
+    user_id: str,
+) -> ToolRegistry:
+    registry = ToolRegistry()
+    tool_results = scenario.get("tool_results") or {}
+
+    if "search_docs" in tool_results:
+        registry.register(
+            _build_scripted_search_tool(list(tool_results["search_docs"]))
+        )
+
+    for tool_name, input_model in SCRIPTED_TOOL_INPUTS.items():
+        if tool_name in tool_results:
+            queue = list(tool_results[tool_name])
+            registry.register(
+                _build_scripted_queue_tool(
+                    tool_name,
+                    description=f"Scripted {tool_name} for eval scenarios.",
+                    input_model=input_model,
+                    queued_results=queue,
+                )
+            )
+
+    register_memory_tools(registry, store=store, user_id=user_id)
+    return registry
+
+
+class FakeProvider:
+    """Scripted ChatProvider: pops pre-canned responses per chat() call."""
 
     def __init__(self, name: str, responses: Iterable[ProviderResponse]) -> None:
         self.name = name
@@ -143,12 +190,6 @@ class FakeProvider:
 
 
 def _build_responses(raw: list[dict[str, Any]]) -> list[ProviderResponse]:
-    """Compile YAML `responses:` entries into `ProviderResponse` objects.
-
-    Tool-call ids are synthesised (`t{resp}_{tool}`) so scenario authors
-    don't have to manage them by hand; `run_turn` just needs them to be
-    unique within a turn.
-    """
     out: list[ProviderResponse] = []
     for resp_idx, entry in enumerate(raw):
         tool_calls: list[ToolCall] = []
@@ -178,7 +219,6 @@ def _build_provider(name: str, scenario: dict[str, Any]) -> FakeProvider:
 
 
 def _build_live_provider(name: str, settings: Settings) -> ChatProvider:
-    """Construct a real ChatProvider from `.env` / environment settings."""
     timeout = float(settings.request_timeout_seconds)
     match name:
         case "ollama":
@@ -232,9 +272,6 @@ async def _close_provider(provider: ChatProvider) -> None:
         await aclose()
 
 
-# ─── Scenario execution ────────────────────────────────────────────────────
-
-
 async def _run_one(
     scenario: dict[str, Any],
     *,
@@ -257,10 +294,7 @@ async def _run_one(
         for fact in scenario.get("seed_facts") or []:
             store.add(user_id, fact)
 
-        registry = ToolRegistry()
-        queued_hits = list((scenario.get("tool_results") or {}).get("search_docs") or [])
-        registry.register(_build_scripted_search_tool(queued_hits))
-        register_memory_tools(registry, store=store, user_id=user_id)
+        registry = _build_eval_registry(scenario, store=store, user_id=user_id)
 
         session = Session(user_id=user_id)
         response = await run_turn(
@@ -276,11 +310,14 @@ async def _run_one(
             await _close_provider(provider)
 
     expected = scenario.get("expected") or {}
+    gold_citations = expected.get("gold_citations") or expected.get("gold_chunks") or []
     return ScenarioResult(
         scenario_id=scenario["id"],
         category=scenario["category"],
         provider=provider_name,
-        faithfulness=faithfulness(response, expected.get("gold_chunks") or []),
+        code_faithfulness=code_faithfulness(response, gold_citations),
+        patch_correctness=patch_correctness(response, expected.get("gold_files") or []),
+        verification=verification_score(response, expected.get("should_verify")),
         correctness=correctness(response, expected.get("gold_answer") or ""),
         memory_recall=memory_recall(response, expected.get("expected_facts") or []),
         escalation_correct=escalation(response, bool(expected.get("should_escalate"))),
@@ -299,7 +336,6 @@ async def run_matrix(
     live: bool = False,
     settings: Settings | None = None,
 ) -> list[ScenarioResult]:
-    """Run every (scenario x provider) pair and return results in order."""
     if live and settings is None:
         raise ValueError("settings required when live=True")
     grounder = Grounder(escalation_threshold=escalation_threshold)
@@ -319,9 +355,6 @@ async def run_matrix(
     return results
 
 
-# ─── Report rendering ──────────────────────────────────────────────────────
-
-
 def _avg(values: Iterable[float]) -> float:
     vals = list(values)
     return sum(vals) / len(vals) if vals else 0.0
@@ -333,13 +366,16 @@ def _pct(hits: int, total: int) -> float:
 
 def _summary_row(provider: str, results: list[ScenarioResult]) -> str:
     n = len(results)
-    faith = _avg(r.faithfulness for r in results)
+    faith = _avg(r.code_faithfulness for r in results)
+    patch = _avg(r.patch_correctness for r in results)
+    verify = _avg(r.verification for r in results)
     corr = _avg(r.correctness for r in results)
     mem = _avg(r.memory_recall for r in results)
     esc_acc = _pct(sum(1 for r in results if r.escalation_correct), n)
     lat = _avg(r.latency_ms for r in results)
     return (
-        f"| `{provider}` | {n} | {faith:.3f} | {corr:.3f} | {mem:.3f} | {esc_acc:.3f} | {lat:.1f} |"
+        f"| `{provider}` | {n} | {faith:.3f} | {patch:.3f} | {verify:.3f} | "
+        f"{corr:.3f} | {mem:.3f} | {esc_acc:.3f} | {lat:.1f} |"
     )
 
 
@@ -355,15 +391,15 @@ def render_report(
     lines.append("")
     mode = "live backends" if live else "scripted FakeProvider (offline)"
     lines.append(
-        f"Full scenario matrix ({len(results)} results) against "
+        f"Coding-agent scenario matrix ({len(results)} results) against "
         f"{len(providers)} providers ({mode}), escalation threshold = "
         f"{escalation_threshold:.2f}."
     )
     lines.append("")
     if live:
         lines.append(
-            "Live run: real providers were called. Tool retrieval stayed "
-            "scripted for RAG determinism, but LLM answers vary — scores "
+            "Live run: real providers were called. Tool results stayed "
+            "scripted for determinism, but LLM answers vary — scores "
             "are not comparable to the README headline table."
         )
     else:
@@ -376,10 +412,10 @@ def render_report(
     lines.append("## Summary")
     lines.append("")
     lines.append(
-        "| Provider | Scenarios | Faithfulness | Correctness | Memory Recall | "
-        "Escalation Acc. | Mean Latency (ms) |"
+        "| Provider | Scenarios | Code Faith. | Patch | Verification | Correctness | "
+        "Memory Recall | Escalation Acc. | Mean Latency (ms) |"
     )
-    lines.append("|---|---|---|---|---|---|---|")
+    lines.append("|---|---|---|---|---|---|---|---|---|")
     for provider in providers:
         subset = [r for r in results if r.provider == provider]
         if subset:
@@ -392,38 +428,45 @@ def render_report(
     for category in categories:
         lines.append(f"### `{category}`")
         lines.append("")
-        lines.append("| Provider | Faithfulness | Correctness | Memory Recall | Escalation Acc. |")
-        lines.append("|---|---|---|---|---|")
+        lines.append(
+            "| Provider | Code Faith. | Patch | Verification | Correctness | "
+            "Memory Recall | Escalation Acc. |"
+        )
+        lines.append("|---|---|---|---|---|---|---|")
         for provider in providers:
             subset = [r for r in results if r.provider == provider and r.category == category]
             if not subset:
                 continue
-            faith = _avg(r.faithfulness for r in subset)
+            faith = _avg(r.code_faithfulness for r in subset)
+            patch = _avg(r.patch_correctness for r in subset)
+            verify = _avg(r.verification for r in subset)
             corr = _avg(r.correctness for r in subset)
             mem = _avg(r.memory_recall for r in subset)
             esc = _pct(sum(1 for r in subset if r.escalation_correct), len(subset))
-            lines.append(f"| `{provider}` | {faith:.3f} | {corr:.3f} | {mem:.3f} | {esc:.3f} |")
+            lines.append(
+                f"| `{provider}` | {faith:.3f} | {patch:.3f} | {verify:.3f} | "
+                f"{corr:.3f} | {mem:.3f} | {esc:.3f} |"
+            )
         lines.append("")
 
     lines.append("## Per-scenario details")
     lines.append("")
     lines.append(
-        "| ID | Category | Provider | Faith | Correct | MemRec | EscOK | Escalated | Confidence |"
+        "| ID | Category | Provider | Faith | Patch | Verify | Correct | MemRec | "
+        "EscOK | Escalated | Confidence |"
     )
-    lines.append("|---|---|---|---|---|---|---|---|---|")
+    lines.append("|---|---|---|---|---|---|---|---|---|---|---|")
     for r in sorted(results, key=lambda r: (r.category, r.scenario_id, r.provider)):
         conf = "—" if r.confidence is None else f"{r.confidence:.2f}"
         lines.append(
             f"| `{r.scenario_id}` | {r.category} | `{r.provider}` | "
-            f"{r.faithfulness:.2f} | {r.correctness:.2f} | {r.memory_recall:.2f} | "
+            f"{r.code_faithfulness:.2f} | {r.patch_correctness:.2f} | {r.verification:.2f} | "
+            f"{r.correctness:.2f} | {r.memory_recall:.2f} | "
             f"{'✓' if r.escalation_correct else '✗'} | "
             f"{'yes' if r.escalated else 'no'} | {conf} |"
         )
     lines.append("")
     return "\n".join(lines)
-
-
-# ─── CLI ───────────────────────────────────────────────────────────────────
 
 
 def _load_scenarios(path: Path) -> list[dict[str, Any]]:
@@ -446,7 +489,7 @@ def _parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser.add_argument(
         "--providers",
         default=DEFAULT_PROVIDERS,
-        help="Comma-separated provider names, e.g. 'ollama,anthropic'.",
+        help="Comma-separated provider names, e.g. 'ollama,anthropic,openai'.",
     )
     parser.add_argument(
         "--scenarios",

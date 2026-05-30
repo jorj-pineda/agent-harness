@@ -31,6 +31,7 @@ from tools import ToolError, ToolRegistry
 from .grounding import Grounder
 from .memory import harvest_memory_writes
 from .outcome import harvest_files_touched, harvest_verification_ran
+from .policy import edit_budget_exceeded
 from .state import Session, ToolCallRecord, Turn, TurnResponse
 
 log = logging.getLogger(__name__)
@@ -64,6 +65,7 @@ async def run_turn(
     max_iterations: int = DEFAULT_MAX_ITERATIONS,
     grounder: Grounder | None = None,
     require_verification_before_finish: bool = False,
+    max_files_touched_per_turn: int = 0,
 ) -> TurnResponse:
     """Drive one user turn to completion via ReAct + tool dispatch.
 
@@ -152,6 +154,10 @@ async def run_turn(
         require_verification_before_finish
         and not verification_ran
         and final_answer != MAX_ITERATIONS_STUB
+    ):
+        escalated = True
+    if max_files_touched_per_turn > 0 and edit_budget_exceeded(
+        files_touched, max_files=max_files_touched_per_turn
     ):
         escalated = True
 

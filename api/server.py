@@ -39,8 +39,9 @@ from fastapi import FastAPI, HTTPException, Request
 from data.embed import open_collection
 from harness.grounding import Grounder
 from harness.loop import run_turn
+from harness.policy import is_out_of_scope_request
 from harness.router import ProviderNotFoundError, ProviderRouter
-from harness.state import Session
+from harness.state import Session, TurnResponse
 from memory import FactStore
 from providers import create_chat_provider, create_embedder
 from providers.base import ChatMessage, ChatProvider, Embedder
@@ -48,6 +49,7 @@ from tools import ToolRegistry
 from tools.code import register_code_tools
 from tools.memory import register_memory_tools
 from tools.rag import register_rag_tool
+from tools.semantic import register_semantic_search_stub
 from tools.sql import register_sql_tools
 from workspace import Workspace
 
@@ -70,8 +72,8 @@ BASE_SYSTEM_PROMPT = (
     "an explicit list in the tool trace.\n"
     "- Decline unsafe or out-of-scope requests (destructive shell, secrets exfiltration, "
     "unbounded refactors).\n\n"
-    "Support lookup tools (SQL, doc search) may still be registered during the coding-agent "
-    "pivot — prefer code-oriented reasoning when the task is about the repository."
+    "Support lookup tools (SQL, doc search) are disabled by default — set "
+    "ENABLE_SUPPORT_TOOLS=true to restore the legacy support demo."
 )
 
 
@@ -184,7 +186,10 @@ def _register_routes(app: FastAPI) -> None:
     @app.post("/sessions", response_model=CreateSessionResponse)
     async def create_session(req: CreateSessionRequest, request: Request) -> CreateSessionResponse:
         components: Components = request.app.state.components
-        workspace_root = _resolve_workspace_root(req.workspace_root)
+        settings: Settings = request.app.state.settings
+        workspace_root = _resolve_workspace_root(
+            req.workspace_root or _default_workspace_root(settings)
+        )
         session = Session(user_id=req.user_id, workspace_root=workspace_root)
         components.sessions[session.session_id] = session
         log.info(
@@ -205,6 +210,17 @@ def _register_routes(app: FastAPI) -> None:
             raise HTTPException(status_code=404, detail="Unknown session_id")
         if session.user_id != req.user_id:
             raise HTTPException(status_code=403, detail="Session does not belong to this user_id")
+
+        if is_out_of_scope_request(req.message):
+            return TurnResponse(
+                answer=(
+                    "This request is out of scope for a single agent turn "
+                    "(unsafe or unbounded). Please narrow the task."
+                ),
+                escalated=True,
+                provider="policy",
+                latency_ms=0.0,
+            )
 
         _refresh_facts_system_message(
             session,
@@ -233,6 +249,7 @@ def _register_routes(app: FastAPI) -> None:
             max_iterations=settings.max_tool_iterations,
             grounder=components.grounder,
             require_verification_before_finish=settings.require_verification_before_finish,
+            max_files_touched_per_turn=settings.max_files_touched_per_turn,
         )
 
 
@@ -244,12 +261,20 @@ def _build_registry(
     workspace_root: str | None = None,
 ) -> ToolRegistry:
     registry = ToolRegistry()
-    register_sql_tools(registry, db_path=settings.sqlite_db_path)
-    register_rag_tool(registry, collection=components.collection, embedder=components.embedder)
+    if settings.enable_support_tools:
+        register_sql_tools(registry, db_path=settings.sqlite_db_path)
+        register_rag_tool(registry, collection=components.collection, embedder=components.embedder)
     register_memory_tools(registry, store=components.fact_store, user_id=user_id)
     if workspace_root is not None:
         register_code_tools(registry, workspace=Workspace(root=Path(workspace_root)))
+        register_semantic_search_stub(registry)
     return registry
+
+
+def _default_workspace_root(settings: Settings) -> str | None:
+    if settings.default_workspace_root is None:
+        return None
+    return str(settings.default_workspace_root)
 
 
 def _resolve_workspace_root(raw: str | None) -> str | None:

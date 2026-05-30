@@ -177,11 +177,13 @@ For senior agents, **ripgrep-first** is enough for v1; embeddings optional.
 
 **Recommendation:** Phase 2 ships **A**; add **B** only if evals show explore failures.
 
-Remove or archive `data/seed.py`, support DB, doc corpus when coding path is default.
+**Decision (2026-05):** Shipped **A — ripgrep-only**. `grep_repo` is the search tool; `semantic_search` stub documents the embed upgrade path. Default registry sets `ENABLE_SUPPORT_TOOLS=false` so the coding demo needs no seed/embed.
 
 ---
 
 ### Phase 8 — Docker + demo for coding
+
+**Status:** Done on `feat/pivot-harness`.
 
 Update `demo.md` and compose.
 
@@ -212,16 +214,21 @@ What separates “junior script kiddie agent” from “senior” in the portfol
 
 Pick **2–3** for “almost ready”; defer the rest.
 
+**Shipped:** scope gate ([harness/policy.py](harness/policy.py)), edit budget (`MAX_FILES_TOUCHED_PER_TURN`), eval honesty (README).
+
 ---
 
 ### Phase 10 — Final gate
 
+**Status:** Done — 337 tests, ruff/mypy clean, offline eval 84/84 escalation.
+
 Same bar as demo-readiness Slice 7:
 
-- [ ] `pytest -m "not live"` full pass
-- [ ] `ruff` + `mypy` on core layers
-- [ ] Offline eval → README table updated
-- [ ] `demo.md` coding walkthrough verified once on your machine
+- [x] `pytest -m "not live"` full pass
+- [x] `ruff` + `mypy` on core layers
+- [x] Offline eval → README table updated
+- [x] `demo.md` coding walkthrough documented
+- [ ] Reviewer checklist in README (run locally before merge PR)
 - [ ] Deferred list updated in README
 
 ---

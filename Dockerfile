@@ -24,8 +24,10 @@ COPY grounding ./grounding
 COPY memory ./memory
 COPY tools ./tools
 COPY providers ./providers
+COPY workspace ./workspace
 COPY data ./data
 COPY evals ./evals
+COPY tests/fixtures/tiny_repo ./fixtures/tiny_repo
 
 RUN pip install --no-cache-dir .
 

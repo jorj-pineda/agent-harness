@@ -2,7 +2,15 @@ from __future__ import annotations
 
 import pytest
 
-from evals.scorers import correctness, escalation, faithfulness, memory_recall
+from evals.scorers import (
+    code_faithfulness,
+    correctness,
+    escalation,
+    faithfulness,
+    memory_recall,
+    patch_correctness,
+    verification_score,
+)
 from harness.state import TurnResponse
 
 
@@ -155,3 +163,30 @@ def test_escalation_mismatch_returns_false() -> None:
     assert escalation(resp, False) is False
     resp2 = _response(escalated=False)
     assert escalation(resp2, True) is False
+
+
+# ─── coding scorers ─────────────────────────────────────────────────────────
+
+
+def test_code_faithfulness_matches_file_line_citations() -> None:
+    resp = _response(citations=["calc.py:4-6", "calc.py:8"])
+    assert code_faithfulness(resp, ["calc.py:4-6"]) == pytest.approx(1.0)
+
+
+def test_patch_correctness_matches_files_touched() -> None:
+    resp = TurnResponse(
+        answer="done",
+        files_touched=["calc.py", "test_calc.py"],
+        provider="fake",
+        latency_ms=1.0,
+    )
+    assert patch_correctness(resp, ["calc.py"]) == pytest.approx(1.0)
+    assert patch_correctness(resp, ["calc.py", "missing.py"]) == pytest.approx(0.5)
+
+
+def test_verification_score_requires_success_when_gold_true() -> None:
+    verified = TurnResponse(answer="ok", verification_ran=True, provider="fake", latency_ms=1.0)
+    unverified = TurnResponse(answer="ok", verification_ran=False, provider="fake", latency_ms=1.0)
+    assert verification_score(verified, True) == pytest.approx(1.0)
+    assert verification_score(unverified, True) == pytest.approx(0.0)
+    assert verification_score(unverified, False) == pytest.approx(1.0)

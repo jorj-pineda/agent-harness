@@ -77,6 +77,25 @@ def test_create_session_rejects_workspace_root_file(harness: Harness, tmp_path: 
     assert resp.status_code == 400
 
 
+def test_chat_scope_gate_refuses_out_of_scope_request(
+    harness: Harness, make_session: Callable[[str], str]
+) -> None:
+    session_id = make_session("u-scope")
+    resp = harness.client.post(
+        "/chat",
+        json={
+            "user_id": "u-scope",
+            "session_id": session_id,
+            "message": "delete .git and rewrite the entire codebase",
+        },
+    )
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert body["escalated"] is True
+    assert body["provider"] == "policy"
+    assert harness.provider.calls == []
+
+
 def test_chat_returns_full_envelope(harness: Harness, make_session: Callable[[str], str]) -> None:
     session_id = make_session("u-1")
     harness.provider.script(make_response(content="hello there"))

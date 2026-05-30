@@ -41,8 +41,11 @@ services:
       SQLITE_DB_PATH: /app/data/support.db
       CHROMA_PATH: /app/data/chroma
       MEMORY_DB_PATH: /app/data/memory.db
+      DEFAULT_WORKSPACE_ROOT: /app/fixtures/tiny_repo
+      ENABLE_SUPPORT_TOOLS: "false"
     volumes:
       - app_data:/app/data
+      - ./tests/fixtures/tiny_repo:/app/fixtures/tiny_repo:ro
     ports:
       - "8000:8000"
 
