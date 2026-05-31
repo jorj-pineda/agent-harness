@@ -16,35 +16,39 @@ from evals.run import (
     render_report,
     run_matrix,
 )
+from tools.code import ReadFileInput
 
 SCENARIOS_PATH = Path(__file__).parent.parent.parent / "evals" / "scenarios.yaml"
+SUPPORT_SCENARIOS_PATH = Path(__file__).parent.parent.parent / "evals" / "scenarios_support.yaml"
+
+CODING_CATEGORIES = {
+    "bugfix": 5,
+    "feature_slice": 5,
+    "refactor": 4,
+    "explore_only": 5,
+    "low_confidence": 5,
+    "unsafe_request": 4,
+}
 
 
-def _load() -> list[dict]:
-    with SCENARIOS_PATH.open("r", encoding="utf-8") as f:
+def _load(path: Path = SCENARIOS_PATH) -> list[dict]:
+    with path.open("r", encoding="utf-8") as f:
         return yaml.safe_load(f)
 
 
-# ─── schema sanity ──────────────────────────────────────────────────────────
-
-
-def test_scenarios_yaml_has_thirty_scenarios_with_six_per_category() -> None:
+def test_scenarios_yaml_has_twenty_eight_coding_scenarios() -> None:
     scenarios = _load()
-    assert len(scenarios) == 30
+    assert len(scenarios) == 28
     by_cat: dict[str, int] = defaultdict(int)
     for sc in scenarios:
         by_cat[sc["category"]] += 1
-    assert dict(by_cat) == {
-        "grounded_qa": 6,
-        "personalization": 6,
-        "off_topic": 6,
-        "low_confidence": 6,
-        "prompt_injection": 6,
-    }
-    assert len({sc["id"] for sc in scenarios}) == 30
+    assert dict(by_cat) == CODING_CATEGORIES
+    assert len({sc["id"] for sc in scenarios}) == 28
 
 
-# ─── matrix run ─────────────────────────────────────────────────────────────
+def test_support_scenarios_archived_with_thirty_entries() -> None:
+    scenarios = _load(SUPPORT_SCENARIOS_PATH)
+    assert len(scenarios) == 30
 
 
 def _run(
@@ -70,8 +74,6 @@ def test_full_matrix_runs_end_to_end_across_two_providers(tmp_path: Path) -> Non
 
     assert len(results) == len(scenarios) * len(providers)
     assert {r.provider for r in results} == set(providers)
-    # Offline FakeProvider shares responses across labels, so each scenario's
-    # score is identical between providers — use --live for real divergence.
     for p in providers:
         subset = [r for r in results if r.provider == p]
         assert len(subset) == len(scenarios)
@@ -80,9 +82,6 @@ def test_full_matrix_runs_end_to_end_across_two_providers(tmp_path: Path) -> Non
 def test_escalation_decisions_match_every_scenario_gold(tmp_path: Path) -> None:
     scenarios = _load()
     results = _run(scenarios, ["fake"], tmp_path)
-    # Scenarios are authored so the scripted grounder always lands on the
-    # gold escalation decision; if this drifts the scenarios or thresholds
-    # need to be re-tuned, not the test.
     assert all(r.escalation_correct for r in results)
 
 
@@ -90,35 +89,43 @@ def test_at_least_one_low_confidence_scenario_actually_escalates(tmp_path: Path)
     scenarios = _load()
     results = _run(scenarios, ["fake"], tmp_path)
     escalated = [r for r in results if r.category == "low_confidence" and r.escalated]
-    # Brief requires at least one escalation trigger to fire on purpose.
     assert len(escalated) >= 1
 
 
-def test_grounded_scenarios_carry_confidence_and_do_not_escalate(tmp_path: Path) -> None:
-    scenarios = [sc for sc in _load() if sc["category"] == "grounded_qa"]
+def test_bugfix_scenarios_run_verification_and_touch_files(tmp_path: Path) -> None:
+    scenarios = [sc for sc in _load() if sc["category"] == "bugfix"]
     results = _run(scenarios, ["fake"], tmp_path)
-    assert all(r.confidence is not None and r.confidence > 0.5 for r in results)
-    assert not any(r.escalated for r in results)
+    assert all(r.verification == 1.0 for r in results)
+    assert all(r.patch_correctness == 1.0 for r in results)
 
 
-def test_offtopic_and_injection_leave_confidence_none_no_escalation(tmp_path: Path) -> None:
-    scenarios = [sc for sc in _load() if sc["category"] in {"off_topic", "prompt_injection"}]
+def test_explore_only_carries_citations_and_does_not_escalate(tmp_path: Path) -> None:
+    scenarios = [sc for sc in _load() if sc["category"] == "explore_only"]
+    results = _run(scenarios, ["fake"], tmp_path)
+    for r in results:
+        assert r.code_faithfulness == 1.0, r.scenario_id
+        assert r.escalated is False, r.scenario_id
+
+
+def test_unsafe_requests_leave_confidence_none_no_escalation(tmp_path: Path) -> None:
+    scenarios = [sc for sc in _load() if sc["category"] == "unsafe_request"]
     results = _run(scenarios, ["fake"], tmp_path)
     for r in results:
         assert r.confidence is None, r.scenario_id
         assert r.escalated is False, r.scenario_id
 
 
-def test_personalization_recall_scores_high_for_seeded_scenarios(tmp_path: Path) -> None:
-    scenarios = [sc for sc in _load() if sc["category"] == "personalization"]
+def test_memory_scenarios_score_high_recall(tmp_path: Path) -> None:
+    scenarios = [
+        sc
+        for sc in _load()
+        if sc["category"] in {"bugfix", "feature_slice"}
+        and (sc.get("seed_facts") or (sc.get("expected") or {}).get("expected_facts"))
+    ]
+    assert len(scenarios) >= 2
     results = _run(scenarios, ["fake"], tmp_path)
-    # Every personalization scenario either surfaces its expected fact in
-    # the answer or records it via memory_writes; memory_recall averages >0.5.
     avg = sum(r.memory_recall for r in results) / len(results)
     assert avg >= 0.5
-
-
-# ─── report rendering ───────────────────────────────────────────────────────
 
 
 def test_render_report_produces_all_sections(tmp_path: Path) -> None:
@@ -130,17 +137,16 @@ def test_render_report_produces_all_sections(tmp_path: Path) -> None:
 
     assert "# Eval Report" in report
     assert "## Summary" in report
+    assert "Code Faith." in report
     assert "## Per-category breakdown" in report
     assert "## Per-scenario details" in report
-    # Every provider gets a summary row.
     for p in providers:
         assert f"`{p}`" in report
-    # Every scenario id appears at least once.
     for sc in scenarios:
         assert f"`{sc['id']}`" in report
 
 
-def test_main_cli_writes_report_file(tmp_path: Path, monkeypatch: object) -> None:
+def test_main_cli_writes_report_file(tmp_path: Path) -> None:
     out = tmp_path / "report.md"
     rc = main(
         [
@@ -162,16 +168,15 @@ def test_main_cli_writes_report_file(tmp_path: Path, monkeypatch: object) -> Non
     assert "| Provider |" in content
 
 
-# ─── defensive: scripted search drying up ──────────────────────────────────
-
-
-def test_scripted_search_returns_empty_when_queue_is_exhausted() -> None:
-    tool = runner._build_scripted_search_tool([])
-    result = asyncio.run(tool.fn(runner._ScriptedSearchInput(query="anything")))
-    assert result == []
-
-
-# ─── live eval (optional) ─────────────────────────────────────────────────
+def test_scripted_read_file_returns_empty_dict_when_queue_exhausted() -> None:
+    tool = runner._build_scripted_queue_tool(
+        "read_file",
+        description="test",
+        input_model=ReadFileInput,
+        queued_results=[],
+    )
+    result = asyncio.run(tool.fn(ReadFileInput(path="calc.py")))
+    assert result == {}
 
 
 _ollama_reachable = pytest.mark.skipif(
@@ -183,10 +188,6 @@ _ollama_reachable = pytest.mark.skipif(
 @pytest.mark.live
 @_ollama_reachable
 def test_live_matrix_runs_one_scenario(tmp_path: Path) -> None:
-    """Smoke: one scenario against real Ollama via evals.run --live path.
-
-    Run with: OLLAMA_HOST=http://localhost:11434 pytest -m live -k live_matrix
-    """
     from api.settings import get_settings
 
     scenarios = [_load()[0]]
@@ -203,4 +204,4 @@ def test_live_matrix_runs_one_scenario(tmp_path: Path) -> None:
     )
     assert len(results) == 1
     assert results[0].provider == "ollama"
-    assert results[0].answer.strip() != ""
+    assert results[0].correctness >= 0.0

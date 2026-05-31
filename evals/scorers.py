@@ -1,22 +1,9 @@
 """Scorers for eval scenarios.
 
-Deliberately cheap, deterministic scorers that run without a model call so
-the eval matrix stays fast and reproducible in CI. Each scorer takes the
-rule-#5 `TurnResponse` (`harness.state.TurnResponse`) plus a scenario-gold
-payload and returns a scalar (or bool for escalation).
-
-Why no LLM-judge here:
-    An LLM self-assessment would add provider coupling, cost, and
-    non-determinism to the one layer that's supposed to be the objective
-    judge. We keep scorers first-principles and measurable; an LLM-judge
-    correctness scorer is a `Deferred` item in CLAUDE.md to swap in once
-    the heuristics visibly underperform on a scenario set.
-
-Contracts:
-    faithfulness(response, gold_chunks)    -> float in [0, 1]
-    correctness(response, gold_answer)     -> float in [0, 1]
-    memory_recall(response, expected_facts) -> float in [0, 1]
-    escalation(response, should_escalate)  -> bool
+Deterministic scorers over the rule-#5 `TurnResponse` envelope. Support-era
+scorers (`faithfulness`, `correctness`, `memory_recall`) remain for archived
+`scenarios_support.yaml`. Coding scenarios use `code_faithfulness`,
+`patch_correctness`, and `verification_score` alongside `escalation`.
 """
 
 from __future__ import annotations
@@ -34,17 +21,7 @@ def _tokenize(text: str) -> list[str]:
 
 
 def faithfulness(response: TurnResponse, gold_chunks: list[str]) -> float:
-    """Fraction of gold chunk ids present in `response.citations`.
-
-    Recall-flavored on purpose: the faithfulness question is "did every
-    claim that *should* be cited actually get cited?". Precision (over-
-    citing) is not penalized here — surplus citations are tracked in the
-    run report but don't pull the score down.
-
-    If `gold_chunks` is empty the scenario didn't make a factual claim
-    requiring support, so faithfulness is 1.0 regardless of what the agent
-    cited.
-    """
+    """Fraction of gold citation keys present in `response.citations` (RAG chunk ids)."""
     if not gold_chunks:
         return 1.0
     cited = set(response.citations)
@@ -52,18 +29,29 @@ def faithfulness(response: TurnResponse, gold_chunks: list[str]) -> float:
     return hits / len(gold_chunks)
 
 
+def code_faithfulness(response: TurnResponse, gold_citations: list[str]) -> float:
+    """Fraction of required file:line citation keys present in `response.citations`."""
+    return faithfulness(response, gold_citations)
+
+
+def patch_correctness(response: TurnResponse, gold_files: list[str]) -> float:
+    """Fraction of expected repo-relative paths present in `response.files_touched`."""
+    if not gold_files:
+        return 1.0
+    touched = set(response.files_touched)
+    hits = sum(1 for path in gold_files if path in touched)
+    return hits / len(gold_files)
+
+
+def verification_score(response: TurnResponse, should_verify: bool | None) -> float:
+    """1.0 when verification expectation matches `response.verification_ran`."""
+    if should_verify is None or should_verify is False:
+        return 1.0
+    return 1.0 if response.verification_ran else 0.0
+
+
 def correctness(response: TurnResponse, gold_answer: str) -> float:
-    """Token-overlap F1 between `response.answer` and `gold_answer`.
-
-    SQuAD-style: tokenize on word characters, case-fold, compare as
-    multisets. This catches paraphrase better than exact match and stays
-    deterministic.
-
-    Edge cases:
-    * both empty         -> 1.0   (agreed the answer is the empty string)
-    * one side empty     -> 0.0   (no overlap possible)
-    * zero-token overlap -> 0.0
-    """
+    """Token-overlap F1 between `response.answer` and `gold_answer`."""
     pred = _tokenize(response.answer)
     gold = _tokenize(gold_answer)
     if not pred and not gold:
@@ -80,18 +68,7 @@ def correctness(response: TurnResponse, gold_answer: str) -> float:
 
 
 def memory_recall(response: TurnResponse, expected_facts: list[str]) -> float:
-    """Fraction of expected facts surfaced in the answer or memory_writes.
-
-    A fact counts as recalled iff its normalized text (trimmed, lowercased)
-    appears as a substring in either `response.answer` or any entry in
-    `response.memory_writes`. This accepts both shapes of personalization
-    success:
-    * the agent *mentions* a previously-stored fact in its reply,
-    * the agent *writes* the fact to long-term memory this turn.
-
-    Substring match is a deliberately strict first pass — semantic
-    paraphrase scoring is an upgrade path once scenarios start failing it.
-    """
+    """Fraction of expected engineering notes surfaced in answer or memory_writes."""
     if not expected_facts:
         return 1.0
     haystack_parts = [response.answer, *response.memory_writes]
@@ -105,9 +82,5 @@ def memory_recall(response: TurnResponse, expected_facts: list[str]) -> float:
 
 
 def escalation(response: TurnResponse, should_escalate: bool) -> bool:
-    """True iff the agent's escalation decision matches the scenario's gold.
-
-    Returned as a bool rather than a float so the run report can compute
-    precision/recall across scenarios directly.
-    """
+    """True iff the agent's escalation decision matches the scenario gold."""
     return response.escalated is should_escalate

@@ -49,6 +49,26 @@ class Settings(BaseSettings):
     # Grounding
     confidence_escalation_threshold: float = Field(default=0.55, ge=0.0, le=1.0)
 
+    # Coding agent (Phase 4+)
+    require_verification_before_finish: bool = Field(
+        default=False,
+        description="Escalate when the turn finishes without a successful verification command.",
+    )
+    enable_support_tools: bool = Field(
+        default=False,
+        description="Register legacy SQL + RAG support tools (requires seeded support DB/corpus).",
+    )
+    max_files_touched_per_turn: int = Field(
+        default=5,
+        ge=0,
+        le=50,
+        description="Escalate when a turn writes more than this many distinct files (0 disables).",
+    )
+    default_workspace_root: Path | None = Field(
+        default=None,
+        description="Optional default repo sandbox when sessions omit workspace_root.",
+    )
+
     # Logging
     log_level: str = "INFO"
 

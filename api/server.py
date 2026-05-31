@@ -31,6 +31,7 @@ import logging
 from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
+from pathlib import Path
 
 import chromadb
 from fastapi import FastAPI, HTTPException, Request
@@ -38,15 +39,19 @@ from fastapi import FastAPI, HTTPException, Request
 from data.embed import open_collection
 from harness.grounding import Grounder
 from harness.loop import run_turn
+from harness.policy import is_out_of_scope_request
 from harness.router import ProviderNotFoundError, ProviderRouter
-from harness.state import Session
+from harness.state import Session, TurnResponse
 from memory import FactStore
 from providers import create_chat_provider, create_embedder
 from providers.base import ChatMessage, ChatProvider, Embedder
 from tools import ToolRegistry
+from tools.code import register_code_tools
 from tools.memory import register_memory_tools
 from tools.rag import register_rag_tool
+from tools.semantic import register_semantic_search_stub
 from tools.sql import register_sql_tools
+from workspace import Workspace
 
 from .models import ChatRequest, ChatResponse, CreateSessionRequest, CreateSessionResponse
 from .settings import Settings, get_settings
@@ -54,11 +59,21 @@ from .settings import Settings, get_settings
 log = logging.getLogger(__name__)
 
 BASE_SYSTEM_PROMPT = (
-    "You are a customer-support assistant. Use the available tools to look up "
-    "customer, order, and product data; search the support documentation for "
-    "policy questions; and remember durable facts about the user across sessions. "
-    "Cite documentation chunks you draw from when answering policy questions. "
-    "Decline politely if a question is outside the support scope."
+    "You are a senior software engineering agent. Work in the configured workspace "
+    "when one is set; otherwise use the tools available to you.\n\n"
+    "Contract:\n"
+    "- Read before you edit — inspect relevant files and cite paths (and line ranges "
+    "when known) for claims about the codebase.\n"
+    "- Prefer minimal, focused diffs over broad rewrites; match existing conventions.\n"
+    "- Run verification (tests, lint, type-check) before claiming a task is done.\n"
+    "- Use `remember_fact` / `remember` for durable engineering notes (stack choices, "
+    "repo conventions, review preferences). They are injected into every future turn's "
+    "system prompt for this user — call `recall_facts` / `recall` only when you need "
+    "an explicit list in the tool trace.\n"
+    "- Decline unsafe or out-of-scope requests (destructive shell, secrets exfiltration, "
+    "unbounded refactors).\n\n"
+    "Support lookup tools (SQL, doc search) are disabled by default — set "
+    "ENABLE_SUPPORT_TOOLS=true to restore the legacy support demo."
 )
 
 
@@ -171,12 +186,17 @@ def _register_routes(app: FastAPI) -> None:
     @app.post("/sessions", response_model=CreateSessionResponse)
     async def create_session(req: CreateSessionRequest, request: Request) -> CreateSessionResponse:
         components: Components = request.app.state.components
-        session = Session(user_id=req.user_id)
+        settings: Settings = request.app.state.settings
+        workspace_root = _resolve_workspace_root(
+            req.workspace_root or _default_workspace_root(settings)
+        )
+        session = Session(user_id=req.user_id, workspace_root=workspace_root)
         components.sessions[session.session_id] = session
         log.info(
-            "api=create_session user_id=%s session_id=%s",
+            "api=create_session user_id=%s session_id=%s workspace_root=%s",
             req.user_id,
             session.session_id,
+            workspace_root,
         )
         return CreateSessionResponse(session_id=session.session_id)
 
@@ -191,9 +211,30 @@ def _register_routes(app: FastAPI) -> None:
         if session.user_id != req.user_id:
             raise HTTPException(status_code=403, detail="Session does not belong to this user_id")
 
-        _refresh_facts_system_message(session, components.fact_store, req.user_id)
+        if is_out_of_scope_request(req.message):
+            return TurnResponse(
+                answer=(
+                    "This request is out of scope for a single agent turn "
+                    "(unsafe or unbounded). Please narrow the task."
+                ),
+                escalated=True,
+                provider="policy",
+                latency_ms=0.0,
+            )
 
-        registry = _build_registry(components=components, settings=settings, user_id=req.user_id)
+        _refresh_facts_system_message(
+            session,
+            components.fact_store,
+            req.user_id,
+            workspace_root=session.workspace_root,
+        )
+
+        registry = _build_registry(
+            components=components,
+            settings=settings,
+            user_id=req.user_id,
+            workspace_root=session.workspace_root,
+        )
 
         try:
             provider = components.router.resolve(req.provider)
@@ -207,6 +248,8 @@ def _register_routes(app: FastAPI) -> None:
             registry=registry,
             max_iterations=settings.max_tool_iterations,
             grounder=components.grounder,
+            require_verification_before_finish=settings.require_verification_before_finish,
+            max_files_touched_per_turn=settings.max_files_touched_per_turn,
         )
 
 
@@ -215,18 +258,44 @@ def _build_registry(
     components: Components,
     settings: Settings,
     user_id: str,
+    workspace_root: str | None = None,
 ) -> ToolRegistry:
     registry = ToolRegistry()
-    register_sql_tools(registry, db_path=settings.sqlite_db_path)
-    register_rag_tool(registry, collection=components.collection, embedder=components.embedder)
+    if settings.enable_support_tools:
+        register_sql_tools(registry, db_path=settings.sqlite_db_path)
+        register_rag_tool(registry, collection=components.collection, embedder=components.embedder)
     register_memory_tools(registry, store=components.fact_store, user_id=user_id)
+    if workspace_root is not None:
+        register_code_tools(registry, workspace=Workspace(root=Path(workspace_root)))
+        register_semantic_search_stub(registry)
     return registry
+
+
+def _default_workspace_root(settings: Settings) -> str | None:
+    if settings.default_workspace_root is None:
+        return None
+    return str(settings.default_workspace_root)
+
+
+def _resolve_workspace_root(raw: str | None) -> str | None:
+    """Resolve an optional client path to an absolute directory for the session."""
+    if raw is None:
+        return None
+    resolved = Path(raw).expanduser().resolve()
+    if not resolved.is_dir():
+        raise HTTPException(
+            status_code=400,
+            detail=f"workspace_root is not a directory: {resolved}",
+        )
+    return str(resolved)
 
 
 def _refresh_facts_system_message(
     session: Session,
     fact_store: FactStore,
     user_id: str,
+    *,
+    workspace_root: str | None,
 ) -> None:
     """Replace (or insert) the facts system message at index 0.
 
@@ -234,8 +303,13 @@ def _refresh_facts_system_message(
     `format_for_system_prompt` returns "" when the user has no facts, so the
     concatenation stays unconditional.
     """
+    blocks = [BASE_SYSTEM_PROMPT]
+    if workspace_root:
+        blocks.append(f"Workspace root: {workspace_root}")
     facts_block = fact_store.format_for_system_prompt(user_id)
-    content = BASE_SYSTEM_PROMPT + (f"\n\n{facts_block}" if facts_block else "")
+    if facts_block:
+        blocks.append(facts_block)
+    content = "\n\n".join(blocks)
     message = ChatMessage(role="system", content=content)
     if session.messages and session.messages[0].role == "system":
         session.messages[0] = message

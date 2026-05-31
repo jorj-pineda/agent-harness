@@ -202,6 +202,15 @@ def test_format_for_system_prompt_isolates_by_user_id(store: FactStore) -> None:
     assert store.format_for_system_prompt("bob") == f"{FACTS_HEADING}\n- bob-fact"
 
 
+def test_engineering_note_persists_for_cross_session_prompt_injection(store: FactStore) -> None:
+    store.add("dev-1", "prefer async handlers")
+
+    block = store.format_for_system_prompt("dev-1")
+
+    assert FACTS_HEADING in block
+    assert "prefer async handlers" in block
+
+
 def test_format_for_system_prompt_rejects_empty_user_id(store: FactStore) -> None:
     with pytest.raises(ValueError, match="user_id"):
         store.format_for_system_prompt("")

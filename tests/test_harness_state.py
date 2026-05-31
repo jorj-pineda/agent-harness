@@ -62,6 +62,8 @@ def test_turn_response_carries_the_rule_5_metadata_shape() -> None:
     assert r.citations == []
     assert r.tool_calls == []
     assert r.memory_writes == []
+    assert r.files_touched == []
+    assert r.verification_ran is False
     assert r.provider == "ollama"
     assert r.latency_ms == 12.3
 

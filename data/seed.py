@@ -1,5 +1,9 @@
 """Populate the mock support database with a curated, deterministic dataset.
 
+Legacy support demo only — not required for the default coding-agent path
+(`ENABLE_SUPPORT_TOOLS=false`). Use `evals/scenarios_support.yaml` to replay
+support evals after `python -m data.seed` and `python -m data.embed`.
+
 Data is hardcoded (no RNG) so evaluation scenarios can assert against
 specific rows without flakiness. Re-running wipes the five tables first,
 so `python -m data.seed` is always idempotent.

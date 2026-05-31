@@ -1,23 +1,23 @@
 """Grounding layer: convert answer + tool-call history into rule-#5 metadata.
 
-`Grounder.ground()` harvests citations from `search_docs` results, scores
+`Grounder.ground()` harvests citations from retrieval tool results, scores
 confidence with a deterministic heuristic, and decides escalation against
 a threshold. Deliberately no LLM calls — the confidence signal is
 inspectable, cheap, and measurable by the eval harness directly.
 
-Heuristic shape:
+Evidence sources (pivot Phase 3):
+
+* **Support RAG** — `search_docs` hits with Chroma similarity scores.
+* **Code tools** — `read_file` / `grep_repo` results mapped to file:line
+  citation keys (`path:start-end` on the wire in `TurnResponse.citations`).
+
+Heuristic shape (unchanged):
 
     confidence = top_score * coverage_factor * health_factor
 
-- `top_score`        — best retrieval score across all `search_docs` hits.
-- `coverage_factor`  — fraction of hits at or above `min_citation_score`.
-- `health_factor`    — 1.0 by default, penalized for tool errors and for
-                       loops that hit their max-iteration cap.
-
-If no `search_docs` call happened at all, confidence is `None` — the
-answer is ungrounded and escalation is not triggered (pure chitchat
-shouldn't page a human). If retrieval *was* attempted but returned
-nothing usable, confidence is 0.0 and escalation fires.
+If no retrieval or code-evidence tool ran, confidence is `None` — ungrounded
+chitchat. If evidence tools ran but returned nothing usable, confidence is
+0.0 and escalation fires.
 
 Planned upgrades (see CLAUDE.md "Deferred"): LLM-judge confidence,
 per-sentence attribution, answer rewriting on escalation.
@@ -36,10 +36,31 @@ from .state import ToolCallRecord
 log = logging.getLogger(__name__)
 
 SEARCH_TOOL_NAME = "search_docs"
+READ_FILE_TOOL_NAME = "read_file"
+GREP_REPO_TOOL_NAME = "grep_repo"
+CODE_EVIDENCE_TOOL_NAMES = frozenset({READ_FILE_TOOL_NAME, GREP_REPO_TOOL_NAME})
+
 DEFAULT_MIN_CITATION_SCORE = 0.3
 DEFAULT_MAX_CITATIONS = 5
 ERROR_HEALTH_PENALTY = 0.7
 MAX_ITERATION_HEALTH_PENALTY = 0.5
+
+READ_FILE_EVIDENCE_SCORE = 1.0
+GREP_HIT_EVIDENCE_SCORE = 0.85
+
+
+class CodeCitation(BaseModel):
+    """Structured file:line citation harvested from code tools."""
+
+    path: str
+    start_line: int
+    end_line: int
+    snippet: str | None = None
+
+    def wire_key(self) -> str:
+        if self.start_line == self.end_line:
+            return f"{self.path}:{self.start_line}"
+        return f"{self.path}:{self.start_line}-{self.end_line}"
 
 
 class GroundingResult(BaseModel):
@@ -81,12 +102,13 @@ class Grounder:
         tool_calls: list[ToolCallRecord],
         max_iterations_reached: bool = False,
     ) -> GroundingResult:
-        retrieval_calls = [tc for tc in tool_calls if tc.name == SEARCH_TOOL_NAME]
+        rag_calls = [tc for tc in tool_calls if tc.name == SEARCH_TOOL_NAME]
+        code_calls = [tc for tc in tool_calls if tc.name in CODE_EVIDENCE_TOOL_NAMES]
 
-        if not retrieval_calls:
+        if not rag_calls and not code_calls:
             return GroundingResult(confidence=None, citations=[], escalated=False)
 
-        hits = list(self._collect_hits(retrieval_calls))
+        hits = list(self._collect_rag_hits(rag_calls)) + list(self._collect_code_hits(code_calls))
         citations = self._pick_citations(hits)
         confidence = self._score(
             hits,
@@ -107,7 +129,7 @@ class Grounder:
             escalated=escalated,
         )
 
-    def _collect_hits(
+    def _collect_rag_hits(
         self,
         retrieval_calls: list[ToolCallRecord],
     ) -> Iterable[dict[str, Any]]:
@@ -117,6 +139,47 @@ class Grounder:
             for hit in call.result:
                 if isinstance(hit, dict) and "chunk_id" in hit and "score" in hit:
                     yield hit
+
+    def _collect_code_hits(
+        self,
+        code_calls: list[ToolCallRecord],
+    ) -> Iterable[dict[str, Any]]:
+        for call in code_calls:
+            if call.error is not None:
+                continue
+            if call.name == READ_FILE_TOOL_NAME:
+                yield from self._hits_from_read_file(call.result)
+            elif call.name == GREP_REPO_TOOL_NAME:
+                yield from self._hits_from_grep(call.result)
+
+    def _hits_from_read_file(self, result: Any) -> Iterable[dict[str, Any]]:
+        if not isinstance(result, dict) or "path" not in result:
+            return
+        path = str(result["path"])
+        start = int(result.get("start_line", 1))
+        end = int(result.get("end_line", start))
+        snippet = result.get("content")
+        snippet_str = snippet if isinstance(snippet, str) else None
+        citation = CodeCitation(
+            path=path,
+            start_line=start,
+            end_line=end,
+            snippet=snippet_str,
+        )
+        yield {"chunk_id": citation.wire_key(), "score": READ_FILE_EVIDENCE_SCORE}
+
+    def _hits_from_grep(self, result: Any) -> Iterable[dict[str, Any]]:
+        if not isinstance(result, list):
+            return
+        for hit in result:
+            if not isinstance(hit, dict) or "path" not in hit or "line" not in hit:
+                continue
+            line = int(hit["line"])
+            path = str(hit["path"])
+            text = hit.get("text")
+            snippet = text if isinstance(text, str) else None
+            citation = CodeCitation(path=path, start_line=line, end_line=line, snippet=snippet)
+            yield {"chunk_id": citation.wire_key(), "score": GREP_HIT_EVIDENCE_SCORE}
 
     def _pick_citations(self, hits: list[dict[str, Any]]) -> list[str]:
         seen: set[str] = set()

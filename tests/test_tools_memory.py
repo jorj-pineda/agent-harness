@@ -106,7 +106,34 @@ async def test_build_memory_tools_isolates_by_user_id(store: FactStore) -> None:
 async def test_tools_expose_specs_for_provider_layer(registry: ToolRegistry) -> None:
     names = {s.name for s in registry.as_tool_specs()}
 
-    assert {"remember_fact", "recall_facts"} <= names
+    assert {"remember_fact", "remember", "recall_facts", "recall"} <= names
+
+
+async def test_remember_alias_stores_engineering_note(registry: ToolRegistry) -> None:
+    result = await registry.invoke("remember", {"note": "prefer async handlers"})
+
+    assert result == {"stored": True, "fact": "prefer async handlers"}
+    recalled = await registry.invoke("recall", {})
+    assert recalled == ["prefer async handlers"]
+
+
+async def test_cross_session_engineering_note_surfaces_via_recall(
+    store: FactStore,
+) -> None:
+    """Session A writes via remember; session B (same user_id) reads via recall."""
+    session_a = ToolRegistry()
+    for tool in build_memory_tools(store, "dev-1"):
+        session_a.register(tool)
+
+    await session_a.invoke("remember", {"note": "prefer async handlers"})
+
+    session_b = ToolRegistry()
+    for tool in build_memory_tools(store, "dev-1"):
+        session_b.register(tool)
+
+    recalled = await session_b.invoke("recall_facts", {})
+    assert recalled == ["prefer async handlers"]
+    assert "prefer async" in store.format_for_system_prompt("dev-1")
 
 
 async def test_register_memory_tools_rejects_double_registration(store: FactStore) -> None:
