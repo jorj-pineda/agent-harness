@@ -39,7 +39,7 @@ from fastapi import FastAPI, HTTPException, Request
 from data.embed import open_collection
 from harness.grounding import Grounder
 from harness.loop import run_turn
-from harness.policy import is_out_of_scope_request
+from harness.policy import classify_task, is_out_of_scope_request
 from harness.router import ProviderNotFoundError, ProviderRouter
 from harness.state import Session, TurnResponse
 from memory import FactStore
@@ -221,6 +221,13 @@ def _register_routes(app: FastAPI) -> None:
                 provider="policy",
                 latency_ms=0.0,
             )
+
+        log.info(
+            "api=chat user_id=%s session_id=%s task_kind=%s",
+            req.user_id,
+            req.session_id,
+            classify_task(req.message),
+        )
 
         _refresh_facts_system_message(
             session,

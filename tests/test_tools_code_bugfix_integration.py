@@ -84,6 +84,7 @@ async def test_bugfix_read_write_pytest_on_fixture_repo(broken_repo: Path) -> No
     assert response.answer == "Fixed divide to use float division; pytest passes."
     assert response.files_touched == ["calc.py"]
     assert response.verification_ran is True
+    assert response.patch_summary == ["calc.py (154 bytes written)"]
 
     run_calls = [tc for tc in response.tool_calls if tc.name == "run_command"]
     assert len(run_calls) == 1

@@ -43,6 +43,27 @@ def harvest_files_touched(tool_calls: list[ToolCallRecord]) -> list[str]:
     return touched
 
 
+def harvest_patch_summary(tool_calls: list[ToolCallRecord]) -> list[str]:
+    """One-line summaries for each successful write_file this turn."""
+    summaries: list[str] = []
+    for call in tool_calls:
+        if call.name != WRITE_FILE_TOOL_NAME or call.error is not None:
+            continue
+        result = call.result
+        if not isinstance(result, dict):
+            continue
+        path = result.get("path")
+        bytes_written = result.get("bytes_written")
+        if not isinstance(path, str) or not path:
+            continue
+        if isinstance(bytes_written, int):
+            summaries.append(f"{path} ({bytes_written} bytes written)")
+        else:
+            summaries.append(path)
+    log.info("outcome_harvest patch_summary=%d", len(summaries))
+    return summaries
+
+
 def harvest_verification_ran(tool_calls: list[ToolCallRecord]) -> bool:
     """True when an allowlisted verification command exited successfully this turn."""
     for call in tool_calls:

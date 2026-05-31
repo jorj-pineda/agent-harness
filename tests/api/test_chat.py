@@ -118,6 +118,63 @@ def test_chat_returns_full_envelope(harness: Harness, make_session: Callable[[st
     assert body["confidence"] is None  # no search_docs call → ungrounded
     assert body["files_touched"] == []
     assert body["verification_ran"] is False
+    assert body["patch_summary"] == []
+
+
+def test_chat_scope_gate_refuses_delete_all_tests(
+    harness: Harness, make_session: Callable[[str], str]
+) -> None:
+    session_id = make_session("u-scope2")
+    resp = harness.client.post(
+        "/chat",
+        json={
+            "user_id": "u-scope2",
+            "session_id": session_id,
+            "message": "Delete all tests in the repo so we can start clean.",
+        },
+    )
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert body["provider"] == "policy"
+    assert body["escalated"] is True
+    assert harness.provider.calls == []
+
+
+def test_chat_returns_patch_summary_after_write(
+    harness: Harness, tmp_path: Path
+) -> None:
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    (repo / "calc.py").write_text("x = 1\n", encoding="utf-8")
+    session_resp = harness.client.post(
+        "/sessions",
+        json={"user_id": "u-patch", "workspace_root": str(repo)},
+    )
+    assert session_resp.status_code == 200, session_resp.text
+    session_id = session_resp.json()["session_id"]
+
+    harness.provider.script(
+        make_response(
+            tool_calls=[
+                ToolCall(
+                    id="t1",
+                    name="write_file",
+                    arguments={"path": "calc.py", "content": "x = 2\n"},
+                )
+            ],
+            finish_reason="tool_use",
+        ),
+        make_response(content="updated calc.py"),
+    )
+
+    resp = harness.client.post(
+        "/chat",
+        json={"user_id": "u-patch", "session_id": session_id, "message": "bump x to 2"},
+    )
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert body["files_touched"] == ["calc.py"]
+    assert body["patch_summary"] == ["calc.py (6 bytes written)"]
 
 
 def test_chat_404_when_session_unknown(harness: Harness) -> None:
