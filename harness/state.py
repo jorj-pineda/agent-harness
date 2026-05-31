@@ -96,5 +96,9 @@ class TurnResponse(BaseModel):
         default=False,
         description="True when an allowlisted verification command succeeded this turn.",
     )
+    patch_summary: list[str] = Field(
+        default_factory=list,
+        description="Human-readable write_file summaries for this turn (path + bytes written).",
+    )
     provider: str
     latency_ms: float

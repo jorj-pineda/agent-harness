@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from harness.outcome import (
     harvest_files_touched,
+    harvest_patch_summary,
     harvest_verification_ran,
     is_verification_command,
 )
@@ -45,6 +46,31 @@ def test_harvest_files_touched_collects_successful_writes_in_order() -> None:
     ]
 
     assert harvest_files_touched(calls) == ["a.py", "c.py"]
+
+
+def test_harvest_patch_summary_formats_successful_writes() -> None:
+    calls = [
+        ToolCallRecord(
+            name="write_file",
+            arguments={"path": "calc.py"},
+            result={"path": "calc.py", "bytes_written": 180},
+        ),
+        ToolCallRecord(
+            name="write_file",
+            arguments={"path": "other.py"},
+            error="denied",
+        ),
+        ToolCallRecord(
+            name="write_file",
+            arguments={"path": "note.txt"},
+            result={"path": "note.txt", "bytes_written": 12},
+        ),
+    ]
+
+    assert harvest_patch_summary(calls) == [
+        "calc.py (180 bytes written)",
+        "note.txt (12 bytes written)",
+    ]
 
 
 def test_harvest_verification_ran_requires_successful_pytest() -> None:

@@ -27,8 +27,10 @@ CODING_CATEGORIES = {
     "refactor": 4,
     "explore_only": 5,
     "low_confidence": 5,
-    "unsafe_request": 4,
+    "unsafe_request": 6,
 }
+
+CODING_SCENARIO_COUNT = 30
 
 
 def _load(path: Path = SCENARIOS_PATH) -> list[dict]:
@@ -36,14 +38,14 @@ def _load(path: Path = SCENARIOS_PATH) -> list[dict]:
         return yaml.safe_load(f)
 
 
-def test_scenarios_yaml_has_twenty_eight_coding_scenarios() -> None:
+def test_scenarios_yaml_has_thirty_coding_scenarios() -> None:
     scenarios = _load()
-    assert len(scenarios) == 28
+    assert len(scenarios) == CODING_SCENARIO_COUNT
     by_cat: dict[str, int] = defaultdict(int)
     for sc in scenarios:
         by_cat[sc["category"]] += 1
     assert dict(by_cat) == CODING_CATEGORIES
-    assert len({sc["id"] for sc in scenarios}) == 28
+    assert len({sc["id"] for sc in scenarios}) == CODING_SCENARIO_COUNT
 
 
 def test_support_scenarios_archived_with_thirty_entries() -> None:

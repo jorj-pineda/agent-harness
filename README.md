@@ -4,7 +4,7 @@
 
 A local-first, pluggable-provider agent harness for **senior-level coding tasks**, built from scratch — no LangChain, no LlamaIndex, no LangGraph. The point is the loop: a hand-written ReAct controller, a deterministic grounding layer that scores answer confidence and triggers escalation, and a per-user memory layer that persists engineering context across sessions. One process, two containers (Ollama + the FastAPI app), one `docker compose up` to demo.
 
-The differentiating features are **grounded edits with confidence** and **cross-session repo memory**. Both are inspectable: every response ships the same envelope (`{answer, confidence, citations, escalated, tool_calls, memory_writes, files_touched, verification_ran, provider, latency_ms}`) so the eval harness can score it directly without re-prompting the model. The provider abstraction is sacred — Ollama (Gemma 4 E4B by default), Anthropic, and OpenAI all sit behind one `Provider` interface, and nothing above [providers/](providers/) imports a specific backend.
+The differentiating features are **grounded edits with confidence** and **cross-session repo memory**. Both are inspectable: every response ships the same envelope (`{answer, confidence, citations, escalated, tool_calls, memory_writes, files_touched, verification_ran, patch_summary, provider, latency_ms}`) so the eval harness can score it directly without re-prompting the model. The provider abstraction is sacred — Ollama (Gemma 4 E4B by default), Anthropic, and OpenAI all sit behind one `Provider` interface, and nothing above [providers/](providers/) imports a specific backend.
 
 > **Coding-agent pivot complete (phases 1–10).** Default demo is workspace-scoped code tools on `fixtures/tiny_repo`. Legacy support tools are off unless `ENABLE_SUPPORT_TOOLS=true`.
 
@@ -34,7 +34,9 @@ Each layer depends only on the ones below it. Model-specific quirks (Gemma 4's t
 
 **Ripgrep-first indexing.** Codebase search uses `grep_repo` (ripgrep with Python fallback). No embed model required for the default demo. A deferred `semantic_search` stub documents the upgrade path if evals show explore failures — see [tools/semantic.py](tools/semantic.py).
 
-**Scope gate + edit budget.** [harness/policy.py](harness/policy.py) refuses clearly unsafe/unbounded requests before the ReAct loop runs. `MAX_FILES_TOUCHED_PER_TURN` (default 5) sets `escalated=True` when a turn writes too many files — a senior-agent guardrail against drive-by refactors.
+**Scope gate + edit budget.** [harness/policy.py](harness/policy.py) classifies each message (`bugfix | explore | refactor | out_of_scope`) with lightweight rules and refuses unsafe or unbounded requests (`delete all tests`, `rewrite entire repo`, …) via an early `provider="policy"` return before the ReAct loop runs. `MAX_FILES_TOUCHED_PER_TURN` (default 5) sets `escalated=True` when a turn writes too many files — a senior-agent guardrail against drive-by refactors.
+
+**Patch summary.** Successful `write_file` calls populate `patch_summary` with one-line entries (`path (N bytes written)`) so API consumers see what changed without parsing the full tool trace.
 
 **Inspectable planning.** `emit_plan` records an ordered step list in the tool trace before any `write_file` call — no filesystem side effects. Optional `REQUIRE_PLAN_BEFORE_EDIT=true` escalates when the agent edits without planning first.
 
@@ -44,13 +46,13 @@ Offline eval scores are **scripted** — every provider replays the same YAML to
 
 ## Eval results
 
-The eval harness drives [harness/loop.run_turn](harness/loop.py) directly across **28 scripted coding scenarios** spanning six categories — bugfix, feature slice, refactor, explore-only Q&A, low-confidence escalation, and unsafe-request refusal — plus archived [support scenarios](evals/scenarios_support.yaml) for regression. Every scenario × provider combination runs through scorers for code faithfulness (file:line citations), patch correctness (`files_touched`), verification (`verification_ran`), answer correctness, engineering memory recall, and escalation precision. Run with `python -m evals.run --providers ollama,anthropic,openai`; the full report writes to [evals/report.md](evals/report.md).
+The eval harness drives [harness/loop.run_turn](harness/loop.py) directly across **30 scripted coding scenarios** spanning six categories — bugfix, feature slice, refactor, explore-only Q&A, low-confidence escalation, and unsafe-request refusal — plus archived [support scenarios](evals/scenarios_support.yaml) for regression. Every scenario × provider combination runs through scorers for code faithfulness (file:line citations), patch correctness (`files_touched`), verification (`verification_ran`), answer correctness, engineering memory recall, and escalation precision. Run with `python -m evals.run --providers ollama,anthropic,openai`; the full report writes to [evals/report.md](evals/report.md).
 
 | Provider    | Scenarios | Code Faith. | Patch | Verification | Correctness | Memory Recall | Escalation Acc. |
 |-------------|-----------|-------------|-------|--------------|-------------|---------------|-----------------|
-| `ollama`    | 28        | 1.000       | 1.000 | 1.000        | 0.592       | 1.000         | 1.000           |
-| `anthropic` | 28        | 1.000       | 1.000 | 1.000        | 0.592       | 1.000         | 1.000           |
-| `openai`    | 28        | 1.000       | 1.000 | 1.000        | 0.592       | 1.000         | 1.000           |
+| `ollama`    | 30        | 1.000       | 1.000 | 1.000        | 0.592       | 1.000         | 1.000           |
+| `anthropic` | 30        | 1.000       | 1.000 | 1.000        | 0.592       | 1.000         | 1.000           |
+| `openai`    | 30        | 1.000       | 1.000 | 1.000        | 0.592       | 1.000         | 1.000           |
 
 Today every provider replays the same scripted responses through a `FakeProvider` — so the columns match by construction. The point of the matrix isn't yet "which model is better"; it's that the harness produces the same shaped, scoreable envelope no matter which backend label ran the turn.
 
@@ -58,7 +60,7 @@ Today every provider replays the same scripted responses through a `FakeProvider
 
 | Layer | What it exercises | Where |
 |-------|-------------------|-------|
-| **Eval matrix (default)** | 28 coding scenarios × scorers; offline `FakeProvider` scripts from `scenarios.yaml` | `python -m evals.run --providers ollama,anthropic,openai` |
+| **Eval matrix (default)** | 30 coding scenarios × scorers; offline `FakeProvider` scripts from `scenarios.yaml` | `python -m evals.run --providers ollama,anthropic,openai` |
 | **Provider unit tests** | Wire format (plain chat, tool call, HTTP error) per backend | `tests/cassettes/*.json` replayed in CI |
 | **Live eval (optional)** | Real LLM calls; scores vary run-to-run | `python -m evals.run --live --providers ollama` — see [evals/LIVE.md](evals/LIVE.md) |
 

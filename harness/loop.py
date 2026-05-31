@@ -30,7 +30,7 @@ from tools import ToolError, ToolRegistry
 
 from .grounding import Grounder
 from .memory import harvest_memory_writes
-from .outcome import harvest_files_touched, harvest_verification_ran
+from .outcome import harvest_files_touched, harvest_patch_summary, harvest_verification_ran
 from .policy import edit_budget_exceeded, edit_without_plan
 from .state import Session, ToolCallRecord, Turn, TurnResponse
 
@@ -149,6 +149,7 @@ async def run_turn(
     )
 
     files_touched = harvest_files_touched(turn.tool_calls)
+    patch_summary = harvest_patch_summary(turn.tool_calls)
     verification_ran = harvest_verification_ran(turn.tool_calls)
     escalated = grounding.escalated if grounding else False
     if (
@@ -173,6 +174,7 @@ async def run_turn(
         memory_writes=list(turn.memory_writes),
         files_touched=files_touched,
         verification_ran=verification_ran,
+        patch_summary=patch_summary,
         provider=provider.name,
         latency_ms=_now_ms() - start,
     )
