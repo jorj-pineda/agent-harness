@@ -124,6 +124,25 @@ def test_build_code_tools_exposes_every_tool(workspace: Workspace) -> None:
         "tree",
         "git_status",
         "git_diff",
+        "emit_plan",
         "write_file",
         "run_command",
     }
+
+
+async def test_emit_plan_records_steps_in_tool_trace(registry: ToolRegistry) -> None:
+    result = await registry.invoke(
+        "emit_plan",
+        {
+            "steps": ["Read calc.py", "Fix divide", "Run pytest"],
+            "summary": "Bugfix divide test",
+        },
+    )
+    assert result["step_count"] == 3
+    assert result["steps"] == ["Read calc.py", "Fix divide", "Run pytest"]
+    assert result["summary"] == "Bugfix divide test"
+
+
+async def test_emit_plan_rejects_empty_steps(registry: ToolRegistry) -> None:
+    with pytest.raises(ToolError, match="non-empty step"):
+        await registry.invoke("emit_plan", {"steps": ["  ", ""]})

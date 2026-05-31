@@ -249,6 +249,7 @@ def _register_routes(app: FastAPI) -> None:
             max_iterations=settings.max_tool_iterations,
             grounder=components.grounder,
             require_verification_before_finish=settings.require_verification_before_finish,
+            require_plan_before_edit=settings.require_plan_before_edit,
             max_files_touched_per_turn=settings.max_files_touched_per_turn,
         )
 

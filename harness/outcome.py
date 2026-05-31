@@ -8,6 +8,7 @@ from .state import ToolCallRecord
 
 log = logging.getLogger(__name__)
 
+EMIT_PLAN_TOOL_NAME = "emit_plan"
 WRITE_FILE_TOOL_NAME = "write_file"
 RUN_COMMAND_TOOL_NAME = "run_command"
 

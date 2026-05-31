@@ -36,6 +36,8 @@ Each layer depends only on the ones below it. Model-specific quirks (Gemma 4's t
 
 **Scope gate + edit budget.** [harness/policy.py](harness/policy.py) refuses clearly unsafe/unbounded requests before the ReAct loop runs. `MAX_FILES_TOUCHED_PER_TURN` (default 5) sets `escalated=True` when a turn writes too many files — a senior-agent guardrail against drive-by refactors.
 
+**Inspectable planning.** `emit_plan` records an ordered step list in the tool trace before any `write_file` call — no filesystem side effects. Optional `REQUIRE_PLAN_BEFORE_EDIT=true` escalates when the agent edits without planning first.
+
 ### Eval honesty
 
 Offline eval scores are **scripted** — every provider replays the same YAML tool traces, so headline columns match by construction. They measure harness shape and scorer wiring, not model quality. Use `python -m evals.run --live --providers ollama` for real provider comparison (non-deterministic).

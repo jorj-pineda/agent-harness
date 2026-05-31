@@ -1,6 +1,6 @@
 # Next steps after coding-agent pivot (phases 1–10)
 
-**Status:** Phases 1–10 **merged to `main`** (PR #13, merge `acb8cbe`). Missions 1–3 **done** (ship, live eval, CI). Tags pending Jorge approval. **Next:** Mission 4 (`emit_plan`) or cloud provider demo (§3). Support baseline recoverable via `evals/scenarios_support.yaml`.
+**Status:** Phases 1–10 **merged to `main`** (PR #13, merge `acb8cbe`). Missions 1–4 **done** (ship, live eval, CI, `emit_plan`). Tags pending Jorge approval. **Next:** Mission 5 (patch summary) or cloud provider demo (§3). Support baseline recoverable via `evals/scenarios_support.yaml`.
 
 This doc is the post-pivot backlog — what to do **after** merge, in priority order.
 
@@ -68,8 +68,8 @@ Pick **one at a time** after merge. Each should be a small PR with tests.
 
 | Item | What | Trigger |
 |------|------|---------|
-| **Live eval headline row** | Run matrix live on Ollama; add “live snapshot” row to README (separate from offline table) | Partial — 3-scenario smoke in README + [evals/LIVE.md](evals/LIVE.md); full 28-scenario live run pending gemma4 RAM or Anthropic |
-| **`emit_plan` tool** | Structured plan in tool trace before edits | If demo feels too “black box” |
+| ~~**Live eval headline row**~~ | Run matrix live on Ollama; add “live snapshot” row to README (separate from offline table) | Partial — 3-scenario smoke in README + [evals/LIVE.md](evals/LIVE.md); full 28-scenario live run pending gemma4 RAM or Anthropic |
+| ~~**`emit_plan` tool**~~ | Structured plan in tool trace before edits | Shipped; optional `REQUIRE_PLAN_BEFORE_EDIT` gate (default off) |
 | **Diff summary in envelope** | Optional `patch_summary` field from `write_file` results | UX polish for API consumers |
 | **Stronger scope gate** | Classify bugfix vs explore vs refactor; refuse “rewrite entire repo” with tests | If manual testing shows false negatives |
 
@@ -136,6 +136,7 @@ Week 3+  One Tier-A PR if motivated (Mission 2/3/4/5/6 from COMPOSER_SUPER_PROMP
 | 2026-05 | Mission 1 ship checklist: baseline green; Docker gemma4 OOM documented; tags proposed |
 | 2026-05 | Mission 2 live eval: 3-scenario smoke in [evals/LIVE.md](evals/LIVE.md); gemma4 OOM, llama3.2:1b fallback |
 | 2026-05 | Mission 3 CI: [`.github/workflows/ci.yml`](.github/workflows/ci.yml) — baseline + support offline eval |
+| 2026-05 | Mission 4 `emit_plan` tool + optional `REQUIRE_PLAN_BEFORE_EDIT` gate |
 | 2026-05 | `CLAUDE.md` + `COMPOSER_SUPER_PROMPT.md` synced for post-pivot missions |
 | 2026-05 | Indexing: **ripgrep-first** (A); semantic search deferred |
 | 2026-05 | Default registry: **coding tools on**, support tools off (`ENABLE_SUPPORT_TOOLS=false`) |
