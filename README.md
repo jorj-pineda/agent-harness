@@ -1,5 +1,7 @@
 # agent-harness
 
+[![CI](https://github.com/jorj-pineda/agent-harness/actions/workflows/ci.yml/badge.svg)](https://github.com/jorj-pineda/agent-harness/actions/workflows/ci.yml)
+
 A local-first, pluggable-provider agent harness for **senior-level coding tasks**, built from scratch — no LangChain, no LlamaIndex, no LangGraph. The point is the loop: a hand-written ReAct controller, a deterministic grounding layer that scores answer confidence and triggers escalation, and a per-user memory layer that persists engineering context across sessions. One process, two containers (Ollama + the FastAPI app), one `docker compose up` to demo.
 
 The differentiating features are **grounded edits with confidence** and **cross-session repo memory**. Both are inspectable: every response ships the same envelope (`{answer, confidence, citations, escalated, tool_calls, memory_writes, files_touched, verification_ran, provider, latency_ms}`) so the eval harness can score it directly without re-prompting the model. The provider abstraction is sacred — Ollama (Gemma 4 E4B by default), Anthropic, and OpenAI all sit behind one `Provider` interface, and nothing above [providers/](providers/) imports a specific backend.
@@ -34,6 +36,8 @@ Each layer depends only on the ones below it. Model-specific quirks (Gemma 4's t
 
 **Scope gate + edit budget.** [harness/policy.py](harness/policy.py) refuses clearly unsafe/unbounded requests before the ReAct loop runs. `MAX_FILES_TOUCHED_PER_TURN` (default 5) sets `escalated=True` when a turn writes too many files — a senior-agent guardrail against drive-by refactors.
 
+**Inspectable planning.** `emit_plan` records an ordered step list in the tool trace before any `write_file` call — no filesystem side effects. Optional `REQUIRE_PLAN_BEFORE_EDIT=true` escalates when the agent edits without planning first.
+
 ### Eval honesty
 
 Offline eval scores are **scripted** — every provider replays the same YAML tool traces, so headline columns match by construction. They measure harness shape and scorer wiring, not model quality. Use `python -m evals.run --live --providers ollama` for real provider comparison (non-deterministic).
@@ -56,11 +60,21 @@ Today every provider replays the same scripted responses through a `FakeProvider
 |-------|-------------------|-------|
 | **Eval matrix (default)** | 28 coding scenarios × scorers; offline `FakeProvider` scripts from `scenarios.yaml` | `python -m evals.run --providers ollama,anthropic,openai` |
 | **Provider unit tests** | Wire format (plain chat, tool call, HTTP error) per backend | `tests/cassettes/*.json` replayed in CI |
-| **Live eval (optional)** | Real LLM calls; scores vary run-to-run | `python -m evals.run --live --providers ollama` (requires Ollama / API keys) |
+| **Live eval (optional)** | Real LLM calls; scores vary run-to-run | `python -m evals.run --live --providers ollama` — see [evals/LIVE.md](evals/LIVE.md) |
 
 Support baseline scenarios remain in [evals/scenarios_support.yaml](evals/scenarios_support.yaml) (`python -m evals.run --scenarios evals/scenarios_support.yaml`).
 
 The 0.592 mean correctness is held down by refusal-style `unsafe_request` answers and terse explore-only replies where token-F1 against a longer gold string under-scores paraphrase. **Escalation accuracy is 100%**: every low-confidence scenario tripped the threshold and every high-confidence one did not. Patch and verification scores are 100% on offline scripts because bugfix/feature/refactor scenarios always script a successful `write_file` + `pytest` chain. (Offline eval uses threshold **0.50**; the API default is **0.55**.)
+
+### Live snapshot (3-scenario smoke, 2026-05-31)
+
+Not comparable to the offline table — real Ollama (`llama3.2:1b` fallback; `gemma4` OOM on this host). Full notes: [evals/LIVE.md](evals/LIVE.md).
+
+| Provider | Scenarios | Code Faith. | Patch | Verification | Correctness | Escalation Acc. |
+|----------|-----------|-------------|-------|--------------|-------------|-----------------|
+| `ollama` (live) | 3 | 0.333 | 0.667 | 0.667 | 0.131 | 1.000 |
+
+Escalation wiring held; patch/faithfulness dropped because the fallback model skipped or mishandled tool calls on bugfix/explore scenarios.
 
 ## Run it
 
@@ -93,6 +107,8 @@ python -m evals.run --providers ollama,anthropic,openai
 ```
 
 ## Reviewer checklist
+
+CI runs the same offline gate on every push/PR ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)): pytest, ruff, mypy, coding eval matrix, and support scenario regression — no live providers.
 
 ```bash
 uv sync --extra dev

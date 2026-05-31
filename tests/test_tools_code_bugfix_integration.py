@@ -113,3 +113,121 @@ async def test_require_verification_escalates_when_pytest_never_ran(broken_repo:
 
     assert response.verification_ran is False
     assert response.escalated is True
+
+
+async def test_emit_plan_appears_in_tool_calls_before_write(broken_repo: Path) -> None:
+    provider = ScriptedProvider()
+    provider.script(
+        make_response(
+            tool_calls=[
+                ToolCall(
+                    id="t0",
+                    name="emit_plan",
+                    arguments={
+                        "steps": ["Read calc.py", "Fix divide", "Run pytest"],
+                        "summary": "Fix divide bug",
+                    },
+                )
+            ],
+            finish_reason="tool_use",
+        ),
+        make_response(
+            tool_calls=[
+                ToolCall(
+                    id="t1",
+                    name="write_file",
+                    arguments={"path": "calc.py", "content": FIXED_CALC},
+                )
+            ],
+            finish_reason="tool_use",
+        ),
+        make_response(content="Planned and applied fix."),
+    )
+
+    registry = ToolRegistry()
+    register_code_tools(registry, workspace=Workspace(root=broken_repo))
+
+    response = await run_turn(
+        session=Session(),
+        user_input="fix divide",
+        provider=provider,
+        registry=registry,
+    )
+
+    assert [tc.name for tc in response.tool_calls] == ["emit_plan", "write_file"]
+    plan_call = response.tool_calls[0]
+    assert isinstance(plan_call.result, dict)
+    assert plan_call.result["step_count"] == 3
+
+
+async def test_require_plan_before_edit_escalates_on_write_without_plan(broken_repo: Path) -> None:
+    provider = ScriptedProvider()
+    provider.script(
+        make_response(
+            tool_calls=[
+                ToolCall(
+                    id="t1",
+                    name="write_file",
+                    arguments={"path": "calc.py", "content": FIXED_CALC},
+                )
+            ],
+            finish_reason="tool_use",
+        ),
+        make_response(content="Fixed without planning."),
+    )
+
+    registry = ToolRegistry()
+    register_code_tools(registry, workspace=Workspace(root=broken_repo))
+
+    response = await run_turn(
+        session=Session(),
+        user_input="fix divide",
+        provider=provider,
+        registry=registry,
+        require_plan_before_edit=True,
+    )
+
+    assert response.files_touched == ["calc.py"]
+    assert response.escalated is True
+
+
+async def test_require_plan_before_edit_allows_write_after_emit_plan(broken_repo: Path) -> None:
+    provider = ScriptedProvider()
+    provider.script(
+        make_response(
+            tool_calls=[
+                ToolCall(
+                    id="t0",
+                    name="emit_plan",
+                    arguments={"steps": ["Read calc.py", "Fix divide", "Run pytest"]},
+                )
+            ],
+            finish_reason="tool_use",
+        ),
+        make_response(
+            tool_calls=[
+                ToolCall(
+                    id="t1",
+                    name="write_file",
+                    arguments={"path": "calc.py", "content": FIXED_CALC},
+                )
+            ],
+            finish_reason="tool_use",
+        ),
+        make_response(content="Fixed with plan."),
+    )
+
+    registry = ToolRegistry()
+    register_code_tools(registry, workspace=Workspace(root=broken_repo))
+
+    response = await run_turn(
+        session=Session(),
+        user_input="fix divide",
+        provider=provider,
+        registry=registry,
+        grounder=Grounder(escalation_threshold=0.55),
+        require_plan_before_edit=True,
+    )
+
+    assert response.files_touched == ["calc.py"]
+    assert response.escalated is False

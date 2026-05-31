@@ -98,6 +98,18 @@ class RunCommandInput(BaseModel):
     )
 
 
+class EmitPlanInput(BaseModel):
+    steps: list[str] = Field(
+        ...,
+        min_length=1,
+        description="Ordered plan steps before making filesystem edits.",
+    )
+    summary: str | None = Field(
+        default=None,
+        description="Optional one-line goal for the turn.",
+    )
+
+
 def _workspace_error(exc: WorkspaceError) -> ToolError:
     return ToolError(str(exc))
 
@@ -254,6 +266,17 @@ def build_code_tools(workspace: Workspace) -> list[Tool]:
             "success": proc.returncode == 0,
         }
 
+    def emit_plan(args: EmitPlanInput) -> dict[str, Any]:
+        log.info("code_tool=emit_plan steps=%d", len(args.steps))
+        cleaned = [step.strip() for step in args.steps if step.strip()]
+        if not cleaned:
+            raise ToolError("emit_plan requires at least one non-empty step.")
+        return {
+            "steps": cleaned,
+            "summary": args.summary,
+            "step_count": len(cleaned),
+        }
+
     return [
         Tool(
             name="read_file",
@@ -298,6 +321,15 @@ def build_code_tools(workspace: Workspace) -> list[Tool]:
             ),
             input_model=GitDiffInput,
             fn=git_diff,
+        ),
+        Tool(
+            name="emit_plan",
+            description=(
+                "Record a structured plan (ordered steps) in the tool trace before editing "
+                "files. No filesystem changes."
+            ),
+            input_model=EmitPlanInput,
+            fn=emit_plan,
         ),
         Tool(
             name="write_file",

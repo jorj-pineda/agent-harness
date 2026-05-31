@@ -64,6 +64,10 @@ class Settings(BaseSettings):
         le=50,
         description="Escalate when a turn writes more than this many distinct files (0 disables).",
     )
+    require_plan_before_edit: bool = Field(
+        default=False,
+        description="Escalate when write_file runs without a prior emit_plan in the same turn.",
+    )
     default_workspace_root: Path | None = Field(
         default=None,
         description="Optional default repo sandbox when sessions omit workspace_root.",

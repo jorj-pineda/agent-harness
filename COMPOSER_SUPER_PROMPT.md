@@ -1,8 +1,10 @@
-# agent-harness — Composer Super Prompts
+# agent-harness — Composer Super Prompts (post-pivot)
 
-Use this file to start a **new Composer chat per pivot phase**. Copy **one** phase block (from `## Paste from here` through `## Paste to here`) into the chat input.
+Use this file to start a **new Composer chat per mission**. Copy **one** mission block (from `## Paste from here` through `## Paste to here`) into the chat input.
 
-**Roadmap detail:** [CODING_AGENT_PIVOT.md](CODING_AGENT_PIVOT.md)  
+**Roadmap:** [NEXT_STEPS.md](NEXT_STEPS.md)  
+**Project rules:** [CLAUDE.md](CLAUDE.md)  
+**Pivot history:** [CODING_AGENT_PIVOT.md](CODING_AGENT_PIVOT.md)  
 **Demo ops:** [demo.md](demo.md)
 
 ---
@@ -12,54 +14,63 @@ Use this file to start a **new Composer chat per pivot phase**. Copy **one** pha
 | Item | Status |
 |------|--------|
 | Support harness (steps 1–12) | Merged |
-| Demo hardening (`feat/demo-readiness`) | Done — pytest/ruff/mypy, `demo.md`, eval `--live` |
-| Current direction | Pivot → **senior-level coding agent** (phases 0–10 below) |
-| Workflow | Agent completes **one phase**, pauses for your green light before the next |
+| Demo hardening (`feat/demo-readiness`) | Done |
+| Coding-agent pivot (phases 1–10) | **Merged to `main` (PR #13)** |
+| Current direction | Post-pivot backlog in [NEXT_STEPS.md](NEXT_STEPS.md) |
+| Workflow | Agent completes **one mission**, pauses for your green light before the next |
 
 **Which prompt to use**
 
-| Phase | When |
-|-------|------|
-| **0** | Tag/merge support baseline before pivot |
-| **1** | Rebrand README + API shape (no new tools yet) |
-| **2** | Workspace jail + read-only code tools |
-| **3** | Grounding → file:line citations |
-| **4** | Write tools + verification loop |
-| **5** | Repo memory (FactStore repurposed) |
-| **6** | Coding eval harness |
-| **7** | Indexing strategy (grep vs embed) |
-| **8** | Docker + demo for coding |
-| **9** | Senior polish (scope gate, edit budget, etc.) |
-| **10** | Final gate |
+| Mission | When |
+|---------|------|
+| **0 — Context reload** | New chat; orient before picking work (read-only recon) |
+| **1 — Ship + validate** | Tag release, reviewer checklist, Docker/live smoke |
+| **2 — Live eval snapshot** | Run `--live`, document scores, optional README row |
+| **3 — GitHub Actions CI** | Wire pytest/ruff/mypy/evals in CI |
+| **4 — `emit_plan` tool** | Structured plan in tool trace before edits |
+| **5 — Patch summary envelope** | `patch_summary` field from write results |
+| **6 — Stronger scope gate** | Classify task type; refuse unbounded rewrites |
+| **7 — README / portfolio polish** | FocusKPI write-up pass (minimal code) |
+| **8 — Semantic search** | Only if grep-only explore evals fail |
+
+Pivot phase prompts (0–10) are archived in [CODING_AGENT_PIVOT.md](CODING_AGENT_PIVOT.md).
 
 ---
 
-## Shared context (included in every phase prompt)
+## Shared context (included in every mission prompt)
 
-Every phase block below repeats these rules so each chat is self-contained.
+Every mission block below repeats these rules so each chat is self-contained.
 
-**Repo:** `/Users/jorge/Projects/agent-harness`
+**Repo:** `/Users/jorge/Projects/agent-harness`  
+**Branch:** `main` (pivot merged 2026-05, PR #13)
 
-**Target product:** Local-first, pluggable-provider **senior coding agent** harness — hand-written ReAct loop (no LangChain/LlamaIndex/LangGraph). Portfolio piece.
+**Target product:** Local-first, pluggable-provider **senior coding agent** harness — hand-written ReAct loop (no LangChain/LlamaIndex/LangGraph). Portfolio piece for FocusKPI Junior AI/ML Engineer role.
 
-**Headline features (post-pivot):**
+**Headline features (shipped):**
 1. **Grounded edits with confidence** — citations = file paths + line ranges; `escalated=True` when evidence is thin.
-2. **Cross-session repo memory** — SQLite `FactStore` per `user_id`; conventions and prior decisions injected into system prompt.
+2. **Cross-session repo memory** — SQLite `FactStore` per `user_id`; engineering notes injected into system prompt.
+3. **Workspace sandbox** — path-jailed code tools; ripgrep-first search; scope gate + edit budget.
 
-**Response envelope (preserve; extend additively):**  
-`{answer, confidence, citations, escalated, tool_calls, memory_writes, provider, latency_ms}`
+**Response envelope (preserve; extend additively only):**  
+`{answer, confidence, citations, escalated, tool_calls, memory_writes, files_touched, verification_ran, provider, latency_ms}`
 
 **Architecture (layers depend only downward):**
 
 ```
 api/            FastAPI — thin HTTP wrapper, per-request tool registry
-  └── harness/  ReAct loop, session/turn state, provider router
-        ├── grounding/   confidence heuristic, citations, escalation
+  └── harness/  ReAct loop, session/turn state, provider router, policy gate
+        ├── grounding/   confidence heuristic, file:line citations, escalation
         ├── memory/      FactStore, system-prompt injection
-        ├── tools/       typed registry (coding tools replace support tools over phases)
-        ├── workspace/   (Phase 2+) sandboxed repo root
+        ├── tools/       read/grep/edit/verify + memory (support tools optional)
+        ├── workspace/   sandboxed repo root, path jail
         └── providers/   Ollama / Anthropic / OpenAI — SACRED abstraction
 ```
+
+**Key defaults:**
+- `ENABLE_SUPPORT_TOOLS=false` — coding demo default; support path needs seed/embed
+- `DEFAULT_WORKSPACE_ROOT` — Docker: `/app/fixtures/tiny_repo`
+- `MAX_FILES_TOUCHED_PER_TURN=5`
+- Offline eval: 28 coding scenarios; README headline table; threshold 0.50 (API: 0.55)
 
 **Critical rules (non-negotiable):**
 1. NO agent frameworks.
@@ -67,469 +78,394 @@ api/            FastAPI — thin HTTP wrapper, per-request tool registry
 3. Every response ships the full metadata envelope.
 4. Tests use VCR cassettes / FakeProvider — never hit live APIs in CI.
 5. Secrets in `.env` via pydantic-settings; `.env.example` committed.
-6. `pyproject.toml` edits: additive only, phase-labeled blocks.
+6. `pyproject.toml` edits: additive only, step-labeled blocks.
 7. Line length 100, `ruff format/check`, `mypy --strict` on core layers.
 8. No comments that restate code; commits imperative present tense.
-9. Do NOT commit unless Jorge explicitly says "commit" — DO propose commit messages each phase.
+9. Do NOT commit unless Jorge explicitly says "commit" — DO propose commit messages each mission.
 10. Workspace tools must jail paths; shell tools use argv allowlists, never `shell=True`.
 
 **Baseline commands:**
 
 ```bash
 uv sync --extra dev
-pytest -m "not live"
+pytest -m "not live"                    # ~337 tests
 ruff check .
 mypy
 python -m evals.run --providers ollama,anthropic,openai
 ```
 
-**Phase workflow (MANDATORY):** Complete the assigned phase only. Then output:
+**Mission workflow (MANDATORY):** Complete the assigned mission only. Then output:
 1. **What I did** (3–6 bullets)
-2. **Evidence** (test/lint counts)
+2. **Evidence** (test/lint counts, command output)
 3. **Files touched**
 4. **Proposed commit message** (imperative, 1–2 sentences, WHY)
-5. **Stop** — ask Jorge for green light before the next phase.
+5. **Stop** — ask Jorge for green light before the next mission.
 
 ---
 
-# Phase 0 — Freeze support baseline
+# Mission 0 — Context reload (read-only)
 
 ## Paste from here
 
 You are working on `agent-harness` at `/Users/jorge/Projects/agent-harness`.
 
-**Phase 0 only:** Freeze the customer-support baseline before the coding-agent pivot. Do not start pivot code yet.
+**Mission 0 only:** Read-only reconnaissance. Do **not** change code unless Jorge explicitly asks.
 
 ### Context
 
-Support harness steps 1–12 are merged. Demo hardening landed on `feat/demo-readiness`: mypy fix, `demo.md`, eval `--live`, README/CLAUDE sync, `CODING_AGENT_PIVOT.md`.
+Coding-agent pivot (phases 1–10) is **merged to `main`** (PR #13). Post-pivot work is tracked in [NEXT_STEPS.md](NEXT_STEPS.md). Project rules live in [CLAUDE.md](CLAUDE.md).
 
 ### Your tasks
 
-1. Confirm `main` (or intended base branch) includes demo-readiness work — read git log, run baseline commands.
-2. Ensure support demo is recoverable:
-   - Tag `v0.1-support` **or** document the merge commit hash in `CODING_AGENT_PIVOT.md` Phase 0 section.
-3. Verify offline eval still matches README headline table.
-4. List any uncommitted files; propose what to merge vs gitignore.
+1. Read [NEXT_STEPS.md](NEXT_STEPS.md), [README.md](README.md) (eval table + reviewer checklist), and [CLAUDE.md](CLAUDE.md).
+2. Confirm repo state: `git log -5 --oneline`, `git status`.
+3. Run baseline gate (report counts, don't fix unless broken):
+   ```bash
+   uv run pytest -m "not live" -q
+   uv run ruff check .
+   uv run mypy
+   ```
+4. Summarize: what's shipped, what's next (Tier A/B/C from NEXT_STEPS), and recommend **one** mission for Jorge to pick next.
 
 ### Exit criteria
 
-- Support baseline tagged or merge commit recorded.
-- `pytest -m "not live"`, `ruff`, `mypy` green.
-- No pivot code changes in this phase.
+- Accurate status report (test count, eval scenario count, key env vars).
+- No code diffs unless baseline is red and Jorge approves fixes.
 
 ### Rules
 
-Follow shared context above. Minimal diffs. Do not commit unless Jorge says "commit".
+Follow shared context above. STOP after deliverable — wait for Jorge to pick Mission 1–8.
 
-**Start Phase 0 now.** Report status, propose tag/merge steps, then STOP for green light.
+**Start Mission 0 now.**
 
 ## Paste to here
 
 ---
 
-# Phase 1 — Narrative + API shape
+# Mission 1 — Ship + validate
 
 ## Paste from here
 
 You are working on `agent-harness` at `/Users/jorge/Projects/agent-harness`.
 
-**Phase 1 only:** Rebrand toward a senior coding agent **without** removing support tools yet. Read [CODING_AGENT_PIVOT.md](CODING_AGENT_PIVOT.md) Phase 1.
+**Mission 1 only:** Finish post-merge ship checklist from [NEXT_STEPS.md](NEXT_STEPS.md) §1–3. Minimal code; docs/tags/smoke only.
 
-**Prerequisite:** Phase 0 complete (support baseline frozen).
+### Prerequisite
+
+Pivot merged to `main`. Mission 0 optional.
 
 ### Your tasks
 
-1. **README** — Rewrite headline features for coding agent:
-   - Grounded edits with confidence (file:line citations).
-   - Cross-session repo memory.
-   - Keep architecture diagram accurate; note pivot in progress if support tools still present.
-2. **`api/models.py` + `api/server.py`** — Extend requests:
-   - Add `workspace_root` or `workspace_id` on session/chat (design: resolve to sandbox path).
-   - Keep `user_id` for memory scoping.
-3. **System prompt** — Replace `BASE_SYSTEM_PROMPT` in `api/server.py` with engineering contract: minimal diffs, cite files read, run verification before claiming done.
-4. **Envelope (additive only)** — If needed, extend `TurnResponse` / API models with optional `files_touched`, `verification_ran` — do not remove existing fields evals use.
+1. **Tag** — If `v0.2-coding-agent` missing, propose tag on merge commit `acb8cbe` (or current merge tip); do not force-push.
+2. **Reviewer checklist** — Run README checklist end-to-end; fix only blockers found.
+3. **Docker smoke** — Follow [demo.md](demo.md) coding path; document any machine constraints in demo.md if needed.
+4. **Update [NEXT_STEPS.md](NEXT_STEPS.md)** — Mark merge/tag/checklist items done; note live eval as next.
+5. Optional: tag `v0.1-support` at pre-pivot commit if not already tagged.
 
 ### Allowed file scope
 
-`README.md`, `api/`, `harness/state.py` (only if envelope extended), `tests/api/`. Do not delete `tools/sql.py` or `tools/rag.py` yet.
+`NEXT_STEPS.md`, `demo.md` (smoke notes only), git tags (with Jorge approval).
 
 ### Exit criteria
 
-- API boots; existing tests pass (update API tests for new optional fields).
-- README describes coding agent intent.
-- Support tools still registered — behavior may be unchanged for old curl demos.
+- Baseline gate green.
+- NEXT_STEPS reflects current ship status.
+- Docker demo documented (pass or documented constraint).
 
 ### Rules
 
-Follow shared context. Read before editing. Minimal diffs. Propose commit message; STOP for green light.
+Follow shared context. No feature work. STOP for green light.
 
-**Start Phase 1 now.**
+**Start Mission 1 now.**
 
 ## Paste to here
 
 ---
 
-# Phase 2 — Workspace sandbox + read-only code tools
+# Mission 2 — Live eval snapshot
 
 ## Paste from here
 
 You are working on `agent-harness` at `/Users/jorge/Projects/agent-harness`.
 
-**Phase 2 only:** Workspace jail + read-only coding tools. Read [CODING_AGENT_PIVOT.md](CODING_AGENT_PIVOT.md) Phase 2.
+**Mission 2 only:** Run live provider evals and document results. Read [NEXT_STEPS.md](NEXT_STEPS.md) Tier A (live eval headline row).
 
-**Prerequisite:** Phase 1 complete (API accepts workspace root).
+### Prerequisite
+
+Ollama running with `gemma4` pulled, **or** Anthropic/OpenAI keys in `.env`.
 
 ### Your tasks
 
-1. **`workspace/` module** (new package, add to `pyproject.toml` hatch packages):
-   - `Workspace` dataclass: root path, ignore globs (`.git`, `node_modules`, `.venv`).
-   - `resolve(path) -> Path` with jail — reject paths outside root.
-2. **Read-only tools** in `tools/`:
-   - `read_file(path, start_line?, end_line?)` — byte/line caps.
-   - `grep_repo(pattern, path?, glob?)` — subprocess ripgrep or pure Python; timeout + hit limit.
-   - `list_dir(path)` / optional `tree(path, depth)` — bounded listing.
-   - `git_status`, `git_diff` — read-only git via argv allowlist.
-3. **Registry** — `register_code_tools(registry, workspace=...)` called from `api/server.py` per request (bind workspace like memory tools bind `user_id`).
-4. **Fixture repo** — `tests/fixtures/tiny_repo/` (minimal Python package + one module + test).
-5. **Tests** — path escape attempts fail; happy-path read/grep on fixture.
+1. Run live eval (start narrow if full matrix is slow):
+   ```bash
+   python -m evals.run --live --providers ollama
+   ```
+2. Capture score spread vs offline README table; note which scenarios diverge and why.
+3. Add **`evals/LIVE.md`** (or README subsection) documenting:
+   - command used, date, provider, scenario subset if partial
+   - live vs offline interpretation (scripted vs real model)
+4. Optional: add separate **"Live snapshot"** row to README eval table (do not overwrite offline table).
 
 ### Allowed file scope
 
-`workspace/`, `tools/`, `api/server.py`, `tests/`, `pyproject.toml` (additive), `tests/fixtures/`.
+`evals/LIVE.md`, `README.md` (eval section only), `NEXT_STEPS.md` (mark done).
 
 ### Exit criteria
 
-- Agent can explore fixture repo via new tools in integration test.
-- SQL/RAG tools may remain registered alongside (no deletion required).
+- At least one successful `--live` run with documented output.
+- Clear eval honesty note for reviewers.
 
 ### Rules
 
-Follow shared context. No `shell=True`. Log tool calls. STOP for green light after phase.
+Follow shared context. Do not change scorers unless live run exposes a harness bug. STOP for green light.
 
-**Start Phase 2 now.**
+**Start Mission 2 now.** If no live provider available, report what's missing and STOP.
 
 ## Paste to here
 
 ---
 
-# Phase 3 — Grounding retarget (code citations)
+# Mission 3 — GitHub Actions CI
 
 ## Paste from here
 
 You are working on `agent-harness` at `/Users/jorge/Projects/agent-harness`.
 
-**Phase 3 only:** Retarget grounding from RAG chunks to file:line citations. Read [CODING_AGENT_PIVOT.md](CODING_AGENT_PIVOT.md) Phase 3.
-
-**Prerequisite:** Phase 2 complete (read tools emit structured results).
+**Mission 3 only:** Add CI workflow per [NEXT_STEPS.md](NEXT_STEPS.md) Tier C.
 
 ### Your tasks
 
-1. **`harness/grounding.py`** — Accept evidence from `read_file` / `grep_repo` tool records (path, start_line, end_line, optional snippet).
-2. **Heuristic** — Keep shape `top_score × coverage × health`; tune for code evidence not Chroma distances.
-3. **Citation schema** — `{path, start_line, end_line, snippet?}` in grounding output; map to `TurnResponse.citations`.
-4. **Tests** — Extend `tests/test_harness_grounding.py` with code-style tool call fixtures; keep or isolate legacy RAG scenarios.
-5. **Do not delete RAG grounder path yet** if support evals still depend on it — branch on tool name or feature flag.
+1. Add `.github/workflows/ci.yml`:
+   - `uv sync --extra dev`
+   - `pytest -m "not live"`
+   - `ruff check .`
+   - `mypy`
+   - `python -m evals.run --providers ollama,anthropic,openai` (offline FakeProvider)
+2. Python 3.11 matrix (single version fine for portfolio).
+3. Optional second job: support regression with `ENABLE_SUPPORT_TOOLS=true` + `evals/scenarios_support.yaml` (only if seed data can run in CI without Ollama — document if skipped).
+4. Update README reviewer checklist to mention CI badge if added.
 
 ### Allowed file scope
 
-`harness/grounding.py`, `harness/loop.py` (minimal), `harness/state.py`, `tests/test_harness_grounding.py`, related types.
+`.github/workflows/`, `README.md` (CI note), `NEXT_STEPS.md`, maybe `data/` if CI needs fixture DB.
 
 ### Exit criteria
 
-- Grounding produces file:line citations from code tool traces.
-- Escalation still fires on low-confidence coding scenarios in tests.
-
-### Rules
-
-Follow shared context. Minimal diffs. STOP for green light.
-
-**Start Phase 3 now.**
-
-## Paste to here
-
----
-
-# Phase 4 — Write tools + verification loop
-
-## Paste from here
-
-You are working on `agent-harness` at `/Users/jorge/Projects/agent-harness`.
-
-**Phase 4 only:** Write tools + allowlisted verification commands. Read [CODING_AGENT_PIVOT.md](CODING_AGENT_PIVOT.md) Phase 4.
-
-**Prerequisite:** Phase 2–3 complete (read tools + code grounding).
-
-### Your tasks
-
-1. **`apply_patch` or `write_file`** — edits jailed to workspace; reject traversal.
-2. **`run_command`** — allowlist only (`pytest`, `ruff`, `mypy`, `git diff`, etc.); timeout; `subprocess` with argument list, **never** `shell=True`.
-3. **Integration test** — fixture repo with intentionally failing test; scripted or live FakeProvider path proves read → edit → pytest → answer.
-4. **Optional setting** — `REQUIRE_VERIFICATION_BEFORE_FINISH` (default false) documented in `.env.example`.
-
-### Allowed file scope
-
-`tools/`, `workspace/`, `api/settings.py`, `tests/fixtures/`, `tests/test_tools_*`.
-
-### Exit criteria
-
-- End-to-end bugfix on `tests/fixtures/tiny_repo` in tests.
-- Tool trace + verification visible in `TurnResponse`.
-
-### Rules
-
-Follow shared context. Security-first on shell. STOP for green light.
-
-**Start Phase 4 now.**
-
-## Paste to here
-
----
-
-# Phase 5 — Memory for engineering context
-
-## Paste from here
-
-You are working on `agent-harness` at `/Users/jorge/Projects/agent-harness`.
-
-**Phase 5 only:** Repurpose FactStore for repo/engineering memory. Read [CODING_AGENT_PIVOT.md](CODING_AGENT_PIVOT.md) Phase 5.
-
-**Prerequisite:** Phase 1 complete (coding system prompt). Phases 2–4 recommended.
-
-### Your tasks
-
-1. **Document** facts as durable engineering notes (conventions, stack choices, review preferences).
-2. **Tools** — keep `remember_fact` / `recall_facts` or add aliases `remember` / `recall`; update descriptions for coding context.
-3. **System prompt** — clarify memory tool usage for cross-session repo preferences.
-4. **Tests** — session A remembers "prefer async"; session B recall surfaces in system prompt or tool result.
-
-### Allowed file scope
-
-`memory/`, `tools/memory.py`, `api/server.py` (prompt + registry), `tests/test_tools_memory.py`, `tests/test_memory_store.py`.
-
-### Exit criteria
-
-- Cross-session memory test passes with engineering-style facts.
-- No regression to memory isolation per `user_id`.
+- Workflow file valid; local commands match CI steps.
+- No live provider calls in CI.
 
 ### Rules
 
 Follow shared context. STOP for green light.
 
-**Start Phase 5 now.**
+**Start Mission 3 now.**
 
 ## Paste to here
 
 ---
 
-# Phase 6 — Eval harness for coding
+# Mission 4 — `emit_plan` tool
 
 ## Paste from here
 
 You are working on `agent-harness` at `/Users/jorge/Projects/agent-harness`.
 
-**Phase 6 only:** Replace support eval scenarios with coding scenarios. Read [CODING_AGENT_PIVOT.md](CODING_AGENT_PIVOT.md) Phase 6.
-
-**Prerequisite:** Phase 4 complete (at least one end-to-end fixture bugfix works).
+**Mission 4 only:** Add structured planning before edits. Deferred item from pivot Phase 9 / [NEXT_STEPS.md](NEXT_STEPS.md) Tier A.
 
 ### Your tasks
 
-1. **`evals/scenarios.yaml`** — ~25–30 scenarios, categories:
-   - `bugfix`, `feature_slice`, `refactor`, `explore_only`, `low_confidence`, `unsafe_request`
-2. **`evals/scorers.py`** — add/adapt:
-   - `patch_correctness`, `verification_ran`, code `faithfulness` (claims vs cited lines)
-   - keep `escalation` scorer
-3. **`evals/run.py`** — scripted tool results for fixture repos; keep offline FakeProvider default + `--live`.
-4. **README** — new headline table from offline eval run.
-5. **Tests** — update `tests/evals/test_run.py` for new schema/counts.
+1. Add `emit_plan(steps: list[str], ...)` tool — writes structured plan to tool trace (no filesystem side effects).
+2. Register in code tools when workspace is bound.
+3. Optional setting: `REQUIRE_PLAN_BEFORE_EDIT` (default false) — if true, escalate when agent calls `write_file` without prior `emit_plan` in same turn.
+4. Tests: plan appears in `tool_calls`; optional gate test.
+5. README "What's novel" bullet + eval scenario if gate enabled.
 
 ### Allowed file scope
 
-`evals/`, `tests/evals/`, `tests/fixtures/`, `README.md` (eval table only).
+`tools/code.py`, `api/server.py`, `api/settings.py`, `.env.example`, `tests/`, `README.md`, `evals/` (if new scenario).
 
 ### Exit criteria
 
-- `python -m evals.run --providers ollama,anthropic,openai` completes offline.
-- CI deterministic; live path documented.
+- Plan tool callable in integration test.
+- No regression to existing 337 tests.
 
 ### Rules
 
-Follow shared context. Archive or move old support scenarios to `evals/scenarios_support.yaml` if useful. STOP for green light.
+Follow shared context. Minimal API surface. STOP for green light.
 
-**Start Phase 6 now.**
+**Start Mission 4 now.**
 
 ## Paste to here
 
 ---
 
-# Phase 7 — Indexing strategy
+# Mission 5 — Patch summary in envelope
 
 ## Paste from here
 
 You are working on `agent-harness` at `/Users/jorge/Projects/agent-harness`.
 
-**Phase 7 only:** Choose and implement indexing for codebase search. Read [CODING_AGENT_PIVOT.md](CODING_AGENT_PIVOT.md) Phase 7.
-
-**Prerequisite:** Phase 2 complete. Phase 6 recommended (evals tell you if grep is enough).
+**Mission 5 only:** Enrich response envelope with edit summary. [NEXT_STEPS.md](NEXT_STEPS.md) Tier A.
 
 ### Your tasks
 
-1. **Decide** (document in README):
-   - **A. Ripgrep only** (recommended v1), **B. Chroma over repo**, or **C. Hybrid**.
-2. **Implement chosen path** — if staying grep-only, add optional `semantic_search` stub deferred; if Chroma, wire embedder through `providers/` only.
-3. **Deprecate support data path** — archive `data/seed.py`, support corpus, SQL tools from default registry (feature flag or remove if Jorge approves).
-4. **Update evals** if indexing changes explore_only scores.
+1. Extend `TurnResponse` / API models with optional `patch_summary: list[str]` (or structured `{path, lines_added, lines_removed}` — pick simpler v1).
+2. Harvest from `write_file` tool results in [harness/outcome.py](harness/outcome.py) or loop.
+3. API tests + one harness test proving field populated after edit turn.
+4. Document field in README envelope description.
 
 ### Allowed file scope
 
-`tools/`, `data/`, `api/server.py`, `README.md`, `CODING_AGENT_PIVOT.md` (decision record).
+`harness/state.py`, `harness/outcome.py`, `harness/loop.py`, `api/models.py`, `tests/`.
 
 ### Exit criteria
 
-- Decision documented with trade-offs.
-- Default coding demo does not require support SQLite/doc corpus.
+- Additive envelope field only; evals still pass.
+- Backward compatible (optional field).
+
+### Rules
+
+Follow shared context. STOP for green light.
+
+**Start Mission 5 now.**
+
+## Paste to here
+
+---
+
+# Mission 6 — Stronger scope gate
+
+## Paste from here
+
+You are working on `agent-harness` at `/Users/jorge/Projects/agent-harness`.
+
+**Mission 6 only:** Improve [harness/policy.py](harness/policy.py) task classification. [NEXT_STEPS.md](NEXT_STEPS.md) Tier A.
+
+### Prerequisite
+
+Read current scope gate tests and eval `unsafe_request` scenarios.
+
+### Your tasks
+
+1. Classify incoming message: `bugfix | explore | refactor | out_of_scope` (heuristic or lightweight rules — no second LLM call unless justified).
+2. Refuse unbounded requests ("rewrite entire repo", "delete all tests") with `provider="policy"` early return (existing pattern).
+3. Allow normal bugfix/explore/refactor through.
+4. Tests + 2–3 eval scenarios if behavior changes.
+5. README note under scope gate.
+
+### Allowed file scope
+
+`harness/policy.py`, `api/server.py`, `tests/`, `evals/scenarios.yaml` (additive scenarios only).
+
+### Exit criteria
+
+- False positive rate low on existing evals.
+- New refusal cases covered by tests.
+
+### Rules
+
+Follow shared context. STOP for green light.
+
+**Start Mission 6 now.**
+
+## Paste to here
+
+---
+
+# Mission 7 — README / portfolio polish
+
+## Paste from here
+
+You are working on `agent-harness` at `/Users/jorge/Projects/agent-harness`.
+
+**Mission 7 only:** FocusKPI write-up pass — **docs only**, no new features. [NEXT_STEPS.md](NEXT_STEPS.md) §4.
+
+### Your tasks
+
+1. Read README as a hiring manager (3–6 paragraph pitch). Tighten:
+   - Opening hook (why this repo, not another agent tutorial)
+   - "What's novel" — lead with grounded confidence + memory + eval honesty
+   - Clear "Run it in 5 minutes" path
+2. Sync any stale numbers (337 tests, 28 scenarios, PR #13 merged).
+3. Optional: add link to `evals/LIVE.md` if Mission 2 ran.
+4. Do **not** rewrite architecture unless inaccurate.
+
+### Allowed file scope
+
+`README.md`, `NEXT_STEPS.md` (portfolio section only).
+
+### Exit criteria
+
+- README stands alone as application write-up draft.
+- No code changes.
+
+### Rules
+
+Follow shared context. STOP for green light.
+
+**Start Mission 7 now.**
+
+## Paste to here
+
+---
+
+# Mission 8 — Semantic codebase search
+
+## Paste from here
+
+You are working on `agent-harness` at `/Users/jorge/Projects/agent-harness`.
+
+**Mission 8 only:** Implement deferred semantic search. **Only run if Jorge confirms grep-only explore evals are insufficient.**
+
+### Prerequisite
+
+Mission 2 live eval or manual testing shows explore failures ripgrep cannot fix.
+
+### Your tasks
+
+1. Implement `semantic_search` in [tools/semantic.py](tools/semantic.py):
+   - Embed via provider boundary only (no direct ollama import outside `providers/`)
+   - Chroma collection scoped to workspace root
+   - Ignore globs match workspace module
+2. Index on first use or explicit `index_workspace` tool — document trade-off.
+3. Register alongside `grep_repo`; eval scenario updates if scores shift.
+4. README: document when to use grep vs semantic.
+
+### Allowed file scope
+
+`tools/semantic.py`, `workspace/`, `providers/` (if embed hook needed), `api/server.py`, `tests/`, `evals/`, `README.md`.
+
+### Exit criteria
+
+- Semantic search returns file:line citations compatible with grounder.
+- Offline evals still deterministic (script semantic tool in YAML if needed).
 
 ### Rules
 
 Follow shared context. Do not add LangChain. STOP for green light.
 
-**Start Phase 7 now.**
+**Start Mission 8 only if Jorge confirmed the trigger.** Otherwise propose grep-first mitigations and STOP.
 
 ## Paste to here
 
 ---
 
-# Phase 8 — Docker + demo for coding
+# Appendix — Pivot phases 0–10 (COMPLETE)
 
-## Paste from here
+Coding-agent pivot shipped on `main` (PR #13). Phase-by-phase history: [CODING_AGENT_PIVOT.md](CODING_AGENT_PIVOT.md).
 
-You are working on `agent-harness` at `/Users/jorge/Projects/agent-harness`.
-
-**Phase 8 only:** Docker and demo docs for coding agent. Read [CODING_AGENT_PIVOT.md](CODING_AGENT_PIVOT.md) Phase 8 and existing [demo.md](demo.md).
-
-**Prerequisite:** Phases 1–4 minimum; Phase 6 for eval demo commands.
-
-### Your tasks
-
-1. **`docker-compose.yml`** — mount fixture repo or `fixtures/` volume; env for `WORKSPACE_ROOT`.
-2. **`Dockerfile`** — copy `workspace/`, `fixtures/` as needed.
-3. **`demo.md`** — coding walkthrough:
-   - create session with workspace
-   - ask to fix failing test
-   - interpret envelope (citations, confidence, escalated)
-   - model options (Ollama vs cloud; RAM notes from support demo)
-4. **Smoke test** — `docker compose build && up`; document commands even if gemma4 OOM on low-RAM Docker Desktop.
-
-### Allowed file scope
-
-`docker-compose.yml`, `Dockerfile`, `.dockerignore`, `demo.md`, `README.md` (Run it section).
-
-### Exit criteria
-
-- Reviewer can follow `demo.md` for coding demo in <15 minutes on a adequately provisioned machine.
-
-### Rules
-
-Follow shared context. STOP for green light.
-
-**Start Phase 8 now.**
-
-## Paste to here
-
----
-
-# Phase 9 — Senior-level polish
-
-## Paste from here
-
-You are working on `agent-harness` at `/Users/jorge/Projects/agent-harness`.
-
-**Phase 9 only:** Pick 2–3 senior differentiators. Read [CODING_AGENT_PIVOT.md](CODING_AGENT_PIVOT.md) Phase 9.
-
-**Prerequisite:** Phases 1–6 complete.
-
-### Options (pick 2–3 with Jorge if unclear)
-
-1. **Scope gate** — classify task (bugfix / explore / out-of-scope); refuse huge rewrites.
-2. **Edit budget** — max files/lines per turn; set `escalated` when exceeded.
-3. **`emit_plan` tool** — structured plan in tool trace before edits.
-4. **Diff-first API presentation** — enrich envelope with patch summary fields.
-5. **Eval honesty** — README offline vs `--live` limits for coding metrics.
-
-### Your tasks
-
-1. Implement chosen items with tests.
-2. Update README "What's novel" for each.
-3. Add eval scenarios if scope gate / edit budget affect escalation.
-
-### Exit criteria
-
-- Each chosen feature has test coverage and README mention.
-- No scope creep into IDE/LSP/full SWE-bench.
-
-### Rules
-
-Follow shared context. STOP for green light.
-
-**Start Phase 9 now.** If Jorge didn't specify which 2–3 items, propose a recommendation first and wait.
-
-## Paste to here
-
----
-
-# Phase 10 — Final gate
-
-## Paste from here
-
-You are working on `agent-harness` at `/Users/jorge/Projects/agent-harness`.
-
-**Phase 10 only:** Final quality gate for coding-agent "almost ready." Read [CODING_AGENT_PIVOT.md](CODING_AGENT_PIVOT.md) Phase 10.
-
-**Prerequisite:** Phases 1–9 complete (or Jorge explicitly waives 9).
-
-### Your tasks
-
-1. Run full gate:
-   ```bash
-   pytest -m "not live"
-   ruff check .
-   mypy
-   python -m evals.run --providers ollama,anthropic,openai
-   ```
-2. Regenerate eval report; confirm README headline table matches.
-3. Verify `demo.md` coding path once (document any machine constraints).
-4. Update `CLAUDE.md` / README deferred list.
-5. Produce **reviewer checklist** (3–5 commands a hiring manager can run).
-6. List explicit non-goals still deferred.
-
-### Exit criteria
-
-- All checks green.
-- Reviewer checklist delivered.
-- No uncommitted critical work unmentioned.
-
-### Rules
-
-Fix only blockers found in gate — minimal diffs. Propose final merge PR title/description. STOP after deliverable.
-
-**Start Phase 10 now.**
-
-## Paste to here
-
----
-
-# Appendix — Support demo hardening (COMPLETE)
-
-The 7-slice support hardening mission is **done** (May 2026). Do not re-run unless regressions appear. Summary:
-
-| Slice | Outcome |
+| Phase | Outcome |
 |-------|---------|
-| 1 | Baseline verified |
-| 2 | Chroma/mypy fix in `tools/rag.py` |
-| 3 | Docker smoke + `demo.md` |
-| 4 | Eval regenerated; README table matched |
-| 5 | Eval `--live` + FakeProvider docs |
-| 6 | README + CLAUDE sync |
-| 7 | Final gate green |
+| 0 | Support baseline frozen |
+| 1 | README + API shape (`workspace_root`, envelope fields) |
+| 2 | Workspace jail + read-only code tools |
+| 3 | Grounding → file:line citations |
+| 4 | Write + verify tools |
+| 5 | Engineering memory |
+| 6 | Coding eval harness (28 scenarios) |
+| 7 | Ripgrep-first; `ENABLE_SUPPORT_TOOLS=false` default |
+| 8 | Docker + demo.md coding walkthrough |
+| 9 | Scope gate, edit budget, eval honesty |
+| 10 | Final gate (~337 tests), reviewer checklist |
 
-For support-only debugging, use [demo.md](demo.md) and `python -m evals.run --providers ollama,anthropic,openai`.
+For support-only debugging: `ENABLE_SUPPORT_TOOLS=true`, seed/embed, `evals/scenarios_support.yaml`.
