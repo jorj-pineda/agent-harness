@@ -1,5 +1,7 @@
 # agent-harness
 
+[![CI](https://github.com/jorj-pineda/agent-harness/actions/workflows/ci.yml/badge.svg)](https://github.com/jorj-pineda/agent-harness/actions/workflows/ci.yml)
+
 A local-first, pluggable-provider agent harness for **senior-level coding tasks**, built from scratch — no LangChain, no LlamaIndex, no LangGraph. The point is the loop: a hand-written ReAct controller, a deterministic grounding layer that scores answer confidence and triggers escalation, and a per-user memory layer that persists engineering context across sessions. One process, two containers (Ollama + the FastAPI app), one `docker compose up` to demo.
 
 The differentiating features are **grounded edits with confidence** and **cross-session repo memory**. Both are inspectable: every response ships the same envelope (`{answer, confidence, citations, escalated, tool_calls, memory_writes, files_touched, verification_ran, provider, latency_ms}`) so the eval harness can score it directly without re-prompting the model. The provider abstraction is sacred — Ollama (Gemma 4 E4B by default), Anthropic, and OpenAI all sit behind one `Provider` interface, and nothing above [providers/](providers/) imports a specific backend.
@@ -103,6 +105,8 @@ python -m evals.run --providers ollama,anthropic,openai
 ```
 
 ## Reviewer checklist
+
+CI runs the same offline gate on every push/PR ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)): pytest, ruff, mypy, coding eval matrix, and support scenario regression — no live providers.
 
 ```bash
 uv sync --extra dev
