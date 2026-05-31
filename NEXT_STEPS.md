@@ -1,6 +1,6 @@
 # Next steps after coding-agent pivot (phases 1–10)
 
-**Status:** Phases 1–10 **merged to `main`** (PR #13, merge `acb8cbe`). Support baseline recoverable via `evals/scenarios_support.yaml`.
+**Status:** Phases 1–10 **merged to `main`** (PR #13, merge `acb8cbe`). Missions 1–2 **done** (ship checklist + live eval snapshot). Tags pending Jorge approval. **Next:** Mission 3 (GitHub Actions CI) or cloud provider demo (§3). Support baseline recoverable via `evals/scenarios_support.yaml`.
 
 This doc is the post-pivot backlog — what to do **after** merge, in priority order.
 
@@ -13,9 +13,9 @@ This doc is the post-pivot backlog — what to do **after** merge, in priority o
 | Task | Why | Done when |
 |------|-----|-----------|
 | ~~Merge `feat/pivot-harness` → `main`~~ | Locks the portfolio narrative | ✅ PR #13 merged |
-| **Tag release** | Recoverable snapshot | e.g. `v0.2-coding-agent` on merge commit |
-| **Run reviewer checklist locally once** | Catch env-specific gaps | [README reviewer checklist](README.md#reviewer-checklist) all green |
-| **Optional: tag support baseline** | Pre-pivot snapshot | `v0.1-support` points at pre-pivot merge |
+| ~~**Tag release**~~ | Recoverable snapshot | **Proposed** (awaiting approval): `v0.2-coding-agent` → `acb8cbe` |
+| ~~**Run reviewer checklist locally once**~~ | Catch env-specific gaps | ✅ 337 passed, ruff/mypy clean, offline eval 84/84; Docker `/chat` blocked by RAM (see [demo.md](demo.md)) |
+| **Optional: tag support baseline** | Pre-pivot snapshot | **Proposed** (awaiting approval): `v0.1-support` → `1ce9f9e` (pre-pivot `main`) |
 
 ```bash
 git checkout main && git pull
@@ -41,9 +41,9 @@ python -m evals.run --providers ollama,anthropic,openai
 
 | Task | Effort | Outcome |
 |------|--------|---------|
-| **Live eval smoke** | ~30 min | `python -m evals.run --live --providers ollama` (or anthropic) on 2–3 scenarios; document score spread in README or a short `evals/LIVE.md` note |
-| **Docker coding demo on your machine** | ~15 min | Follow [demo.md](demo.md) end-to-end with real Gemma 4 tool-calling |
-| **Cloud provider demo** | ~15 min | `.env` with Anthropic/OpenAI; same bugfix curl; confirm tool-call wire format |
+| ~~**Live eval smoke**~~ | ~30 min | ✅ 3-scenario smoke documented in [evals/LIVE.md](evals/LIVE.md); `gemma4` OOM, `llama3.2:1b` fallback |
+| ~~**Docker coding demo on your machine**~~ | ~15 min | ✅ Stack up; `/sessions` OK; `/chat` OOM on gemma4 with 8 GiB Docker RAM — constraint documented in [demo.md](demo.md) |
+| **Cloud provider demo** ← **optional next** | ~15 min | `.env` with Anthropic/OpenAI; same bugfix curl; confirm tool-call wire format |
 
 Offline eval proves **harness shape**; live runs prove **model behavior**. Both belong in the portfolio story.
 
@@ -68,7 +68,7 @@ Pick **one at a time** after merge. Each should be a small PR with tests.
 
 | Item | What | Trigger |
 |------|------|---------|
-| **Live eval headline row** | Run matrix live on Ollama; add “live snapshot” row to README (separate from offline table) | After one successful `--live` run |
+| **Live eval headline row** | Run matrix live on Ollama; add “live snapshot” row to README (separate from offline table) | Partial — 3-scenario smoke in README + [evals/LIVE.md](evals/LIVE.md); full 28-scenario live run pending gemma4 RAM or Anthropic |
 | **`emit_plan` tool** | Structured plan in tool trace before edits | If demo feels too “black box” |
 | **Diff summary in envelope** | Optional `patch_summary` field from `write_file` results | UX polish for API consumers |
 | **Stronger scope gate** | Classify bugfix vs explore vs refactor; refuse “rewrite entire repo” with tests | If manual testing shows false negatives |
@@ -133,6 +133,8 @@ Week 3+  One Tier-A PR if motivated (Mission 2/3/4/5/6 from COMPOSER_SUPER_PROMP
 | Date | Decision |
 |------|----------|
 | 2026-05 | Pivot phases 1–10 merged to `main` (PR #13) |
+| 2026-05 | Mission 1 ship checklist: baseline green; Docker gemma4 OOM documented; tags proposed |
+| 2026-05 | Mission 2 live eval: 3-scenario smoke in [evals/LIVE.md](evals/LIVE.md); gemma4 OOM, llama3.2:1b fallback |
 | 2026-05 | `CLAUDE.md` + `COMPOSER_SUPER_PROMPT.md` synced for post-pivot missions |
 | 2026-05 | Indexing: **ripgrep-first** (A); semantic search deferred |
 | 2026-05 | Default registry: **coding tools on**, support tools off (`ENABLE_SUPPORT_TOOLS=false`) |

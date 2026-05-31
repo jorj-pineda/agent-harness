@@ -44,6 +44,8 @@ Every `/chat` response includes:
 - **GPU laptop (8 GB VRAM):** Gemma 4 E4B with `OLLAMA_KV_CACHE_TYPE=q8_0` (set on the Ollama service).
 - **Docker Desktop without GPU:** allocate **≥ 12 GB RAM** or use a cloud provider in `.env` (`DEFAULT_PROVIDER=anthropic`).
 
+**Smoke-tested constraint (2026-05, Apple Silicon + Docker Desktop):** With Docker limited to ~8 GiB total, Ollama fails to load `gemma4` (`model requires more system memory (9.7 GiB) than is available`). `/sessions` succeeds but `/chat` returns HTTP 500. Fix: raise Docker Desktop **Settings → Resources → Memory** to **≥ 12 GiB**, or set `DEFAULT_PROVIDER=anthropic` / `OPENAI_API_KEY` in `.env` and pass `"provider":"anthropic"` on `/chat`.
+
 ## Quick start (local, no Docker)
 
 ```bash
@@ -94,7 +96,8 @@ Copy `.env.example` to `.env` and set `ANTHROPIC_API_KEY` and/or `OPENAI_API_KEY
 
 | Symptom | Fix |
 |---------|-----|
-| Ollama 500 / OOM on `/chat` | More Docker RAM, smaller model, or cloud provider |
+| Ollama 500 / OOM on `/chat` | More Docker RAM (**≥ 12 GiB** for gemma4), smaller model, or cloud provider |
+| `model requires more system memory (9.7 GiB)` in Ollama logs | Same as above — gemma4 weights alone need ~9.4 GiB on CPU |
 | `read_file` not in tool list | Session needs `workspace_root` (or `DEFAULT_WORKSPACE_ROOT`) |
 | Empty citations | Model skipped read/grep tools — check `tool_calls` in response |
 | `escalated: true` after edit | Edit budget (`MAX_FILES_TOUCHED_PER_TURN`, default 5) or low grounding confidence |

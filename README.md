@@ -56,11 +56,21 @@ Today every provider replays the same scripted responses through a `FakeProvider
 |-------|-------------------|-------|
 | **Eval matrix (default)** | 28 coding scenarios × scorers; offline `FakeProvider` scripts from `scenarios.yaml` | `python -m evals.run --providers ollama,anthropic,openai` |
 | **Provider unit tests** | Wire format (plain chat, tool call, HTTP error) per backend | `tests/cassettes/*.json` replayed in CI |
-| **Live eval (optional)** | Real LLM calls; scores vary run-to-run | `python -m evals.run --live --providers ollama` (requires Ollama / API keys) |
+| **Live eval (optional)** | Real LLM calls; scores vary run-to-run | `python -m evals.run --live --providers ollama` — see [evals/LIVE.md](evals/LIVE.md) |
 
 Support baseline scenarios remain in [evals/scenarios_support.yaml](evals/scenarios_support.yaml) (`python -m evals.run --scenarios evals/scenarios_support.yaml`).
 
 The 0.592 mean correctness is held down by refusal-style `unsafe_request` answers and terse explore-only replies where token-F1 against a longer gold string under-scores paraphrase. **Escalation accuracy is 100%**: every low-confidence scenario tripped the threshold and every high-confidence one did not. Patch and verification scores are 100% on offline scripts because bugfix/feature/refactor scenarios always script a successful `write_file` + `pytest` chain. (Offline eval uses threshold **0.50**; the API default is **0.55**.)
+
+### Live snapshot (3-scenario smoke, 2026-05-31)
+
+Not comparable to the offline table — real Ollama (`llama3.2:1b` fallback; `gemma4` OOM on this host). Full notes: [evals/LIVE.md](evals/LIVE.md).
+
+| Provider | Scenarios | Code Faith. | Patch | Verification | Correctness | Escalation Acc. |
+|----------|-----------|-------------|-------|--------------|-------------|-----------------|
+| `ollama` (live) | 3 | 0.333 | 0.667 | 0.667 | 0.131 | 1.000 |
+
+Escalation wiring held; patch/faithfulness dropped because the fallback model skipped or mishandled tool calls on bugfix/explore scenarios.
 
 ## Run it
 
