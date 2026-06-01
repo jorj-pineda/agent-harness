@@ -35,6 +35,7 @@ from pathlib import Path
 
 import chromadb
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.staticfiles import StaticFiles
 
 from data.embed import open_collection
 from harness.grounding import Grounder
@@ -179,7 +180,23 @@ def create_app(
     app = FastAPI(title="agent-harness", version="0.1.0", lifespan=lifespan)
     app.state.settings = resolved_settings
     _register_routes(app)
+    _mount_ui(app)
     return app
+
+
+# Mounted last so the explicit API routes (and FastAPI's /docs, /openapi.json)
+# resolve first; the catch-all "/" mount only serves the demo panel and assets.
+UI_DIR = Path(__file__).resolve().parent.parent / "ui"
+
+
+def _mount_ui(app: FastAPI) -> None:
+    """Serve the static demo panel at `/` when the `ui/` directory is present.
+
+    The panel is a thin HTTP client (POST /sessions, POST /chat) — no agent
+    logic lives in the frontend. Absent `ui/`, the API runs headless.
+    """
+    if UI_DIR.is_dir():
+        app.mount("/", StaticFiles(directory=UI_DIR, html=True), name="ui")
 
 
 def _register_routes(app: FastAPI) -> None:
