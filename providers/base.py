@@ -32,6 +32,10 @@ class ChatMessage(BaseModel):
     content: str = ""
     tool_calls: list[ToolCall] = Field(default_factory=list)
     tool_call_id: str | None = None
+    tool_name: str | None = Field(
+        default=None,
+        description="Tool name for role=tool messages (Ollama wire format).",
+    )
 
 
 class ToolSpec(BaseModel):

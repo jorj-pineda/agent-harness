@@ -8,8 +8,8 @@ from typing import Any
 import httpx
 import pytest
 
-from providers.base import ChatMessage, ChatProvider, Embedder, ProviderError, ToolSpec
-from providers.ollama import OllamaProvider
+from providers.base import ChatMessage, ChatProvider, Embedder, ProviderError, ToolCall, ToolSpec
+from providers.ollama import OllamaProvider, _message_to_ollama
 from tests._cassette import CassetteTransport
 
 # ---------------------------------------------------------------------------
@@ -194,6 +194,96 @@ async def test_chat_with_tool_calls_synthesizes_ids() -> None:
     assert call.arguments == {"sql": "SELECT 1"}
     assert call.id.startswith("call_")
     assert len(call.id) > len("call_")
+
+
+def test_message_to_ollama_tool_role_includes_tool_name() -> None:
+    wire = _message_to_ollama(
+        ChatMessage(
+            role="tool",
+            content='{"path": "calc.py"}',
+            tool_call_id="call_abc123",
+            tool_name="read_file",
+        )
+    )
+    assert wire == {
+        "role": "tool",
+        "content": '{"path": "calc.py"}',
+        "tool_name": "read_file",
+    }
+
+
+def test_message_to_ollama_assistant_tool_calls_use_function_type() -> None:
+    wire = _message_to_ollama(
+        ChatMessage(
+            role="assistant",
+            content="",
+            tool_calls=[
+                ToolCall(
+                    id="call_1",
+                    name="grep_repo",
+                    arguments={"pattern": "divide", "path": "."},
+                )
+            ],
+        )
+    )
+    assert wire["tool_calls"] == [
+        {
+            "type": "function",
+            "function": {"name": "grep_repo", "arguments": {"pattern": "divide", "path": "."}},
+        }
+    ]
+
+
+async def test_chat_multi_turn_history_sends_tool_name_on_tool_messages() -> None:
+    transport = _chat_response(
+        {
+            "model": "gemma4",
+            "message": {"role": "assistant", "content": "done"},
+            "done": True,
+            "done_reason": "stop",
+        }
+    )
+    provider = OllamaProvider(
+        host="http://fake",
+        model="gemma4",
+        embed_model="nomic-embed-text",
+        transport=transport,
+    )
+    messages = [
+        ChatMessage(role="user", content="fix divide"),
+        ChatMessage(
+            role="assistant",
+            content="",
+            tool_calls=[
+                ToolCall(
+                    id="call_1",
+                    name="read_file",
+                    arguments={"path": "calc.py"},
+                )
+            ],
+        ),
+        ChatMessage(
+            role="tool",
+            content='{"path": "calc.py", "content": "def divide..."}',
+            tool_call_id="call_1",
+            tool_name="read_file",
+        ),
+    ]
+
+    await provider.chat(messages)
+
+    body = transport.captured["body"]  # type: ignore[attr-defined]
+    assert body["messages"][-1] == {
+        "role": "tool",
+        "content": '{"path": "calc.py", "content": "def divide..."}',
+        "tool_name": "read_file",
+    }
+    assert body["messages"][1]["tool_calls"] == [
+        {
+            "type": "function",
+            "function": {"name": "read_file", "arguments": {"path": "calc.py"}},
+        }
+    ]
 
 
 async def test_chat_max_tokens_maps_to_num_predict() -> None:

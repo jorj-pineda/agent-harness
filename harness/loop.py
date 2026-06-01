@@ -124,6 +124,7 @@ async def run_turn(
                     role="tool",
                     content=_encode_tool_result(payload),
                     tool_call_id=tc.id,
+                    tool_name=tc.name,
                 )
             )
     else:
