@@ -53,10 +53,11 @@ Offline eval proves **harness shape**; live runs prove **model behavior**. Both 
 
 | Task | Notes |
 |------|-------|
-| **GitHub repo polish** | Pin README eval table; ensure demo.md is linked from repo description |
-| **FocusKPI application** | Resume + GitHub + README as write-up to `danz@focuskpi.com` |
-| **Demo video (optional)** | 3–5 min: session → bugfix curl → envelope fields on screen |
+| ~~**GitHub repo polish**~~ | README FocusKPI pass (Mission 7); eval table + [demo.md](demo.md) + [evals/LIVE.md](evals/LIVE.md) linked |
+| **FocusKPI application** | Resume + GitHub + **this README** as the 3–6 paragraph write-up → `danz@focuskpi.com` |
+| **Demo video (optional)** | 3–5 min: session → bugfix curl → envelope fields; Anthropic recommended for full edit→verify chain |
 | **Second project** | Duodoro or another repo — don’t let agent-harness block the application window |
+| **Tag release (optional)** | `v0.2-coding-agent` at post-pivot merge — proposed in §1 |
 
 ---
 
@@ -140,6 +141,7 @@ Week 3+  One Tier-A PR if motivated (Mission 2/3/4/5/6 from COMPOSER_SUPER_PROMP
 | 2026-05 | `CLAUDE.md` + `COMPOSER_SUPER_PROMPT.md` synced for post-pivot missions |
 | 2026-05 | Indexing: **ripgrep-first** (A); semantic search deferred |
 | 2026-05 | Default registry: **coding tools on**, support tools off (`ENABLE_SUPPORT_TOOLS=false`) |
-| 2026-05 | Senior polish shipped: **scope gate**, **edit budget**, **eval honesty** |
+| 2026-05 | Mission 7 README portfolio pass on `chore/readme-portfolio` |
+| 2026-05 | Ollama multi-turn fix: `tool_name` on tool messages; 4070 live notes in [evals/LIVE.md](evals/LIVE.md) |
 
 Update this table when Tier A/B items land.
