@@ -65,6 +65,50 @@ curl -X POST http://localhost:8000/sessions \
   -d "{\"user_id\":\"dev1\",\"workspace_root\":\"$(pwd)/tests/fixtures/tiny_repo\"}"
 ```
 
+## Agent panel + CLI (curl-free)
+
+The harness ships a **Typer CLI** and a **static demo panel** so you can drive a
+turn without curl. Both are thin HTTP clients — no agent logic lives in them.
+
+### Start the server
+
+```bash
+uv sync --extra dev
+agent-harness serve                 # = uvicorn api.server:app; --host/--port/--reload
+```
+
+### Browser panel
+
+Open **http://127.0.0.1:8000/**. The panel is served from `ui/` (static mount):
+
+1. (Optional) paste an absolute `workspace_root` and pick a provider in the top bar.
+2. Click **New session**.
+3. Type a coding task and press **Enter**.
+
+Tool calls stream in **live as cards** (name, arguments, result/error, latency)
+via Server-Sent Events (`GET /chat/stream`); the right-hand **envelope rail**
+shows the confidence badge, escalation pill, provider, latency, citations,
+`files_touched`, `patch_summary`, and `memory_writes`. If the browser can't open
+an `EventSource`, the panel falls back to a single `POST /chat`.
+
+> **Screenshot (30-second capture):** with the server running and a turn sent,
+> screenshot `http://127.0.0.1:8000/` and save it to `docs/panel.png` — the
+> README references that path. A populated capture needs a tool-calling provider
+> (cloud key or a model that completes read→edit→verify; gemma4 may stop early on
+> 8 GB VRAM — see the hardware note above).
+
+### Terminal REPL
+
+```bash
+agent-harness chat \
+  --workspace "$(pwd)/tests/fixtures/tiny_repo" \
+  --provider anthropic            # omit for the configured default
+```
+
+`chat` creates a session, then loops on stdin: each line is a turn, and the reply
+prints the answer plus a one-line envelope summary (confidence, escalation,
+provider, latency, `files_touched`). Type `/quit` or Ctrl-D to exit.
+
 ## Eval matrix (offline)
 
 ```bash
@@ -88,7 +132,7 @@ curl -X POST http://localhost:8000/chat \
 
 Support eval scenarios: `python -m evals.run --scenarios evals/scenarios_support.yaml`
 
-**Future:** local agent panel demo — [GUI-integ.md](GUI-integ.md) (Mission 9: `agent-harness ui`).
+See **Agent panel + CLI** above for the curl-free demo — plan in [GUI-integ.md](GUI-integ.md).
 
 ## Optional: cloud providers
 
@@ -104,3 +148,5 @@ Copy `.env.example` to `.env` and set `ANTHROPIC_API_KEY` and/or `OPENAI_API_KEY
 | Empty citations | Model skipped read/grep tools — check `tool_calls` in response |
 | Model reads files then answers without editing | After merging `fix/ollama-tool-loop`, multi-turn tools work; gemma4 may still stop with text instead of `write_file` — try `"provider":"anthropic"` for edit→verify demos |
 | `escalated: true` after edit | Edit budget (`MAX_FILES_TOUCHED_PER_TURN`, default 5) or low grounding confidence |
+| Panel loads but Send is disabled | Click **New session** first — the input enables once a session exists |
+| Panel tool cards never fill in | Stream interrupted; the panel falls back to `POST /chat`. Check the server log and that the provider supports tool calls |

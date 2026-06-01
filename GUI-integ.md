@@ -186,12 +186,13 @@ Frontend: Node 20+, `npm create vite@latest ui -- --template react-ts` (or equiv
 | 2026-06-01 | Slice 9a shipped — Typer CLI (`serve`/`chat`), pure HTTP client; `.env` test-isolation leak fixed |
 | 2026-06-01 | Slice 9b shipped — `ui/` static panel (vanilla JS/CSS, no build step) mounted at `/` after API routes |
 | 2026-06-01 | Slice 9c shipped — SSE `/chat/stream` via optional `run_turn(on_event=…)` hook; UI EventSource with POST fallback |
+| 2026-06-01 | Slice 9d shipped — demo.md walkthrough, README panel blurb + ASCII preview, `docs/` screenshot recipe. **Mission 9 complete** (real `docs/panel.png` capture pending) |
 
 ---
 
 ## Handoff (Claude Code / new chat)
 
 Branch: `feat/gui-integration` (2026-06-01).  
-Slices **9a–9c done** (CLI, static panel, SSE live tool cards). **Next: Slice 9d** — provider/workspace pickers polish, demo video script, README paragraph + screenshot, PowerShell note.
+**Mission 9 complete** — slices 9a–9d done (CLI, static panel, SSE live tool cards, docs). Only follow-up: drop a real `docs/panel.png` capture (recipe in [docs/README.md](docs/README.md)). Optional future polish: provider/workspace dropdowns wired to richer state, demo video script.
 
 Paste Mission 9 block from [COMPOSER_SUPER_PROMPT.md](COMPOSER_SUPER_PROMPT.md) when ready.

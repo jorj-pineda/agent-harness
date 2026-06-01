@@ -6,7 +6,7 @@ This is a portfolio project — architectural decisions should be defensible in 
 
 ## Current status
 
-**Coding-agent pivot complete (phases 1–10).** Merged to `main` via PR #13 (2026-05). Post-pivot missions 1–7 done; Ollama `tool_name` fix merged. **Mission 9 agent panel in progress (as of 2026-06-01):** slices **9a (Typer CLI)**, **9b (static panel)**, and **9c (SSE live tool cards)** done on `feat/gui-integration`; **9d (polish + docs)** next — [GUI-integ.md](GUI-integ.md). Support baseline recoverable via `evals/scenarios_support.yaml` and `ENABLE_SUPPORT_TOOLS=true`.
+**Coding-agent pivot complete (phases 1–10).** Merged to `main` via PR #13 (2026-05). Post-pivot missions 1–7 done; Ollama `tool_name` fix merged. **Mission 9 agent panel complete (2026-06-01):** slices **9a (Typer CLI)**, **9b (static panel)**, **9c (SSE live tool cards)**, **9d (polish + docs)** all shipped on `feat/gui-integration`; only the real `docs/panel.png` capture is pending — [GUI-integ.md](GUI-integ.md). Support baseline recoverable via `evals/scenarios_support.yaml` and `ENABLE_SUPPORT_TOOLS=true`.
 
 Test suite: **381 passed** in CI (`pytest -m "not live"`; 5 live tests deselected). `ruff` clean; `mypy --strict` clean on core layers (`harness`, `grounding`, `memory`, `tools`, `providers`, `workspace`).
 
@@ -153,7 +153,7 @@ Scope expansions we considered but postponed. Revisit only when a concrete use c
 - **Per-sentence citation attribution.** Grounding emits citations at the turn level (file:line ranges). Mapping individual claims to specific spans needs a post-generation pass — defer until faithfulness scoring rewards it.
 - **Rewriting the answer on escalation.** Today `escalated=True` is a flag; the raw answer is preserved so the API layer owns presentation.
 - **Session persistence.** Sessions live in an in-memory `dict[session_id, Session]` inside the FastAPI process. Swap for Redis or a `sessions` SQLite table when the demo grows beyond a single uvicorn process.
-- **Demo agent panel UI.** Mission 9 in progress (2026-06-01): CLI + static panel + SSE shipped (slices 9a–9c); polish/docs (9d) remaining. See [GUI-integ.md](GUI-integ.md). Full IDE still out of scope.
+- **Demo agent panel UI.** Mission 9 complete (2026-06-01): CLI + static panel + SSE + docs shipped (slices 9a–9d); only a real `docs/panel.png` capture pending. See [GUI-integ.md](GUI-integ.md). Full IDE still out of scope.
 
 ## Out of scope (explicitly)
 
