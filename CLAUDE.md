@@ -6,13 +6,13 @@ This is a portfolio project — architectural decisions should be defensible in 
 
 ## Current status
 
-**Coding-agent pivot complete (phases 1–10).** Merged to `main` via PR #13 (2026-05). Support baseline remains recoverable via `evals/scenarios_support.yaml` and `ENABLE_SUPPORT_TOOLS=true`.
+**Coding-agent pivot complete (phases 1–10).** Merged to `main` via PR #13 (2026-05). Post-pivot missions 1–7 done; Ollama `tool_name` fix merged. **Next:** Mission 9 agent panel — [GUI-integ.md](GUI-integ.md). Support baseline recoverable via `evals/scenarios_support.yaml` and `ENABLE_SUPPORT_TOOLS=true`.
 
-Test suite: **337 collected** (342 total − 5 live-provider deselected in default CI). `ruff` clean; `mypy --strict` clean on core layers (`harness`, `grounding`, `memory`, `tools`, `providers`, `workspace`).
+Test suite: **~356 passed** in CI (`pytest -m "not live"`; 5 live tests deselected). `ruff` clean; `mypy --strict` clean on core layers (`harness`, `grounding`, `memory`, `tools`, `providers`, `workspace`).
 
-README is the FocusKPI write-up and holds the **offline eval headline table** (28 coding scenarios). `evals/report.md` is gitignored — regenerate with `python -m evals.run` and update README if metrics change.
+README is the FocusKPI write-up and holds the **offline eval headline table** (**30** coding scenarios). `evals/report.md` is gitignored — regenerate with `python -m evals.run` and update README if metrics change.
 
-**Post-pivot backlog:** [NEXT_STEPS.md](NEXT_STEPS.md). New Composer chats: [COMPOSER_SUPER_PROMPT.md](COMPOSER_SUPER_PROMPT.md).
+**Post-pivot backlog:** [NEXT_STEPS.md](NEXT_STEPS.md). Agent mission prompts: [COMPOSER_SUPER_PROMPT.md](COMPOSER_SUPER_PROMPT.md).
 
 ## Architecture
 
@@ -149,15 +149,14 @@ Scope expansions we considered but postponed. Revisit only when a concrete use c
 - **Per-sentence citation attribution.** Grounding emits citations at the turn level (file:line ranges). Mapping individual claims to specific spans needs a post-generation pass — defer until faithfulness scoring rewards it.
 - **Rewriting the answer on escalation.** Today `escalated=True` is a flag; the raw answer is preserved so the API layer owns presentation.
 - **Session persistence.** Sessions live in an in-memory `dict[session_id, Session]` inside the FastAPI process. Swap for Redis or a `sessions` SQLite table when the demo grows beyond a single uvicorn process.
-- **`emit_plan` tool / diff-first API UX.** Inspectable tool trace is sufficient for portfolio v1; see [NEXT_STEPS.md](NEXT_STEPS.md) Tier A.
-- **GitHub Actions CI.** Not yet wired; see [NEXT_STEPS.md](NEXT_STEPS.md) Tier C.
+- **Demo agent panel UI.** Planned Mission 9 — thin web panel + CLI; see [GUI-integ.md](GUI-integ.md). Full IDE still out of scope.
 
 ## Out of scope (explicitly)
 
 Things that sound like they belong but don't — noting them here so we don't accidentally build them:
 
 - User authentication / multi-tenant session isolation (overlaps with Duodoro; not a differentiator here).
-- A chat UI (decided: FastAPI-only; demo via curl or an HTTP client).
+- **Full IDE / chat product** (Monaco, LSP, file tree) — local **demo agent panel** is Mission 9 ([GUI-integ.md](GUI-integ.md)); demo today via curl, PowerShell, or future `agent-harness ui`.
 - IDE / LSP plugin.
 - SWE-bench leaderboard runs.
 - Fine-tuning Gemma 4 (impressive-sounding but a different project).
@@ -169,6 +168,7 @@ Things that sound like they belong but don't — noting them here so we don't ac
 
 - FocusKPI role this project supports: Junior AI/ML Engineer — applications go to `danz@focuskpi.com` with resume, GitHub, and a 3–6 paragraph write-up of one project. The README of this repo _is_ that write-up draft.
 - Post-pivot roadmap: [NEXT_STEPS.md](NEXT_STEPS.md)
+- Agent panel plan (Mission 9): [GUI-integ.md](GUI-integ.md)
 - Pivot history: [CODING_AGENT_PIVOT.md](CODING_AGENT_PIVOT.md)
 - Composer mission prompts: [COMPOSER_SUPER_PROMPT.md](COMPOSER_SUPER_PROMPT.md)
 - Gemma 4 model card: https://ai.google.dev/gemma/docs/core/model_card_4

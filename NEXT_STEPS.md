@@ -1,10 +1,10 @@
 # Next steps after coding-agent pivot (phases 1–10)
 
-**Status:** Phases 1–10 **merged to `main`** (PR #13, merge `acb8cbe`). Missions 1–4 **done** (ship, live eval, CI, `emit_plan`). Tags pending Jorge approval. **Next:** Mission 5 (patch summary) or cloud provider demo (§3). Support baseline recoverable via `evals/scenarios_support.yaml`.
+**Status:** Phases 1–10 **merged to `main`** (PR #13). Missions **1–7 done** (ship, live eval, CI, `emit_plan`, patch summary, scope gate, README polish). Ollama `tool_name` multi-turn fix merged. **Next:** FocusKPI submit and/or **Mission 9** agent panel ([GUI-integ.md](GUI-integ.md)). Mission 8 semantic search remains conditional.
 
 This doc is the post-pivot backlog — what to do **after** merge, in priority order.
 
-**New Composer chats:** paste a mission from [COMPOSER_SUPER_PROMPT.md](COMPOSER_SUPER_PROMPT.md) (Mission 0 = context reload).
+**New agent chats:** paste a mission from [COMPOSER_SUPER_PROMPT.md](COMPOSER_SUPER_PROMPT.md) (Mission 0 = context reload).
 
 ---
 
@@ -32,8 +32,8 @@ python -m evals.run --providers ollama,anthropic,openai
 | Task | Owner | Notes |
 |------|-------|-------|
 | ~~**Sync `CLAUDE.md`**~~ | Done | Coding-agent status, 337 tests, new defaults |
-| ~~**Sync `COMPOSER_SUPER_PROMPT.md`**~~ | Done | Post-pivot missions 0–8; pivot phases archived |
-| **FocusKPI README pass** | You or Mission 7 | README is the 3–6 paragraph write-up — see [COMPOSER_SUPER_PROMPT.md](COMPOSER_SUPER_PROMPT.md) Mission 7 |
+| ~~**Sync `COMPOSER_SUPER_PROMPT.md`**~~ | Done | Post-pivot missions 0–9; pivot phases archived |
+| ~~**FocusKPI README pass**~~ | Done | Mission 7 on `chore/readme-portfolio` |
 
 ---
 
@@ -53,10 +53,11 @@ Offline eval proves **harness shape**; live runs prove **model behavior**. Both 
 
 | Task | Notes |
 |------|-------|
-| **GitHub repo polish** | Pin README eval table; ensure demo.md is linked from repo description |
-| **FocusKPI application** | Resume + GitHub + README as write-up to `danz@focuskpi.com` |
-| **Demo video (optional)** | 3–5 min: session → bugfix curl → envelope fields on screen |
+| ~~**GitHub repo polish**~~ | README FocusKPI pass (Mission 7); eval table + [demo.md](demo.md) + [evals/LIVE.md](evals/LIVE.md) linked |
+| **FocusKPI application** | Resume + GitHub + **this README** as the 3–6 paragraph write-up → `danz@focuskpi.com` |
+| **Demo video (optional)** | 3–5 min: session → bugfix curl → envelope fields; Anthropic recommended for full edit→verify chain |
 | **Second project** | Duodoro or another repo — don’t let agent-harness block the application window |
+| **Tag release (optional)** | `v0.2-coding-agent` at post-pivot merge — proposed in §1 |
 
 ---
 
@@ -68,10 +69,12 @@ Pick **one at a time** after merge. Each should be a small PR with tests.
 
 | Item | What | Trigger |
 |------|------|---------|
-| ~~**Live eval headline row**~~ | Run matrix live on Ollama; add “live snapshot” row to README (separate from offline table) | Partial — 3-scenario smoke in README + [evals/LIVE.md](evals/LIVE.md); full 28-scenario live run pending gemma4 RAM or Anthropic |
+| ~~**Live eval headline row**~~ | Run matrix live on Ollama; add “live snapshot” row to README (separate from offline table) | Partial — 3-scenario smoke + 4070 native gemma4 notes in [evals/LIVE.md](evals/LIVE.md) |
 | ~~**`emit_plan` tool**~~ | Structured plan in tool trace before edits | Shipped; optional `REQUIRE_PLAN_BEFORE_EDIT` gate (default off) |
-| **Diff summary in envelope** | Optional `patch_summary` field from `write_file` results | UX polish for API consumers |
-| **Stronger scope gate** | Classify bugfix vs explore vs refactor; refuse “rewrite entire repo” with tests | If manual testing shows false negatives |
+| ~~**Diff summary in envelope**~~ | `patch_summary` field from `write_file` results | Shipped (PR #15) |
+| ~~**Stronger scope gate**~~ | Classify bugfix vs explore vs refactor; refuse unbounded rewrites | Shipped (PR #15) |
+| **Agent panel demo UI** | Typer CLI + local web panel (Cursor-style tool trace) | [GUI-integ.md](GUI-integ.md) Mission 9 — post-application “wow” demo |
+| **SSE streaming `/chat`** | Live tool cards in UI | Slice 9c in [GUI-integ.md](GUI-integ.md); pairs with agent panel |
 
 ### Tier B — deferred from README (only if evals demand it)
 
@@ -108,9 +111,9 @@ Pick **one at a time** after merge. Each should be a small PR with tests.
 
 ```
 Week 1   Tag v0.2-coding-agent, reviewer checklist, live smoke + Docker demo
-Week 2   Application materials (Mission 7 README pass, submit FocusKPI)
-Week 3+  One Tier-A PR if motivated (Mission 2/3/4/5/6 from COMPOSER_SUPER_PROMPT)
-         Tier B (Mission 8 semantic search) only when live eval proves grep insufficient
+Week 2   FocusKPI submit (README = write-up); optional demo video
+Week 3+  Mission 9 agent panel ([GUI-integ.md](GUI-integ.md)) for demo UX
+         Mission 8 semantic search only when live eval proves grep insufficient
 ```
 
 ---
@@ -123,6 +126,7 @@ Week 3+  One Tier-A PR if motivated (Mission 2/3/4/5/6 from COMPOSER_SUPER_PROMP
 | Support regression eval | `python -m evals.run --scenarios evals/scenarios_support.yaml` (with support tools seeded) |
 | Live provider comparison | `python -m evals.run --live --providers ollama` |
 | Coding demo | [demo.md](demo.md) |
+| Agent panel plan (Mission 9) | [GUI-integ.md](GUI-integ.md) |
 | Pivot history | [CODING_AGENT_PIVOT.md](CODING_AGENT_PIVOT.md) |
 | Composer missions (new chats) | [COMPOSER_SUPER_PROMPT.md](COMPOSER_SUPER_PROMPT.md) |
 
@@ -140,6 +144,9 @@ Week 3+  One Tier-A PR if motivated (Mission 2/3/4/5/6 from COMPOSER_SUPER_PROMP
 | 2026-05 | `CLAUDE.md` + `COMPOSER_SUPER_PROMPT.md` synced for post-pivot missions |
 | 2026-05 | Indexing: **ripgrep-first** (A); semantic search deferred |
 | 2026-05 | Default registry: **coding tools on**, support tools off (`ENABLE_SUPPORT_TOOLS=false`) |
-| 2026-05 | Senior polish shipped: **scope gate**, **edit budget**, **eval honesty** |
+| 2026-05 | Missions 5–6: `patch_summary`, scope gate (PR #15) |
+| 2026-05 | Mission 7 README portfolio pass |
+| 2026-05 | Ollama multi-turn fix: `tool_name` on tool messages; 4070 live notes in [evals/LIVE.md](evals/LIVE.md) |
+| 2026-05 | Mission 9 agent panel planned — [GUI-integ.md](GUI-integ.md) (demo UI OK; full IDE still out of scope) |
 
 Update this table when Tier A/B items land.

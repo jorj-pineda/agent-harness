@@ -88,6 +88,8 @@ curl -X POST http://localhost:8000/chat \
 
 Support eval scenarios: `python -m evals.run --scenarios evals/scenarios_support.yaml`
 
+**Future:** local agent panel demo — [GUI-integ.md](GUI-integ.md) (Mission 9: `agent-harness ui`).
+
 ## Optional: cloud providers
 
 Copy `.env.example` to `.env` and set `ANTHROPIC_API_KEY` and/or `OPENAI_API_KEY`. Pass `"provider":"anthropic"` on `/chat`.

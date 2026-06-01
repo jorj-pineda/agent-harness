@@ -2,11 +2,13 @@
 
 [![CI](https://github.com/jorj-pineda/agent-harness/actions/workflows/ci.yml/badge.svg)](https://github.com/jorj-pineda/agent-harness/actions/workflows/ci.yml)
 
-A local-first, pluggable-provider agent harness for **senior-level coding tasks**, built from scratch — no LangChain, no LlamaIndex, no LangGraph. The point is the loop: a hand-written ReAct controller, a deterministic grounding layer that scores answer confidence and triggers escalation, and a per-user memory layer that persists engineering context across sessions. One process, two containers (Ollama + the FastAPI app), one `docker compose up` to demo.
+Most agent tutorials stop at `LangChain.AgentExecutor`. **agent-harness** is the opposite: a hand-written ReAct loop, grounding layer, and memory store you can read in an afternoon — built to show how a **senior coding agent** is wired, not how to import a framework. No LangChain, LlamaIndex, or LangGraph. One FastAPI process, pluggable providers (Ollama / Anthropic / OpenAI), workspace-scoped code tools, and an eval harness that scores every turn from the same metadata envelope.
 
-The differentiating features are **grounded edits with confidence** and **cross-session repo memory**. Both are inspectable: every response ships the same envelope (`{answer, confidence, citations, escalated, tool_calls, memory_writes, files_touched, verification_ran, patch_summary, provider, latency_ms}`) so the eval harness can score it directly without re-prompting the model. The provider abstraction is sacred — Ollama (Gemma 4 E4B by default), Anthropic, and OpenAI all sit behind one `Provider` interface, and nothing above [providers/](providers/) imports a specific backend.
+Three ideas carry the portfolio story. **Grounded confidence:** every evidence-backed turn gets a deterministic score and file:line citations; below threshold → `escalated=true` without a second LLM judge. **Cross-session repo memory:** SQLite facts per `user_id` injected into the system prompt so conventions survive across sessions. **Eval honesty:** offline scores replay scripted tool traces (30 scenarios); live Ollama runs are documented separately — the README table measures harness shape, not which model wins.
 
-> **Coding-agent pivot complete (phases 1–10).** Default demo is workspace-scoped code tools on `fixtures/tiny_repo`. Legacy support tools are off unless `ENABLE_SUPPORT_TOOLS=true`.
+**Run it in five minutes:** `docker compose up --build -d`, `ollama pull gemma4`, then `POST /sessions` + `POST /chat` against the vendored `tiny_repo` fixture. Step-by-step curls, envelope field guide, and Windows PowerShell notes: [demo.md](demo.md). Live provider behavior (Mac Docker OOM, 4070 gemma4 multi-turn validation): [evals/LIVE.md](evals/LIVE.md).
+
+> **Coding-agent pivot complete (phases 1–10, PR #13).** Default demo: workspace code tools on `fixtures/tiny_repo`. Legacy support tools off unless `ENABLE_SUPPORT_TOOLS=true`.
 
 ## Architecture
 
@@ -26,23 +28,21 @@ Each layer depends only on the ones below it. Model-specific quirks (Gemma 4's t
 
 ## What's novel
 
-**Grounded confidence.** Every turn that retrieves evidence gets a confidence score from a deterministic heuristic — `top_score × coverage_factor × health_factor` — over the cited material. No second LLM call. During the pivot, citations transition from RAG doc chunks to **file paths and line ranges** read via code tools; the same `Grounder` interface carries through. If confidence falls below the configured threshold (default 0.55), the response is flagged `escalated=True`. Pure chitchat that never retrieved gets `confidence=null` rather than a fake number. See [harness/grounding.py](harness/grounding.py).
+Every response ships one envelope — `{answer, confidence, citations, escalated, tool_calls, memory_writes, files_touched, verification_ran, patch_summary, provider, latency_ms}` — so consumers and eval scorers never re-parse prose.
 
-**Cross-session repo memory.** [memory/store.py](memory/store.py) is a SQLite-backed `FactStore` keyed by `user_id`. The memory tools are factory-bound to the request's `user_id` at registry-construction time in [api/server.py](api/server.py), so cross-user leakage is structurally impossible. Facts — conventions, stack choices, prior review notes — are injected into the system prompt at the start of each turn via `FactStore.format_for_system_prompt(user_id)`, so personalization survives across sessions without the model needing to call a tool first.
+**Grounded confidence.** [harness/grounding.py](harness/grounding.py) scores evidence turns with `top_score × coverage × health` over cited file spans. Pure chitchat → `confidence=null`. Threshold breach → `escalated=true`.
 
-**Workspace-scoped sessions.** `POST /sessions` accepts an optional `workspace_root`. Docker sets `DEFAULT_WORKSPACE_ROOT=/app/fixtures/tiny_repo`. Code tools jail all paths under that root.
+**Cross-session repo memory.** [memory/store.py](memory/store.py) persists facts per `user_id`; [api/server.py](api/server.py) injects them at turn start. Memory tools are factory-bound to the session user — no cross-user leakage.
 
-**Ripgrep-first indexing.** Codebase search uses `grep_repo` (ripgrep with Python fallback). No embed model required for the default demo. A deferred `semantic_search` stub documents the upgrade path if evals show explore failures — see [tools/semantic.py](tools/semantic.py).
+**Workspace sandbox + policy.** Path-jailed code tools under `workspace_root`; [harness/policy.py](harness/policy.py) classifies task kind and refuses unsafe scope; `MAX_FILES_TOUCHED_PER_TURN` caps drive-by refactors.
 
-**Scope gate + edit budget.** [harness/policy.py](harness/policy.py) classifies each message (`bugfix | explore | refactor | out_of_scope`) with lightweight rules and refuses unsafe or unbounded requests (`delete all tests`, `rewrite entire repo`, …) via an early `provider="policy"` return before the ReAct loop runs. `MAX_FILES_TOUCHED_PER_TURN` (default 5) sets `escalated=True` when a turn writes too many files — a senior-agent guardrail against drive-by refactors.
+**Ripgrep-first search.** Default demo needs no embed model; deferred semantic path in [tools/semantic.py](tools/semantic.py).
 
-**Patch summary.** Successful `write_file` calls populate `patch_summary` with one-line entries (`path (N bytes written)`) so API consumers see what changed without parsing the full tool trace.
-
-**Inspectable planning.** `emit_plan` records an ordered step list in the tool trace before any `write_file` call — no filesystem side effects. Optional `REQUIRE_PLAN_BEFORE_EDIT=true` escalates when the agent edits without planning first.
+**Planning + patch trace.** `emit_plan` records steps before edits; `patch_summary` lists successful writes. Optional gates: `REQUIRE_PLAN_BEFORE_EDIT`, `REQUIRE_VERIFICATION_BEFORE_FINISH`.
 
 ### Eval honesty
 
-Offline eval scores are **scripted** — every provider replays the same YAML tool traces, so headline columns match by construction. They measure harness shape and scorer wiring, not model quality. Use `python -m evals.run --live --providers ollama` for real provider comparison (non-deterministic).
+Offline eval scores are **scripted** — every provider replays the same YAML tool traces, so headline columns match by construction. They measure harness shape, not model quality. Live runs: `python -m evals.run --live --providers ollama` and [evals/LIVE.md](evals/LIVE.md).
 
 ## Eval results
 
@@ -68,9 +68,9 @@ Support baseline scenarios remain in [evals/scenarios_support.yaml](evals/scenar
 
 The 0.592 mean correctness is held down by refusal-style `unsafe_request` answers and terse explore-only replies where token-F1 against a longer gold string under-scores paraphrase. **Escalation accuracy is 100%**: every low-confidence scenario tripped the threshold and every high-confidence one did not. Patch and verification scores are 100% on offline scripts because bugfix/feature/refactor scenarios always script a successful `write_file` + `pytest` chain. (Offline eval uses threshold **0.50**; the API default is **0.55**.)
 
-### Live snapshot (3-scenario smoke, 2026-05-31)
+### Live snapshot (2026-05-31)
 
-Not comparable to the offline table — real Ollama (`llama3.2:1b` fallback; `gemma4` OOM on this host). Full notes: [evals/LIVE.md](evals/LIVE.md).
+Not comparable to the offline table — real Ollama, non-deterministic. Mac Docker: `gemma4` OOM → `llama3.2:1b` fallback (3-scenario smoke). 4070 laptop: native `gemma4:e4b` completes multi-turn tool chains after the Ollama `tool_name` wire fix; full read→write→pytest still depends on model choice. Details: [evals/LIVE.md](evals/LIVE.md).
 
 | Provider | Scenarios | Code Faith. | Patch | Verification | Correctness | Escalation Acc. |
 |----------|-----------|-------------|-------|--------------|-------------|-----------------|
@@ -80,7 +80,7 @@ Escalation wiring held; patch/faithfulness dropped because the fallback model sk
 
 ## Run it
 
-Two services: Ollama + FastAPI. **Coding demo:** [demo.md](demo.md) — no seed/embed step required.
+Full walkthrough: [demo.md](demo.md) (envelope fields, hardware notes, PowerShell curls).
 
 ```bash
 docker compose up --build -d
@@ -97,11 +97,11 @@ curl -X POST http://localhost:8000/chat \
 
 `DEFAULT_WORKSPACE_ROOT` in [docker-compose.yml](docker-compose.yml) points at the vendored fixture repo. Set `ENABLE_SUPPORT_TOOLS=true` and run `data.seed` / `data.embed` for the legacy support demo.
 
-For development without Docker:
+Local dev (no Docker):
 
 ```bash
 uv sync --extra dev
-cp .env.example .env
+cp .env.example .env   # set DEFAULT_WORKSPACE_ROOT to tests/fixtures/tiny_repo
 ollama pull gemma4
 uvicorn api.server:app --reload
 pytest -m "not live"
@@ -121,7 +121,7 @@ python -m evals.run --providers ollama,anthropic,openai
 docker compose up --build -d            # optional smoke; see demo.md
 ```
 
-1. **Tests** — `pytest -m "not live"` should pass (~335 tests).
+1. **Tests** — `pytest -m "not live"` should pass (~356 tests; 5 live tests deselected in CI).
 2. **Lint/types** — `ruff check .` and `mypy` on core layers.
 3. **Offline evals** — matrix completes; README table matches report summary.
 4. **Coding demo** — `demo.md` curl flow returns envelope with `tool_calls`, citations, confidence.
@@ -129,9 +129,10 @@ docker compose up --build -d            # optional smoke; see demo.md
 
 ## What's deferred (and why)
 
-- **Semantic codebase search.** Ripgrep-first is enough for v1; `semantic_search` stub in [tools/semantic.py](tools/semantic.py).
+- **Semantic codebase search.** Ripgrep-first is enough for v1; Mission 8 / [tools/semantic.py](tools/semantic.py) when explore evals fail grep-only.
+- **Agent panel demo UI.** Mission 9 — Typer CLI + local web panel over `/chat`; plan in [GUI-integ.md](GUI-integ.md). Not a full IDE.
+- **Streaming `/chat` (SSE).** Slice 9c; live tool-trace in the agent panel.
+- **Session persistence.** In-memory sessions; swap for Redis/SQLite when multi-worker or restart-safe demos matter.
 - **LLM-judge confidence.** Deterministic heuristic is inspectable; validate before swapping.
 - **Per-sentence citation attribution.** Turn-level file:line citations today.
-- **Session persistence.** In-memory sessions; swap for Redis/SQLite when multi-worker.
 - **Router fallback across providers.** Plain dispatch table until error patterns justify failover.
-- **emit_plan tool / diff-first API UX.** Inspectable tool trace is sufficient for portfolio v1.
