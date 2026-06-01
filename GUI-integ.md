@@ -170,7 +170,7 @@ Frontend: Node 20+, `npm create vite@latest ui -- --template react-ts` (or equiv
 
 | Gate | Command |
 |------|---------|
-| Backend unchanged | `pytest -m "not live"` (~356 tests) |
+| Backend unchanged | `pytest -m "not live"` (381 tests as of 2026-06-01) |
 | Lint | `ruff check .` ; `mypy` on core layers |
 | Manual | `agent-harness ui` → send bugfix prompt → tool cards + envelope visible |
 
@@ -183,12 +183,15 @@ Frontend: Node 20+, `npm create vite@latest ui -- --template react-ts` (or equiv
 | 2026-05 | Agent panel only (not IDE); Mission 9; plan in this file |
 | 2026-05 | Phase 1 = one-shot `/chat`; SSE in 9c |
 | 2026-05 | Revisit v1 “no chat UI” — demo shell OK; full IDE still out of scope |
+| 2026-06-01 | Slice 9a shipped — Typer CLI (`serve`/`chat`), pure HTTP client; `.env` test-isolation leak fixed |
+| 2026-06-01 | Slice 9b shipped — `ui/` static panel (vanilla JS/CSS, no build step) mounted at `/` after API routes |
+| 2026-06-01 | Slice 9c shipped — SSE `/chat/stream` via optional `run_turn(on_event=…)` hook; UI EventSource with POST fallback |
 
 ---
 
 ## Handoff (Claude Code / new chat)
 
-Branch suggestion: `feat/agent-panel-ui`  
-Start with **Slice 9a** or **9b** depending on whether CLI or visual demo is higher priority for the application video.
+Branch: `feat/gui-integration` (2026-06-01).  
+Slices **9a–9c done** (CLI, static panel, SSE live tool cards). **Next: Slice 9d** — provider/workspace pickers polish, demo video script, README paragraph + screenshot, PowerShell note.
 
 Paste Mission 9 block from [COMPOSER_SUPER_PROMPT.md](COMPOSER_SUPER_PROMPT.md) when ready.

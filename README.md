@@ -121,7 +121,7 @@ python -m evals.run --providers ollama,anthropic,openai
 docker compose up --build -d            # optional smoke; see demo.md
 ```
 
-1. **Tests** — `pytest -m "not live"` should pass (~356 tests; 5 live tests deselected in CI).
+1. **Tests** — `pytest -m "not live"` should pass (381 tests; 5 live tests deselected in CI).
 2. **Lint/types** — `ruff check .` and `mypy` on core layers.
 3. **Offline evals** — matrix completes; README table matches report summary.
 4. **Coding demo** — `demo.md` curl flow returns envelope with `tool_calls`, citations, confidence.
