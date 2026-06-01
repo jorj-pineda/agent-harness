@@ -16,7 +16,7 @@ Use this file to start a **new Composer chat per mission**. Copy **one** mission
 | Support harness (steps 1–12) | Merged |
 | Demo hardening (`feat/demo-readiness`) | Done |
 | Coding-agent pivot (phases 1–10) | **Merged to `main` (PR #13)** |
-| Current direction | Post-pivot backlog in [NEXT_STEPS.md](NEXT_STEPS.md) |
+| Current direction | Missions 1–7 done; Mission 9 agent panel next — [GUI-integ.md](GUI-integ.md) |
 | Workflow | Agent completes **one mission**, pauses for your green light before the next |
 
 **Which prompt to use**
@@ -32,6 +32,7 @@ Use this file to start a **new Composer chat per mission**. Copy **one** mission
 | **6 — Stronger scope gate** | Classify task type; refuse unbounded rewrites |
 | **7 — README / portfolio polish** | FocusKPI write-up pass (minimal code) |
 | **8 — Semantic search** | Only if grep-only explore evals fail |
+| **9 — Agent panel + CLI** | Typer CLI + local demo UI — [GUI-integ.md](GUI-integ.md) |
 
 Pivot phase prompts (0–10) are archived in [CODING_AGENT_PIVOT.md](CODING_AGENT_PIVOT.md).
 
@@ -70,7 +71,7 @@ api/            FastAPI — thin HTTP wrapper, per-request tool registry
 - `ENABLE_SUPPORT_TOOLS=false` — coding demo default; support path needs seed/embed
 - `DEFAULT_WORKSPACE_ROOT` — Docker: `/app/fixtures/tiny_repo`
 - `MAX_FILES_TOUCHED_PER_TURN=5`
-- Offline eval: 28 coding scenarios; README headline table; threshold 0.50 (API: 0.55)
+- Offline eval: **30** coding scenarios; README headline table; threshold 0.50 (API: 0.55)
 
 **Critical rules (non-negotiable):**
 1. NO agent frameworks.
@@ -88,7 +89,7 @@ api/            FastAPI — thin HTTP wrapper, per-request tool registry
 
 ```bash
 uv sync --extra dev
-pytest -m "not live"                    # ~337 tests
+pytest -m "not live"                    # ~356 tests
 ruff check .
 mypy
 python -m evals.run --providers ollama,anthropic,openai
@@ -445,6 +446,48 @@ Mission 2 live eval or manual testing shows explore failures ripgrep cannot fix.
 Follow shared context. Do not add LangChain. STOP for green light.
 
 **Start Mission 8 only if Jorge confirmed the trigger.** Otherwise propose grep-first mitigations and STOP.
+
+## Paste to here
+
+---
+
+# Mission 9 — Agent panel + CLI (demo UI)
+
+## Paste from here
+
+You are working on `agent-harness` at `/Users/jorge/Projects/agent-harness`.
+
+**Mission 9 only:** Local **agent panel** (Cursor-style tool trace, not an IDE) + optional Typer CLI. Full plan: [GUI-integ.md](GUI-integ.md). **One slice at a time** (9a → 9b → 9c → 9d); pause for green light between slices.
+
+### Context
+
+- Harness + FastAPI API are done; UI is a **thin HTTP client**.
+- Do not duplicate the ReAct loop in the frontend.
+- Do not add LangChain, Gradio, or Electron.
+
+### Your tasks (pick the slice Jorge named)
+
+| Slice | Scope |
+|-------|--------|
+| **9a** | `cli/` Typer: `serve`, optional `chat` REPL; `pyproject.toml` entry point |
+| **9b** | `ui/` static panel: session + chat, tool cards, envelope rail; mount on FastAPI |
+| **9c** | SSE `/chat/stream` + live tool cards in UI |
+| **9d** | Polish, demo.md, README blurb, screenshots |
+
+### Allowed file scope
+
+Per slice in [GUI-integ.md](GUI-integ.md): `cli/`, `ui/`, `api/server.py` (static mount / SSE only), `pyproject.toml` (additive), `tests/`, `demo.md`, `README.md`.
+
+### Exit criteria
+
+- Slice exit criteria in [GUI-integ.md](GUI-integ.md).
+- `pytest -m "not live"` green; no provider imports above `providers/`.
+
+### Rules
+
+Follow shared context. STOP for green light after each slice.
+
+**Start Mission 9 slice ___ now.** (Jorge fills slice id: 9a / 9b / 9c / 9d)
 
 ## Paste to here
 

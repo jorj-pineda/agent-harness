@@ -130,7 +130,8 @@ docker compose up --build -d            # optional smoke; see demo.md
 ## What's deferred (and why)
 
 - **Semantic codebase search.** Ripgrep-first is enough for v1; Mission 8 / [tools/semantic.py](tools/semantic.py) when explore evals fail grep-only.
-- **Streaming `/chat` (SSE).** Responses return after the full ReAct turn; live tool-trace streaming is the natural big UX upgrade.
+- **Agent panel demo UI.** Mission 9 — Typer CLI + local web panel over `/chat`; plan in [GUI-integ.md](GUI-integ.md). Not a full IDE.
+- **Streaming `/chat` (SSE).** Slice 9c; live tool-trace in the agent panel.
 - **Session persistence.** In-memory sessions; swap for Redis/SQLite when multi-worker or restart-safe demos matter.
 - **LLM-judge confidence.** Deterministic heuristic is inspectable; validate before swapping.
 - **Per-sentence citation attribution.** Turn-level file:line citations today.
