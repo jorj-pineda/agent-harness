@@ -132,6 +132,51 @@ function addTurn(data) {
   scrollToBottom();
 }
 
+// A tool card opened live on `tool_start`, before its result is known.
+function runningToolCard(ev) {
+  const card = el("details", "tool-card running");
+  card.open = true;
+  card._tool = ev.tool;
+  card._done = false;
+
+  const summary = el("summary");
+  summary.appendChild(el("span", "tool-name", ev.tool));
+  summary.appendChild(el("span", "tool-latency", "…"));
+  card.appendChild(summary);
+
+  const body = el("div", "tool-body");
+  if (ev.arguments && Object.keys(ev.arguments).length > 0) {
+    body.appendChild(el("div", "label", "arguments"));
+    body.appendChild(el("pre", null, pretty(ev.arguments)));
+  }
+  const placeholder = el("div", "label", "running…");
+  placeholder.dataset.pending = "1";
+  body.appendChild(placeholder);
+  card.appendChild(body);
+  return card;
+}
+
+// Fill a running card in place when its matching `tool_end` arrives.
+function completeToolCard(card, ev) {
+  card.classList.remove("running");
+  card._done = true;
+  const latency = card.querySelector(".tool-latency");
+  if (latency) latency.textContent = `${ev.latency_ms.toFixed(1)}ms`;
+
+  const body = card.querySelector(".tool-body");
+  const placeholder = body.querySelector('[data-pending="1"]');
+  if (placeholder) placeholder.remove();
+
+  if (ev.error) {
+    card.classList.add("errored");
+    body.appendChild(el("div", "label", "error"));
+    body.appendChild(el("pre", "err", ev.error));
+  } else if (ev.result_snippet) {
+    body.appendChild(el("div", "label", "result"));
+    body.appendChild(el("pre", null, ev.result_snippet));
+  }
+}
+
 function confidenceClass(conf) {
   if (conf == null) return "conf-mid";
   if (conf >= 0.7) return "conf-high";
@@ -211,12 +256,106 @@ async function createSession() {
   }
 }
 
-async function sendMessage(message) {
+// Entry point for a turn. Prefer SSE (live tool cards); fall back to POST.
+function sendMessage(message) {
+  addUserMessage(message);
+  if (typeof window.EventSource === "function") {
+    streamTurn(message);
+  } else {
+    postTurn(message);
+  }
+}
+
+// Live path: open an EventSource and draw tool cards as events arrive.
+function streamTurn(message) {
+  const block = el("div", "turn-block");
+  const tools = el("div", "tools");
+  block.appendChild(tools);
+  const spinner = addSpinner();
+  block.appendChild(spinner);
+  els.messages.appendChild(block);
+  scrollToBottom();
+  setBusy(true);
+
+  const params = new URLSearchParams({ user_id: userId, session_id: sessionId, message });
+  const provider = els.provider.value;
+  if (provider) params.set("provider", provider);
+
+  let es;
+  try {
+    es = new EventSource(`/chat/stream?${params.toString()}`);
+  } catch (err) {
+    block.remove();
+    postTurn(message);
+    return;
+  }
+
+  const pending = [];
+  let received = false;
+  let done = false;
+
+  const finishWith = (node) => {
+    spinner.remove();
+    if (node) block.appendChild(node);
+    es.close();
+    setBusy(false);
+    scrollToBottom();
+  };
+
+  es.addEventListener("tool_start", (e) => {
+    received = true;
+    const card = runningToolCard(JSON.parse(e.data));
+    tools.appendChild(card);
+    pending.push(card);
+    scrollToBottom();
+  });
+
+  es.addEventListener("tool_end", (e) => {
+    received = true;
+    const data = JSON.parse(e.data);
+    const card = pending.find((c) => c._tool === data.tool && !c._done);
+    if (card) completeToolCard(card, data);
+    scrollToBottom();
+  });
+
+  es.addEventListener("turn_done", (e) => {
+    received = true;
+    done = true;
+    const data = JSON.parse(e.data).response;
+    finishWith(el("div", "msg assistant", data.answer || "(no answer)"));
+    renderEnvelope(data);
+  });
+
+  // Fires for both server-sent `error` events (with .data) and connection drops.
+  es.addEventListener("error", (e) => {
+    if (e.data) {
+      done = true;
+      let detail = e.data;
+      try {
+        detail = JSON.parse(e.data).detail;
+      } catch (_) {
+        /* keep raw */
+      }
+      finishWith(el("div", "msg error", `Turn failed: ${detail}`));
+      return;
+    }
+    if (done) return; // clean close after turn_done
+    es.close();
+    if (!received) {
+      block.remove(); // never connected — fall back to POST
+      postTurn(message);
+    } else {
+      finishWith(el("div", "msg error", "Stream interrupted."));
+    }
+  });
+}
+
+// Fallback path: single POST /chat, render the full turn when it returns.
+async function postTurn(message) {
   const body = { user_id: userId, session_id: sessionId, message };
   const provider = els.provider.value;
   if (provider) body.provider = provider;
 
-  addUserMessage(message);
   const spinner = addSpinner();
   setBusy(true);
   try {

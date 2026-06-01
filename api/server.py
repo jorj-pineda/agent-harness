@@ -27,6 +27,7 @@ opening a real provider — the lifespan hands the factory the validated
 
 from __future__ import annotations
 
+import asyncio
 import logging
 from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
@@ -35,6 +36,7 @@ from pathlib import Path
 
 import chromadb
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
 from data.embed import open_collection
@@ -43,6 +45,7 @@ from harness.loop import run_turn
 from harness.policy import classify_task, is_out_of_scope_request
 from harness.router import ProviderNotFoundError, ProviderRouter
 from harness.state import Session, TurnResponse
+from harness.stream import ErrorEvent, EventCallback, StreamEvent, TurnDoneEvent
 from memory import FactStore
 from providers import create_chat_provider, create_embedder
 from providers.base import ChatMessage, ChatProvider, Embedder
@@ -222,22 +225,9 @@ def _register_routes(app: FastAPI) -> None:
         components: Components = request.app.state.components
         settings: Settings = request.app.state.settings
 
-        session = components.sessions.get(req.session_id)
-        if session is None:
-            raise HTTPException(status_code=404, detail="Unknown session_id")
-        if session.user_id != req.user_id:
-            raise HTTPException(status_code=403, detail="Session does not belong to this user_id")
-
+        session = _lookup_session(components, req.session_id, req.user_id)
         if is_out_of_scope_request(req.message):
-            return TurnResponse(
-                answer=(
-                    "This request is out of scope for a single agent turn "
-                    "(unsafe or unbounded). Please narrow the task."
-                ),
-                escalated=True,
-                provider="policy",
-                latency_ms=0.0,
-            )
+            return _out_of_scope_response()
 
         log.info(
             "api=chat user_id=%s session_id=%s task_kind=%s",
@@ -245,37 +235,153 @@ def _register_routes(app: FastAPI) -> None:
             req.session_id,
             classify_task(req.message),
         )
-
-        _refresh_facts_system_message(
-            session,
-            components.fact_store,
-            req.user_id,
-            workspace_root=session.workspace_root,
-        )
-
-        registry = _build_registry(
+        provider = _resolve_provider_or_400(components, req.provider)
+        return await _run_configured_turn(
             components=components,
             settings=settings,
-            user_id=req.user_id,
-            workspace_root=session.workspace_root,
-        )
-
-        try:
-            provider = components.router.resolve(req.provider)
-        except ProviderNotFoundError as exc:
-            raise HTTPException(status_code=400, detail=str(exc)) from exc
-
-        return await run_turn(
             session=session,
-            user_input=req.message,
+            user_id=req.user_id,
+            message=req.message,
             provider=provider,
-            registry=registry,
-            max_iterations=settings.max_tool_iterations,
-            grounder=components.grounder,
-            require_verification_before_finish=settings.require_verification_before_finish,
-            require_plan_before_edit=settings.require_plan_before_edit,
-            max_files_touched_per_turn=settings.max_files_touched_per_turn,
         )
+
+    @app.get("/chat/stream")
+    async def chat_stream(
+        request: Request,
+        user_id: str,
+        session_id: str,
+        message: str,
+        provider: str | None = None,
+    ) -> StreamingResponse:
+        """SSE variant of /chat — emits tool_start/tool_end as the loop runs.
+
+        EventSource only issues GET, so the turn inputs ride as query params.
+        Session/ownership/provider failures surface as real HTTP status codes
+        before the stream opens; failures *during* the turn arrive as an
+        `error` SSE event since the response status is already committed.
+        """
+        components: Components = request.app.state.components
+        settings: Settings = request.app.state.settings
+
+        session = _lookup_session(components, session_id, user_id)
+        provider_obj = _resolve_provider_or_400(components, provider)
+
+        async def event_gen() -> AsyncIterator[str]:
+            if is_out_of_scope_request(message):
+                yield _sse(TurnDoneEvent(response=_out_of_scope_response()))
+                return
+
+            log.info(
+                "api=chat_stream user_id=%s session_id=%s task_kind=%s",
+                user_id,
+                session_id,
+                classify_task(message),
+            )
+            queue: asyncio.Queue[StreamEvent | None] = asyncio.Queue()
+
+            async def on_event(event: StreamEvent) -> None:
+                await queue.put(event)
+
+            async def runner() -> None:
+                try:
+                    response = await _run_configured_turn(
+                        components=components,
+                        settings=settings,
+                        session=session,
+                        user_id=user_id,
+                        message=message,
+                        provider=provider_obj,
+                        on_event=on_event,
+                    )
+                    await queue.put(TurnDoneEvent(response=response))
+                except Exception as exc:  # surfaced to the client as an SSE error
+                    log.exception("api=chat_stream turn failed")
+                    await queue.put(ErrorEvent(detail=str(exc)))
+                finally:
+                    await queue.put(None)
+
+            task = asyncio.create_task(runner())
+            try:
+                while True:
+                    event = await queue.get()
+                    if event is None:
+                        break
+                    yield _sse(event)
+            finally:
+                await task
+
+        return StreamingResponse(event_gen(), media_type="text/event-stream")
+
+
+def _lookup_session(components: Components, session_id: str, user_id: str) -> Session:
+    """Fetch a session, enforcing existence (404) and ownership (403)."""
+    session = components.sessions.get(session_id)
+    if session is None:
+        raise HTTPException(status_code=404, detail="Unknown session_id")
+    if session.user_id != user_id:
+        raise HTTPException(status_code=403, detail="Session does not belong to this user_id")
+    return session
+
+
+def _resolve_provider_or_400(components: Components, provider_name: str | None) -> ChatProvider:
+    try:
+        return components.router.resolve(provider_name)
+    except ProviderNotFoundError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+def _out_of_scope_response() -> TurnResponse:
+    return TurnResponse(
+        answer=(
+            "This request is out of scope for a single agent turn "
+            "(unsafe or unbounded). Please narrow the task."
+        ),
+        escalated=True,
+        provider="policy",
+        latency_ms=0.0,
+    )
+
+
+def _sse(event: StreamEvent) -> str:
+    """Format one Server-Sent Event frame: a named event + JSON data line."""
+    return f"event: {event.type}\ndata: {event.model_dump_json()}\n\n"
+
+
+async def _run_configured_turn(
+    *,
+    components: Components,
+    settings: Settings,
+    session: Session,
+    user_id: str,
+    message: str,
+    provider: ChatProvider,
+    on_event: EventCallback | None = None,
+) -> TurnResponse:
+    """Refresh injected facts, build the per-request registry, and run the loop."""
+    _refresh_facts_system_message(
+        session,
+        components.fact_store,
+        user_id,
+        workspace_root=session.workspace_root,
+    )
+    registry = _build_registry(
+        components=components,
+        settings=settings,
+        user_id=user_id,
+        workspace_root=session.workspace_root,
+    )
+    return await run_turn(
+        session=session,
+        user_input=message,
+        provider=provider,
+        registry=registry,
+        max_iterations=settings.max_tool_iterations,
+        grounder=components.grounder,
+        require_verification_before_finish=settings.require_verification_before_finish,
+        require_plan_before_edit=settings.require_plan_before_edit,
+        max_files_touched_per_turn=settings.max_files_touched_per_turn,
+        on_event=on_event,
+    )
 
 
 def _build_registry(

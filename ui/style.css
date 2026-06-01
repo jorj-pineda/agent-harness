@@ -265,6 +265,14 @@ button:disabled {
   color: var(--bad);
 }
 
+.tool-card.running {
+  border-color: var(--accent);
+}
+
+.tool-card.running .tool-latency {
+  animation: pulse 1s infinite ease-in-out;
+}
+
 .tool-body {
   border-top: 1px solid var(--border);
   padding: 0.5rem 0.7rem;
