@@ -122,6 +122,9 @@ def harness(tmp_path: Path) -> Iterator[Harness]:
     fake_embedder = FakeEmbedder()
 
     settings = Settings(
+        # _env_file=None keeps the suite hermetic: a developer's local .env
+        # (e.g. DEFAULT_WORKSPACE_ROOT) must not leak into test settings.
+        _env_file=None,
         default_provider="scripted",
         sqlite_db_path=tmp_path / "support.db",
         chroma_path=tmp_path / "chroma",
