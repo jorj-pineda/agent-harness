@@ -40,6 +40,8 @@ Every response ships one envelope — `{answer, confidence, citations, escalated
 
 **Planning + patch trace.** `emit_plan` records steps before edits; `patch_summary` lists successful writes. Optional gates: `REQUIRE_PLAN_BEFORE_EDIT`, `REQUIRE_VERIFICATION_BEFORE_FINISH`.
 
+**Local agent panel.** A Typer CLI (`agent-harness serve`/`chat`) and a zero-build static panel (`ui/`) make the envelope legible — tool cards stream in live over SSE (`GET /chat/stream`). Both are thin HTTP clients; the ReAct loop is never duplicated in the frontend.
+
 ### Eval honesty
 
 Offline eval scores are **scripted** — every provider replays the same YAML tool traces, so headline columns match by construction. They measure harness shape, not model quality. Live runs: `python -m evals.run --live --providers ollama` and [evals/LIVE.md](evals/LIVE.md).
@@ -108,6 +110,25 @@ pytest -m "not live"
 python -m evals.run --providers ollama,anthropic,openai
 ```
 
+### Local agent panel
+
+Prefer not to read raw JSON? Start the server and open **http://127.0.0.1:8000/** —
+or drive it from the terminal. Full walkthrough in [demo.md](demo.md#agent-panel--cli-curl-free).
+
+```bash
+agent-harness serve                                   # browser panel at /
+agent-harness chat --workspace "$(pwd)/tests/fixtures/tiny_repo"   # terminal REPL
+```
+
+The panel calls the same `/sessions` + `/chat` API; tool calls stream in live as
+cards over SSE (`GET /chat/stream`), with the response envelope on a side rail.
+
+![agent-harness panel after a bugfix turn — live tool cards (read_file, write_file, run_command/pytest), the answer, and the grounding envelope rail (confidence 1.00, verified, citations, files touched, patch summary).](docs/panel.png)
+
+_Capture above is offline-deterministic — the `scripted` provider chip in the rail
+is the test `FakeProvider`; the workspace edit and pytest run are real. Reproduce
+or refresh it via the recipe in [docs/README.md](docs/README.md)._
+
 ## Reviewer checklist
 
 CI runs the same offline gate on every push/PR ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)): pytest, ruff, mypy, coding eval matrix, and support scenario regression — no live providers.
@@ -121,7 +142,7 @@ python -m evals.run --providers ollama,anthropic,openai
 docker compose up --build -d            # optional smoke; see demo.md
 ```
 
-1. **Tests** — `pytest -m "not live"` should pass (~356 tests; 5 live tests deselected in CI).
+1. **Tests** — `pytest -m "not live"` should pass (381 tests; 5 live tests deselected in CI).
 2. **Lint/types** — `ruff check .` and `mypy` on core layers.
 3. **Offline evals** — matrix completes; README table matches report summary.
 4. **Coding demo** — `demo.md` curl flow returns envelope with `tool_calls`, citations, confidence.

@@ -362,6 +362,7 @@ def test_build_components_smoke(tmp_path: Path) -> None:
     the default factory.
     """
     settings = Settings(
+        _env_file=None,
         default_provider="ollama",
         sqlite_db_path=tmp_path / "support.db",
         chroma_path=tmp_path / "chroma",

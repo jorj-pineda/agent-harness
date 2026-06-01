@@ -16,7 +16,7 @@ Use this file to start a **new Composer chat per mission**. Copy **one** mission
 | Support harness (steps 1–12) | Merged |
 | Demo hardening (`feat/demo-readiness`) | Done |
 | Coding-agent pivot (phases 1–10) | **Merged to `main` (PR #13)** |
-| Current direction | Missions 1–7 done; Mission 9 agent panel next — [GUI-integ.md](GUI-integ.md) |
+| Current direction | Missions 1–7 done; Mission 9 agent panel in progress (2026-06-01) — slices 9a–9c shipped, 9d next — [GUI-integ.md](GUI-integ.md) |
 | Workflow | Agent completes **one mission**, pauses for your green light before the next |
 
 **Which prompt to use**
@@ -89,7 +89,7 @@ api/            FastAPI — thin HTTP wrapper, per-request tool registry
 
 ```bash
 uv sync --extra dev
-pytest -m "not live"                    # ~356 tests
+pytest -m "not live"                    # 381 tests (2026-06-01)
 ruff check .
 mypy
 python -m evals.run --providers ollama,anthropic,openai

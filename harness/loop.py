@@ -33,6 +33,9 @@ from .memory import harvest_memory_writes
 from .outcome import harvest_files_touched, harvest_patch_summary, harvest_verification_ran
 from .policy import edit_budget_exceeded, edit_without_plan
 from .state import Session, ToolCallRecord, Turn, TurnResponse
+from .stream import EventCallback, ToolEndEvent, ToolStartEvent
+
+RESULT_SNIPPET_LIMIT = 600
 
 log = logging.getLogger(__name__)
 
@@ -67,6 +70,7 @@ async def run_turn(
     require_verification_before_finish: bool = False,
     require_plan_before_edit: bool = False,
     max_files_touched_per_turn: int = 0,
+    on_event: EventCallback | None = None,
 ) -> TurnResponse:
     """Drive one user turn to completion via ReAct + tool dispatch.
 
@@ -74,6 +78,9 @@ async def run_turn(
     returns the rule-#5 payload. When `grounder` is provided, fills in
     `confidence` / `citations` / `escalated` from the turn's tool-call
     history; otherwise those fields stay at their defaults.
+
+    `on_event`, when supplied, observes each tool call (start/end) for live
+    streaming — it never alters control flow.
     """
     turn = Turn(user_input=user_input)
     session.turns.append(turn)
@@ -100,6 +107,8 @@ async def run_turn(
             break
 
         for tc in response.tool_calls:
+            if on_event is not None:
+                await on_event(ToolStartEvent(tool=tc.name, arguments=dict(tc.arguments)))
             tool_start = _now_ms()
             result: Any = None
             error: str | None = None
@@ -119,6 +128,15 @@ async def run_turn(
                 )
             )
             payload = error if error is not None else result
+            if on_event is not None:
+                await on_event(
+                    ToolEndEvent(
+                        tool=tc.name,
+                        latency_ms=tool_latency,
+                        error=error,
+                        result_snippet=_encode_tool_result(payload)[:RESULT_SNIPPET_LIMIT],
+                    )
+                )
             session.messages.append(
                 ChatMessage(
                     role="tool",

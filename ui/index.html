@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>agent-harness — panel</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo">▣</span>
+        <span>agent-harness</span>
+        <span class="tag">panel</span>
+      </div>
+      <div class="controls">
+        <input
+          id="workspace"
+          type="text"
+          placeholder="workspace_root (optional, absolute path)"
+          autocomplete="off"
+        />
+        <select id="provider" title="Provider override">
+          <option value="">default provider</option>
+          <option value="ollama">ollama</option>
+          <option value="anthropic">anthropic</option>
+          <option value="openai">openai</option>
+        </select>
+        <button id="new-session">New session</button>
+        <span id="session-pill" class="pill muted">no session</span>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="chat" aria-label="Chat">
+        <div id="messages" class="messages">
+          <div class="empty-state">
+            Create a session, then send a coding task. Tool calls and the
+            grounding envelope appear as the turn completes.
+          </div>
+        </div>
+        <form id="composer" class="composer">
+          <textarea
+            id="input"
+            rows="2"
+            placeholder="Describe a coding task…  (Enter to send, Shift+Enter for newline)"
+            disabled
+          ></textarea>
+          <button id="send" type="submit" disabled>Send</button>
+        </form>
+      </section>
+
+      <aside class="rail" aria-label="Response envelope">
+        <h2>Envelope</h2>
+        <div id="envelope" class="envelope">
+          <div class="empty-state small">No turn yet.</div>
+        </div>
+      </aside>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

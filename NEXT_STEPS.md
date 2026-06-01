@@ -1,6 +1,6 @@
 # Next steps after coding-agent pivot (phases 1–10)
 
-**Status:** Phases 1–10 **merged to `main`** (PR #13). Missions **1–7 done** (ship, live eval, CI, `emit_plan`, patch summary, scope gate, README polish). Ollama `tool_name` multi-turn fix merged. **Next:** FocusKPI submit and/or **Mission 9** agent panel ([GUI-integ.md](GUI-integ.md)). Mission 8 semantic search remains conditional.
+**Status (2026-06-01):** Phases 1–10 **merged to `main`** (PR #13). Missions **1–7 done** (ship, live eval, CI, `emit_plan`, patch summary, scope gate, README polish). Ollama `tool_name` multi-turn fix merged. **Mission 9 agent panel complete** on `feat/gui-integration` — slices **9a (Typer CLI)**, **9b (static panel)**, **9c (SSE live tool cards)**, **9d (polish + docs)** all shipped; only the real `docs/panel.png` capture is pending ([GUI-integ.md](GUI-integ.md)). Suite at **381 tests** (`pytest -m "not live"`). Mission 8 semantic search remains conditional.
 
 This doc is the post-pivot backlog — what to do **after** merge, in priority order.
 
@@ -148,5 +148,9 @@ Week 3+  Mission 9 agent panel ([GUI-integ.md](GUI-integ.md)) for demo UX
 | 2026-05 | Mission 7 README portfolio pass |
 | 2026-05 | Ollama multi-turn fix: `tool_name` on tool messages; 4070 live notes in [evals/LIVE.md](evals/LIVE.md) |
 | 2026-05 | Mission 9 agent panel planned — [GUI-integ.md](GUI-integ.md) (demo UI OK; full IDE still out of scope) |
+| 2026-06-01 | Mission 9 slice 9a: Typer CLI (`agent-harness serve`/`chat`); fixed `.env` test-isolation leak (`_env_file=None`) |
+| 2026-06-01 | Mission 9 slice 9b: static demo panel (`ui/`) mounted at `/` — tool cards + envelope rail |
+| 2026-06-01 | Mission 9 slice 9c: SSE `GET /chat/stream` + `harness/stream.py` `on_event` hook; live tool cards (no loop duplication) |
+| 2026-06-01 | Mission 9 slice 9d: demo.md panel walkthrough, README panel blurb + ASCII preview, `docs/` screenshot recipe — **Mission 9 complete** (real `docs/panel.png` capture pending Jorge) |
 
 Update this table when Tier A/B items land.
