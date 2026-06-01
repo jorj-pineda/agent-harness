@@ -123,22 +123,11 @@ agent-harness chat --workspace "$(pwd)/tests/fixtures/tiny_repo"   # terminal RE
 The panel calls the same `/sessions` + `/chat` API; tool calls stream in live as
 cards over SSE (`GET /chat/stream`), with the response envelope on a side rail.
 
-```
-┌──────────────────────────────────────────────┬──────────────────┐
-│ Chat                                          │ Envelope         │
-│  You: Fix the failing divide test            │  conf 0.82  ✓     │
-│  ▾ grep_repo {"pattern":"def divide"} 1.2ms  │  not escalated   │
-│  ▾ read_file {"path":"calc.py"}      0.4ms   │  ollama  • 1.4s  │
-│  ▾ write_file {"path":"calc.py"}     0.6ms   │  citations       │
-│  ▾ run_tests {"path":"."}            120ms   │   calc.py:4-6    │
-│  Agent: Guarded divide() against zero; pytest │  files_touched   │
-│         passes.                               │   calc.py        │
-│  [ message… ]                          [Send] │  patch_summary   │
-└──────────────────────────────────────────────┴──────────────────┘
-```
+![agent-harness panel after a bugfix turn — live tool cards (read_file, write_file, run_command/pytest), the answer, and the grounding envelope rail (confidence 1.00, verified, citations, files touched, patch summary).](docs/panel.png)
 
-> _Drop a real capture at `docs/panel.png` — see the 30-second recipe in
-> [demo.md](demo.md#agent-panel--cli-curl-free)._
+_Capture above is offline-deterministic — the `scripted` provider chip in the rail
+is the test `FakeProvider`; the workspace edit and pytest run are real. Reproduce
+or refresh it via the recipe in [docs/README.md](docs/README.md)._
 
 ## Reviewer checklist
 
