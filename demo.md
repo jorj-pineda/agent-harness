@@ -100,4 +100,5 @@ Copy `.env.example` to `.env` and set `ANTHROPIC_API_KEY` and/or `OPENAI_API_KEY
 | `model requires more system memory (9.7 GiB)` in Ollama logs | Same as above — gemma4 weights alone need ~9.4 GiB on CPU |
 | `read_file` not in tool list | Session needs `workspace_root` (or `DEFAULT_WORKSPACE_ROOT`) |
 | Empty citations | Model skipped read/grep tools — check `tool_calls` in response |
+| Model reads files then answers without editing | After merging `fix/ollama-tool-loop`, multi-turn tools work; gemma4 may still stop with text instead of `write_file` — try `"provider":"anthropic"` for edit→verify demos |
 | `escalated: true` after edit | Edit budget (`MAX_FILES_TOUCHED_PER_TURN`, default 5) or low grounding confidence |

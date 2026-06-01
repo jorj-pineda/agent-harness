@@ -8,8 +8,8 @@ from typing import Any
 import httpx
 import pytest
 
-from providers.base import ChatMessage, ChatProvider, Embedder, ProviderError, ToolSpec
-from providers.ollama import OllamaProvider
+from providers.base import ChatMessage, ChatProvider, Embedder, ProviderError, ToolCall, ToolSpec
+from providers.ollama import OllamaProvider, _message_to_ollama
 from tests._cassette import CassetteTransport
 
 # ---------------------------------------------------------------------------
@@ -25,6 +25,21 @@ def _chat_response(payload: dict[str, Any]) -> httpx.MockTransport:
         captured["url"] = str(request.url)
         captured["body"] = json.loads(request.content.decode("utf-8"))
         return httpx.Response(200, json=payload, request=request)
+
+    transport = httpx.MockTransport(handler)
+    transport.captured = captured  # type: ignore[attr-defined]
+    return transport
+
+
+def _chat_response_queue(payloads: list[dict[str, Any]]) -> httpx.MockTransport:
+    """Mock transport that pops a response per request and records every body."""
+    captured: dict[str, Any] = {"bodies": []}
+    queue = list(payloads)
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured["bodies"].append(json.loads(request.content.decode("utf-8")))
+        assert queue, "mock Ollama ran out of scripted chat responses"
+        return httpx.Response(200, json=queue.pop(0), request=request)
 
     transport = httpx.MockTransport(handler)
     transport.captured = captured  # type: ignore[attr-defined]
@@ -194,6 +209,189 @@ async def test_chat_with_tool_calls_synthesizes_ids() -> None:
     assert call.arguments == {"sql": "SELECT 1"}
     assert call.id.startswith("call_")
     assert len(call.id) > len("call_")
+
+
+def test_message_to_ollama_tool_role_includes_tool_name() -> None:
+    wire = _message_to_ollama(
+        ChatMessage(
+            role="tool",
+            content='{"path": "calc.py"}',
+            tool_call_id="call_abc123",
+            tool_name="read_file",
+        )
+    )
+    assert wire == {
+        "role": "tool",
+        "content": '{"path": "calc.py"}',
+        "tool_name": "read_file",
+    }
+
+
+def test_message_to_ollama_assistant_tool_calls_use_function_type() -> None:
+    wire = _message_to_ollama(
+        ChatMessage(
+            role="assistant",
+            content="",
+            tool_calls=[
+                ToolCall(
+                    id="call_1",
+                    name="grep_repo",
+                    arguments={"pattern": "divide", "path": "."},
+                )
+            ],
+        )
+    )
+    assert wire["tool_calls"] == [
+        {
+            "type": "function",
+            "function": {"name": "grep_repo", "arguments": {"pattern": "divide", "path": "."}},
+        }
+    ]
+
+
+async def test_chat_multi_turn_history_sends_tool_name_on_tool_messages() -> None:
+    transport = _chat_response(
+        {
+            "model": "gemma4",
+            "message": {"role": "assistant", "content": "done"},
+            "done": True,
+            "done_reason": "stop",
+        }
+    )
+    provider = OllamaProvider(
+        host="http://fake",
+        model="gemma4",
+        embed_model="nomic-embed-text",
+        transport=transport,
+    )
+    messages = [
+        ChatMessage(role="user", content="fix divide"),
+        ChatMessage(
+            role="assistant",
+            content="",
+            tool_calls=[
+                ToolCall(
+                    id="call_1",
+                    name="read_file",
+                    arguments={"path": "calc.py"},
+                )
+            ],
+        ),
+        ChatMessage(
+            role="tool",
+            content='{"path": "calc.py", "content": "def divide..."}',
+            tool_call_id="call_1",
+            tool_name="read_file",
+        ),
+    ]
+
+    await provider.chat(messages)
+
+    body = transport.captured["body"]  # type: ignore[attr-defined]
+    assert body["messages"][-1] == {
+        "role": "tool",
+        "content": '{"path": "calc.py", "content": "def divide..."}',
+        "tool_name": "read_file",
+    }
+    assert body["messages"][1]["tool_calls"] == [
+        {
+            "type": "function",
+            "function": {"name": "read_file", "arguments": {"path": "calc.py"}},
+        }
+    ]
+
+
+async def test_chat_second_request_includes_tool_name_after_tool_round() -> None:
+    """Regression guard: harness-style second /api/chat must carry tool_name on tool results."""
+    transport = _chat_response_queue(
+        [
+            {
+                "model": "gemma4",
+                "message": {
+                    "role": "assistant",
+                    "content": "",
+                    "tool_calls": [
+                        {
+                            "function": {
+                                "name": "read_file",
+                                "arguments": {"path": "calc.py"},
+                            }
+                        }
+                    ],
+                },
+                "done": True,
+                "done_reason": "stop",
+            },
+            {
+                "model": "gemma4",
+                "message": {"role": "assistant", "content": "fixed divide"},
+                "done": True,
+                "done_reason": "stop",
+            },
+        ]
+    )
+    provider = OllamaProvider(
+        host="http://fake",
+        model="gemma4",
+        embed_model="nomic-embed-text",
+        transport=transport,
+    )
+    tools = [
+        ToolSpec(
+            name="read_file",
+            description="Read a file",
+            parameters_schema={
+                "type": "object",
+                "properties": {"path": {"type": "string"}},
+            },
+        )
+    ]
+    messages = [ChatMessage(role="user", content="fix divide by zero in calc.py")]
+
+    first = await provider.chat(messages, tools=tools)
+    assert first.tool_calls
+    call = first.tool_calls[0]
+    messages.append(
+        ChatMessage(
+            role="assistant",
+            content=first.content,
+            tool_calls=list(first.tool_calls),
+        )
+    )
+    messages.append(
+        ChatMessage(
+            role="tool",
+            content='{"path": "calc.py", "content": "def divide(a,b): return a/b"}',
+            tool_call_id=call.id,
+            tool_name=call.name,
+        )
+    )
+
+    second = await provider.chat(messages, tools=tools)
+    assert second.content == "fixed divide"
+
+    bodies = transport.captured["bodies"]  # type: ignore[attr-defined]
+    assert len(bodies) == 2
+    second_body = bodies[1]["messages"]
+    assert second_body[2] == {
+        "role": "tool",
+        "content": '{"path": "calc.py", "content": "def divide(a,b): return a/b"}',
+        "tool_name": "read_file",
+    }
+    assert second_body[1]["tool_calls"] == [
+        {
+            "type": "function",
+            "function": {"name": "read_file", "arguments": {"path": "calc.py"}},
+        }
+    ]
+
+
+def test_message_to_ollama_tool_role_without_tool_name_omits_field() -> None:
+    wire = _message_to_ollama(
+        ChatMessage(role="tool", content='{"ok": true}', tool_call_id="call_old")
+    )
+    assert wire == {"role": "tool", "content": '{"ok": true}'}
+    assert "tool_name" not in wire
 
 
 async def test_chat_max_tokens_maps_to_num_predict() -> None:
