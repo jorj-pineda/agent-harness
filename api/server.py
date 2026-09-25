@@ -41,44 +41,22 @@ from fastapi.staticfiles import StaticFiles
 
 from data.embed import open_collection
 from harness.grounding import Grounder
-from harness.loop import run_turn
 from harness.policy import classify_task, is_out_of_scope_request
 from harness.router import ProviderNotFoundError, ProviderRouter
+from harness.runtime import build_registry, out_of_scope_response, run_configured_turn
 from harness.state import Session, TurnResponse
 from harness.stream import ErrorEvent, EventCallback, StreamEvent, TurnDoneEvent
 from memory import FactStore
 from providers import create_chat_provider, create_embedder
-from providers.base import ChatMessage, ChatProvider, Embedder
+from providers.base import ChatProvider, Embedder
 from tools import ToolRegistry
-from tools.code import register_code_tools
-from tools.memory import register_memory_tools
 from tools.rag import register_rag_tool
-from tools.semantic import register_semantic_search_stub
 from tools.sql import register_sql_tools
-from workspace import Workspace
 
 from .models import ChatRequest, ChatResponse, CreateSessionRequest, CreateSessionResponse
 from .settings import Settings, get_settings
 
 log = logging.getLogger(__name__)
-
-BASE_SYSTEM_PROMPT = (
-    "You are a senior software engineering agent. Work in the configured workspace "
-    "when one is set; otherwise use the tools available to you.\n\n"
-    "Contract:\n"
-    "- Read before you edit — inspect relevant files and cite paths (and line ranges "
-    "when known) for claims about the codebase.\n"
-    "- Prefer minimal, focused diffs over broad rewrites; match existing conventions.\n"
-    "- Run verification (tests, lint, type-check) before claiming a task is done.\n"
-    "- Use `remember_fact` / `remember` for durable engineering notes (stack choices, "
-    "repo conventions, review preferences). They are injected into every future turn's "
-    "system prompt for this user — call `recall_facts` / `recall` only when you need "
-    "an explicit list in the tool trace.\n"
-    "- Decline unsafe or out-of-scope requests (destructive shell, secrets exfiltration, "
-    "unbounded refactors).\n\n"
-    "Support lookup tools (SQL, doc search) are disabled by default — set "
-    "ENABLE_SUPPORT_TOOLS=true to restore the legacy support demo."
-)
 
 
 @dataclass
@@ -227,7 +205,7 @@ def _register_routes(app: FastAPI) -> None:
 
         session = _lookup_session(components, req.session_id, req.user_id)
         if is_out_of_scope_request(req.message):
-            return _out_of_scope_response()
+            return out_of_scope_response()
 
         log.info(
             "api=chat user_id=%s session_id=%s task_kind=%s",
@@ -268,7 +246,7 @@ def _register_routes(app: FastAPI) -> None:
 
         async def event_gen() -> AsyncIterator[str]:
             if is_out_of_scope_request(message):
-                yield _sse(TurnDoneEvent(response=_out_of_scope_response()))
+                yield _sse(TurnDoneEvent(response=out_of_scope_response()))
                 return
 
             log.info(
@@ -330,18 +308,6 @@ def _resolve_provider_or_400(components: Components, provider_name: str | None) 
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
-def _out_of_scope_response() -> TurnResponse:
-    return TurnResponse(
-        answer=(
-            "This request is out of scope for a single agent turn "
-            "(unsafe or unbounded). Please narrow the task."
-        ),
-        escalated=True,
-        provider="policy",
-        latency_ms=0.0,
-    )
-
-
 def _sse(event: StreamEvent) -> str:
     """Format one Server-Sent Event frame: a named event + JSON data line."""
     return f"event: {event.type}\ndata: {event.model_dump_json()}\n\n"
@@ -358,48 +324,29 @@ async def _run_configured_turn(
     on_event: EventCallback | None = None,
 ) -> TurnResponse:
     """Refresh injected facts, build the per-request registry, and run the loop."""
-    _refresh_facts_system_message(
-        session,
-        components.fact_store,
-        user_id,
-        workspace_root=session.workspace_root,
-    )
-    registry = _build_registry(
-        components=components,
-        settings=settings,
+    support_registry = ToolRegistry()
+    if settings.enable_support_tools:
+        register_sql_tools(support_registry, db_path=settings.sqlite_db_path)
+        register_rag_tool(
+            support_registry, collection=components.collection, embedder=components.embedder
+        )
+    registry = build_registry(
+        fact_store=components.fact_store,
         user_id=user_id,
         workspace_root=session.workspace_root,
+        support_tools=support_registry,
     )
-    return await run_turn(
+    return await run_configured_turn(
+        settings=settings,
         session=session,
-        user_input=message,
+        user_id=user_id,
+        message=message,
         provider=provider,
+        fact_store=components.fact_store,
         registry=registry,
-        max_iterations=settings.max_tool_iterations,
         grounder=components.grounder,
-        require_verification_before_finish=settings.require_verification_before_finish,
-        require_plan_before_edit=settings.require_plan_before_edit,
-        max_files_touched_per_turn=settings.max_files_touched_per_turn,
         on_event=on_event,
     )
-
-
-def _build_registry(
-    *,
-    components: Components,
-    settings: Settings,
-    user_id: str,
-    workspace_root: str | None = None,
-) -> ToolRegistry:
-    registry = ToolRegistry()
-    if settings.enable_support_tools:
-        register_sql_tools(registry, db_path=settings.sqlite_db_path)
-        register_rag_tool(registry, collection=components.collection, embedder=components.embedder)
-    register_memory_tools(registry, store=components.fact_store, user_id=user_id)
-    if workspace_root is not None:
-        register_code_tools(registry, workspace=Workspace(root=Path(workspace_root)))
-        register_semantic_search_stub(registry)
-    return registry
 
 
 def _default_workspace_root(settings: Settings) -> str | None:
@@ -419,33 +366,6 @@ def _resolve_workspace_root(raw: str | None) -> str | None:
             detail=f"workspace_root is not a directory: {resolved}",
         )
     return str(resolved)
-
-
-def _refresh_facts_system_message(
-    session: Session,
-    fact_store: FactStore,
-    user_id: str,
-    *,
-    workspace_root: str | None,
-) -> None:
-    """Replace (or insert) the facts system message at index 0.
-
-    Rebuilt every turn so a `remember_fact` call surfaces on the next turn.
-    `format_for_system_prompt` returns "" when the user has no facts, so the
-    concatenation stays unconditional.
-    """
-    blocks = [BASE_SYSTEM_PROMPT]
-    if workspace_root:
-        blocks.append(f"Workspace root: {workspace_root}")
-    facts_block = fact_store.format_for_system_prompt(user_id)
-    if facts_block:
-        blocks.append(facts_block)
-    content = "\n\n".join(blocks)
-    message = ChatMessage(role="system", content=content)
-    if session.messages and session.messages[0].role == "system":
-        session.messages[0] = message
-    else:
-        session.messages.insert(0, message)
 
 
 app = create_app()
