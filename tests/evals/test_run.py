@@ -16,6 +16,13 @@ from evals.run import (
     render_report,
     run_matrix,
 )
+from harness.config import Settings
+from harness.prompts import BASE_SYSTEM_PROMPT, PROMPT_VERSION
+from harness.runtime import build_registry
+from memory import FactStore
+from providers.base import ToolCall
+from tests.api.conftest import ScriptedProvider, make_response
+from tools import ToolError
 from tools.code import ReadFileInput
 
 SCENARIOS_PATH = Path(__file__).parent.parent.parent / "evals" / "scenarios.yaml"
@@ -179,6 +186,97 @@ def test_scripted_read_file_returns_empty_dict_when_queue_exhausted() -> None:
     )
     result = asyncio.run(tool.fn(ReadFileInput(path="calc.py")))
     assert result == {}
+
+
+async def test_live_smoke_uses_shared_prompt_memory_policy_and_threshold(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    provider = ScriptedProvider()
+    provider.script(make_response(content="Done without checks"))
+    monkeypatch.setattr(runner, "_build_live_provider", lambda *_: provider)
+    scenario = {
+        "id": "runtime",
+        "category": "bugfix",
+        "user_input": "Fix the bug",
+        "seed_facts": ["Use focused changes"],
+        "tool_results": {},
+        "expected": {},
+    }
+    results = await run_matrix(
+        [scenario],
+        ["test"],
+        workdir=tmp_path,
+        live=True,
+        settings=Settings(
+            _env_file=None,
+            require_verification_before_finish=True,
+            confidence_escalation_threshold=0.73,
+            default_workspace_root=tmp_path / "must-not-be-used",
+        ),
+    )
+    result = results[0]
+    assert result.escalated is True
+    assert result.evaluation_mode == runner.LIVE_SIMULATED_MODE
+    assert result.prompt_version == PROMPT_VERSION
+    assert result.runtime_config["confidence_escalation_threshold"] == 0.73
+    messages, specs = provider.calls[0]
+    assert messages[0].content.startswith(BASE_SYSTEM_PROMPT)
+    assert "Use focused changes" in messages[0].content
+    assert "must-not-be-used" not in messages[0].content
+    assert {spec.name for spec in specs or []} >= {"read_file", "write_file", "emit_plan"}
+
+
+async def test_simulated_tools_preserve_specs_without_executing_code(tmp_path: Path) -> None:
+    scenario = {
+        "tool_results": {
+            "write_file": [{"path": "must-not-exist.py", "bytes_written": 1}],
+            "run_command": [{"success": True, "exit_code": 0}],
+        }
+    }
+    with FactStore(tmp_path / "memory.db") as store:
+        simulated = runner._build_live_simulated_registry(
+            scenario, store=store, user_id="dev", workspace_root=str(tmp_path)
+        )
+        production = build_registry(fact_store=store, user_id="dev", workspace_root=str(tmp_path))
+        assert simulated.as_tool_specs() == production.as_tool_specs()
+        await simulated.invoke("write_file", {"path": "must-not-exist.py", "content": "x"})
+        # A real command tool rejects this argv. Simulation must never execute it.
+        result = await simulated.invoke("run_command", {"argv": ["not-a-real-command"]})
+        assert result["success"] is True
+        with pytest.raises(ToolError, match="no scripted result"):
+            await simulated.invoke("write_file", {"path": "must-not-exist.py", "content": "x"})
+        with pytest.raises(ToolError, match="no scripted result"):
+            await simulated.invoke("read_file", {"path": "memory.db"})
+    assert not (tmp_path / "must-not-exist.py").exists()
+
+
+async def test_live_smoke_obeys_iteration_limit(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    provider = ScriptedProvider()
+    provider.script(make_response(tool_calls=[ToolCall(id="a", name="recall", arguments={})]))
+    monkeypatch.setattr(runner, "_build_live_provider", lambda *_: provider)
+    scenario = {"id": "budget", "category": "explore_only", "user_input": "Recall preferences"}
+    results = await run_matrix(
+        [scenario],
+        ["test"],
+        workdir=tmp_path,
+        live=True,
+        settings=Settings(_env_file=None, max_tool_iterations=1),
+    )
+    assert len(provider.calls) == 1
+    assert results[0].runtime_config["max_tool_iterations"] == 1
+
+
+@pytest.mark.parametrize("live", [False, True])
+def test_report_labels_simulation_and_metric_limits(live: bool) -> None:
+    report = render_report([], [], escalation_threshold=0.5, live=live)
+    assert (runner.LIVE_SIMULATED_MODE if live else runner.SCRIPTED_MODE) in report
+    assert "expected-path recall" in report
+    assert "not independent acceptance checks" in report
+    if live:
+        assert "no patch or test suite is executed" in report
 
 
 _ollama_reachable = pytest.mark.skipif(

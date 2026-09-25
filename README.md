@@ -1,5 +1,11 @@
 # agent-harness
 
+**Current direction:** a practical coding harness for lower-tier local and hosted
+models. See [roadmap.md](roadmap.md) for the implementation plan and
+[AGENTS.md](AGENTS.md) for contributor instructions. The portfolio description and
+historical results below describe the project's starting point, not demonstrated
+improvements in model coding ability.
+
 [![CI](https://github.com/jorj-pineda/agent-harness/actions/workflows/ci.yml/badge.svg)](https://github.com/jorj-pineda/agent-harness/actions/workflows/ci.yml)
 
 Most agent tutorials stop at `LangChain.AgentExecutor`. **agent-harness** is the opposite: a hand-written ReAct loop, grounding layer, and memory store you can read in an afternoon — built to show how a **senior coding agent** is wired, not how to import a framework. No LangChain, LlamaIndex, or LangGraph. One FastAPI process, pluggable providers (Ollama / Anthropic / OpenAI), workspace-scoped code tools, and an eval harness that scores every turn from the same metadata envelope.
@@ -43,6 +49,27 @@ Every response ships one envelope — `{answer, confidence, citations, escalated
 **Local agent panel.** A Typer CLI (`agent-harness serve`/`chat`) and a zero-build static panel (`ui/`) make the envelope legible — tool cards stream in live over SSE (`GET /chat/stream`). Both are thin HTTP clients; the ReAct loop is never duplicated in the frontend.
 
 ### Eval honesty
+
+There are currently two evaluation modes, neither of which executes real coding
+tasks:
+
+- **`scripted-contract`** (default): fake model responses and simulated tools
+  exercise the low-level loop. Historical scenario behavior is preserved.
+- **`live-model-simulated-tools`** (`--live`): real inference uses the shared
+  application prompt, coding tool definitions, memory injection, and policy
+  settings, but file reads, edits, and commands still return canned results.
+  Unscripted coding calls fail explicitly; they never execute on disk.
+
+The shared setup lives in `harness/runtime.py`, `harness/prompts.py`, and
+`harness/config.py`; the CLI uses it through the API. Live smoke tests now use the
+application escalation threshold unless `--escalation-threshold` overrides it.
+Offline contracts retain their 0.50 default. Historical live results predate this
+shared setup and should not be compared directly with new runs.
+
+Reports identify these modes and explain the proxy metrics: expected-path recall
+is not patch correctness, and a scripted verification flag is not a passing test
+suite. Real-workspace evaluations with independent acceptance checks are upcoming
+work in the roadmap.
 
 Offline eval scores are **scripted** — every provider replays the same YAML tool traces, so headline columns match by construction. They measure harness shape, not model quality. Live runs: `python -m evals.run --live --providers ollama` and [evals/LIVE.md](evals/LIVE.md).
 

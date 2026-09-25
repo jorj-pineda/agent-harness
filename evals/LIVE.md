@@ -1,5 +1,12 @@
 # Live eval snapshot
 
+> Historical evidence, not a real coding benchmark. The eval runner used real
+> inference with simulated code-tool results, so its patch/verification scores do
+> not establish working edits or passing tests. These historical runs also predate
+> shared application prompt/configuration setup. Current `--live` runs are labeled
+> `live-model-simulated-tools` and use `harness/runtime.py`; all code execution is
+> still simulated. Interactive API demos discussed below are a separate workflow.
+
 Real-provider runs for portfolio honesty. The **README headline table stays offline** (scripted `FakeProvider`); this file records what happens when a live LLM drives the same harness.
 
 ---
