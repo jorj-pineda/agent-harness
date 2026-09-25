@@ -39,10 +39,17 @@ The harness does not need to make every model good at every task. It needs to id
   live-model smoke evaluations use this setup. Offline scenario contracts retain
   their historical low-level behavior. Reports now distinguish `scripted-contract`
   from `live-model-simulated-tools` and explain their metric limitations.
-- **Next:** file-tool fixes and targeted edits (item 2 in the implementation
-  sequence). Real-workspace benchmarks, completion recovery, model profiles, and
-  context management remain unimplemented. Shared setup alone is not evidence of
-  better coding performance.
+- **2026-09-25 — Second implementation slice prepared:** single-file ripgrep and
+  option-like patterns now return usable matches; bounded `read_file` ranges work
+  on large files and include a whole-file hash. `replace_text` applies one exact
+  match only when the file still has that hash, returns a diff, and contributes to
+  files touched and patch summaries. This covers item 2 in the implementation
+  sequence. Ignored-path parity, explicit search truncation metadata, and managed
+  command execution remain Milestone 2 work.
+- **Next:** managed execution and disposable workspaces (item 3). Real-workspace
+  benchmarks, completion recovery, model profiles, and context management remain
+  unimplemented. Tool improvements alone are not evidence of better model coding
+  performance.
 
 ### Review baseline
 

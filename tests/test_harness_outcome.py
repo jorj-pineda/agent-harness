@@ -73,6 +73,18 @@ def test_harvest_patch_summary_formats_successful_writes() -> None:
     ]
 
 
+def test_harvest_targeted_replacement_counts_as_file_edit() -> None:
+    calls = [
+        ToolCallRecord(
+            name="replace_text",
+            arguments={"path": "calc.py"},
+            result={"path": "calc.py", "replacement_count": 1, "bytes_written": 50},
+        )
+    ]
+    assert harvest_files_touched(calls) == ["calc.py"]
+    assert harvest_patch_summary(calls) == ["calc.py (replaced 1 text span)"]
+
+
 def test_harvest_verification_ran_requires_successful_pytest() -> None:
     failing = ToolCallRecord(
         name="run_command",

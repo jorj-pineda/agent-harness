@@ -53,6 +53,17 @@ def test_edit_without_plan_when_write_precedes_emit_plan() -> None:
     assert edit_without_plan(calls)
 
 
+def test_edit_without_plan_includes_targeted_replacement() -> None:
+    calls = [
+        ToolCallRecord(
+            name="replace_text",
+            arguments={"path": "calc.py"},
+            result={"path": "calc.py", "replacement_count": 1},
+        )
+    ]
+    assert edit_without_plan(calls)
+
+
 def test_edit_without_plan_false_after_successful_emit_plan() -> None:
     calls = [
         ToolCallRecord(

@@ -1,4 +1,4 @@
-"""Read-only code exploration tools bound to a jailed `Workspace`.
+"""Code exploration and editing tools bound to a workspace.
 
 Each tool resolves paths under the workspace root, logs invocations, and returns
 structured results (repo-relative paths, line numbers) for downstream grounding.
@@ -6,10 +6,14 @@ structured results (repo-relative paths, line numbers) for downstream grounding.
 
 from __future__ import annotations
 
+import difflib
+import hashlib
 import logging
+import os
 import re
 import shutil
 import subprocess
+import tempfile
 from collections.abc import Iterator
 from fnmatch import fnmatch
 from pathlib import Path
@@ -87,6 +91,17 @@ class WriteFileInput(BaseModel):
     content: str = Field(..., description="Full file contents (UTF-8).")
 
 
+class ReplaceTextInput(BaseModel):
+    path: str = Field(..., min_length=1, description="Repo-relative existing file path.")
+    old_text: str = Field(..., min_length=1, description="Exact text to replace once.")
+    new_text: str = Field(..., description="Replacement text; empty string deletes the match.")
+    expected_sha256: str = Field(
+        ...,
+        pattern=r"^[0-9a-f]{64}$",
+        description="Whole-file SHA-256 from read_file. Refuses edits after the file changes.",
+    )
+
+
 class RunCommandInput(BaseModel):
     argv: list[str] = Field(
         ...,
@@ -115,7 +130,7 @@ def _workspace_error(exc: WorkspaceError) -> ToolError:
 
 
 def build_code_tools(workspace: Workspace) -> list[Tool]:
-    """Build read-only code tools bound to a specific workspace."""
+    """Build code tools bound to a specific workspace."""
 
     def read_file(args: ReadFileInput) -> dict[str, Any]:
         log.info("code_tool=read_file path=%s", args.path)
@@ -126,30 +141,51 @@ def build_code_tools(workspace: Workspace) -> list[Tool]:
         if not target.is_file():
             raise ToolError(f"Not a file: {args.path}")
 
-        raw = target.read_bytes()
-        if len(raw) > MAX_READ_BYTES:
-            raise ToolError(
-                f"File exceeds {MAX_READ_BYTES} bytes; narrow with start_line/end_line."
-            )
-        text = raw.decode("utf-8", errors="replace")
-        lines = text.splitlines()
         start = args.start_line or 1
-        end = args.end_line or len(lines)
-        if start > len(lines):
-            raise ToolError(f"start_line {start} beyond file length {len(lines)}")
-        end = min(end, len(lines))
-        if end < start:
+        if args.end_line is not None and args.end_line < start:
             raise ToolError("end_line must be >= start_line")
-        if end - start + 1 > MAX_READ_LINES:
+        if args.end_line is not None and args.end_line - start + 1 > MAX_READ_LINES:
             raise ToolError(f"Line range exceeds {MAX_READ_LINES} lines; narrow the request.")
 
-        slice_lines = lines[start - 1 : end]
+        # Scan the full file for its line count and version hash, retaining only
+        # the requested range. A large file can therefore be read in slices.
+        digest = hashlib.sha256()
+        selected: list[str] = []
+        selected_bytes = 0
+        total_lines = 0
+        with target.open("rb") as stream:
+            for raw_line in stream:
+                digest.update(raw_line)
+                total_lines += 1
+                if total_lines < start or (
+                    args.end_line is not None and total_lines > args.end_line
+                ):
+                    continue
+                if len(selected) >= MAX_READ_LINES:
+                    raise ToolError(
+                        f"Line range exceeds {MAX_READ_LINES} lines; narrow the request."
+                    )
+                selected_bytes += len(raw_line)
+                if selected_bytes > MAX_READ_BYTES:
+                    raise ToolError(
+                        f"Selected range exceeds {MAX_READ_BYTES} bytes; narrow the request."
+                    )
+                selected.append(
+                    raw_line.decode("utf-8", errors="replace").removesuffix("\n").removesuffix("\r")
+                )
+
+        if total_lines and start > total_lines:
+            raise ToolError(f"start_line {start} beyond file length {total_lines}")
+        if not total_lines and start != 1:
+            raise ToolError(f"start_line {start} beyond file length 0")
+        end = min(args.end_line or total_lines, total_lines)
         return {
             "path": workspace.relative_str(target),
             "start_line": start,
             "end_line": end,
-            "content": "\n".join(slice_lines),
-            "total_lines": len(lines),
+            "content": "\n".join(selected),
+            "total_lines": total_lines,
+            "sha256": digest.hexdigest(),
         }
 
     def grep_repo(args: GrepRepoInput) -> list[dict[str, Any]]:
@@ -237,6 +273,68 @@ def build_code_tools(workspace: Workspace) -> list[Tool]:
         target.write_bytes(encoded)
         rel = workspace.relative_str(target)
         return {"path": rel, "bytes_written": len(encoded)}
+
+    def replace_text(args: ReplaceTextInput) -> dict[str, Any]:
+        log.info("code_tool=replace_text path=%s", args.path)
+        try:
+            target = workspace.resolve(args.path, must_exist=True)
+        except WorkspaceError as exc:
+            raise _workspace_error(exc) from exc
+        if not target.is_file():
+            raise ToolError(f"Not a file: {args.path}")
+
+        raw = target.read_bytes()
+        current_sha256 = hashlib.sha256(raw).hexdigest()
+        if current_sha256 != args.expected_sha256:
+            raise ToolError(
+                "File changed since read_file; read the file again before replacing text."
+            )
+        try:
+            before = raw.decode("utf-8")
+        except UnicodeDecodeError as exc:
+            raise ToolError(f"File is not valid UTF-8: {args.path}") from exc
+
+        count = before.count(args.old_text)
+        if count != 1:
+            raise ToolError(f"Expected exactly one old_text match; found {count}.")
+        after = before.replace(args.old_text, args.new_text, 1)
+        encoded = after.encode("utf-8")
+        if len(encoded) > MAX_WRITE_BYTES:
+            raise ToolError(f"Result exceeds {MAX_WRITE_BYTES} bytes.")
+        if encoded == raw:
+            raise ToolError("Replacement would not change the file.")
+
+        diff = "".join(
+            difflib.unified_diff(
+                before.splitlines(keepends=True),
+                after.splitlines(keepends=True),
+                fromfile=f"a/{workspace.relative_str(target)}",
+                tofile=f"b/{workspace.relative_str(target)}",
+            )
+        )
+        # Replace atomically so a failed write leaves the existing file intact.
+        temporary_path: str | None = None
+        try:
+            with tempfile.NamedTemporaryFile(dir=target.parent, delete=False) as temporary:
+                temporary_path = temporary.name
+                temporary.write(encoded)
+            os.chmod(temporary_path, target.stat().st_mode)
+            # Catch changes made while preparing the replacement as well.
+            if hashlib.sha256(target.read_bytes()).hexdigest() != args.expected_sha256:
+                raise ToolError("File changed during replacement; read the file again.")
+            os.replace(temporary_path, target)
+            temporary_path = None
+        finally:
+            if temporary_path is not None:
+                os.unlink(temporary_path)
+
+        return {
+            "path": workspace.relative_str(target),
+            "bytes_written": len(encoded),
+            "replacement_count": 1,
+            "sha256": hashlib.sha256(encoded).hexdigest(),
+            "diff": _truncate_output(diff),
+        }
 
     def run_command(args: RunCommandInput) -> dict[str, Any]:
         log.info("code_tool=run_command argv=%s", args.argv)
@@ -341,6 +439,16 @@ def build_code_tools(workspace: Workspace) -> list[Tool]:
             fn=write_file,
         ),
         Tool(
+            name="replace_text",
+            description=(
+                "Replace one exact text span in an existing UTF-8 file. Read the file first; "
+                "pass its sha256 as expected_sha256. Refuses stale or ambiguous matches "
+                "and returns the applied diff. Prefer this for small edits."
+            ),
+            input_model=ReplaceTextInput,
+            fn=replace_text,
+        ),
+        Tool(
             name="run_command",
             description=(
                 "Run an allowlisted verification command in the workspace root "
@@ -393,12 +501,13 @@ def _grep_ripgrep(
         "rg",
         "--line-number",
         "--no-heading",
+        "--with-filename",
+        "--null",
         f"--max-count={MAX_GREP_HITS}",
-        pattern,
-        str(target),
     ]
     if glob:
-        cmd.insert(-1, f"--glob={glob}")
+        cmd.append(f"--glob={glob}")
+    cmd.extend(["--", pattern, str(target)])
 
     try:
         proc = subprocess.run(  # noqa: S603 — argv allowlist; pattern/path jailed under workspace
@@ -425,11 +534,13 @@ def _grep_ripgrep(
 
 
 def _parse_rg_line(workspace: Workspace, line: str) -> dict[str, Any] | None:
-    # rg --no-heading: path:line:content
-    parts = line.split(":", 2)
-    if len(parts) != 3:
+    # rg --null --with-filename: path\0line:content
+    file_path, separator, rest = line.partition("\x00")
+    if not separator:
         return None
-    file_path, line_no, text = parts
+    line_no, separator, text = rest.partition(":")
+    if not separator or not line_no.isdigit():
+        return None
     abs_path = Path(file_path).resolve()
     try:
         rel = workspace.relative_str(abs_path)

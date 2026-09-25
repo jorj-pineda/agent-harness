@@ -90,7 +90,7 @@ class TurnResponse(BaseModel):
     memory_writes: list[str] = Field(default_factory=list)
     files_touched: list[str] = Field(
         default_factory=list,
-        description="Repo-relative paths edited this turn (coding agent; populated in Phase 4+).",
+        description="Repo-relative paths edited by file tools this turn.",
     )
     verification_ran: bool = Field(
         default=False,
@@ -98,7 +98,7 @@ class TurnResponse(BaseModel):
     )
     patch_summary: list[str] = Field(
         default_factory=list,
-        description="Human-readable write_file summaries for this turn (path + bytes written).",
+        description="Human-readable summaries of successful file-tool edits this turn.",
     )
     provider: str
     latency_ms: float
