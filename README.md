@@ -44,6 +44,13 @@ Every response ships one envelope — `{answer, confidence, citations, escalated
 
 **Ripgrep-first search.** Default demo needs no embed model; deferred semantic path in [tools/semantic.py](tools/semantic.py).
 
+**Targeted edits.** `read_file` now returns a whole-file `sha256`, including when
+reading a small range of a large file. `replace_text` takes that hash and one
+exact `old_text` span, refuses stale or ambiguous edits, and returns a diff.
+`write_file` remains available for new files or deliberate full replacements.
+File-tool edit metadata includes either operation. These mechanics have offline
+regression coverage; model-level success still requires real coding evaluations.
+
 **Planning + patch trace.** `emit_plan` records steps before edits; `patch_summary` lists successful writes. Optional gates: `REQUIRE_PLAN_BEFORE_EDIT`, `REQUIRE_VERIFICATION_BEFORE_FINISH`.
 
 **Local agent panel.** A Typer CLI (`agent-harness serve`/`chat`) and a zero-build static panel (`ui/`) make the envelope legible — tool cards stream in live over SSE (`GET /chat/stream`). Both are thin HTTP clients; the ReAct loop is never duplicated in the frontend.
