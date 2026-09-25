@@ -10,6 +10,8 @@ log = logging.getLogger(__name__)
 
 EMIT_PLAN_TOOL_NAME = "emit_plan"
 WRITE_FILE_TOOL_NAME = "write_file"
+REPLACE_TEXT_TOOL_NAME = "replace_text"
+EDIT_TOOL_NAMES = frozenset({WRITE_FILE_TOOL_NAME, REPLACE_TEXT_TOOL_NAME})
 RUN_COMMAND_TOOL_NAME = "run_command"
 
 VERIFICATION_ROOT_COMMANDS = frozenset({"pytest", "ruff", "mypy"})
@@ -30,7 +32,7 @@ def harvest_files_touched(tool_calls: list[ToolCallRecord]) -> list[str]:
     touched: list[str] = []
     seen: set[str] = set()
     for call in tool_calls:
-        if call.name != WRITE_FILE_TOOL_NAME or call.error is not None:
+        if call.name not in EDIT_TOOL_NAMES or call.error is not None:
             continue
         result = call.result
         if not isinstance(result, dict):
@@ -44,10 +46,10 @@ def harvest_files_touched(tool_calls: list[ToolCallRecord]) -> list[str]:
 
 
 def harvest_patch_summary(tool_calls: list[ToolCallRecord]) -> list[str]:
-    """One-line summaries for each successful write_file this turn."""
+    """One-line summaries for each successful file edit this turn."""
     summaries: list[str] = []
     for call in tool_calls:
-        if call.name != WRITE_FILE_TOOL_NAME or call.error is not None:
+        if call.name not in EDIT_TOOL_NAMES or call.error is not None:
             continue
         result = call.result
         if not isinstance(result, dict):
@@ -56,7 +58,9 @@ def harvest_patch_summary(tool_calls: list[ToolCallRecord]) -> list[str]:
         bytes_written = result.get("bytes_written")
         if not isinstance(path, str) or not path:
             continue
-        if isinstance(bytes_written, int):
+        if call.name == REPLACE_TEXT_TOOL_NAME:
+            summaries.append(f"{path} (replaced 1 text span)")
+        elif isinstance(bytes_written, int):
             summaries.append(f"{path} ({bytes_written} bytes written)")
         else:
             summaries.append(path)

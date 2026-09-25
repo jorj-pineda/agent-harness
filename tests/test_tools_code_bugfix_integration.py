@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import shutil
 from pathlib import Path
 
@@ -93,6 +94,57 @@ async def test_bugfix_read_write_pytest_on_fixture_repo(broken_repo: Path) -> No
     assert isinstance(result, dict)
     assert result.get("success") is True
 
+    assert (broken_repo / "calc.py").read_text(encoding="utf-8") == FIXED_CALC
+
+
+async def test_bugfix_read_replace_pytest_tracks_targeted_edit(broken_repo: Path) -> None:
+    original = (broken_repo / "calc.py").read_bytes()
+    provider = ScriptedProvider()
+    provider.script(
+        make_response(
+            tool_calls=[ToolCall(id="r1", name="read_file", arguments={"path": "calc.py"})],
+            finish_reason="tool_use",
+        ),
+        make_response(
+            tool_calls=[
+                ToolCall(
+                    id="r2",
+                    name="replace_text",
+                    arguments={
+                        "path": "calc.py",
+                            "old_text": "return 0.0  # intentional bug — Phase 4 e2e tests fix with write_file + pytest",
+                        "new_text": "return a / b",
+                        "expected_sha256": hashlib.sha256(original).hexdigest(),
+                    },
+                )
+            ],
+            finish_reason="tool_use",
+        ),
+        make_response(
+            tool_calls=[
+                ToolCall(
+                    id="r3",
+                    name="run_command",
+                    arguments={"argv": ["pytest", "test_calc.py", "-q"]},
+                )
+            ],
+            finish_reason="tool_use",
+        ),
+        make_response(content="Fixed the division bug; the test passes."),
+    )
+    registry = ToolRegistry()
+    register_code_tools(registry, workspace=Workspace(root=broken_repo))
+    response = await run_turn(
+        session=Session(user_id="dev"),
+        user_input="Fix divide",
+        provider=provider,
+        registry=registry,
+        grounder=Grounder(escalation_threshold=0.55),
+    )
+    assert response.files_touched == ["calc.py"]
+    assert response.patch_summary == ["calc.py (replaced 1 text span)"]
+    assert response.verification_ran is True
+    assert response.tool_calls[1].error is None
     assert (broken_repo / "calc.py").read_text(encoding="utf-8") == FIXED_CALC
 
 
