@@ -46,10 +46,18 @@ The harness does not need to make every model good at every task. It needs to id
   files touched and patch summaries. This covers item 2 in the implementation
   sequence. Ignored-path parity, explicit search truncation metadata, and managed
   command execution remain Milestone 2 work.
-- **Next:** managed execution and disposable workspaces (item 3). Real-workspace
-  benchmarks, completion recovery, model profiles, and context management remain
-  unimplemented. Tool improvements alone are not evidence of better model coding
-  performance.
+- **2026-09-26 — Third implementation slice prepared:** code-tool subprocesses
+  now use async managed processes with bounded captured output, per-command
+  deadlines, and process-group termination on POSIX when timed out or cancelled.
+  A disposable workspace helper copies trusted fixtures and reports added,
+  modified, and deleted files, including files created by commands. The copy
+  omits `.env` files and passes only a small default command environment. The
+  current eval runner does not use this helper yet; the five-task real evaluator
+  will integrate it. This is not OS-level isolation for unfamiliar repository
+  code, and the API still lacks a run cancellation endpoint.
+- **Next:** the five-task real evaluator (item 4). Completion recovery, model
+  profiles, and context management remain unimplemented. These execution
+  improvements alone are not evidence of better model coding performance.
 
 ### Review baseline
 
@@ -124,7 +132,7 @@ The first baseline can use one already-supported provider. Configurable endpoint
 - [ ] Retain whole-file writes for new files and deliberate replacements; use atomic writes where possible.
 - [ ] Record the initial working-tree state and derive actual agent changes from snapshots/diffs, including changes made by commands and new untracked files.
 - [ ] Prevent overlapping writers to the same workspace and serialize turns within a session.
-- [ ] Replace worker-thread subprocess execution with managed processes: bounded output capture, explicit timeout, process-tree termination, and cancellation.
+- [x] Replace code-tool worker-thread subprocess execution with managed processes: bounded output capture, explicit timeout, process-group termination on POSIX, and cancellation.
 - [ ] Align tool, provider, turn, and client timeouts so a reported timeout has a defined effect.
 - [ ] Use disposable execution environments for evaluations. Provide an explicit local workspace mode for trusted projects and an isolated mode before running unfamiliar repository code.
 - [ ] Keep model-provider credentials in the orchestrator; expose only explicitly configured environment variables and mounts to repository commands.
