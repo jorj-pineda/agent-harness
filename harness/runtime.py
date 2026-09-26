@@ -50,8 +50,14 @@ def build_registry(
     return registry
 
 
-def refresh_system_message(session: Session, fact_store: FactStore, user_id: str) -> None:
-    blocks = [BASE_SYSTEM_PROMPT]
+def refresh_system_message(
+    session: Session,
+    fact_store: FactStore,
+    user_id: str,
+    *,
+    system_prompt: str = BASE_SYSTEM_PROMPT,
+) -> None:
+    blocks = [system_prompt]
     if session.workspace_root:
         blocks.append(f"Workspace root: {session.workspace_root}")
     facts = fact_store.format_for_system_prompt(user_id)
@@ -87,10 +93,11 @@ async def run_configured_turn(
     registry: ToolRegistry,
     grounder: Grounder | None = None,
     on_event: EventCallback | None = None,
+    system_prompt: str = BASE_SYSTEM_PROMPT,
 ) -> TurnResponse:
     if is_out_of_scope_request(message):
         return out_of_scope_response()
-    refresh_system_message(session, fact_store, user_id)
+    refresh_system_message(session, fact_store, user_id, system_prompt=system_prompt)
     return await run_turn(
         session=session,
         user_input=message,
