@@ -57,10 +57,10 @@ group on POSIX. Command results report when stdout or stderr was truncated.
 `workspace.disposable_workspace` copies a trusted fixture and compares filesystem
 snapshots to find edits, new files, and deletions, including changes made by tests.
 It excludes `.env` files, and commands receive a small default environment rather
-than provider API keys. The current evaluator has not wired this copy into real
-model tasks. A copy is not a security boundary: executed code can still access
-the host filesystem and network. Do not run unfamiliar repository code with this
-helper until an isolated execution mode exists.
+than provider API keys. The five-task real evaluator uses this copy with actual
+coding tools and external acceptance checks. A copy is not a security boundary:
+executed code can still access the host filesystem and network. Do not run
+unfamiliar repository code with this helper until an isolated execution mode exists.
 
 **Planning + patch trace.** `emit_plan` records steps before edits; `patch_summary` lists successful writes. Optional gates: `REQUIRE_PLAN_BEFORE_EDIT`, `REQUIRE_VERIFICATION_BEFORE_FINISH`.
 
@@ -68,7 +68,7 @@ helper until an isolated execution mode exists.
 
 ### Eval honesty
 
-There are currently two evaluation modes, neither of which executes real coding
+The legacy scenario runner has two modes, neither of which executes real coding
 tasks:
 
 - **`scripted-contract`** (default): fake model responses and simulated tools
@@ -86,8 +86,10 @@ shared setup and should not be compared directly with new runs.
 
 Reports identify these modes and explain the proxy metrics: expected-path recall
 is not patch correctness, and a scripted verification flag is not a passing test
-suite. Real-workspace evaluations with independent acceptance checks are upcoming
-work in the roadmap.
+suite. The separate [five-task real evaluator](evals/real_tasks/README.md) runs
+the shared application runtime with real tools on trusted disposable fixtures,
+then grades the final files with external acceptance tests. It has a same-model
+minimal-prompt mode. No live-model comparison has been run for this change.
 
 Offline eval scores are **scripted** — every provider replays the same YAML tool traces, so headline columns match by construction. They measure harness shape, not model quality. Live runs: `python -m evals.run --live --providers ollama` and [evals/LIVE.md](evals/LIVE.md).
 

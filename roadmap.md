@@ -1,6 +1,6 @@
 # Roadmap: a coding harness for lower-tier models
 
-Updated: 2026-09-25
+Updated: 2026-09-26
 
 ## Direction
 
@@ -52,12 +52,19 @@ The harness does not need to make every model good at every task. It needs to id
   A disposable workspace helper copies trusted fixtures and reports added,
   modified, and deleted files, including files created by commands. The copy
   omits `.env` files and passes only a small default command environment. The
-  current eval runner does not use this helper yet; the five-task real evaluator
-  will integrate it. This is not OS-level isolation for unfamiliar repository
-  code, and the API still lacks a run cancellation endpoint.
-- **Next:** the five-task real evaluator (item 4). Completion recovery, model
-  profiles, and context management remain unimplemented. These execution
-  improvements alone are not evidence of better model coding performance.
+  five-task real evaluator now uses this helper. This is not OS-level isolation
+  for unfamiliar repository code, and the API still lacks a run cancellation
+  endpoint.
+- **2026-09-26 — Fourth implementation slice prepared:** five trusted Python
+  bugfix fixtures now have independent acceptance tests and checked reference
+  solutions. A separate real-task runner uses disposable copies, the application
+  runtime and real coding tools, then grades final files. It records traces,
+  diffs, checks, usage, and latency, with a same-model minimal-prompt mode. No
+  live model comparison has been run; the milestone's model baseline remains open.
+- **Next:** chosen-model connectivity (item 5), followed by a recorded run of
+  the selected model through all five tasks in both modes. Completion recovery,
+  model profiles, and context management remain unimplemented. Offline checks
+  alone are not evidence of better model coding performance.
 
 ### Review baseline
 
@@ -107,13 +114,13 @@ Relevant implementation: `harness/loop.py`, `harness/outcome.py`, `harness/groun
 
 - [x] Extract shared prompt, coding-tool definitions, memory injection, and policy/configuration setup for the API/CLI backend and live-model smoke runner. Model profiles remain part of Milestone 4; the real-task runner will reuse this setup.
 - [x] Keep existing scripted scenarios as harness contract tests; label real-model/scripted-tool tests separately from end-to-end coding evaluations.
-- [ ] Create five small Python bugfix tasks, each with an immutable starting fixture, task request, setup instructions, and externally controlled acceptance checks.
-- [ ] Give every attempt a fresh disposable repository copy and real read, search, edit, and command tools.
-- [ ] Verify that the relevant acceptance check fails on the initial fixture and passes for a known reference solution.
-- [ ] Keep authoritative acceptance checks outside the agent's editable workspace. Changes to visible tests must not redefine success.
-- [ ] Evaluate the final artifact for behavior and regressions; do not require the model to match a reference patch's text or exact filenames.
-- [ ] Capture task ID, starting revision, model/endpoint identity, prompt/profile version, tool trace, final diff, check results, termination reason, usage, and latency.
-- [ ] Add a minimal baseline mode using the same model, task, safe execution environment, and comparable budget.
+- [x] Create five small Python bugfix tasks, each with an immutable starting fixture, task request, setup instructions, and externally controlled acceptance checks.
+- [x] Give every attempt a fresh disposable repository copy and real read, search, edit, and command tools.
+- [x] Verify that the relevant acceptance check fails on the initial fixture and passes for a known reference solution.
+- [x] Keep authoritative acceptance checks outside the agent's editable workspace. Changes to visible tests must not redefine success.
+- [x] Evaluate the final artifact for behavior and regressions; do not require the model to match a reference patch's text or exact filenames.
+- [x] Capture task ID, starting revision, model/endpoint identity, prompt/profile version, tool trace, final diff, check results, termination reason, usage, and latency.
+- [x] Add a minimal baseline mode using the same model, task, trusted disposable workspace, and comparable budget.
 - [ ] Add a configurable OpenAI-compatible endpoint path where supported, retaining dedicated adapters when a backend needs them. Keep credentials out of traces.
 
 The first baseline can use one already-supported provider. Configurable endpoints should unblock Jorge's chosen hosted models before expanding the benchmark; do not build an exhaustive provider catalog first.
