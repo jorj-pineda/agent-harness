@@ -27,6 +27,7 @@ class Tool:
     description: str
     input_model: type[BaseModel]
     fn: Callable[..., Any]
+    timeout_seconds: float | None = None
 
     def to_spec(self) -> ToolSpec:
         return ToolSpec(

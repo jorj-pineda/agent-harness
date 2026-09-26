@@ -51,7 +51,7 @@ class ToolRegistry:
         name: str,
         arguments: dict[str, Any],
         *,
-        timeout: float = DEFAULT_INVOKE_TIMEOUT_S,  # noqa: ASYNC109  (library-level default; callers may still wrap with asyncio.timeout)
+        timeout: float | None = None,  # noqa: ASYNC109 — public override for tool deadlines
     ) -> Any:
         tool = self.get(name)
 
@@ -60,8 +60,11 @@ class ToolRegistry:
         except ValidationError as exc:
             raise ToolError(f"Invalid arguments for tool {name!r}: {exc}") from exc
 
+        effective_timeout = timeout if timeout is not None else tool.timeout_seconds
+        if effective_timeout is None:
+            effective_timeout = DEFAULT_INVOKE_TIMEOUT_S
         try:
-            async with asyncio.timeout(timeout):
+            async with asyncio.timeout(effective_timeout):
                 if inspect.iscoroutinefunction(tool.fn):
                     return await tool.fn(validated)
                 # Run sync tools in a worker thread so the event loop stays
@@ -69,7 +72,7 @@ class ToolRegistry:
                 # returns to the harness on schedule.
                 return await asyncio.to_thread(tool.fn, validated)
         except TimeoutError as exc:
-            raise ToolError(f"Tool {name!r} timed out after {timeout}s") from exc
+            raise ToolError(f"Tool {name!r} timed out after {effective_timeout}s") from exc
         except ToolError:
             raise
         except Exception as exc:
