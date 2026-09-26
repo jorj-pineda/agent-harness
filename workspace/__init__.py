@@ -1,7 +1,14 @@
-"""Sandboxed workspace root — all code-tool paths resolve under here."""
+"""Workspace path guards and disposable copies for trusted tasks."""
 
 from __future__ import annotations
 
 from .core import Workspace, WorkspaceError
+from .disposable import DisposableWorkspace, WorkspaceChanges, disposable_workspace
 
-__all__ = ["Workspace", "WorkspaceError"]
+__all__ = [
+    "DisposableWorkspace",
+    "Workspace",
+    "WorkspaceChanges",
+    "WorkspaceError",
+    "disposable_workspace",
+]

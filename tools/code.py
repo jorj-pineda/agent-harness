@@ -12,9 +12,8 @@ import logging
 import os
 import re
 import shutil
-import subprocess
 import tempfile
-from collections.abc import Iterator
+from collections.abc import Iterator, Mapping
 from fnmatch import fnmatch
 from pathlib import Path
 from typing import Any
@@ -24,6 +23,7 @@ from pydantic import BaseModel, Field
 from workspace import Workspace, WorkspaceError
 
 from .base import Tool, ToolError
+from .process import ProcessTimeoutError, command_environment, run_process
 from .registry import ToolRegistry
 
 log = logging.getLogger(__name__)
@@ -38,6 +38,7 @@ GIT_TIMEOUT_S = 15.0
 RUN_COMMAND_TIMEOUT_S = 120.0
 MAX_WRITE_BYTES = 512_000
 MAX_COMMAND_OUTPUT_CHARS = 32_000
+MAX_GREP_OUTPUT_BYTES = 2_000_000
 
 ALLOWED_ROOT_COMMANDS = frozenset({"pytest", "ruff", "mypy", "git", "python"})
 ALLOWED_GIT_SUBCOMMANDS = frozenset({"diff", "status", "show"})
@@ -129,7 +130,9 @@ def _workspace_error(exc: WorkspaceError) -> ToolError:
     return ToolError(str(exc))
 
 
-def build_code_tools(workspace: Workspace) -> list[Tool]:
+def build_code_tools(
+    workspace: Workspace, *, command_env: Mapping[str, str] | None = None
+) -> list[Tool]:
     """Build code tools bound to a specific workspace."""
 
     def read_file(args: ReadFileInput) -> dict[str, Any]:
@@ -188,7 +191,7 @@ def build_code_tools(workspace: Workspace) -> list[Tool]:
             "sha256": digest.hexdigest(),
         }
 
-    def grep_repo(args: GrepRepoInput) -> list[dict[str, Any]]:
+    async def grep_repo(args: GrepRepoInput) -> list[dict[str, Any]]:
         log.info("code_tool=grep_repo pattern=%r path=%s", args.pattern, args.path)
         try:
             target = workspace.resolve(args.path, must_exist=True)
@@ -196,7 +199,7 @@ def build_code_tools(workspace: Workspace) -> list[Tool]:
             raise _workspace_error(exc) from exc
 
         if shutil.which("rg"):
-            return _grep_ripgrep(workspace, target, args.pattern, args.glob)
+            return await _grep_ripgrep(workspace, target, args.pattern, args.glob, command_env)
 
         try:
             regex = re.compile(args.pattern)
@@ -240,11 +243,11 @@ def build_code_tools(workspace: Workspace) -> list[Tool]:
                 break
         return rows
 
-    def git_status(_args: GitStatusInput) -> dict[str, str]:
+    async def git_status(_args: GitStatusInput) -> dict[str, str | bool]:
         log.info("code_tool=git_status")
-        return _run_git(workspace, ["status", "--porcelain"])
+        return await _run_git(workspace, ["status", "--porcelain"], command_env)
 
-    def git_diff(args: GitDiffInput) -> dict[str, str]:
+    async def git_diff(args: GitDiffInput) -> dict[str, str | bool]:
         log.info("code_tool=git_diff path=%s", args.path)
         cmd = ["diff", "--no-color"]
         if args.path is not None:
@@ -254,7 +257,7 @@ def build_code_tools(workspace: Workspace) -> list[Tool]:
                 cmd.append(workspace.relative_str(resolved))
             except WorkspaceError as exc:
                 raise _workspace_error(exc) from exc
-        return _run_git(workspace, cmd)
+        return await _run_git(workspace, cmd, command_env)
 
     def write_file(args: WriteFileInput) -> dict[str, Any]:
         log.info("code_tool=write_file path=%s bytes=%d", args.path, len(args.content.encode()))
@@ -336,32 +339,33 @@ def build_code_tools(workspace: Workspace) -> list[Tool]:
             "diff": _truncate_output(diff),
         }
 
-    def run_command(args: RunCommandInput) -> dict[str, Any]:
+    async def run_command(args: RunCommandInput) -> dict[str, Any]:
         log.info("code_tool=run_command argv=%s", args.argv)
         argv = [str(token) for token in args.argv]
         _validate_command_argv(argv)
         executable = argv[0]
-        if shutil.which(executable) is None:
+        if shutil.which(executable, path=command_environment(command_env).get("PATH")) is None:
             raise ToolError(f"Command not found on PATH: {executable}")
 
         try:
-            proc = subprocess.run(  # noqa: S603 — argv validated against allowlist; cwd jailed
+            proc = await run_process(
                 argv,
-                cwd=str(workspace.root),
-                capture_output=True,
-                text=True,
-                timeout=RUN_COMMAND_TIMEOUT_S,
-                check=False,
+                cwd=workspace.root,
+                timeout_seconds=RUN_COMMAND_TIMEOUT_S,
+                output_limit=MAX_COMMAND_OUTPUT_CHARS,
+                env=command_env,
             )
-        except subprocess.TimeoutExpired as exc:
-            raise ToolError(f"run_command timed out after {RUN_COMMAND_TIMEOUT_S}s") from exc
+        except ProcessTimeoutError as exc:
+            raise ToolError(str(exc)) from exc
 
         return {
             "argv": argv,
-            "exit_code": proc.returncode,
-            "stdout": _truncate_output(proc.stdout),
-            "stderr": _truncate_output(proc.stderr),
-            "success": proc.returncode == 0,
+            "exit_code": proc.exit_code,
+            "stdout": proc.stdout,
+            "stderr": proc.stderr,
+            "stdout_truncated": proc.stdout_truncated,
+            "stderr_truncated": proc.stderr_truncated,
+            "success": proc.exit_code == 0,
         }
 
     def emit_plan(args: EmitPlanInput) -> dict[str, Any]:
@@ -457,13 +461,19 @@ def build_code_tools(workspace: Workspace) -> list[Tool]:
             ),
             input_model=RunCommandInput,
             fn=run_command,
+            timeout_seconds=RUN_COMMAND_TIMEOUT_S + 5.0,
         ),
     ]
 
 
-def register_code_tools(registry: ToolRegistry, *, workspace: Workspace) -> None:
+def register_code_tools(
+    registry: ToolRegistry,
+    *,
+    workspace: Workspace,
+    command_env: Mapping[str, str] | None = None,
+) -> None:
     """Register code tools (read, write, verify) on the given registry."""
-    for tool in build_code_tools(workspace):
+    for tool in build_code_tools(workspace, command_env=command_env):
         registry.register(tool)
 
 
@@ -491,11 +501,12 @@ def _truncate_output(text: str) -> str:
     return text[:MAX_COMMAND_OUTPUT_CHARS] + "\n...(truncated)"
 
 
-def _grep_ripgrep(
+async def _grep_ripgrep(
     workspace: Workspace,
     target: Path,
     pattern: str,
     glob: str | None,
+    command_env: Mapping[str, str] | None,
 ) -> list[dict[str, Any]]:
     cmd = [
         "rg",
@@ -510,17 +521,19 @@ def _grep_ripgrep(
     cmd.extend(["--", pattern, str(target)])
 
     try:
-        proc = subprocess.run(  # noqa: S603 — argv allowlist; pattern/path jailed under workspace
+        proc = await run_process(
             cmd,
-            capture_output=True,
-            text=True,
-            timeout=GREP_TIMEOUT_S,
-            check=False,
+            cwd=workspace.root,
+            timeout_seconds=GREP_TIMEOUT_S,
+            output_limit=MAX_GREP_OUTPUT_BYTES,
+            env=command_env,
         )
-    except subprocess.TimeoutExpired as exc:
-        raise ToolError(f"grep_repo timed out after {GREP_TIMEOUT_S}s") from exc
+    except ProcessTimeoutError as exc:
+        raise ToolError(str(exc)) from exc
 
-    if proc.returncode not in (0, 1):
+    if proc.stdout_truncated:
+        raise ToolError("grep_repo output exceeded limit; narrow the path or glob.")
+    if proc.exit_code not in (0, 1):
         raise ToolError(f"rg failed: {proc.stderr.strip() or proc.stdout.strip()}")
 
     hits: list[dict[str, Any]] = []
@@ -614,24 +627,33 @@ def _walk_tree(
     yield from _walk(target, 0)
 
 
-def _run_git(workspace: Workspace, git_args: list[str]) -> dict[str, str]:
+async def _run_git(
+    workspace: Workspace,
+    git_args: list[str],
+    command_env: Mapping[str, str] | None,
+) -> dict[str, str | bool]:
     git_dir = workspace.root / ".git"
     if not git_dir.exists():
         raise ToolError("Not a git repository (no .git directory in workspace root).")
 
     cmd = ["git", "-C", str(workspace.root), *git_args]
     try:
-        proc = subprocess.run(  # noqa: S603 — argv allowlist; pattern/path jailed under workspace
+        proc = await run_process(
             cmd,
-            capture_output=True,
-            text=True,
-            timeout=GIT_TIMEOUT_S,
-            check=False,
+            cwd=workspace.root,
+            timeout_seconds=GIT_TIMEOUT_S,
+            output_limit=MAX_COMMAND_OUTPUT_CHARS,
+            env=command_env,
         )
-    except subprocess.TimeoutExpired as exc:
-        raise ToolError(f"git timed out after {GIT_TIMEOUT_S}s") from exc
+    except ProcessTimeoutError as exc:
+        raise ToolError(str(exc)) from exc
 
-    if proc.returncode not in (0, 1):
+    if proc.exit_code not in (0, 1):
         raise ToolError(f"git failed: {proc.stderr.strip() or proc.stdout.strip()}")
 
-    return {"stdout": proc.stdout, "stderr": proc.stderr}
+    return {
+        "stdout": proc.stdout,
+        "stderr": proc.stderr,
+        "stdout_truncated": proc.stdout_truncated,
+        "stderr_truncated": proc.stderr_truncated,
+    }

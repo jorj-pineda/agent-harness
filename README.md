@@ -24,7 +24,7 @@ api/            FastAPI server — thin HTTP wrapper, per-request tool registry
         ├── grounding/   confidence heuristic, file:line citations, escalation
         ├── memory/      per-user FactStore (SQLite), system-prompt injection
         ├── tools/       read/grep/edit/verify + memory (support tools optional)
-        ├── workspace/   sandboxed repo root, path jail
+        ├── workspace/   repo path guard and disposable workspace copies
         └── providers/   Ollama / Anthropic / OpenAI behind one interface
 ```
 
@@ -40,7 +40,7 @@ Every response ships one envelope — `{answer, confidence, citations, escalated
 
 **Cross-session repo memory.** [memory/store.py](memory/store.py) persists facts per `user_id`; [api/server.py](api/server.py) injects them at turn start. Memory tools are factory-bound to the session user — no cross-user leakage.
 
-**Workspace sandbox + policy.** Path-jailed code tools under `workspace_root`; [harness/policy.py](harness/policy.py) classifies task kind and refuses unsafe scope; `MAX_FILES_TOUCHED_PER_TURN` caps drive-by refactors.
+**Workspace path guard + policy.** Code tools resolve paths under `workspace_root`; [harness/policy.py](harness/policy.py) classifies task kind and flags unsafe scope; `MAX_FILES_TOUCHED_PER_TURN` flags oversized edits after the turn. These controls do not isolate code executed by tests.
 
 **Ripgrep-first search.** Default demo needs no embed model; deferred semantic path in [tools/semantic.py](tools/semantic.py).
 
@@ -50,6 +50,17 @@ exact `old_text` span, refuses stale or ambiguous edits, and returns a diff.
 `write_file` remains available for new files or deliberate full replacements.
 File-tool edit metadata includes either operation. These mechanics have offline
 regression coverage; model-level success still requires real coding evaluations.
+
+**Managed commands and disposable copies.** Code-tool commands now run as async
+processes with bounded output. Timeouts and cancellation terminate their process
+group on POSIX. Command results report when stdout or stderr was truncated.
+`workspace.disposable_workspace` copies a trusted fixture and compares filesystem
+snapshots to find edits, new files, and deletions, including changes made by tests.
+It excludes `.env` files, and commands receive a small default environment rather
+than provider API keys. The current evaluator has not wired this copy into real
+model tasks. A copy is not a security boundary: executed code can still access
+the host filesystem and network. Do not run unfamiliar repository code with this
+helper until an isolated execution mode exists.
 
 **Planning + patch trace.** `emit_plan` records steps before edits; `patch_summary` lists successful writes. Optional gates: `REQUIRE_PLAN_BEFORE_EDIT`, `REQUIRE_VERIFICATION_BEFORE_FINISH`.
 
