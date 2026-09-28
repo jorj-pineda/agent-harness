@@ -382,6 +382,8 @@ async def _run_one(
         prompt_version=PROMPT_VERSION if live else None,
         runtime_config={
             "max_tool_iterations": settings.max_tool_iterations,
+            "max_tool_calls_per_turn": settings.max_tool_calls_per_turn,
+            "max_identical_tool_calls": settings.max_identical_tool_calls,
             "max_completion_retries": settings.max_completion_retries,
             "project_check_argv": settings.project_check_argv,
             "require_plan_before_edit": settings.require_plan_before_edit,
