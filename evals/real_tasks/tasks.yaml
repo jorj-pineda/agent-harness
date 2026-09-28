@@ -1,0 +1,15 @@
+- id: divide_zero
+  fixture: divide_zero
+  request: Fix divide so it performs real division and preserves Python's zero-division error.
+- id: slugify
+  fixture: slugify
+  request: Fix slugify so punctuation and repeated whitespace produce clean lowercase ASCII slugs.
+- id: stable_dedupe
+  fixture: stable_dedupe
+  request: Fix dedupe so it removes repeated values without changing the order of first appearances.
+- id: decimal_total
+  fixture: decimal_total
+  request: Fix total_cents for decimal price strings, including half-up cent rounding.
+- id: parse_flags
+  fixture: parse_flags
+  request: Fix parse_flags to skip blank/comment lines, strip surrounding whitespace, and keep equals signs inside values.
