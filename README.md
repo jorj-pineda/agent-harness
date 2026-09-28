@@ -84,12 +84,22 @@ application escalation threshold unless `--escalation-threshold` overrides it.
 Offline contracts retain their 0.50 default. Historical live results predate this
 shared setup and should not be compared directly with new runs.
 
+The application and real-task evaluator also share chat provider configuration.
+`OLLAMA_HOST` and `OLLAMA_MODEL` select a local model. For an OpenAI-compatible
+chat endpoint, set `OPENAI_COMPATIBLE_BASE_URL` and
+`OPENAI_COMPATIBLE_MODEL`, plus `OPENAI_COMPATIBLE_API_KEY` if required; then
+set `DEFAULT_PROVIDER=openai_compatible` for the app or pass
+`--provider openai_compatible` to the evaluator. Endpoint URLs must not contain
+credentials. This path uses chat completions with function tools; endpoint
+compatibility should be checked with a real model before relying on it.
+
 Reports identify these modes and explain the proxy metrics: expected-path recall
 is not patch correctness, and a scripted verification flag is not a passing test
 suite. The separate [five-task real evaluator](evals/real_tasks/README.md) runs
 the shared application runtime with real tools on trusted disposable fixtures,
 then grades the final files with external acceptance tests. It has a same-model
-minimal-prompt mode. No live-model comparison has been run for this change.
+minimal-prompt mode. In the first local smoke comparison, `gemma4:12b` passed
+`divide_zero` once in each mode; this does not establish an overall advantage.
 
 Offline eval scores are **scripted** — every provider replays the same YAML tool traces, so headline columns match by construction. They measure harness shape, not model quality. Live runs: `python -m evals.run --live --providers ollama` and [evals/LIVE.md](evals/LIVE.md).
 

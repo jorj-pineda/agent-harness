@@ -1,6 +1,6 @@
 # Roadmap: a coding harness for lower-tier models
 
-Updated: 2026-09-26
+Updated: 2026-09-28
 
 ## Direction
 
@@ -61,10 +61,17 @@ The harness does not need to make every model good at every task. It needs to id
   runtime and real coding tools, then grades final files. It records traces,
   diffs, checks, usage, and latency, with a same-model minimal-prompt mode. No
   live model comparison has been run; the milestone's model baseline remains open.
-- **Next:** chosen-model connectivity (item 5), followed by a recorded run of
-  the selected model through all five tasks in both modes. Completion recovery,
-  model profiles, and context management remain unimplemented. Offline checks
-  alone are not evidence of better model coding performance.
+- **2026-09-28 — Fifth implementation slice prepared:** application and real-task
+  evaluation now construct chat providers from one settings path. A configured
+  OpenAI-compatible URL/model/key can be selected beside Ollama and dedicated
+  adapters. Local `gemma4:12b` passed the `divide_zero` task once in harness
+  mode and once in minimal-prompt mode, on the same starting revision and
+  runtime budget. Each used four tools; the agent did not run a check, but the
+  external acceptance check passed. These are two smoke observations, not a
+  measured improvement. A full five-task, repeated baseline remains open.
+- **Next:** completion and recovery (item 6). A full selected-model baseline,
+  model profiles, and context management remain open. Offline checks alone are
+  not evidence of better model coding performance.
 
 ### Review baseline
 
@@ -121,7 +128,7 @@ Relevant implementation: `harness/loop.py`, `harness/outcome.py`, `harness/groun
 - [x] Evaluate the final artifact for behavior and regressions; do not require the model to match a reference patch's text or exact filenames.
 - [x] Capture task ID, starting revision, model/endpoint identity, prompt/profile version, tool trace, final diff, check results, termination reason, usage, and latency.
 - [x] Add a minimal baseline mode using the same model, task, trusted disposable workspace, and comparable budget.
-- [ ] Add a configurable OpenAI-compatible endpoint path where supported, retaining dedicated adapters when a backend needs them. Keep credentials out of traces.
+- [x] Add a configurable OpenAI-compatible endpoint path where supported, retaining dedicated adapters when a backend needs them. Keep credentials out of traces.
 
 The first baseline can use one already-supported provider. Configurable endpoints should unblock Jorge's chosen hosted models before expanding the benchmark; do not build an exhaustive provider catalog first.
 
