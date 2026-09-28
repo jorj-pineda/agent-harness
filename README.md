@@ -71,7 +71,12 @@ run a fresh check. The API response adds `verification_status`,
 remains for compatibility. File count limits reject additional file-tool edits
 before mutation. A passing check becomes stale after a later edit, and
 version/help commands do not count as checks. Recognized checks are currently
-pytest, Ruff check, and mypy; project-specific commands remain roadmap work.
+pytest, Ruff check, and mypy. Set `PROJECT_CHECK_ARGV='["pytest","-q"]'`
+and `REQUIRE_VERIFICATION_BEFORE_FINISH=true` to require that exact command
+after the latest edit. The runtime includes it in the system message, and the
+same setting applies to the API and real-task evaluator. Without an explicit
+project check, the previous recognized-command heuristic remains in use; a
+passing unrelated command may therefore appear verified.
 
 **Local agent panel.** A Typer CLI (`agent-harness serve`/`chat`) and a zero-build static panel (`ui/`) make the envelope legible — tool cards stream in live over SSE (`GET /chat/stream`). Both are thin HTTP clients; the ReAct loop is never duplicated in the frontend.
 

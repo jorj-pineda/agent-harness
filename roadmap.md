@@ -76,8 +76,14 @@ The harness does not need to make every model good at every task. It needs to id
   can receive one bounded corrective prompt before an incomplete result. The
   response now reports completion and verification status while retaining old
   fields. Scripted tests cover these mechanics; no model-quality gain is claimed.
-- **Next:** finish item 6 with project-specific check configuration, total
-  budgets, repeated-call handling, and honest partial-work reporting. A full
+- **2026-09-28 — Item 6 follow-up prepared:** an exact project check argv can now
+  be configured in shared settings, shown to the model, and used to decide
+  post-edit verification in both the application and real-task evaluator.
+  Unrelated passing commands cannot satisfy that configured check. Without an
+  explicit command, the historical recognized-command heuristic remains. This
+  is one check command per run, not automatic project detection.
+- **Next:** continue item 6 with total budgets, repeated-call handling, and
+  honest partial-work reporting. A full
   selected-model baseline, model profiles, and context management remain open.
   Offline checks alone are not evidence of better model coding performance.
 
