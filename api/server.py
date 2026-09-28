@@ -42,12 +42,13 @@ from fastapi.staticfiles import StaticFiles
 from data.embed import open_collection
 from harness.grounding import Grounder
 from harness.policy import classify_task, is_out_of_scope_request
+from harness.providers import build_configured_provider, configured_provider_names
 from harness.router import ProviderNotFoundError, ProviderRouter
 from harness.runtime import build_registry, out_of_scope_response, run_configured_turn
 from harness.state import Session, TurnResponse
 from harness.stream import ErrorEvent, EventCallback, StreamEvent, TurnDoneEvent
 from memory import FactStore
-from providers import create_chat_provider, create_embedder
+from providers import create_embedder
 from providers.base import ChatProvider, Embedder
 from tools import ToolRegistry
 from tools.rag import register_rag_tool
@@ -97,29 +98,10 @@ def build_components(settings: Settings) -> Components:
 
 
 def _build_providers(settings: Settings) -> dict[str, ChatProvider]:
-    providers: dict[str, ChatProvider] = {
-        "ollama": create_chat_provider(
-            "ollama",
-            host=settings.ollama_host,
-            model=settings.ollama_model,
-            embed_model=settings.ollama_embed_model,
-            timeout_seconds=float(settings.request_timeout_seconds),
-        )
+    providers = {
+        name: build_configured_provider(name, settings)
+        for name in configured_provider_names(settings)
     }
-    if settings.anthropic_api_key:
-        providers["anthropic"] = create_chat_provider(
-            "anthropic",
-            api_key=settings.anthropic_api_key,
-            model=settings.anthropic_model,
-            timeout_seconds=float(settings.request_timeout_seconds),
-        )
-    if settings.openai_api_key:
-        providers["openai"] = create_chat_provider(
-            "openai",
-            api_key=settings.openai_api_key,
-            model=settings.openai_model,
-            timeout_seconds=float(settings.request_timeout_seconds),
-        )
     if settings.default_provider not in providers:
         raise RuntimeError(
             f"DEFAULT_PROVIDER={settings.default_provider!r} is not configured "

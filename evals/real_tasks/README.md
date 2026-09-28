@@ -20,11 +20,15 @@ uv run python -m evals.real_run --provider ollama --mode harness --report /tmp/r
 uv run python -m evals.real_run --provider ollama --mode minimal --report /tmp/real-minimal.json
 ```
 
-`--task divide_zero` limits either run to one task. Provider model IDs and the
-Ollama endpoint come from the normal application settings. Anthropic and OpenAI
-are also available when their API keys are configured; those calls may incur
-charges. The JSON report records the starting revision hash, provider/model,
-prompt version, runtime configuration, tool trace, final diff, independent check
+`--task divide_zero` limits either run to one task. Provider model IDs and
+endpoints come from the normal application settings. Set `OLLAMA_MODEL` to the
+exact installed tag (for example, `gemma4:12b`) for both the app and evaluator.
+An OpenAI-compatible endpoint can instead use `OPENAI_COMPATIBLE_BASE_URL`,
+`OPENAI_COMPATIBLE_MODEL`, and optionally `OPENAI_COMPATIBLE_API_KEY`, then
+`--provider openai_compatible`. Anthropic and official OpenAI remain available
+when configured; hosted calls may incur charges. The JSON report records the
+starting revision hash, provider/model, prompt version, runtime configuration,
+tool trace, final diff, independent check
 output, termination, usage, and latency. A single run is a baseline observation,
 not evidence of a repeatable model improvement.
 

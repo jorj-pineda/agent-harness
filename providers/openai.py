@@ -45,13 +45,17 @@ class OpenAIProvider:
         api_key: str,
         model: str,
         *,
+        base_url: str | None = None,
+        provider_name: str = "openai",
         timeout_seconds: float = 60.0,
         max_retries: int = 2,
         http_client: httpx.AsyncClient | None = None,
     ) -> None:
+        self.name = provider_name
         self._model = model
         self._client = AsyncOpenAI(
             api_key=api_key,
+            base_url=base_url,
             timeout=timeout_seconds,
             max_retries=max_retries,
             http_client=http_client,
