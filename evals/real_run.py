@@ -23,10 +23,15 @@ import yaml
 from harness.config import Settings, get_settings
 from harness.loop import MAX_ITERATIONS_STUB
 from harness.prompts import BASE_SYSTEM_PROMPT, PROMPT_VERSION
+from harness.providers import (
+    build_configured_provider,
+    configured_model,
+    configured_provider_names,
+    provider_endpoint,
+)
 from harness.runtime import build_registry, run_configured_turn
 from harness.state import Session, ToolCallRecord
 from memory import FactStore
-from providers import create_chat_provider
 from providers.base import ChatMessage, ChatProvider, ProviderResponse, ToolSpec
 from tools.process import ProcessResult, run_process
 from workspace import DisposableWorkspace, disposable_workspace
@@ -247,10 +252,13 @@ async def run_task(
             task_id=task.id,
             mode=mode,
             provider=provider.name,
-            model=observed.model,
-            endpoint=settings.ollama_host
-            if provider.name == "ollama"
-            else f"{provider.name}:default",
+            model=(
+                configured_model(provider.name, settings)
+                if observed.model == "unknown"
+                and provider.name in configured_provider_names(settings)
+                else observed.model
+            ),
+            endpoint=provider_endpoint(provider.name, settings),
             prompt_version="minimal-v1" if mode == "minimal" else PROMPT_VERSION,
             source_revision=_source_revision(copy),
             passed=acceptance.exit_code == 0,
@@ -276,33 +284,6 @@ async def run_task(
         )
 
 
-def _provider(name: str, settings: Settings) -> ChatProvider:
-    timeout = float(settings.request_timeout_seconds)
-    if name == "ollama":
-        return create_chat_provider(
-            name,
-            host=settings.ollama_host,
-            model=settings.ollama_model,
-            embed_model=settings.ollama_embed_model,
-            timeout_seconds=timeout,
-        )
-    if name == "anthropic" and settings.anthropic_api_key:
-        return create_chat_provider(
-            name,
-            api_key=settings.anthropic_api_key,
-            model=settings.anthropic_model,
-            timeout_seconds=timeout,
-        )
-    if name == "openai" and settings.openai_api_key:
-        return create_chat_provider(
-            name,
-            api_key=settings.openai_api_key,
-            model=settings.openai_model,
-            timeout_seconds=timeout,
-        )
-    raise ValueError(f"Provider {name!r} is unavailable or lacks an API key")
-
-
 async def _run_cli(args: argparse.Namespace) -> list[RealTaskResult]:
     tasks = load_tasks()
     selected = [task for task in tasks if args.task is None or task.id == args.task]
@@ -313,7 +294,7 @@ async def _run_cli(args: argparse.Namespace) -> list[RealTaskResult]:
     if args.validate_only:
         return []
     settings = get_settings()
-    provider = _provider(args.provider, settings)
+    provider = build_configured_provider(args.provider, settings)
     try:
         return [
             await run_task(task, provider=provider, settings=settings, mode=args.mode)
@@ -327,7 +308,11 @@ async def _run_cli(args: argparse.Namespace) -> list[RealTaskResult]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Real-tool coding evaluation on trusted fixtures")
-    parser.add_argument("--provider", choices=("ollama", "anthropic", "openai"), default="ollama")
+    parser.add_argument(
+        "--provider",
+        choices=("ollama", "anthropic", "openai", "openai_compatible"),
+        default="ollama",
+    )
     parser.add_argument("--task", help="Run one task ID; default runs all five")
     parser.add_argument("--mode", choices=("harness", "minimal"), default="harness")
     parser.add_argument("--validate-only", action="store_true")

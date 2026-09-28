@@ -41,7 +41,9 @@ def chat(
         None, "--workspace", help="Absolute path to repo root (sets workspace_root on session)."
     ),
     provider: str | None = typer.Option(
-        None, "--provider", help="Provider override: ollama | anthropic | openai."
+        None,
+        "--provider",
+        help="Provider override: ollama | anthropic | openai | openai_compatible.",
     ),
 ) -> None:
     """Interactive REPL — connect to a running agent-harness server and chat."""
