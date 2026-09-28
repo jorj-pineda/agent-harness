@@ -153,3 +153,24 @@ def unresolved_edit_blocks(tool_calls: list[ToolCallRecord]) -> list[str]:
         elif call.error is None:
             blocked.discard(normalized)
     return sorted(blocked)
+
+
+def repeated_unchanged_call(
+    name: str,
+    arguments: dict[str, object],
+    tool_calls: list[ToolCallRecord],
+    *,
+    max_identical: int,
+) -> bool:
+    """Block the next call after identical consecutive requests returned the same outcome."""
+    if max_identical < 1 or len(tool_calls) < max_identical:
+        return False
+    recent = tool_calls[-max_identical:]
+    first = recent[0]
+    return all(
+        call.name == name
+        and call.arguments == arguments
+        and call.result == first.result
+        and call.error == first.error
+        for call in recent
+    )

@@ -254,6 +254,108 @@ async def test_multiple_tool_calls_in_single_response() -> None:
     assert session.messages[3].tool_call_id == "t2"
 
 
+async def test_tool_call_budget_stops_batched_calls_before_dispatch() -> None:
+    provider = FakeProvider(
+        [
+            _response(
+                tool_calls=[
+                    ToolCall(id=f"t{i}", name="echo", arguments={"text": str(i)}) for i in range(4)
+                ]
+            )
+        ]
+    )
+    session = Session()
+    response = await run_turn(
+        session=session,
+        user_input="echo four times",
+        provider=provider,
+        registry=_registry(_echo_tool()),
+        max_tool_calls_per_turn=2,
+    )
+    assert len(provider.calls) == 1
+    assert [call.result for call in response.tool_calls[:2]] == ["0", "1"]
+    assert all(call.error and "not executed" in call.error for call in response.tool_calls[2:])
+    assert [message.role for message in session.messages] == [
+        "user",
+        "assistant",
+        "tool",
+        "tool",
+        "tool",
+        "tool",
+    ]
+    assert response.completion_status == "budget_exhausted"
+    assert "2" in (response.completion_reason or "")
+    assert response.escalated is True
+
+
+async def test_identical_unchanged_call_is_stopped_before_third_execution() -> None:
+    provider = FakeProvider(
+        [
+            _response(tool_calls=[ToolCall(id=f"t{i}", name="echo", arguments={"text": "same"})])
+            for i in range(3)
+        ]
+    )
+    response = await run_turn(
+        session=Session(),
+        user_input="repeat",
+        provider=provider,
+        registry=_registry(_echo_tool()),
+        max_identical_tool_calls=2,
+    )
+    assert [call.result for call in response.tool_calls[:2]] == ["same", "same"]
+    assert response.tool_calls[2].result is None
+    assert response.tool_calls[2].error is not None
+    assert response.completion_status == "blocked"
+    assert "Repeated unchanged" in (response.completion_reason or "")
+
+
+async def test_repeated_identical_tool_errors_stop_before_another_dispatch() -> None:
+    provider = FakeProvider(
+        [
+            _response(tool_calls=[ToolCall(id=f"t{i}", name="missing", arguments={})])
+            for i in range(3)
+        ]
+    )
+    response = await run_turn(
+        session=Session(),
+        user_input="repeat failed call",
+        provider=provider,
+        registry=_registry(),
+        max_identical_tool_calls=2,
+    )
+    assert all("Unknown tool" in (call.error or "") for call in response.tool_calls[:2])
+    assert "not executed" in (response.tool_calls[2].error or "")
+    assert response.completion_status == "blocked"
+
+
+async def test_changed_call_result_does_not_trigger_repeat_gate() -> None:
+    counter = 0
+
+    async def changing(_: EchoInput) -> int:
+        nonlocal counter
+        counter += 1
+        return counter
+
+    provider = FakeProvider(
+        [
+            _response(tool_calls=[ToolCall(id=f"t{i}", name="changing", arguments={"text": "x"})])
+            for i in range(3)
+        ]
+        + [_response(content="done")]
+    )
+    response = await run_turn(
+        session=Session(),
+        user_input="repeat",
+        provider=provider,
+        registry=_registry(
+            Tool(name="changing", description="changes", input_model=EchoInput, fn=changing)
+        ),
+        max_identical_tool_calls=2,
+    )
+    assert [call.result for call in response.tool_calls] == [1, 2, 3]
+    assert response.completion_status == "completed"
+
+
 async def test_multi_iteration_tool_chain() -> None:
     provider = FakeProvider(
         [

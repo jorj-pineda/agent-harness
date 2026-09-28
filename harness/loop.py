@@ -32,7 +32,7 @@ from .grounding import Grounder
 from .memory import harvest_memory_writes
 from .outcome import harvest_files_touched, harvest_patch_summary, verification_status
 from .outcome_types import CompletionStatus
-from .policy import edit_precondition_error, unresolved_edit_blocks
+from .policy import edit_precondition_error, repeated_unchanged_call, unresolved_edit_blocks
 from .state import Session, ToolCallRecord, Turn, TurnResponse
 from .stream import EventCallback, ToolEndEvent, ToolStartEvent
 
@@ -71,6 +71,8 @@ async def run_turn(
     require_verification_before_finish: bool = False,
     require_plan_before_edit: bool = False,
     max_files_touched_per_turn: int = 0,
+    max_tool_calls_per_turn: int = 0,
+    max_identical_tool_calls: int = 0,
     max_completion_retries: int = 0,
     required_check: list[str] | None = None,
     on_event: EventCallback | None = None,
@@ -152,6 +154,8 @@ async def run_turn(
             final_answer = response.content
             break
 
+        stop_reason: str | None = None
+        stop_status: CompletionStatus = "completed"
         for tc in usable_calls:
             if on_event is not None:
                 await on_event(ToolStartEvent(tool=tc.name, arguments=dict(tc.arguments)))
@@ -159,6 +163,21 @@ async def run_turn(
             result: Any = None
             error: str | None = None
             try:
+                if stop_reason is not None:
+                    raise ToolError("Tool not executed: this turn has already stopped.")
+                if max_tool_calls_per_turn > 0 and len(turn.tool_calls) >= max_tool_calls_per_turn:
+                    stop_reason = f"Tool-call limit of {max_tool_calls_per_turn} reached."
+                    stop_status = "budget_exhausted"
+                    raise ToolError(f"Tool not executed: {stop_reason}")
+                if repeated_unchanged_call(
+                    tc.name,
+                    tc.arguments,
+                    turn.tool_calls,
+                    max_identical=max_identical_tool_calls,
+                ):
+                    stop_reason = f"Repeated unchanged call to {tc.name!r}."
+                    stop_status = "blocked"
+                    raise ToolError(f"Tool not executed: {stop_reason}")
                 precondition_error = edit_precondition_error(
                     tc.name,
                     tc.arguments,
@@ -200,6 +219,11 @@ async def run_turn(
                     tool_name=tc.name,
                 )
             )
+        if stop_reason is not None:
+            final_answer = "(tool execution stopped before task completion)"
+            completion_status = stop_status
+            completion_reason = stop_reason
+            break
     else:
         final_answer = MAX_ITERATIONS_STUB
         max_iterations_reached = True
