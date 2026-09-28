@@ -82,8 +82,14 @@ The harness does not need to make every model good at every task. It needs to id
   Unrelated passing commands cannot satisfy that configured check. Without an
   explicit command, the historical recognized-command heuristic remains. This
   is one check command per run, not automatic project detection.
-- **Next:** continue item 6 with total budgets, repeated-call handling, and
-  honest partial-work reporting. A full
+- **2026-09-28 — Item 6 tool-budget slice prepared:** the configured runtime
+  caps tool dispatch across a turn and stops before an unchanged identical
+  call repeats again. Rejected batched calls receive tool errors, and the
+  terminal status and real-task termination label record why execution stopped.
+  This prevents further tool execution without claiming a hard wall-time or
+  token limit; model-level gains have not been measured.
+- **Next:** continue item 6 with wall-time/model-token budgets and honest
+  partial-work reporting. A full
   selected-model baseline, model profiles, and context management remain open.
   Offline checks alone are not evidence of better model coding performance.
 

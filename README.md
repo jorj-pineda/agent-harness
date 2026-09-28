@@ -78,6 +78,13 @@ same setting applies to the API and real-task evaluator. Without an explicit
 project check, the previous recognized-command heuristic remains in use; a
 passing unrelated command may therefore appear verified.
 
+The configured runtime also caps tool attempts per turn with
+`MAX_TOOL_CALLS_PER_TURN` and stops before repeating a tool call whose previous
+`MAX_IDENTICAL_TOOL_CALLS` consecutive outcomes were unchanged. Rejected calls
+remain in the trace with an error, and the response reports `budget_exhausted`
+or `blocked` with a reason. These limits prevent further tool dispatch; they do
+not yet impose a total wall-time or model-token budget.
+
 **Local agent panel.** A Typer CLI (`agent-harness serve`/`chat`) and a zero-build static panel (`ui/`) make the envelope legible — tool cards stream in live over SSE (`GET /chat/stream`). Both are thin HTTP clients; the ReAct loop is never duplicated in the frontend.
 
 ### Eval honesty
