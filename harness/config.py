@@ -4,8 +4,9 @@ from __future__ import annotations
 
 from functools import lru_cache
 from pathlib import Path
+from urllib.parse import urlsplit
 
-from pydantic import Field
+from pydantic import Field, ValidationInfo, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -19,6 +20,8 @@ class Settings(BaseSettings):
     # Providers
     anthropic_api_key: str | None = None
     openai_api_key: str | None = None
+    openai_compatible_api_key: str | None = None
+    openai_compatible_base_url: str | None = None
     ollama_host: str = "http://localhost:11434"
     default_provider: str = "ollama"
 
@@ -27,6 +30,38 @@ class Settings(BaseSettings):
     ollama_embed_model: str = "nomic-embed-text"
     anthropic_model: str = "claude-sonnet-4-6"
     openai_model: str = "gpt-4o-mini"
+    openai_compatible_model: str | None = Field(default=None, validate_default=True)
+
+    @field_validator("openai_compatible_base_url", "openai_compatible_model", mode="before")
+    @classmethod
+    def empty_compatible_setting(cls, value: object) -> object:
+        return None if value == "" else value
+
+    @field_validator("openai_compatible_base_url")
+    @classmethod
+    def validate_compatible_url(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        parsed = urlsplit(value)
+        if (
+            parsed.scheme not in {"http", "https"}
+            or not parsed.hostname
+            or parsed.username
+            or parsed.password
+            or parsed.query
+            or parsed.fragment
+        ):
+            raise ValueError(
+                "OpenAI-compatible base URL must be HTTP(S) without credentials or query"
+            )
+        return value.rstrip("/")
+
+    @field_validator("openai_compatible_model")
+    @classmethod
+    def validate_compatible_pair(cls, value: str | None, info: ValidationInfo) -> str | None:
+        if bool(info.data.get("openai_compatible_base_url")) != bool(value):
+            raise ValueError("OpenAI-compatible base URL and model must be configured together")
+        return value
 
     # Data paths
     sqlite_db_path: Path = Path("data/support.db")
