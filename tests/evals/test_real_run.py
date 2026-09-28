@@ -133,3 +133,27 @@ async def test_minimal_baseline_uses_same_tools_and_budget() -> None:
     assert harness.runtime_config == minimal.runtime_config
     assert harness_provider.calls[0][1] == minimal_provider.calls[0][1]
     assert harness_provider.calls[0][0][0].content != minimal_provider.calls[0][0][0].content
+
+
+async def test_tool_budget_termination_is_separate_from_acceptance() -> None:
+    task = load_tasks()[0]
+    provider = ScriptedProvider()
+    provider.script(
+        make_response(
+            tool_calls=[
+                ToolCall(id="read", name="read_file", arguments={"path": "calc.py"}),
+                ToolCall(id="list", name="list_dir", arguments={"path": "."}),
+            ]
+        )
+    )
+    result = await run_task(
+        task,
+        provider=provider,
+        settings=Settings(_env_file=None, max_tool_calls_per_turn=1),
+        mode="harness",
+    )
+    assert result.passed is False
+    assert result.termination == "budget_exhausted"
+    assert result.completion_status == "budget_exhausted"
+    assert result.tool_trace[0]["error"] is None
+    assert "not executed" in result.tool_trace[1]["error"]
