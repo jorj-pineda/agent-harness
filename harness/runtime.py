@@ -7,6 +7,7 @@ The low-level loop remains available for historical scripted contract tests.
 
 from __future__ import annotations
 
+import json
 from collections.abc import Callable, Iterable, Mapping
 from pathlib import Path
 
@@ -56,8 +57,14 @@ def refresh_system_message(
     user_id: str,
     *,
     system_prompt: str = BASE_SYSTEM_PROMPT,
+    project_check_argv: list[str] | None = None,
 ) -> None:
     blocks = [system_prompt]
+    if project_check_argv is not None:
+        blocks.append(
+            "After editing, run this project check with run_command argv: "
+            f"{json.dumps(project_check_argv)}"
+        )
     if session.workspace_root:
         blocks.append(f"Workspace root: {session.workspace_root}")
     facts = fact_store.format_for_system_prompt(user_id)
@@ -99,7 +106,13 @@ async def run_configured_turn(
 ) -> TurnResponse:
     if is_out_of_scope_request(message):
         return out_of_scope_response()
-    refresh_system_message(session, fact_store, user_id, system_prompt=system_prompt)
+    refresh_system_message(
+        session,
+        fact_store,
+        user_id,
+        system_prompt=system_prompt,
+        project_check_argv=settings.project_check_argv,
+    )
     return await run_turn(
         session=session,
         user_input=message,
@@ -112,5 +125,6 @@ async def run_configured_turn(
         require_plan_before_edit=settings.require_plan_before_edit,
         max_files_touched_per_turn=settings.max_files_touched_per_turn,
         max_completion_retries=settings.max_completion_retries,
+        required_check=settings.project_check_argv,
         on_event=on_event,
     )

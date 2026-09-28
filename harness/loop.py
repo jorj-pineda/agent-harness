@@ -72,6 +72,7 @@ async def run_turn(
     require_plan_before_edit: bool = False,
     max_files_touched_per_turn: int = 0,
     max_completion_retries: int = 0,
+    required_check: list[str] | None = None,
     on_event: EventCallback | None = None,
 ) -> TurnResponse:
     """Drive one user turn to completion via ReAct + tool dispatch.
@@ -120,7 +121,7 @@ async def run_turn(
             break
 
         if not usable_calls:
-            checked = verification_status(turn.tool_calls)
+            checked = verification_status(turn.tool_calls, required_check=required_check)
             edited = bool(harvest_files_touched(turn.tool_calls))
             blocked = unresolved_edit_blocks(turn.tool_calls)
             needs_check = require_verification_before_finish and edited and checked != "passed"
@@ -130,8 +131,14 @@ async def run_turn(
                         f"The edits to {', '.join(blocked)} were blocked. Resolve the tool error "
                         "or report the task as incomplete."
                         if blocked
-                        else "The latest edit is not verified. Run a relevant check after editing, "
-                        "repair any failure, then report the observed result."
+                        else (
+                            f"The latest edit is not verified. Run the configured check "
+                            f"{json.dumps(required_check)} after editing, repair any failure, "
+                            "then report the observed result."
+                            if required_check is not None
+                            else "The latest edit is not verified. Run a relevant check after "
+                            "editing, repair any failure, then report the observed result."
+                        )
                     )
                     session.messages.append(ChatMessage(role="user", content=guidance))
                     completion_retries += 1
@@ -219,7 +226,7 @@ async def run_turn(
 
     files_touched = harvest_files_touched(turn.tool_calls)
     patch_summary = harvest_patch_summary(turn.tool_calls)
-    checked = verification_status(turn.tool_calls)
+    checked = verification_status(turn.tool_calls, required_check=required_check)
     verification_ran = checked == "passed"
     escalated = (grounding.escalated if grounding else False) or completion_status != "completed"
 
