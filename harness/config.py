@@ -9,6 +9,8 @@ from urllib.parse import urlsplit
 from pydantic import Field, ValidationInfo, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from .outcome import is_verification_command
+
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
@@ -72,6 +74,21 @@ class Settings(BaseSettings):
     max_tool_iterations: int = Field(default=8, ge=1, le=32)
     max_completion_retries: int = Field(default=1, ge=0, le=3)
     request_timeout_seconds: int = Field(default=60, ge=1, le=600)
+    project_check_argv: list[str] | None = Field(
+        default=None,
+        description="Exact allowlisted command that must pass after the latest edit.",
+    )
+
+    @field_validator("project_check_argv")
+    @classmethod
+    def validate_project_check(cls, value: list[str] | None) -> list[str] | None:
+        if value is None:
+            return None
+        if not value or any(not token or "\n" in token or "\x00" in token for token in value):
+            raise ValueError("Project check must be a non-empty single-line argv list")
+        if not is_verification_command(value):
+            raise ValueError("Project check must be a pytest, ruff check, or mypy invocation")
+        return value
 
     # Grounding
     confidence_escalation_threshold: float = Field(default=0.55, ge=0.0, le=1.0)
@@ -79,7 +96,7 @@ class Settings(BaseSettings):
     # Coding agent (Phase 4+)
     require_verification_before_finish: bool = Field(
         default=False,
-        description="Escalate when the turn finishes without a successful verification command.",
+        description="Require the configured check after file-tool edits before completion.",
     )
     enable_support_tools: bool = Field(
         default=False,
@@ -89,11 +106,11 @@ class Settings(BaseSettings):
         default=5,
         ge=0,
         le=50,
-        description="Escalate when a turn writes more than this many distinct files (0 disables).",
+        description="Block edits to additional distinct files at this limit (0 disables).",
     )
     require_plan_before_edit: bool = Field(
         default=False,
-        description="Escalate when write_file runs without a prior emit_plan in the same turn.",
+        description="Block file-tool edits until emit_plan succeeds in this turn.",
     )
     default_workspace_root: Path | None = Field(
         default=None,

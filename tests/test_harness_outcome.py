@@ -123,3 +123,23 @@ def test_verification_tracks_latest_edit_and_later_check_failure() -> None:
     assert verification_status([edit, passing, failing]) == "failed"
     assert not harvest_verification_ran([edit, passing, failing])
     assert verification_status([edit, failing, passing]) == "passed"
+
+
+def test_configured_check_requires_exact_argv() -> None:
+    edit = ToolCallRecord(name="write_file", result={"path": "calc.py"})
+    other_check = ToolCallRecord(
+        name="run_command",
+        arguments={"argv": ["ruff", "check", "."]},
+        result={"success": True},
+    )
+    required_check = ToolCallRecord(
+        name="run_command",
+        arguments={"argv": ["pytest", "-q"]},
+        result={"success": True},
+    )
+    assert verification_status([edit, other_check], required_check=["pytest", "-q"]) == "not_run"
+    assert not harvest_verification_ran([edit, other_check], required_check=["pytest", "-q"])
+    assert (
+        verification_status([edit, other_check, required_check], required_check=["pytest", "-q"])
+        == "passed"
+    )
