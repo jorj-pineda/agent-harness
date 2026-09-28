@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 
+from .outcome_types import VerificationStatus
 from .state import ToolCallRecord
 
 log = logging.getLogger(__name__)
@@ -21,7 +22,11 @@ def is_verification_command(argv: list[str]) -> bool:
     """True when argv is an allowlisted verification invocation."""
     if not argv:
         return False
+    if any(arg in {"--version", "-V", "--help", "-h", "--collect-only"} for arg in argv[1:]):
+        return False
     root = argv[0]
+    if root == "ruff":
+        return len(argv) >= 2 and argv[1] == "check"
     if root in VERIFICATION_ROOT_COMMANDS:
         return True
     return root == "python" and len(argv) >= 3 and argv[1] == "-m" and argv[2] == "pytest"
@@ -69,15 +74,26 @@ def harvest_patch_summary(tool_calls: list[ToolCallRecord]) -> list[str]:
 
 
 def harvest_verification_ran(tool_calls: list[ToolCallRecord]) -> bool:
-    """True when an allowlisted verification command exited successfully this turn."""
+    """True when the latest relevant check passed after the latest file edit."""
+    return verification_status(tool_calls) == "passed"
+
+
+def verification_status(tool_calls: list[ToolCallRecord]) -> VerificationStatus:
+    """Summarize the latest check, invalidating it when a later edit succeeds."""
+    status: VerificationStatus = "not_run"
     for call in tool_calls:
-        if call.name != RUN_COMMAND_TOOL_NAME or call.error is not None:
+        if call.name in EDIT_TOOL_NAMES and call.error is None and isinstance(call.result, dict):
+            status = "stale" if status != "not_run" else "not_run"
             continue
-        result = call.result
-        if not isinstance(result, dict) or result.get("success") is not True:
+        if call.name != RUN_COMMAND_TOOL_NAME:
             continue
         argv = call.arguments.get("argv")
-        if isinstance(argv, list) and is_verification_command([str(a) for a in argv]):
-            log.info("outcome_harvest verification_ran=True argv=%s", argv)
-            return True
-    return False
+        if not isinstance(argv, list) or not is_verification_command([str(a) for a in argv]):
+            continue
+        result = call.result
+        status = (
+            "passed"
+            if call.error is None and isinstance(result, dict) and result.get("success") is True
+            else "failed"
+        )
+    return status
