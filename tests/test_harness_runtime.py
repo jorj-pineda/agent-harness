@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
+from pydantic import ValidationError
 
 from harness.config import Settings
 from harness.loop import MAX_ITERATIONS_STUB
@@ -12,6 +13,34 @@ from harness.state import Session
 from memory import FactStore
 from providers.base import ToolCall
 from tests.api.conftest import ScriptedProvider, make_response
+
+
+def test_project_check_settings_accept_json_env_and_reject_non_checks(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("PROJECT_CHECK_ARGV", '["pytest", "-q"]')
+    assert Settings(_env_file=None).project_check_argv == ["pytest", "-q"]
+    monkeypatch.delenv("PROJECT_CHECK_ARGV")
+    for argv in ([], ["pytest", "--version"], ["bash", "-c", "pytest"]):
+        with pytest.raises(ValidationError):
+            Settings(_env_file=None, project_check_argv=argv)
+
+
+async def test_configured_check_is_shown_in_shared_system_prompt(tmp_path: Path) -> None:
+    settings = Settings(_env_file=None, project_check_argv=["pytest", "-q", "test_calc.py"])
+    provider = ScriptedProvider()
+    provider.script(make_response(content="hello"))
+    with FactStore(tmp_path / "memory.db") as store:
+        await run_configured_turn(
+            settings=settings,
+            session=Session(workspace_root=str(tmp_path)),
+            user_id="dev",
+            message="Inspect the code",
+            provider=provider,
+            fact_store=store,
+            registry=build_registry(fact_store=store, user_id="dev", workspace_root=str(tmp_path)),
+        )
+    assert '["pytest", "-q", "test_calc.py"]' in provider.calls[0][0][0].content
 
 
 async def test_runtime_refreshes_memory_without_duplicating_system_message(tmp_path: Path) -> None:

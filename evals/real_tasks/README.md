@@ -37,3 +37,6 @@ security sandbox. Python tests and agent commands can access the host and networ
 Use only these trusted fixtures until an isolated execution mode exists. The
 minimal mode changes only the system prompt; it retains the same application
 runtime, tools, settings, and task copy for a same-model comparison.
+To compare verification behavior, set `PROJECT_CHECK_ARGV` and
+`REQUIRE_VERIFICATION_BEFORE_FINISH` identically for both runs. The exact argv
+is recorded in each report's runtime configuration.

@@ -73,12 +73,16 @@ def harvest_patch_summary(tool_calls: list[ToolCallRecord]) -> list[str]:
     return summaries
 
 
-def harvest_verification_ran(tool_calls: list[ToolCallRecord]) -> bool:
+def harvest_verification_ran(
+    tool_calls: list[ToolCallRecord], *, required_check: list[str] | None = None
+) -> bool:
     """True when the latest relevant check passed after the latest file edit."""
-    return verification_status(tool_calls) == "passed"
+    return verification_status(tool_calls, required_check=required_check) == "passed"
 
 
-def verification_status(tool_calls: list[ToolCallRecord]) -> VerificationStatus:
+def verification_status(
+    tool_calls: list[ToolCallRecord], *, required_check: list[str] | None = None
+) -> VerificationStatus:
     """Summarize the latest check, invalidating it when a later edit succeeds."""
     status: VerificationStatus = "not_run"
     for call in tool_calls:
@@ -89,6 +93,8 @@ def verification_status(tool_calls: list[ToolCallRecord]) -> VerificationStatus:
             continue
         argv = call.arguments.get("argv")
         if not isinstance(argv, list) or not is_verification_command([str(a) for a in argv]):
+            continue
+        if required_check is not None and argv != required_check:
             continue
         result = call.result
         status = (

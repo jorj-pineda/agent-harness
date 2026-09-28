@@ -64,12 +64,28 @@ class AddInput(BaseModel):
     b: int
 
 
+class PathInput(BaseModel):
+    path: str
+
+
+class CommandInput(BaseModel):
+    argv: list[str]
+
+
 async def _echo(args: EchoInput) -> str:
     return args.text
 
 
 async def _add(args: AddInput) -> int:
     return args.a + args.b
+
+
+async def _fake_write(args: PathInput) -> dict[str, str]:
+    return {"path": args.path}
+
+
+async def _fake_check(args: CommandInput) -> dict[str, bool]:
+    return {"success": True}
 
 
 def _echo_tool() -> Tool:
@@ -121,6 +137,49 @@ async def test_truncated_response_is_incomplete_and_does_not_execute_tools() -> 
     assert response.completion_status == "incomplete"
     assert response.tool_calls == []
     assert response.escalated is True
+
+
+async def test_wrong_passing_check_gets_bounded_retry_for_configured_command() -> None:
+    provider = FakeProvider(
+        [
+            _response(
+                tool_calls=[ToolCall(id="edit", name="write_file", arguments={"path": "a.py"})]
+            ),
+            _response(
+                tool_calls=[
+                    ToolCall(
+                        id="other", name="run_command", arguments={"argv": ["ruff", "check", "."]}
+                    )
+                ]
+            ),
+            _response(content="Done."),
+            _response(
+                tool_calls=[
+                    ToolCall(
+                        id="required", name="run_command", arguments={"argv": ["pytest", "-q"]}
+                    )
+                ]
+            ),
+            _response(content="Checked."),
+        ]
+    )
+    registry = _registry(
+        Tool(name="write_file", description="edit", input_model=PathInput, fn=_fake_write),
+        Tool(name="run_command", description="check", input_model=CommandInput, fn=_fake_check),
+    )
+    response = await run_turn(
+        session=Session(),
+        user_input="Fix a.py",
+        provider=provider,
+        registry=registry,
+        require_verification_before_finish=True,
+        required_check=["pytest", "-q"],
+        max_completion_retries=1,
+    )
+    assert len(provider.calls) == 5
+    assert '["pytest", "-q"]' in provider.calls[3][0][-1].content
+    assert response.verification_status == "passed"
+    assert response.completion_status == "completed"
 
 
 async def test_single_tool_call_then_final_answer() -> None:
