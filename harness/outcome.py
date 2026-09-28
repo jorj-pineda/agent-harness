@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 
 from .outcome_types import VerificationStatus
-from .state import ToolCallRecord
+from .state import CheckRecord, ToolCallRecord
 
 log = logging.getLogger(__name__)
 
@@ -71,6 +71,46 @@ def harvest_patch_summary(tool_calls: list[ToolCallRecord]) -> list[str]:
             summaries.append(path)
     log.info("outcome_harvest patch_summary=%d", len(summaries))
     return summaries
+
+
+def harvest_checks(
+    tool_calls: list[ToolCallRecord], *, required_check: list[str] | None = None
+) -> list[CheckRecord]:
+    """List observed verification attempts; a later edit supersedes earlier evidence."""
+    checks: list[CheckRecord] = []
+    for call in tool_calls:
+        if call.name in EDIT_TOOL_NAMES and call.error is None and isinstance(call.result, dict):
+            for check in checks:
+                check.superseded_by_edit = True
+            continue
+        argv = call.arguments.get("argv")
+        if call.name != RUN_COMMAND_TOOL_NAME or not isinstance(argv, list):
+            continue
+        if not all(isinstance(token, str) for token in argv) or not is_verification_command(argv):
+            continue
+        result = call.result if isinstance(call.result, dict) else {}
+        exit_code = result.get("exit_code")
+        checks.append(
+            CheckRecord(
+                argv=argv,
+                exit_code=exit_code if isinstance(exit_code, int) else None,
+                status=(
+                    "unavailable"
+                    if call.error is not None
+                    else "passed"
+                    if result.get("success") is True
+                    else "failed"
+                ),
+                relevant=required_check is None or argv == required_check,
+                error=call.error,
+            )
+        )
+    return checks
+
+
+def harvest_tool_errors(tool_calls: list[ToolCallRecord]) -> list[str]:
+    """Observed tool errors in call order; later actions may have recovered from them."""
+    return [f"{call.name}: {call.error}" for call in tool_calls if call.error is not None]
 
 
 def harvest_verification_ran(

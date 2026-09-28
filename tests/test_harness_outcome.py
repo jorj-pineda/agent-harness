@@ -1,13 +1,43 @@
 from __future__ import annotations
 
 from harness.outcome import (
+    harvest_checks,
     harvest_files_touched,
     harvest_patch_summary,
+    harvest_tool_errors,
     harvest_verification_ran,
     is_verification_command,
     verification_status,
 )
 from harness.state import ToolCallRecord
+
+
+def test_check_attempts_distinguish_failure_unavailable_and_stale_evidence() -> None:
+    calls = [
+        ToolCallRecord(
+            name="run_command",
+            arguments={"argv": ["pytest", "-q"]},
+            result={"exit_code": 1, "success": False},
+        ),
+        ToolCallRecord(
+            name="write_file", arguments={"path": "a.py"}, result={"path": "a.py"}
+        ),
+        ToolCallRecord(
+            name="run_command", arguments={"argv": ["ruff", "check", "."]}, error="missing"
+        ),
+        ToolCallRecord(
+            name="run_command",
+            arguments={"argv": ["pytest", "-q"]},
+            result={"exit_code": 0, "success": True},
+        ),
+    ]
+    checks = harvest_checks(calls, required_check=["pytest", "-q"])
+    assert [(c.status, c.relevant, c.superseded_by_edit, c.exit_code) for c in checks] == [
+        ("failed", True, True, 1),
+        ("unavailable", False, False, None),
+        ("passed", True, False, 0),
+    ]
+    assert harvest_tool_errors(calls) == ["run_command: missing"]
 
 
 def test_is_verification_command_accepts_pytest_ruff_mypy() -> None:
