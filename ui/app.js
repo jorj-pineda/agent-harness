@@ -221,6 +221,17 @@ function renderEnvelope(data) {
   els.envelope.appendChild(listSection("citations", data.citations));
   els.envelope.appendChild(listSection("files touched", data.files_touched));
   els.envelope.appendChild(listSection("patch summary", data.patch_summary));
+  els.envelope.appendChild(listSection("completion", [
+    `${data.completion_status || "completed"}${data.completion_reason ? `: ${data.completion_reason}` : ""}`,
+    `verification: ${data.verification_status || "not_run"}`,
+  ]));
+  els.envelope.appendChild(listSection("check attempts", (data.check_attempts || []).map(
+    (check) => `${(check.argv || []).join(" ")}: ${check.status}`
+      + `${check.exit_code == null ? "" : ` (exit ${check.exit_code})`}`
+      + `${check.relevant ? "" : " (not configured check)"}`
+      + `${check.superseded_by_edit ? " (superseded by later edit)" : ""}`,
+  )));
+  els.envelope.appendChild(listSection("tool errors", data.tool_errors));
   els.envelope.appendChild(listSection("memory writes", data.memory_writes));
 }
 

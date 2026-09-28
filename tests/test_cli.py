@@ -58,6 +58,11 @@ def _make_turn(**kwargs: Any) -> MagicMock:
     turn.provider = kwargs.get("provider", "fake")
     turn.latency_ms = kwargs.get("latency_ms", 10.0)
     turn.files_touched = kwargs.get("files_touched", [])
+    turn.completion_status = kwargs.get("completion_status", "completed")
+    turn.completion_reason = kwargs.get("completion_reason")
+    turn.verification_status = kwargs.get("verification_status", "not_run")
+    turn.check_attempts = kwargs.get("check_attempts", [])
+    turn.tool_errors = kwargs.get("tool_errors", [])
     return turn
 
 
@@ -227,6 +232,11 @@ def test_agent_client_chat_parses_envelope() -> None:
         "provider": "ollama",
         "latency_ms": 123.4,
         "files_touched": ["a.py"],
+        "completion_status": "incomplete",
+        "completion_reason": "Check failed.",
+        "verification_status": "failed",
+        "check_attempts": [{"argv": ["pytest", "-q"], "status": "failed"}],
+        "tool_errors": ["read_file: missing"],
         "tool_calls": [],
     }
     with patch("httpx.post", return_value=_ok_response(envelope)):
@@ -238,6 +248,9 @@ def test_agent_client_chat_parses_envelope() -> None:
     assert summary.escalated is False
     assert summary.provider == "ollama"
     assert summary.files_touched == ["a.py"]
+    assert summary.completion_status == "incomplete"
+    assert summary.check_attempts[0]["status"] == "failed"
+    assert summary.tool_errors == ["read_file: missing"]
 
 
 def test_agent_client_raises_on_http_error() -> None:

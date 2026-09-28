@@ -94,4 +94,15 @@ def chat(
         )
         if result.files_touched:
             typer.echo(f"  files_touched={result.files_touched}")
+        typer.echo(f"  status={result.completion_status} verification={result.verification_status}")
+        if result.completion_reason:
+            typer.echo(f"  reason={result.completion_reason}")
+        for check in result.check_attempts:
+            typer.echo(
+                f"  check={check.get('argv')} status={check.get('status')} "
+                f"exit={check.get('exit_code')} relevant={check.get('relevant')} "
+                f"stale={check.get('superseded_by_edit')}"
+            )
+        for error in result.tool_errors:
+            typer.echo(f"  tool_error={error}")
         typer.echo()

@@ -19,7 +19,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import UTC, datetime
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
@@ -48,6 +48,17 @@ class ToolCallRecord(BaseModel):
     result: Any = None
     error: str | None = None
     latency_ms: float = 0.0
+
+
+class CheckRecord(BaseModel):
+    """Observed verification command, including failed or unavailable attempts."""
+
+    argv: list[str]
+    exit_code: int | None = None
+    status: Literal["passed", "failed", "unavailable"]
+    relevant: bool
+    superseded_by_edit: bool = False
+    error: str | None = None
 
 
 class Turn(BaseModel):
@@ -99,6 +110,8 @@ class TurnResponse(BaseModel):
         description="True when an allowlisted verification command succeeded this turn.",
     )
     verification_status: VerificationStatus = "not_run"
+    check_attempts: list[CheckRecord] = Field(default_factory=list)
+    tool_errors: list[str] = Field(default_factory=list)
     completion_status: CompletionStatus = "completed"
     completion_reason: str | None = None
     patch_summary: list[str] = Field(

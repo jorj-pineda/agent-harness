@@ -180,6 +180,11 @@ async def test_wrong_passing_check_gets_bounded_retry_for_configured_command() -
     assert '["pytest", "-q"]' in provider.calls[3][0][-1].content
     assert response.verification_status == "passed"
     assert response.completion_status == "completed"
+    assert [(check.argv, check.relevant, check.status) for check in response.check_attempts] == [
+        (["ruff", "check", "."], False, "passed"),
+        (["pytest", "-q"], True, "passed"),
+    ]
+    assert response.tool_errors == []
 
 
 async def test_single_tool_call_then_final_answer() -> None:
@@ -286,6 +291,8 @@ async def test_tool_call_budget_stops_batched_calls_before_dispatch() -> None:
     assert response.completion_status == "budget_exhausted"
     assert "2" in (response.completion_reason or "")
     assert response.escalated is True
+    assert len(response.tool_errors) == 2
+    assert all("not executed" in error for error in response.tool_errors)
 
 
 async def test_identical_unchanged_call_is_stopped_before_third_execution() -> None:

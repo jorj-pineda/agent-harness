@@ -22,6 +22,11 @@ class TurnSummary:
     provider: str
     latency_ms: float
     files_touched: list[str] = field(default_factory=list)
+    completion_status: str = "completed"
+    completion_reason: str | None = None
+    verification_status: str = "not_run"
+    check_attempts: list[dict[str, object]] = field(default_factory=list)
+    tool_errors: list[str] = field(default_factory=list)
 
 
 class AgentClient:
@@ -62,4 +67,9 @@ class AgentClient:
             provider=str(data.get("provider", "")),
             latency_ms=float(data.get("latency_ms", 0.0)),
             files_touched=list(data.get("files_touched", [])),
+            completion_status=str(data.get("completion_status", "completed")),
+            completion_reason=data.get("completion_reason"),
+            verification_status=str(data.get("verification_status", "not_run")),
+            check_attempts=list(data.get("check_attempts", [])),
+            tool_errors=list(data.get("tool_errors", [])),
         )

@@ -119,6 +119,8 @@ def test_chat_returns_full_envelope(harness: Harness, make_session: Callable[[st
     assert body["files_touched"] == []
     assert body["verification_ran"] is False
     assert body["patch_summary"] == []
+    assert body["check_attempts"] == []
+    assert body["tool_errors"] == []
 
 
 def test_chat_scope_gate_refuses_delete_all_tests(

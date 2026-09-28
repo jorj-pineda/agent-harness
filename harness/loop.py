@@ -30,7 +30,13 @@ from tools import ToolError, ToolRegistry
 
 from .grounding import Grounder
 from .memory import harvest_memory_writes
-from .outcome import harvest_files_touched, harvest_patch_summary, verification_status
+from .outcome import (
+    harvest_checks,
+    harvest_files_touched,
+    harvest_patch_summary,
+    harvest_tool_errors,
+    verification_status,
+)
 from .outcome_types import CompletionStatus
 from .policy import edit_precondition_error, repeated_unchanged_call, unresolved_edit_blocks
 from .state import Session, ToolCallRecord, Turn, TurnResponse
@@ -264,6 +270,8 @@ async def run_turn(
         files_touched=files_touched,
         verification_ran=verification_ran,
         verification_status=checked,
+        check_attempts=harvest_checks(turn.tool_calls, required_check=required_check),
+        tool_errors=harvest_tool_errors(turn.tool_calls),
         completion_status=completion_status,
         completion_reason=completion_reason,
         patch_summary=patch_summary,

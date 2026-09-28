@@ -88,8 +88,13 @@ The harness does not need to make every model good at every task. It needs to id
   terminal status and real-task termination label record why execution stopped.
   This prevents further tool execution without claiming a hard wall-time or
   token limit; model-level gains have not been measured.
-- **Next:** continue item 6 with wall-time/model-token budgets and honest
-  partial-work reporting. A full
+- **2026-09-28 — Item 6 partial-work reporting prepared:** responses now expose
+  ordered verification attempts, configured-check relevance, stale check
+  evidence, and tool errors. The CLI and panel surface these with completion
+  status and tool-reported edits. This is observed turn evidence, not a final
+  filesystem diff or independent acceptance result.
+- **Next:** continue item 6 with wall-time/model-token budgets and actual
+  changed-file reporting for application runs. A full
   selected-model baseline, model profiles, and context management remain open.
   Offline checks alone are not evidence of better model coding performance.
 
