@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import posixpath
 from typing import Literal
 
 from harness.outcome import EDIT_TOOL_NAMES, EMIT_PLAN_TOOL_NAME
@@ -103,3 +104,52 @@ def edit_without_plan(tool_calls: list[ToolCallRecord]) -> bool:
         elif call.name in EDIT_TOOL_NAMES and call.error is None and not saw_plan:
             return True
     return False
+
+
+def edit_precondition_error(
+    name: str,
+    arguments: dict[str, object],
+    tool_calls: list[ToolCallRecord],
+    *,
+    require_plan: bool,
+    max_files: int,
+) -> str | None:
+    """Reject an edit before dispatch when its turn-level preconditions fail."""
+    if name not in EDIT_TOOL_NAMES:
+        return None
+    if require_plan and not any(
+        call.name == EMIT_PLAN_TOOL_NAME and call.error is None for call in tool_calls
+    ):
+        return "Edit blocked: call emit_plan successfully before editing this turn."
+    path = arguments.get("path")
+    if max_files < 1 or not isinstance(path, str):
+        return None
+    attempted = posixpath.normpath(path)
+    edited = {
+        posixpath.normpath(str(call.result["path"]))
+        for call in tool_calls
+        if call.name in EDIT_TOOL_NAMES
+        and call.error is None
+        and isinstance(call.result, dict)
+        and isinstance(call.result.get("path"), str)
+    }
+    if attempted not in edited and len(edited) >= max_files:
+        return f"Edit blocked: this turn's {max_files}-file limit is reached."
+    return None
+
+
+def unresolved_edit_blocks(tool_calls: list[ToolCallRecord]) -> list[str]:
+    """Paths whose last attempted edit was rejected by a turn-level gate."""
+    blocked: set[str] = set()
+    for call in tool_calls:
+        if call.name not in EDIT_TOOL_NAMES:
+            continue
+        path = call.arguments.get("path")
+        if not isinstance(path, str):
+            continue
+        normalized = posixpath.normpath(path)
+        if call.error is not None and call.error.startswith("Edit blocked:"):
+            blocked.add(normalized)
+        elif call.error is None:
+            blocked.discard(normalized)
+    return sorted(blocked)

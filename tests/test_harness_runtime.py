@@ -60,6 +60,7 @@ async def test_runtime_applies_configured_policy(tmp_path: Path, policy: dict) -
             ]
         ),
         make_response(content="Done"),
+        make_response(content="Still done"),
     )
     with FactStore(tmp_path / "memory.db") as store:
         response = await run_configured_turn(
@@ -72,7 +73,18 @@ async def test_runtime_applies_configured_policy(tmp_path: Path, policy: dict) -
             registry=build_registry(fact_store=store, user_id="dev", workspace_root=str(tmp_path)),
         )
     assert response.escalated is True
-    assert response.files_touched == ["a.py", "b.py"]
+    assert response.completion_status == "incomplete"
+    if policy.get("require_plan_before_edit"):
+        assert response.files_touched == []
+        assert not (tmp_path / "a.py").exists()
+        assert not (tmp_path / "b.py").exists()
+    elif policy.get("max_files_touched_per_turn"):
+        assert response.files_touched == ["a.py"]
+        assert (tmp_path / "a.py").exists()
+        assert not (tmp_path / "b.py").exists()
+    else:
+        assert response.files_touched == ["a.py", "b.py"]
+        assert response.verification_status == "not_run"
 
 
 async def test_runtime_uses_iteration_budget_and_scope_policy(tmp_path: Path) -> None:
@@ -90,6 +102,7 @@ async def test_runtime_uses_iteration_budget_and_scope_policy(tmp_path: Path) ->
         }
         refused = await run_configured_turn(message="delete .git", **kwargs)
         assert refused.provider == "policy"
+        assert refused.completion_status == "blocked"
         assert provider.calls == []
         response = await run_configured_turn(message="Recall my preferences", **kwargs)
     assert response.answer == MAX_ITERATIONS_STUB

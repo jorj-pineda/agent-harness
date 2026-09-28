@@ -97,6 +97,44 @@ async def test_bugfix_read_write_pytest_on_fixture_repo(broken_repo: Path) -> No
     assert (broken_repo / "calc.py").read_text(encoding="utf-8") == FIXED_CALC
 
 
+async def test_early_finish_gets_one_check_retry_and_can_complete(broken_repo: Path) -> None:
+    provider = ScriptedProvider()
+    provider.script(
+        make_response(
+            tool_calls=[
+                ToolCall(
+                    id="edit",
+                    name="write_file",
+                    arguments={"path": "calc.py", "content": FIXED_CALC},
+                )
+            ]
+        ),
+        make_response(content="Fixed."),
+        make_response(
+            tool_calls=[
+                ToolCall(id="check", name="run_command", arguments={"argv": ["pytest", "-q"]})
+            ]
+        ),
+        make_response(content="Fixed; pytest passed."),
+    )
+    registry = ToolRegistry()
+    register_code_tools(registry, workspace=Workspace(root=broken_repo))
+    response = await run_turn(
+        session=Session(),
+        user_input="fix divide",
+        provider=provider,
+        registry=registry,
+        require_verification_before_finish=True,
+        max_completion_retries=1,
+    )
+    assert len(provider.calls) == 4
+    assert "not verified" in provider.calls[2][0][-1].content
+    assert response.completion_status == "completed"
+    assert response.verification_status == "passed"
+    assert response.verification_ran is True
+    assert response.escalated is False
+
+
 async def test_bugfix_read_replace_pytest_tracks_targeted_edit(broken_repo: Path) -> None:
     original = (broken_repo / "calc.py").read_bytes()
     provider = ScriptedProvider()
@@ -112,7 +150,7 @@ async def test_bugfix_read_replace_pytest_tracks_targeted_edit(broken_repo: Path
                     name="replace_text",
                     arguments={
                         "path": "calc.py",
-                            "old_text": "return 0.0  # intentional bug — Phase 4 e2e tests fix with write_file + pytest",
+                        "old_text": "return 0.0  # intentional bug — Phase 4 e2e tests fix with write_file + pytest",
                         "new_text": "return a / b",
                         "expected_sha256": hashlib.sha256(original).hexdigest(),
                     },
@@ -148,7 +186,7 @@ async def test_bugfix_read_replace_pytest_tracks_targeted_edit(broken_repo: Path
     assert (broken_repo / "calc.py").read_text(encoding="utf-8") == FIXED_CALC
 
 
-async def test_require_verification_escalates_when_pytest_never_ran(broken_repo: Path) -> None:
+async def test_read_only_turn_does_not_require_verification(broken_repo: Path) -> None:
     provider = ScriptedProvider()
     provider.script(make_response(content="done without running tests"))
 
@@ -165,7 +203,8 @@ async def test_require_verification_escalates_when_pytest_never_ran(broken_repo:
     )
 
     assert response.verification_ran is False
-    assert response.escalated is True
+    assert response.escalated is False
+    assert response.completion_status == "completed"
 
 
 async def test_emit_plan_appears_in_tool_calls_before_write(broken_repo: Path) -> None:
@@ -213,7 +252,7 @@ async def test_emit_plan_appears_in_tool_calls_before_write(broken_repo: Path) -
     assert plan_call.result["step_count"] == 3
 
 
-async def test_require_plan_before_edit_escalates_on_write_without_plan(broken_repo: Path) -> None:
+async def test_require_plan_before_edit_blocks_write_without_plan(broken_repo: Path) -> None:
     provider = ScriptedProvider()
     provider.script(
         make_response(
@@ -240,8 +279,42 @@ async def test_require_plan_before_edit_escalates_on_write_without_plan(broken_r
         require_plan_before_edit=True,
     )
 
-    assert response.files_touched == ["calc.py"]
+    assert response.files_touched == []
+    assert response.tool_calls[0].error is not None
+    assert response.tool_calls[0].error.startswith("Edit blocked:")
     assert response.escalated is True
+    assert response.completion_status == "incomplete"
+
+
+async def test_blocked_edit_can_recover_after_plan(broken_repo: Path) -> None:
+    provider = ScriptedProvider()
+    edit = ToolCall(
+        id="edit", name="write_file", arguments={"path": "calc.py", "content": FIXED_CALC}
+    )
+    provider.script(
+        make_response(tool_calls=[edit]),
+        make_response(content="Fixed."),
+        make_response(
+            tool_calls=[ToolCall(id="plan", name="emit_plan", arguments={"steps": ["Fix divide"]})]
+        ),
+        make_response(tool_calls=[edit.model_copy(update={"id": "edit2"})]),
+        make_response(content="Fixed after planning."),
+    )
+    registry = ToolRegistry()
+    register_code_tools(registry, workspace=Workspace(root=broken_repo))
+    response = await run_turn(
+        session=Session(),
+        user_input="fix divide",
+        provider=provider,
+        registry=registry,
+        require_plan_before_edit=True,
+        max_completion_retries=1,
+    )
+    assert response.tool_calls[0].error is not None
+    assert response.tool_calls[-1].error is None
+    assert response.files_touched == ["calc.py"]
+    assert response.completion_status == "completed"
+    assert (broken_repo / "calc.py").read_text(encoding="utf-8") == FIXED_CALC
 
 
 async def test_require_plan_before_edit_allows_write_after_emit_plan(broken_repo: Path) -> None:
