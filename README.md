@@ -78,6 +78,13 @@ same setting applies to the API and real-task evaluator. Without an explicit
 project check, the previous recognized-command heuristic remains in use; a
 passing unrelated command may therefore appear verified.
 
+Responses also include ordered `check_attempts` (command, outcome, exit code,
+whether it matches the configured check, and whether a later edit superseded it)
+and `tool_errors`. The CLI and browser panel show these beside completion status
+and tool-reported edits, so an incomplete turn has a reviewable partial-work
+record. These fields report observed actions, not independent proof that the
+workspace is correct; command-created file changes require a final diff.
+
 The configured runtime also caps tool attempts per turn with
 `MAX_TOOL_CALLS_PER_TURN` and stops before repeating a tool call whose previous
 `MAX_IDENTICAL_TOOL_CALLS` consecutive outcomes were unchanged. Rejected calls
