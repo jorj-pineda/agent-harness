@@ -104,6 +104,25 @@ async def test_one_shot_answer_skips_tool_dispatch() -> None:
     assert session.turns[0].final_answer == "hello"
 
 
+async def test_truncated_response_is_incomplete_and_does_not_execute_tools() -> None:
+    provider = FakeProvider(
+        [
+            _response(
+                content="partial",
+                tool_calls=[ToolCall(id="x", name="echo", arguments={"text": "unsafe"})],
+                finish_reason="length",
+            )
+        ]
+    )
+    response = await run_turn(
+        session=Session(), user_input="echo", provider=provider, registry=_registry(_echo_tool())
+    )
+    assert response.answer == "partial"
+    assert response.completion_status == "incomplete"
+    assert response.tool_calls == []
+    assert response.escalated is True
+
+
 async def test_single_tool_call_then_final_answer() -> None:
     provider = FakeProvider(
         [

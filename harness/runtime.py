@@ -77,6 +77,8 @@ def out_of_scope_response() -> TurnResponse:
             "(unsafe or unbounded). Please narrow the task."
         ),
         escalated=True,
+        completion_status="blocked",
+        completion_reason="Request is outside the bounded single-turn scope.",
         provider="policy",
         latency_ms=0.0,
     )
@@ -109,5 +111,6 @@ async def run_configured_turn(
         require_verification_before_finish=settings.require_verification_before_finish,
         require_plan_before_edit=settings.require_plan_before_edit,
         max_files_touched_per_turn=settings.max_files_touched_per_turn,
+        max_completion_retries=settings.max_completion_retries,
         on_event=on_event,
     )

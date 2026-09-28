@@ -63,6 +63,9 @@ class RealTaskResult:
     source_revision: str
     passed: bool
     termination: str
+    completion_status: str
+    completion_reason: str | None
+    verification_status: str
     answer: str
     added: tuple[str, ...]
     modified: tuple[str, ...]
@@ -217,6 +220,9 @@ async def run_task(
                 )
                 answer = ""
                 failure = ""
+                completion_status = "incomplete"
+                completion_reason: str | None = None
+                checked = "not_run"
                 start = time.perf_counter()
                 try:
                     response = await run_configured_turn(
@@ -230,6 +236,9 @@ async def run_task(
                         system_prompt=MINIMAL_PROMPT if mode == "minimal" else BASE_SYSTEM_PROMPT,
                     )
                     answer = response.answer
+                    completion_status = response.completion_status
+                    completion_reason = response.completion_reason
+                    checked = response.verification_status
                 except Exception as exc:
                     failure = type(exc).__name__
                 latency_ms = (time.perf_counter() - start) * 1000
@@ -263,6 +272,9 @@ async def run_task(
             source_revision=_source_revision(copy),
             passed=acceptance.exit_code == 0,
             termination=termination,
+            completion_status=completion_status,
+            completion_reason=completion_reason,
+            verification_status=checked,
             answer=answer,
             added=changes.added,
             modified=changes.modified,
@@ -276,6 +288,7 @@ async def run_task(
             tool_trace=[call.model_dump(mode="json") for call in trace],
             runtime_config={
                 "max_tool_iterations": settings.max_tool_iterations,
+                "max_completion_retries": settings.max_completion_retries,
                 "request_timeout_seconds": settings.request_timeout_seconds,
                 "require_verification_before_finish": settings.require_verification_before_finish,
                 "require_plan_before_edit": settings.require_plan_before_edit,

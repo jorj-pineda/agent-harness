@@ -30,8 +30,9 @@ from tools import ToolError, ToolRegistry
 
 from .grounding import Grounder
 from .memory import harvest_memory_writes
-from .outcome import harvest_files_touched, harvest_patch_summary, harvest_verification_ran
-from .policy import edit_budget_exceeded, edit_without_plan
+from .outcome import harvest_files_touched, harvest_patch_summary, verification_status
+from .outcome_types import CompletionStatus
+from .policy import edit_precondition_error, unresolved_edit_blocks
 from .state import Session, ToolCallRecord, Turn, TurnResponse
 from .stream import EventCallback, ToolEndEvent, ToolStartEvent
 
@@ -70,6 +71,7 @@ async def run_turn(
     require_verification_before_finish: bool = False,
     require_plan_before_edit: bool = False,
     max_files_touched_per_turn: int = 0,
+    max_completion_retries: int = 0,
     on_event: EventCallback | None = None,
 ) -> TurnResponse:
     """Drive one user turn to completion via ReAct + tool dispatch.
@@ -90,29 +92,75 @@ async def run_turn(
     start = _now_ms()
     final_answer = ""
     max_iterations_reached = False
+    completion_status: CompletionStatus = "completed"
+    completion_reason: str | None = None
+    completion_retries = 0
 
-    for _ in range(max_iterations):
+    for iteration in range(max_iterations):
         response = await provider.chat(session.messages, tools=tool_specs)
 
+        incomplete_reasons = {
+            "length": "The model response was truncated.",
+            "content_filter": "The provider filtered the response.",
+            "error": "The provider reported an error finish reason.",
+        }
+        usable_calls = [] if response.finish_reason in incomplete_reasons else response.tool_calls
         session.messages.append(
             ChatMessage(
                 role="assistant",
                 content=response.content,
-                tool_calls=list(response.tool_calls),
+                tool_calls=list(usable_calls),
             )
         )
 
-        if not response.tool_calls:
+        if response.finish_reason in incomplete_reasons:
+            final_answer = response.content
+            completion_status = "incomplete"
+            completion_reason = incomplete_reasons[response.finish_reason]
+            break
+
+        if not usable_calls:
+            checked = verification_status(turn.tool_calls)
+            edited = bool(harvest_files_touched(turn.tool_calls))
+            blocked = unresolved_edit_blocks(turn.tool_calls)
+            needs_check = require_verification_before_finish and edited and checked != "passed"
+            if needs_check or blocked:
+                if completion_retries < max_completion_retries and iteration + 1 < max_iterations:
+                    guidance = (
+                        f"The edits to {', '.join(blocked)} were blocked. Resolve the tool error "
+                        "or report the task as incomplete."
+                        if blocked
+                        else "The latest edit is not verified. Run a relevant check after editing, "
+                        "repair any failure, then report the observed result."
+                    )
+                    session.messages.append(ChatMessage(role="user", content=guidance))
+                    completion_retries += 1
+                    continue
+                completion_status = "incomplete"
+                completion_reason = (
+                    f"Edits blocked for: {', '.join(blocked)}."
+                    if blocked
+                    else f"Final edits are not verified ({checked})."
+                )
             final_answer = response.content
             break
 
-        for tc in response.tool_calls:
+        for tc in usable_calls:
             if on_event is not None:
                 await on_event(ToolStartEvent(tool=tc.name, arguments=dict(tc.arguments)))
             tool_start = _now_ms()
             result: Any = None
             error: str | None = None
             try:
+                precondition_error = edit_precondition_error(
+                    tc.name,
+                    tc.arguments,
+                    turn.tool_calls,
+                    require_plan=require_plan_before_edit,
+                    max_files=max_files_touched_per_turn,
+                )
+                if precondition_error is not None:
+                    raise ToolError(precondition_error)
                 result = await registry.invoke(tc.name, tc.arguments)
             except ToolError as exc:
                 error = str(exc)
@@ -148,6 +196,8 @@ async def run_turn(
     else:
         final_answer = MAX_ITERATIONS_STUB
         max_iterations_reached = True
+        completion_status = "budget_exhausted"
+        completion_reason = "Model iteration limit reached before completion."
         log.warning(
             "harness=run_turn max_iterations=%d reached without final answer",
             max_iterations,
@@ -169,20 +219,9 @@ async def run_turn(
 
     files_touched = harvest_files_touched(turn.tool_calls)
     patch_summary = harvest_patch_summary(turn.tool_calls)
-    verification_ran = harvest_verification_ran(turn.tool_calls)
-    escalated = grounding.escalated if grounding else False
-    if (
-        require_verification_before_finish
-        and not verification_ran
-        and final_answer != MAX_ITERATIONS_STUB
-    ):
-        escalated = True
-    if max_files_touched_per_turn > 0 and edit_budget_exceeded(
-        files_touched, max_files=max_files_touched_per_turn
-    ):
-        escalated = True
-    if require_plan_before_edit and edit_without_plan(turn.tool_calls):
-        escalated = True
+    checked = verification_status(turn.tool_calls)
+    verification_ran = checked == "passed"
+    escalated = (grounding.escalated if grounding else False) or completion_status != "completed"
 
     return TurnResponse(
         answer=final_answer,
@@ -193,6 +232,9 @@ async def run_turn(
         memory_writes=list(turn.memory_writes),
         files_touched=files_touched,
         verification_ran=verification_ran,
+        verification_status=checked,
+        completion_status=completion_status,
+        completion_reason=completion_reason,
         patch_summary=patch_summary,
         provider=provider.name,
         latency_ms=_now_ms() - start,

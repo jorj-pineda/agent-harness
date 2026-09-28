@@ -25,6 +25,8 @@ from pydantic import BaseModel, Field
 
 from providers.base import ChatMessage
 
+from .outcome_types import CompletionStatus, VerificationStatus
+
 
 def _uuid() -> str:
     return uuid.uuid4().hex
@@ -96,6 +98,9 @@ class TurnResponse(BaseModel):
         default=False,
         description="True when an allowlisted verification command succeeded this turn.",
     )
+    verification_status: VerificationStatus = "not_run"
+    completion_status: CompletionStatus = "completed"
+    completion_reason: str | None = None
     patch_summary: list[str] = Field(
         default_factory=list,
         description="Human-readable summaries of successful file-tool edits this turn.",

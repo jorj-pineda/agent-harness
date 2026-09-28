@@ -5,6 +5,7 @@ from harness.outcome import (
     harvest_patch_summary,
     harvest_verification_ran,
     is_verification_command,
+    verification_status,
 )
 from harness.state import ToolCallRecord
 
@@ -19,6 +20,10 @@ def test_is_verification_command_accepts_pytest_ruff_mypy() -> None:
 def test_is_verification_command_rejects_git_and_shell() -> None:
     assert not is_verification_command(["git", "diff"])
     assert not is_verification_command(["bash", "-c", "pytest"])
+    assert not is_verification_command(["pytest", "--version"])
+    assert not is_verification_command(["ruff", "--help"])
+    assert not is_verification_command(["ruff"])
+    assert not is_verification_command(["python", "-m", "pytest", "--collect-only"])
 
 
 def test_harvest_files_touched_collects_successful_writes_in_order() -> None:
@@ -99,3 +104,22 @@ def test_harvest_verification_ran_requires_successful_pytest() -> None:
 
     assert harvest_verification_ran([failing]) is False
     assert harvest_verification_ran([failing, passing]) is True
+
+
+def test_verification_tracks_latest_edit_and_later_check_failure() -> None:
+    passing = ToolCallRecord(
+        name="run_command",
+        arguments={"argv": ["pytest", "-q"]},
+        result={"success": True},
+    )
+    failing = ToolCallRecord(
+        name="run_command",
+        arguments={"argv": ["pytest", "-q"]},
+        result={"success": False},
+    )
+    edit = ToolCallRecord(name="write_file", result={"path": "calc.py"})
+    assert verification_status([passing, edit]) == "stale"
+    assert not harvest_verification_ran([passing, edit])
+    assert verification_status([edit, passing, failing]) == "failed"
+    assert not harvest_verification_ran([edit, passing, failing])
+    assert verification_status([edit, failing, passing]) == "passed"
