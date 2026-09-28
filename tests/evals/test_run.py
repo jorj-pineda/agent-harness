@@ -188,7 +188,7 @@ def test_scripted_read_file_returns_empty_dict_when_queue_exhausted() -> None:
     assert result == {}
 
 
-async def test_live_smoke_uses_shared_prompt_memory_policy_and_threshold(
+async def test_live_smoke_uses_shared_prompt_memory_and_threshold(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -216,7 +216,8 @@ async def test_live_smoke_uses_shared_prompt_memory_policy_and_threshold(
         ),
     )
     result = results[0]
-    assert result.escalated is True
+    # No edits occurred, so post-edit verification is not required.
+    assert result.escalated is False
     assert result.evaluation_mode == runner.LIVE_SIMULATED_MODE
     assert result.prompt_version == PROMPT_VERSION
     assert result.runtime_config["confidence_escalation_threshold"] == 0.73

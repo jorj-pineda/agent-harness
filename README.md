@@ -62,7 +62,16 @@ coding tools and external acceptance checks. A copy is not a security boundary:
 executed code can still access the host filesystem and network. Do not run
 unfamiliar repository code with this helper until an isolated execution mode exists.
 
-**Planning + patch trace.** `emit_plan` records steps before edits; `patch_summary` lists successful writes. Optional gates: `REQUIRE_PLAN_BEFORE_EDIT`, `REQUIRE_VERIFICATION_BEFORE_FINISH`.
+**Planning + patch trace.** `emit_plan` records steps before edits;
+`patch_summary` lists successful writes. When enabled,
+`REQUIRE_PLAN_BEFORE_EDIT` blocks premature file edits, and
+`REQUIRE_VERIFICATION_BEFORE_FINISH` gives an edited turn one bounded chance to
+run a fresh check. The API response adds `verification_status`,
+`completion_status`, and `completion_reason`; the older `verification_ran` flag
+remains for compatibility. File count limits reject additional file-tool edits
+before mutation. A passing check becomes stale after a later edit, and
+version/help commands do not count as checks. Recognized checks are currently
+pytest, Ruff check, and mypy; project-specific commands remain roadmap work.
 
 **Local agent panel.** A Typer CLI (`agent-harness serve`/`chat`) and a zero-build static panel (`ui/`) make the envelope legible — tool cards stream in live over SSE (`GET /chat/stream`). Both are thin HTTP clients; the ReAct loop is never duplicated in the frontend.
 

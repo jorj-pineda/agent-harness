@@ -69,9 +69,17 @@ The harness does not need to make every model good at every task. It needs to id
   runtime budget. Each used four tools; the agent did not run a check, but the
   external acceptance check passed. These are two smoke observations, not a
   measured improvement. A full five-task, repeated baseline remains open.
-- **Next:** completion and recovery (item 6). A full selected-model baseline,
-  model profiles, and context management remain open. Offline checks alone are
-  not evidence of better model coding performance.
+- **2026-09-28 — Sixth implementation slice prepared:** configured plan and
+  file-count gates now reject disallowed file-tool edits before mutation.
+  Verification status follows the latest recognized check after the latest
+  file-tool edit; help/version commands cannot certify a task. An editing turn
+  can receive one bounded corrective prompt before an incomplete result. The
+  response now reports completion and verification status while retaining old
+  fields. Scripted tests cover these mechanics; no model-quality gain is claimed.
+- **Next:** finish item 6 with project-specific check configuration, total
+  budgets, repeated-call handling, and honest partial-work reporting. A full
+  selected-model baseline, model profiles, and context management remain open.
+  Offline checks alone are not evidence of better model coding performance.
 
 ### Review baseline
 
