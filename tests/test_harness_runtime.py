@@ -9,7 +9,7 @@ from harness.config import Settings
 from harness.loop import MAX_ITERATIONS_STUB
 from harness.prompts import BASE_SYSTEM_PROMPT
 from harness.runtime import build_registry, run_configured_turn
-from harness.state import Session
+from harness.state import Session, TurnResponse
 from memory import FactStore
 from providers.base import ToolCall
 from tests.api.conftest import ScriptedProvider, make_response
@@ -164,3 +164,78 @@ async def test_runtime_applies_output_budget_when_provider_omits_usage(tmp_path:
     assert response.completion_status == "incomplete"
     assert "did not report" in (response.completion_reason or "")
     assert not (tmp_path / "a.py").exists()
+
+
+async def _run_edit_turn(
+    workspace: Path, memory: Path, settings: Settings, *calls: ToolCall
+) -> TurnResponse:
+    provider = ScriptedProvider()
+    provider.script(make_response(tool_calls=list(calls)), make_response(content="Done"))
+    with FactStore(memory / "memory.db") as store:
+        return await run_configured_turn(
+            settings=settings,
+            session=Session(workspace_root=str(workspace)),
+            user_id="dev",
+            message="Fix the module",
+            provider=provider,
+            fact_store=store,
+            registry=build_registry(
+                fact_store=store,
+                user_id="dev",
+                workspace_root=str(workspace),
+                command_env={
+                    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+                    "PYTHONDONTWRITEBYTECODE": "1",
+                },
+            ),
+        )
+
+
+async def test_runtime_reports_turn_changes_and_excludes_preexisting_edits(
+    tmp_path: Path,
+) -> None:
+    workspace = tmp_path / "repo"
+    workspace.mkdir()
+    (workspace / "user_dirty.py").write_text("# user edit before the turn\n", encoding="utf-8")
+    (workspace / "remove_me.txt").write_text("x", encoding="utf-8")
+    (workspace / "test_side_effect.py").write_text(
+        "from pathlib import Path\n"
+        "def test_side_effect():\n"
+        "    Path('remove_me.txt').unlink()\n"
+        "    Path('generated.txt').write_text('from pytest')\n",
+        encoding="utf-8",
+    )
+    response = await _run_edit_turn(
+        workspace,
+        tmp_path,
+        Settings(_env_file=None),
+        ToolCall(id="w", name="write_file", arguments={"path": "a.py", "content": "a = 1\n"}),
+        ToolCall(id="t", name="run_command", arguments={"argv": ["pytest", "-q"]}),
+    )
+    changes = response.workspace_changes
+    assert changes.status == "tracked"
+    assert changes.added == ["a.py", "generated.txt"]
+    assert changes.modified == []
+    assert changes.deleted == ["remove_me.txt"]
+    assert response.files_touched == ["a.py"]
+    assert (workspace / "user_dirty.py").read_text(encoding="utf-8").startswith("# user edit")
+
+
+async def test_runtime_reports_unavailable_changes_over_limit(tmp_path: Path) -> None:
+    workspace = tmp_path / "repo"
+    workspace.mkdir()
+    (workspace / "one.py").write_text("", encoding="utf-8")
+    (workspace / "two.py").write_text("", encoding="utf-8")
+    edit = ToolCall(id="w", name="write_file", arguments={"path": "a.py", "content": "a = 1\n"})
+    limited = await _run_edit_turn(
+        workspace, tmp_path, Settings(_env_file=None, max_tracked_files=1), edit
+    )
+    assert limited.workspace_changes.status == "unavailable"
+    assert "more than 1 tracked files" in (limited.workspace_changes.reason or "")
+    assert limited.workspace_changes.added == []
+    assert limited.files_touched == ["a.py"]
+
+    disabled = await _run_edit_turn(
+        workspace, tmp_path, Settings(_env_file=None, track_workspace_changes=False), edit
+    )
+    assert disabled.workspace_changes.status == "not_tracked"

@@ -178,6 +178,13 @@ def test_chat_returns_patch_summary_after_write(
     body = resp.json()
     assert body["files_touched"] == ["calc.py"]
     assert body["patch_summary"] == ["calc.py (6 bytes written)"]
+    assert body["workspace_changes"] == {
+        "status": "tracked",
+        "added": [],
+        "modified": ["calc.py"],
+        "deleted": [],
+        "reason": None,
+    }
 
 
 def test_chat_404_when_session_unknown(harness: Harness) -> None:

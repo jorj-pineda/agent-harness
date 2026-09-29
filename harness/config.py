@@ -116,6 +116,12 @@ class Settings(BaseSettings):
         default=False,
         description="Block file-tool edits until emit_plan succeeds in this turn.",
     )
+    track_workspace_changes: bool = Field(
+        default=True,
+        description="Snapshot the workspace around each turn to report actual file changes.",
+    )
+    max_tracked_files: int = Field(default=20_000, ge=1, le=1_000_000)
+    max_tracked_bytes: int = Field(default=256_000_000, ge=1, le=10_000_000_000)
     default_workspace_root: Path | None = Field(
         default=None,
         description="Optional default repo sandbox when sessions omit workspace_root.",
