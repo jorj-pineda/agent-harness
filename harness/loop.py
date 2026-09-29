@@ -29,6 +29,7 @@ from typing import Any
 from providers.base import ChatMessage, ChatProvider, TokenUsage
 from tools import ToolError, ToolRegistry
 
+from .context import BudgetStop, TokenBudget
 from .grounding import Grounder
 from .memory import harvest_memory_writes
 from .outcome import (
@@ -81,6 +82,9 @@ async def run_turn(
     max_tool_calls_per_turn: int = 0,
     max_turn_wall_seconds: float = 0,
     max_completion_tokens_per_turn: int = 0,
+    max_total_tokens_per_turn: int = 0,
+    max_context_tokens: int = 0,
+    min_request_output_tokens: int = 1,
     max_identical_tool_calls: int = 0,
     max_completion_retries: int = 0,
     required_check: list[str] | None = None,
@@ -107,8 +111,12 @@ async def run_turn(
     completion_status: CompletionStatus = "completed"
     completion_reason: str | None = None
     completion_retries = 0
-    prompt_tokens: int | None = 0
-    completion_tokens: int | None = 0
+    budget = TokenBudget(
+        max_output=max_completion_tokens_per_turn,
+        max_total=max_total_tokens_per_turn,
+        max_context=max_context_tokens,
+        min_request_output=min_request_output_tokens,
+    )
     deadline = (
         asyncio.get_running_loop().time() + max_turn_wall_seconds
         if max_turn_wall_seconds > 0
@@ -117,82 +125,49 @@ async def run_turn(
     wall_limit_reason = f"Turn wall-time budget of {max_turn_wall_seconds:g}s reached."
 
     for iteration in range(max_iterations):
-        if (
-            max_completion_tokens_per_turn > 0
-            and completion_tokens is not None
-            and completion_tokens >= max_completion_tokens_per_turn
-        ):
-            final_answer = "(model output budget exhausted before task completion)"
-            completion_status = "budget_exhausted"
-            completion_reason = "Model output-token budget reached."
+        allowance = budget.request_allowance(session.messages, tool_specs)
+        if isinstance(allowance, BudgetStop):
+            final_answer = "(model token budget exhausted before task completion)"
+            completion_status = allowance.status
+            completion_reason = allowance.reason
             break
         if deadline is not None and asyncio.get_running_loop().time() >= deadline:
             final_answer = "(turn stopped before task completion)"
             completion_status = "budget_exhausted"
             completion_reason = wall_limit_reason
             break
-        remaining_output = (
-            max_completion_tokens_per_turn - completion_tokens
-            if max_completion_tokens_per_turn > 0 and completion_tokens is not None
-            else None
-        )
+        sent_count = len(session.messages)
         if deadline is None:
-            if remaining_output is None:
+            if allowance is None:
                 response = await provider.chat(session.messages, tools=tool_specs)
             else:
                 response = await provider.chat(
-                    session.messages, tools=tool_specs, max_tokens=remaining_output
+                    session.messages, tools=tool_specs, max_tokens=allowance
                 )
         else:
             budget_timeout = asyncio.timeout_at(deadline)
             try:
                 async with budget_timeout:
-                    if remaining_output is None:
+                    if allowance is None:
                         response = await provider.chat(session.messages, tools=tool_specs)
                     else:
                         response = await provider.chat(
-                            session.messages, tools=tool_specs, max_tokens=remaining_output
+                            session.messages, tools=tool_specs, max_tokens=allowance
                         )
             except TimeoutError:
                 if not budget_timeout.expired():
                     raise
-                prompt_tokens = None
-                completion_tokens = None
+                budget.mark_unknown()
                 final_answer = "(turn stopped before task completion)"
                 completion_status = "budget_exhausted"
                 completion_reason = wall_limit_reason
                 break
-        reported_prompt = response.usage.prompt_tokens
-        reported_completion = response.usage.completion_tokens
-        prompt_tokens = (
-            prompt_tokens + reported_prompt
-            if prompt_tokens is not None and reported_prompt is not None
-            else None
-        )
-        completion_tokens = (
-            completion_tokens + reported_completion
-            if completion_tokens is not None and reported_completion is not None
-            else None
-        )
+        budget.record(response.usage, sent_count)
         if deadline is not None and asyncio.get_running_loop().time() >= deadline:
             final_answer = "(turn stopped before task completion)"
             completion_status = "budget_exhausted"
             completion_reason = wall_limit_reason
             break
-        output_budget_reason: str | None = None
-        output_budget_status: CompletionStatus = "completed"
-        if max_completion_tokens_per_turn > 0:
-            if completion_tokens is None:
-                output_budget_reason = (
-                    "Provider did not report output-token usage; budget cannot be enforced."
-                )
-                output_budget_status = "incomplete"
-            elif completion_tokens > max_completion_tokens_per_turn:
-                output_budget_reason = "Provider exceeded the requested model output-token budget."
-                output_budget_status = "budget_exhausted"
-            elif completion_tokens == max_completion_tokens_per_turn and response.tool_calls:
-                output_budget_reason = "Model output-token budget reached."
-                output_budget_status = "budget_exhausted"
 
         incomplete_reasons = {
             "length": "The model response was truncated.",
@@ -214,10 +189,11 @@ async def run_turn(
             completion_reason = incomplete_reasons[response.finish_reason]
             break
 
-        if output_budget_reason is not None and not usable_calls:
+        budget_stop = budget.after_response(wants_tools=bool(usable_calls))
+        if budget_stop is not None and not usable_calls:
             final_answer = response.content
-            completion_status = output_budget_status
-            completion_reason = output_budget_reason
+            completion_status = budget_stop.status
+            completion_reason = budget_stop.reason
             break
 
         if not usable_calls:
@@ -252,8 +228,10 @@ async def run_turn(
             final_answer = response.content
             break
 
-        stop_reason = output_budget_reason
-        stop_status = output_budget_status
+        stop_reason = budget_stop.reason if budget_stop is not None else None
+        stop_status: CompletionStatus = (
+            budget_stop.status if budget_stop is not None else "completed"
+        )
         for tc in usable_calls:
             if on_event is not None:
                 await on_event(ToolStartEvent(tool=tc.name, arguments=dict(tc.arguments)))
@@ -368,7 +346,9 @@ async def run_turn(
         verification_status=checked,
         check_attempts=harvest_checks(turn.tool_calls, required_check=required_check),
         tool_errors=harvest_tool_errors(turn.tool_calls),
-        token_usage=TokenUsage(prompt_tokens=prompt_tokens, completion_tokens=completion_tokens),
+        token_usage=TokenUsage(
+            prompt_tokens=budget.prompt_used, completion_tokens=budget.completion_used
+        ),
         completion_status=completion_status,
         completion_reason=completion_reason,
         patch_summary=patch_summary,

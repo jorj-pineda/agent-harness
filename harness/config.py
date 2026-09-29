@@ -75,6 +75,24 @@ class Settings(BaseSettings):
     max_tool_calls_per_turn: int = Field(default=24, ge=1, le=256)
     max_turn_wall_seconds: float = Field(default=0, ge=0, le=3600)
     max_completion_tokens_per_turn: int = Field(default=0, ge=0, le=1000000)
+    max_total_tokens_per_turn: int = Field(
+        default=0,
+        ge=0,
+        le=100_000_000,
+        description="Reported prompt + output tokens across a turn, checked with estimates.",
+    )
+    max_context_tokens: int = Field(
+        default=0,
+        ge=0,
+        le=10_000_000,
+        description="Model context window; estimated prompt + output must fit (0 disables).",
+    )
+    min_request_output_tokens: int = Field(
+        default=256,
+        ge=1,
+        le=100_000,
+        description="Stop instead of requesting fewer output tokens under context/total limits.",
+    )
     max_identical_tool_calls: int = Field(default=2, ge=0, le=10)
     max_completion_retries: int = Field(default=1, ge=0, le=3)
     request_timeout_seconds: int = Field(default=60, ge=1, le=600)

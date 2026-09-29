@@ -239,3 +239,20 @@ async def test_runtime_reports_unavailable_changes_over_limit(tmp_path: Path) ->
         workspace, tmp_path, Settings(_env_file=None, track_workspace_changes=False), edit
     )
     assert disabled.workspace_changes.status == "not_tracked"
+
+
+async def test_runtime_applies_context_limit_before_provider_request(tmp_path: Path) -> None:
+    provider = ScriptedProvider()
+    with FactStore(tmp_path / "memory.db") as store:
+        response = await run_configured_turn(
+            settings=Settings(_env_file=None, max_context_tokens=500),
+            session=Session(),
+            user_id="dev",
+            message="Explain the module",
+            provider=provider,
+            fact_store=store,
+            registry=build_registry(fact_store=store, user_id="dev", workspace_root=None),
+        )
+    assert provider.calls == []
+    assert response.completion_status == "budget_exhausted"
+    assert "context limit" in (response.completion_reason or "")

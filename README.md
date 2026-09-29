@@ -121,6 +121,22 @@ reported output usage spends it. Missing output usage stops a budgeted turn as
 with `null` where usage was not reported. Prompt tokens are known only after
 a request, so this is not a strict prompt-plus-output token budget.
 
+`MAX_CONTEXT_TOKENS` and `MAX_TOTAL_TOKENS_PER_TURN` (both `0` = disabled) are
+checked before each model request using an estimated prompt size. The estimate
+is the larger of a UTF-8 byte heuristic over the whole prompt and the previous
+request's reported prompt tokens plus the heuristic for newer messages. If the
+estimated prompt leaves fewer than `MIN_REQUEST_OUTPUT_TOKENS` of room, the turn
+stops as `budget_exhausted` before sending the request; otherwise the remaining
+room caps `max_tokens`. After a response, the runtime also refuses to dispatch
+requested tools when the next request could not fit, because the model would
+never see their results. The total budget fails closed when prompt or output
+usage is unreported, and a provider response that exceeds it is reported as
+such. Estimates are approximate: on one first request with local `gemma4:12b`
+and the default coding tools, the estimate was 2,950 tokens against 1,781
+reported. The harness does not set the model server's context length, so set
+`MAX_CONTEXT_TOKENS` to the value the server actually uses. Exhausting the
+context stops the turn; compaction is not implemented.
+
 **Local agent panel.** A Typer CLI (`agent-harness serve`/`chat`) and a zero-build static panel (`ui/`) make the envelope legible — tool cards stream in live over SSE (`GET /chat/stream`). Both are thin HTTP clients; the ReAct loop is never duplicated in the frontend.
 
 ### Eval honesty
