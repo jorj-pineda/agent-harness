@@ -73,8 +73,8 @@ class RealTaskResult:
     diff: str
     acceptance_exit_code: int
     acceptance_output: str
-    prompt_tokens: int
-    completion_tokens: int
+    prompt_tokens: int | None
+    completion_tokens: int | None
     latency_ms: float
     tool_trace: list[dict[str, Any]]
     runtime_config: dict[str, Any]
@@ -85,8 +85,8 @@ class ObservedProvider:
         self.provider = provider
         self.name = provider.name
         self.model = "unknown"
-        self.prompt_tokens = 0
-        self.completion_tokens = 0
+        self.prompt_tokens: int | None = 0
+        self.completion_tokens: int | None = 0
         self.finish_reason = "unknown"
 
     async def chat(
@@ -102,8 +102,16 @@ class ObservedProvider:
         )
         self.model = response.model
         self.finish_reason = response.finish_reason
-        self.prompt_tokens += response.usage.prompt_tokens or 0
-        self.completion_tokens += response.usage.completion_tokens or 0
+        self.prompt_tokens = (
+            self.prompt_tokens + response.usage.prompt_tokens
+            if self.prompt_tokens is not None and response.usage.prompt_tokens is not None
+            else None
+        )
+        self.completion_tokens = (
+            self.completion_tokens + response.usage.completion_tokens
+            if self.completion_tokens is not None and response.usage.completion_tokens is not None
+            else None
+        )
         return response
 
 
@@ -292,6 +300,7 @@ async def run_task(
                 "max_tool_iterations": settings.max_tool_iterations,
                 "max_tool_calls_per_turn": settings.max_tool_calls_per_turn,
                 "max_turn_wall_seconds": settings.max_turn_wall_seconds,
+                "max_completion_tokens_per_turn": settings.max_completion_tokens_per_turn,
                 "max_identical_tool_calls": settings.max_identical_tool_calls,
                 "max_completion_retries": settings.max_completion_retries,
                 "project_check_argv": settings.project_check_argv,
