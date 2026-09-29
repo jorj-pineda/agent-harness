@@ -98,7 +98,16 @@ after it. A tool already executing may finish past the deadline, especially a
 synchronous file tool; the limit does not interrupt that work. Exceeded turns
 report `budget_exhausted` and retain completed edits and check history. This is
 a dispatch deadline, not process isolation or a strict upper bound on response
-latency. Model-token budgets remain open.
+latency. A prompt-plus-output total budget remains open.
+
+`MAX_COMPLETION_TOKENS_PER_TURN` optionally caps model output across a turn
+(`0` disables it). The runtime passes the remaining allowance as `max_tokens`
+to each provider request and stops before more tools or model requests when
+reported output usage spends it. Missing output usage stops a budgeted turn as
+`incomplete`; a provider that exceeds the requested cap is reported as
+`budget_exhausted`. Responses show observed prompt and output token totals,
+with `null` where usage was not reported. Prompt tokens are known only after
+a request, so this is not a strict prompt-plus-output token budget.
 
 **Local agent panel.** A Typer CLI (`agent-harness serve`/`chat`) and a zero-build static panel (`ui/`) make the envelope legible — tool cards stream in live over SSE (`GET /chat/stream`). Both are thin HTTP clients; the ReAct loop is never duplicated in the frontend.
 

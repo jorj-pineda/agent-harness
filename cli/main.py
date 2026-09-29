@@ -95,6 +95,8 @@ def chat(
         if result.files_touched:
             typer.echo(f"  files_touched={result.files_touched}")
         typer.echo(f"  status={result.completion_status} verification={result.verification_status}")
+        if result.token_usage:
+            typer.echo(f"  token_usage={result.token_usage}")
         if result.completion_reason:
             typer.echo(f"  reason={result.completion_reason}")
         for check in result.check_attempts:

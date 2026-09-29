@@ -23,7 +23,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
-from providers.base import ChatMessage
+from providers.base import ChatMessage, TokenUsage
 
 from .outcome_types import CompletionStatus, VerificationStatus
 
@@ -112,6 +112,7 @@ class TurnResponse(BaseModel):
     verification_status: VerificationStatus = "not_run"
     check_attempts: list[CheckRecord] = Field(default_factory=list)
     tool_errors: list[str] = Field(default_factory=list)
+    token_usage: TokenUsage = Field(default_factory=TokenUsage)
     completion_status: CompletionStatus = "completed"
     completion_reason: str | None = None
     patch_summary: list[str] = Field(

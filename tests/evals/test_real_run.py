@@ -157,3 +157,5 @@ async def test_tool_budget_termination_is_separate_from_acceptance() -> None:
     assert result.completion_status == "budget_exhausted"
     assert result.tool_trace[0]["error"] is None
     assert "not executed" in result.tool_trace[1]["error"]
+    assert result.prompt_tokens is None
+    assert result.completion_tokens is None

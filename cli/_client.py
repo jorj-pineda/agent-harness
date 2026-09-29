@@ -27,6 +27,7 @@ class TurnSummary:
     verification_status: str = "not_run"
     check_attempts: list[dict[str, object]] = field(default_factory=list)
     tool_errors: list[str] = field(default_factory=list)
+    token_usage: dict[str, int | None] = field(default_factory=dict)
 
 
 class AgentClient:
@@ -72,4 +73,5 @@ class AgentClient:
             verification_status=str(data.get("verification_status", "not_run")),
             check_attempts=list(data.get("check_attempts", [])),
             tool_errors=list(data.get("tool_errors", [])),
+            token_usage=dict(data.get("token_usage", {})),
         )

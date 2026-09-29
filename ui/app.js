@@ -225,6 +225,10 @@ function renderEnvelope(data) {
     `${data.completion_status || "completed"}${data.completion_reason ? `: ${data.completion_reason}` : ""}`,
     `verification: ${data.verification_status || "not_run"}`,
   ]));
+  els.envelope.appendChild(listSection("model tokens", [
+    `prompt: ${data.token_usage?.prompt_tokens ?? "unreported"}`,
+    `output: ${data.token_usage?.completion_tokens ?? "unreported"}`,
+  ]));
   els.envelope.appendChild(listSection("check attempts", (data.check_attempts || []).map(
     (check) => `${(check.argv || []).join(" ")}: ${check.status}`
       + `${check.exit_code == null ? "" : ` (exit ${check.exit_code})`}`

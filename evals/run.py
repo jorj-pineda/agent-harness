@@ -384,6 +384,7 @@ async def _run_one(
             "max_tool_iterations": settings.max_tool_iterations,
             "max_tool_calls_per_turn": settings.max_tool_calls_per_turn,
             "max_turn_wall_seconds": settings.max_turn_wall_seconds,
+            "max_completion_tokens_per_turn": settings.max_completion_tokens_per_turn,
             "max_identical_tool_calls": settings.max_identical_tool_calls,
             "max_completion_retries": settings.max_completion_retries,
             "project_check_argv": settings.project_check_argv,
