@@ -11,10 +11,14 @@ import asyncio
 import difflib
 import hashlib
 import json
+import statistics
+import subprocess
 import sys
 import tempfile
 import time
+from collections import Counter
 from dataclasses import asdict, dataclass
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Literal
 
@@ -41,6 +45,7 @@ MINIMAL_PROMPT = (
     "You are a coding assistant. Complete the user's request using the available tools."
 )
 Mode = Literal["harness", "minimal"]
+MODES: tuple[Mode, ...] = ("harness", "minimal")
 
 
 @dataclass(frozen=True)
@@ -56,6 +61,7 @@ class Task:
 class RealTaskResult:
     task_id: str
     mode: Mode
+    attempt: int
     provider: str
     model: str
     endpoint: str
@@ -214,6 +220,7 @@ async def run_task(
     provider: ChatProvider,
     settings: Settings,
     mode: Mode,
+    attempt: int = 1,
 ) -> RealTaskResult:
     observed = ObservedProvider(provider)
     with disposable_workspace(task.fixture) as copy:
@@ -270,6 +277,7 @@ async def run_task(
         return RealTaskResult(
             task_id=task.id,
             mode=mode,
+            attempt=attempt,
             provider=provider.name,
             model=(
                 configured_model(provider.name, settings)
@@ -315,6 +323,80 @@ async def run_task(
         )
 
 
+def summarize(results: list[RealTaskResult]) -> dict[str, Any]:
+    """Aggregate raw counts per mode; percentages are left to the reader."""
+    summary: dict[str, Any] = {}
+    for mode in MODES:
+        rows = [r for r in results if r.mode == mode]
+        if not rows:
+            continue
+        tokens = [
+            r.prompt_tokens + r.completion_tokens
+            for r in rows
+            if r.prompt_tokens is not None and r.completion_tokens is not None
+        ]
+        summary[mode] = {
+            "accepted": sum(r.passed for r in rows),
+            "attempts": len(rows),
+            "per_task": {
+                task_id: {
+                    "accepted": sum(r.passed for r in rows if r.task_id == task_id),
+                    "attempts": sum(r.task_id == task_id for r in rows),
+                }
+                for task_id in sorted({r.task_id for r in rows})
+            },
+            "terminations": dict(sorted(Counter(r.termination for r in rows).items())),
+            "false_completion": sum(
+                r.completion_status == "completed" and not r.passed for r in rows
+            ),
+            "median_latency_s": round(statistics.median(r.latency_ms for r in rows) / 1000, 1),
+            "median_tool_calls": statistics.median(len(r.tool_trace) for r in rows),
+            "median_total_tokens": statistics.median(tokens) if tokens else None,
+            "unreported_token_attempts": len(rows) - len(tokens),
+        }
+    return summary
+
+
+def summary_markdown(summary: dict[str, Any]) -> str:
+    modes = list(summary)
+    task_ids = sorted({task for mode in modes for task in summary[mode]["per_task"]})
+    lines = ["| Task | " + " | ".join(modes) + " |", "|---|" + "---|" * len(modes)]
+    for task_id in task_ids:
+        cells = [
+            "{accepted}/{attempts}".format(
+                **summary[mode]["per_task"].get(task_id, {"accepted": 0, "attempts": 0})
+            )
+            for mode in modes
+        ]
+        lines.append(f"| {task_id} | " + " | ".join(cells) + " |")
+    lines.append(
+        "| **total** | "
+        + " | ".join(f"**{summary[m]['accepted']}/{summary[m]['attempts']}**" for m in modes)
+        + " |"
+    )
+    return "\n".join(lines)
+
+
+def _harness_revision() -> dict[str, Any]:
+    root = Path(__file__).resolve().parent.parent
+    try:
+        commit = subprocess.run(
+            ["git", "rev-parse", "HEAD"], cwd=root, capture_output=True, text=True, check=True
+        ).stdout.strip()
+        dirty = bool(
+            subprocess.run(
+                ["git", "status", "--porcelain"],
+                cwd=root,
+                capture_output=True,
+                text=True,
+                check=True,
+            ).stdout.strip()
+        )
+    except (OSError, subprocess.CalledProcessError):
+        return {"commit": None, "dirty": None}
+    return {"commit": commit, "dirty": dirty}
+
+
 async def _run_cli(args: argparse.Namespace) -> list[RealTaskResult]:
     tasks = load_tasks()
     selected = [task for task in tasks if args.task is None or task.id == args.task]
@@ -326,15 +408,28 @@ async def _run_cli(args: argparse.Namespace) -> list[RealTaskResult]:
         return []
     settings = get_settings()
     provider = build_configured_provider(args.provider, settings)
+    modes: tuple[Mode, ...] = MODES if args.mode == "both" else (args.mode,)
+    results: list[RealTaskResult] = []
     try:
-        return [
-            await run_task(task, provider=provider, settings=settings, mode=args.mode)
-            for task in selected
-        ]
+        for attempt in range(1, args.repeats + 1):
+            for task in selected:
+                # Alternate mode order so neither mode always runs on a freshly loaded model.
+                ordered = modes if (attempt + selected.index(task)) % 2 else modes[::-1]
+                for mode in ordered:
+                    result = await run_task(
+                        task, provider=provider, settings=settings, mode=mode, attempt=attempt
+                    )
+                    results.append(result)
+                    print(
+                        f"{task.id} {mode} #{attempt}: {result.termination} "
+                        f"({result.latency_ms / 1000:.0f}s, {len(result.tool_trace)} tools)",
+                        flush=True,
+                    )
     finally:
         close = getattr(provider, "aclose", None)
         if close is not None:
             await close()
+    return results
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -345,22 +440,35 @@ def main(argv: list[str] | None = None) -> int:
         default="ollama",
     )
     parser.add_argument("--task", help="Run one task ID; default runs all five")
-    parser.add_argument("--mode", choices=("harness", "minimal"), default="harness")
+    parser.add_argument("--mode", choices=("harness", "minimal", "both"), default="harness")
+    parser.add_argument("--repeats", type=int, default=1, help="Attempts per task and mode")
     parser.add_argument("--validate-only", action="store_true")
     parser.add_argument("--report", type=Path, default=Path("/tmp/agent-harness-real-eval.json"))
     args = parser.parse_args(argv)
+    if args.repeats < 1:
+        parser.error("--repeats must be at least 1")
+    started = datetime.now(UTC).isoformat(timespec="seconds")
     results = asyncio.run(_run_cli(args))
     if args.validate_only:
         print("Selected task fixtures fail initially and their reference solutions pass.")
         return 0
+    summary = summarize(results)
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text(
         json.dumps(
-            {"mode": "real-tools-trusted-fixtures", "results": [asdict(r) for r in results]},
+            {
+                "mode": "real-tools-trusted-fixtures",
+                "started_at": started,
+                "harness_revision": _harness_revision(),
+                "sampling": {"temperature": 0.0},
+                "summary": summary,
+                "results": [asdict(r) for r in results],
+            },
             indent=2,
         ),
         encoding="utf-8",
     )
+    print(summary_markdown(summary))
     print(f"Wrote {args.report} ({sum(r.passed for r in results)}/{len(results)} accepted)")
     return 0
 
