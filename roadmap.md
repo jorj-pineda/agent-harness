@@ -98,7 +98,12 @@ The harness does not need to make every model good at every task. It needs to id
   elapsed. Completed tools and partial work remain visible. In-flight tools
   finish normally, so this is a dispatch deadline rather than a strict bound
   on wall latency or process isolation.
-- **Next:** continue item 6 with model-token budgets and actual
+- **2026-09-28 — Item 6 output-token slice prepared:** the runtime passes a
+  remaining output allowance to providers, stops further work when reported
+  usage reaches it, and fails closed if output usage is unavailable. Responses
+  show observed prompt/output totals. This is not a strict total model-token
+  cap because prompt usage arrives after each request.
+- **Next:** continue item 6 with a pre-request context/total-token budget and actual
   changed-file reporting for application runs. A full
   selected-model baseline, model profiles, and context management remain open.
   Offline checks alone are not evidence of better model coding performance.
