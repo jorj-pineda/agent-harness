@@ -110,9 +110,19 @@ The harness does not need to make every model good at every task. It needs to id
   be distinguished, ignored directories are not tracked, and oversized
   workspaces report the result as unavailable. Paths only; diffs, checkpoints,
   and revert remain open.
-- **Next:** continue item 6 with a pre-request context/total-token budget. A full
-  selected-model baseline, model profiles, and context management remain open.
-  Offline checks alone are not evidence of better model coding performance.
+- **2026-09-29 — Item 6 context/total-token slice prepared:** optional context-window
+  and per-turn total-token budgets are checked before every model request with
+  an estimated prompt size, cap the requested output, and block tool dispatch
+  when no follow-up request could fit. Reported usage stays authoritative, and
+  missing usage fails closed. On one local `gemma4:12b` first request, the
+  estimate was 2,950 tokens against 1,781 reported. This is an estimate-based
+  gate, not a strict cap. Exhausting the context stops the turn without
+  compaction.
+- **Next:** item 6's listed mechanics are in place; see the known limitations
+  below before relying on them unattended. Item 7 starts with the repeated
+  five-task baseline on the selected model. Model profiles and context
+  management remain open. Offline checks alone are not evidence of better model
+  coding performance.
 
 ### Review baseline
 
@@ -328,3 +338,29 @@ The earliest useful checkpoint is items 1–5: a reliable way to observe an actu
 - Which model failures are recoverable with tooling and which require narrower tasks or another model.
 
 Keep this roadmap tied to observed failures. The next feature should remove a demonstrated obstacle to Jorge completing a real coding task.
+
+## Known limitations and proposed fixes
+
+Limitations of shipped slices, with the fix we currently expect to use. A fix
+enters the queue when a real task or evaluation shows the limitation matters.
+
+### Turn change reporting (item 6, PR #30)
+
+| Limitation | Proposed fix |
+|---|---|
+| Changes cannot be attributed. A concurrent edit by Jorge or another process during a turn is reported as a turn change. | Add the Milestone 2 single-writer lock per workspace. Label each changed path as a file-tool edit (its hash matches the last tool result) or as a change from a command or another process. |
+| Only paths are reported, not diff content. There are no checkpoints and no revert. | In Git repositories, checkpoint the working tree with a temporary index (`git write-tree` without touching Jorge's index or stash) and diff or revert against it. Outside Git, keep bounded copies of changed text files. This is the Milestone 5 checkpoint/revert work. |
+| Ignored directories (`.git`, `.venv`, `node_modules`, caches) are not tracked, so dependency installs or Git metadata changes are invisible. | Record a cheap per-directory stat summary for ignored top-level directories and report "ignored directory changed" without listing its contents. |
+| Snapshot time counts toward neither the wall-time budget nor `latency_ms`. | Measure snapshot time, report it in the response, and start the wall deadline before the first snapshot. |
+| Each turn reads every tracked file twice, up to the limits. Large repositories hit `unavailable`. | Cache `(size, mtime_ns, inode)` beside each hash and rehash only files whose metadata changed. Reuse the previous turn's after-snapshot when metadata is unchanged. |
+| Five files on `main` fail `ruff format --check` (pre-existing). | Run a formatting-only PR with no behavior changes. |
+
+### Context and total-token budgets (item 6)
+
+| Limitation | Proposed fix |
+|---|---|
+| The byte heuristic overestimated one `gemma4:12b` first request by about 66% (2,950 versus 1,781 tokens), so a context limit stops turns early. | Add a per-model-profile bytes-per-token ratio, calibrated from recorded first-request usage in real evaluations. Keep the conservative default for unprofiled models. |
+| The harness does not set the model server's context length. A harness limit larger than the server's window still allows silent server-side truncation. | Put the context length in the Milestone 4 model profile, and have the Ollama adapter send it as the request's context option so both sides agree. |
+| Exhausting the context stops the turn instead of continuing. | Add Milestone 4 compaction that keeps the objective, current diff, relevant file spans, unresolved failures, and recent actions. Keep raw traces outside the model context. |
+| The total budget is estimate-gated. One request can overshoot it when the provider's count exceeds the estimate. The overshoot is reported, not prevented. | Profile calibration narrows the error. A stricter variant can reserve a safety margin proportional to the observed estimate error. |
+| Some backends can omit cached prompt tokens from reported usage, so the total budget may undercount work. This was not observed in the one local check. | Record the per-request estimate beside reported usage in real-eval traces, and flag requests where the reported prompt count is far below the estimate. |
