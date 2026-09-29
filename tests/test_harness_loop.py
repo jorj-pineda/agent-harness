@@ -7,6 +7,7 @@ from typing import cast
 import pytest
 from pydantic import BaseModel
 
+from harness.context import estimate_message_tokens, estimate_tool_tokens
 from harness.loop import DEFAULT_MAX_ITERATIONS, MAX_ITERATIONS_STUB, run_turn
 from harness.state import Session
 from providers.base import (
@@ -486,6 +487,111 @@ async def test_final_response_at_output_limit_can_complete() -> None:
     )
     assert response.answer == "done"
     assert response.completion_status == "completed"
+
+
+async def test_context_limit_stops_before_an_oversized_request() -> None:
+    provider = FakeProvider([])
+    response = await run_turn(
+        session=Session(),
+        user_input="x" * 3_000,
+        provider=provider,
+        registry=_registry(_echo_tool()),
+        max_context_tokens=900,
+        min_request_output_tokens=10,
+    )
+    assert provider.calls == []
+    assert response.completion_status == "budget_exhausted"
+    assert "context limit" in (response.completion_reason or "")
+    assert response.token_usage == TokenUsage(prompt_tokens=0, completion_tokens=0)
+
+
+async def test_context_limit_caps_requested_output_to_estimated_room() -> None:
+    provider = FakeProvider([_response(content="done", prompt_tokens=20, completion_tokens=3)])
+    session = Session()
+    response = await run_turn(
+        session=session,
+        user_input="work",
+        provider=provider,
+        registry=_registry(_echo_tool()),
+        max_context_tokens=1_000,
+        max_completion_tokens_per_turn=2_000,
+    )
+    estimate = estimate_message_tokens(provider.calls[0][0]) + estimate_tool_tokens(
+        provider.calls[0][1] or []
+    )
+    assert provider.max_tokens_seen == [1_000 - estimate]
+    assert response.completion_status == "completed"
+
+
+async def test_total_budget_blocks_tools_when_no_follow_up_request_can_fit() -> None:
+    provider = FakeProvider(
+        [
+            _response(
+                tool_calls=[ToolCall(id="edit", name="echo", arguments={"text": "one"})],
+                prompt_tokens=400,
+                completion_tokens=20,
+            )
+        ]
+    )
+    response = await run_turn(
+        session=Session(),
+        user_input="work",
+        provider=provider,
+        registry=_registry(_echo_tool()),
+        max_total_tokens_per_turn=800,
+        min_request_output_tokens=10,
+    )
+    assert len(provider.calls) == 1
+    assert "not executed" in (response.tool_calls[0].error or "")
+    assert response.completion_status == "budget_exhausted"
+    assert "cannot fit another model request" in (response.completion_reason or "")
+    assert response.token_usage == TokenUsage(prompt_tokens=400, completion_tokens=20)
+
+
+async def test_total_budget_stops_before_next_request_using_reported_usage() -> None:
+    provider = FakeProvider(
+        [
+            _response(
+                tool_calls=[ToolCall(id="a", name="echo", arguments={"text": "x" * 900})],
+                prompt_tokens=100,
+                completion_tokens=10,
+            )
+        ]
+    )
+    response = await run_turn(
+        session=Session(),
+        user_input="work",
+        provider=provider,
+        registry=_registry(_echo_tool()),
+        max_total_tokens_per_turn=700,
+        min_request_output_tokens=10,
+    )
+    assert len(provider.calls) == 1
+    assert response.tool_calls[0].result == "x" * 900
+    assert response.completion_status == "budget_exhausted"
+    assert "remaining total token budget" in (response.completion_reason or "")
+
+
+async def test_total_budget_fails_closed_without_reported_prompt_usage() -> None:
+    provider = FakeProvider(
+        [
+            _response(
+                tool_calls=[ToolCall(id="a", name="echo", arguments={"text": "one"})],
+                completion_tokens=5,
+            )
+        ]
+    )
+    response = await run_turn(
+        session=Session(),
+        user_input="work",
+        provider=provider,
+        registry=_registry(_echo_tool()),
+        max_total_tokens_per_turn=10_000,
+    )
+    assert response.tool_calls[0].result is None
+    assert response.completion_status == "incomplete"
+    assert "total budget cannot be enforced" in (response.completion_reason or "")
+    assert response.token_usage.prompt_tokens is None
 
 
 async def test_identical_unchanged_call_is_stopped_before_third_execution() -> None:
