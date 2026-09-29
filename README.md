@@ -90,7 +90,15 @@ The configured runtime also caps tool attempts per turn with
 `MAX_IDENTICAL_TOOL_CALLS` consecutive outcomes were unchanged. Rejected calls
 remain in the trace with an error, and the response reports `budget_exhausted`
 or `blocked` with a reason. These limits prevent further tool dispatch; they do
-not yet impose a total wall-time or model-token budget.
+not meter wall time or model tokens on their own.
+
+`MAX_TURN_WALL_SECONDS` optionally sets a turn deadline (`0` disables it).
+The runtime cancels a model request at the deadline and refuses new tool calls
+after it. A tool already executing may finish past the deadline, especially a
+synchronous file tool; the limit does not interrupt that work. Exceeded turns
+report `budget_exhausted` and retain completed edits and check history. This is
+a dispatch deadline, not process isolation or a strict upper bound on response
+latency. Model-token budgets remain open.
 
 **Local agent panel.** A Typer CLI (`agent-harness serve`/`chat`) and a zero-build static panel (`ui/`) make the envelope legible — tool cards stream in live over SSE (`GET /chat/stream`). Both are thin HTTP clients; the ReAct loop is never duplicated in the frontend.
 

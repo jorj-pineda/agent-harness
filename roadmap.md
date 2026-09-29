@@ -93,7 +93,12 @@ The harness does not need to make every model good at every task. It needs to id
   evidence, and tool errors. The CLI and panel surface these with completion
   status and tool-reported edits. This is observed turn evidence, not a final
   filesystem diff or independent acceptance result.
-- **Next:** continue item 6 with wall-time/model-token budgets and actual
+- **2026-09-28 — Item 6 wall-budget slice prepared:** an optional per-turn
+  deadline cancels in-flight model requests and blocks new tool dispatch once
+  elapsed. Completed tools and partial work remain visible. In-flight tools
+  finish normally, so this is a dispatch deadline rather than a strict bound
+  on wall latency or process isolation.
+- **Next:** continue item 6 with model-token budgets and actual
   changed-file reporting for application runs. A full
   selected-model baseline, model profiles, and context management remain open.
   Offline checks alone are not evidence of better model coding performance.
