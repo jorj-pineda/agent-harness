@@ -61,6 +61,20 @@ class CheckRecord(BaseModel):
     error: str | None = None
 
 
+class WorkspaceChangeReport(BaseModel):
+    """Workspace content changes observed between the start and end of a turn.
+
+    Changes made by any process during the turn are included; files that were
+    already modified before it are reported only if their content changed again.
+    """
+
+    status: Literal["tracked", "unavailable", "not_tracked"] = "not_tracked"
+    added: list[str] = Field(default_factory=list)
+    modified: list[str] = Field(default_factory=list)
+    deleted: list[str] = Field(default_factory=list)
+    reason: str | None = None
+
+
 class Turn(BaseModel):
     """One user input → final assistant answer, with every intermediate call."""
 
@@ -105,6 +119,7 @@ class TurnResponse(BaseModel):
         default_factory=list,
         description="Repo-relative paths edited by file tools this turn.",
     )
+    workspace_changes: WorkspaceChangeReport = Field(default_factory=WorkspaceChangeReport)
     verification_ran: bool = Field(
         default=False,
         description="True when an allowlisted verification command succeeded this turn.",

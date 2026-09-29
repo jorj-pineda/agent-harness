@@ -94,6 +94,13 @@ def chat(
         )
         if result.files_touched:
             typer.echo(f"  files_touched={result.files_touched}")
+        changes = result.workspace_changes
+        if changes.get("status") == "tracked":
+            for kind in ("added", "modified", "deleted"):
+                if changes.get(kind):
+                    typer.echo(f"  workspace_{kind}={changes[kind]}")
+        elif changes.get("status") == "unavailable":
+            typer.echo(f"  workspace_changes=unavailable ({changes.get('reason')})")
         typer.echo(f"  status={result.completion_status} verification={result.verification_status}")
         if result.token_usage:
             typer.echo(f"  token_usage={result.token_usage}")

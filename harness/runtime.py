@@ -7,6 +7,7 @@ The low-level loop remains available for historical scripted contract tests.
 
 from __future__ import annotations
 
+import asyncio
 import json
 from collections.abc import Callable, Iterable, Mapping
 from pathlib import Path
@@ -17,14 +18,15 @@ from tools import Tool, ToolRegistry
 from tools.code import build_code_tools
 from tools.memory import register_memory_tools
 from tools.semantic import register_semantic_search_stub
-from workspace import Workspace
+from workspace import SnapshotLimitError, Workspace, compare, snapshot
+from workspace.core import DEFAULT_IGNORE_GLOBS
 
 from .config import Settings
 from .grounding import Grounder
 from .loop import run_turn
 from .policy import is_out_of_scope_request
 from .prompts import BASE_SYSTEM_PROMPT
-from .state import Session, TurnResponse
+from .state import Session, TurnResponse, WorkspaceChangeReport
 from .stream import EventCallback
 
 
@@ -113,7 +115,13 @@ async def run_configured_turn(
         system_prompt=system_prompt,
         project_check_argv=settings.project_check_argv,
     )
-    return await run_turn(
+    tracked_root = (
+        Path(session.workspace_root)
+        if settings.track_workspace_changes and session.workspace_root
+        else None
+    )
+    before = await _snapshot_or_reason(tracked_root, settings) if tracked_root else None
+    response = await run_turn(
         session=session,
         user_input=message,
         provider=provider,
@@ -131,4 +139,37 @@ async def run_configured_turn(
         max_completion_retries=settings.max_completion_retries,
         required_check=settings.project_check_argv,
         on_event=on_event,
+    )
+    if tracked_root is not None and before is not None:
+        response.workspace_changes = await _change_report(tracked_root, settings, before)
+    return response
+
+
+async def _snapshot_or_reason(root: Path, settings: Settings) -> dict[str, str] | str:
+    try:
+        return await asyncio.to_thread(
+            snapshot,
+            root,
+            ignore=DEFAULT_IGNORE_GLOBS,
+            max_files=settings.max_tracked_files,
+            max_bytes=settings.max_tracked_bytes,
+        )
+    except SnapshotLimitError as exc:
+        return f"{exc}; change tracking skipped."
+    except OSError as exc:
+        return f"Workspace snapshot failed ({type(exc).__name__}); change tracking skipped."
+
+
+async def _change_report(
+    root: Path, settings: Settings, before: dict[str, str] | str
+) -> WorkspaceChangeReport:
+    after = before if isinstance(before, str) else await _snapshot_or_reason(root, settings)
+    if isinstance(before, str) or isinstance(after, str):
+        return WorkspaceChangeReport(status="unavailable", reason=str(after))
+    changes = compare(before, after)
+    return WorkspaceChangeReport(
+        status="tracked",
+        added=list(changes.added),
+        modified=list(changes.modified),
+        deleted=list(changes.deleted),
     )

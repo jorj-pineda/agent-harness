@@ -64,6 +64,7 @@ def _make_turn(**kwargs: Any) -> MagicMock:
     turn.check_attempts = kwargs.get("check_attempts", [])
     turn.tool_errors = kwargs.get("tool_errors", [])
     turn.token_usage = kwargs.get("token_usage", {})
+    turn.workspace_changes = kwargs.get("workspace_changes", {})
     return turn
 
 
@@ -81,6 +82,33 @@ def test_chat_creates_session_and_sends_message() -> None:
     assert "foo.py" in result.output
     instance.create_session.assert_called_once_with("cli-user", None)
     instance.chat.assert_called_once_with("cli-user", "sess-abc", "fix the bug", None)
+
+
+def test_chat_shows_observed_workspace_changes() -> None:
+    with patch("cli.main.AgentClient") as MockClient:
+        instance = MockClient.return_value
+        instance.create_session.return_value = "sess-changes"
+        instance.chat.side_effect = [
+            _make_turn(
+                workspace_changes={
+                    "status": "tracked",
+                    "added": ["generated.txt"],
+                    "modified": ["calc.py"],
+                    "deleted": [],
+                }
+            ),
+            _make_turn(
+                workspace_changes={"status": "unavailable", "reason": "Workspace too large"}
+            ),
+        ]
+
+        result = runner.invoke(app, ["chat"], input="fix\nagain\n/quit\n")
+
+    assert result.exit_code == 0, result.output
+    assert "workspace_added=['generated.txt']" in result.output
+    assert "workspace_modified=['calc.py']" in result.output
+    assert "workspace_deleted" not in result.output
+    assert "workspace_changes=unavailable (Workspace too large)" in result.output
 
 
 def test_chat_quit_immediately() -> None:
@@ -239,6 +267,7 @@ def test_agent_client_chat_parses_envelope() -> None:
         "check_attempts": [{"argv": ["pytest", "-q"], "status": "failed"}],
         "tool_errors": ["read_file: missing"],
         "token_usage": {"prompt_tokens": 10, "completion_tokens": 5},
+        "workspace_changes": {"status": "tracked", "modified": ["a.py"]},
         "tool_calls": [],
     }
     with patch("httpx.post", return_value=_ok_response(envelope)):
@@ -254,6 +283,7 @@ def test_agent_client_chat_parses_envelope() -> None:
     assert summary.check_attempts[0]["status"] == "failed"
     assert summary.tool_errors == ["read_file: missing"]
     assert summary.token_usage == {"prompt_tokens": 10, "completion_tokens": 5}
+    assert summary.workspace_changes == {"status": "tracked", "modified": ["a.py"]}
 
 
 def test_agent_client_raises_on_http_error() -> None:

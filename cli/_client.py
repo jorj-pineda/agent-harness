@@ -28,6 +28,7 @@ class TurnSummary:
     check_attempts: list[dict[str, object]] = field(default_factory=list)
     tool_errors: list[str] = field(default_factory=list)
     token_usage: dict[str, int | None] = field(default_factory=dict)
+    workspace_changes: dict[str, object] = field(default_factory=dict)
 
 
 class AgentClient:
@@ -74,4 +75,5 @@ class AgentClient:
             check_attempts=list(data.get("check_attempts", [])),
             tool_errors=list(data.get("tool_errors", [])),
             token_usage=dict(data.get("token_usage", {})),
+            workspace_changes=dict(data.get("workspace_changes", {})),
         )

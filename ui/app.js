@@ -194,6 +194,16 @@ function listSection(label, items) {
   return section;
 }
 
+function workspaceChangeItems(changes) {
+  if (!changes || changes.status === "not_tracked") return [];
+  if (changes.status === "unavailable") return [`unavailable: ${changes.reason || "unknown"}`];
+  return [
+    ...(changes.added || []).map((path) => `added: ${path}`),
+    ...(changes.modified || []).map((path) => `modified: ${path}`),
+    ...(changes.deleted || []).map((path) => `deleted: ${path}`),
+  ];
+}
+
 function renderEnvelope(data) {
   els.envelope.replaceChildren();
 
@@ -220,6 +230,7 @@ function renderEnvelope(data) {
 
   els.envelope.appendChild(listSection("citations", data.citations));
   els.envelope.appendChild(listSection("files touched", data.files_touched));
+  els.envelope.appendChild(listSection("workspace changes", workspaceChangeItems(data.workspace_changes)));
   els.envelope.appendChild(listSection("patch summary", data.patch_summary));
   els.envelope.appendChild(listSection("completion", [
     `${data.completion_status || "completed"}${data.completion_reason ? `: ${data.completion_reason}` : ""}`,

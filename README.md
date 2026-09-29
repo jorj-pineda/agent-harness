@@ -83,7 +83,19 @@ whether it matches the configured check, and whether a later edit superseded it)
 and `tool_errors`. The CLI and browser panel show these beside completion status
 and tool-reported edits, so an incomplete turn has a reviewable partial-work
 record. These fields report observed actions, not independent proof that the
-workspace is correct; command-created file changes require a final diff.
+workspace is correct.
+
+Responses also include `workspace_changes`: repo-relative files added, modified,
+or deleted between the start and end of the turn. The runtime hashes the
+workspace before and after each turn, so edits already present when the turn
+starts are excluded unless their content changes again, and files created or
+removed by commands are included. It cannot attribute a change to its author: a
+concurrent edit by Jorge or another process during the turn is reported too.
+Ignored directories such as `.git`, `.venv`, `node_modules`, and caches are not
+tracked. When the workspace exceeds `MAX_TRACKED_FILES` or `MAX_TRACKED_BYTES`,
+the report is `unavailable` with a reason instead of a partial list; set
+`TRACK_WORKSPACE_CHANGES=false` to skip snapshots. This reports paths, not diff
+content, and snapshot time is outside the turn wall-time budget.
 
 The configured runtime also caps tool attempts per turn with
 `MAX_TOOL_CALLS_PER_TURN` and stops before repeating a tool call whose previous
