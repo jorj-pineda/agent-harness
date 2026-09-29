@@ -1,6 +1,6 @@
 # Roadmap: a coding harness for lower-tier models
 
-Updated: 2026-09-28
+Updated: 2026-09-29
 
 ## Direction
 
@@ -103,8 +103,14 @@ The harness does not need to make every model good at every task. It needs to id
   usage reaches it, and fails closed if output usage is unavailable. Responses
   show observed prompt/output totals. This is not a strict total model-token
   cap because prompt usage arrives after each request.
-- **Next:** continue item 6 with a pre-request context/total-token budget and actual
-  changed-file reporting for application runs. A full
+- **2026-09-29 — Item 6 changed-file slice prepared:** the shared runtime hashes
+  the workspace before and after each turn and reports added, modified, and
+  deleted paths, including command side effects. Edits present before the turn
+  are excluded unless changed again. Concurrent edits by other processes cannot
+  be distinguished, ignored directories are not tracked, and oversized
+  workspaces report the result as unavailable. Paths only; diffs, checkpoints,
+  and revert remain open.
+- **Next:** continue item 6 with a pre-request context/total-token budget. A full
   selected-model baseline, model profiles, and context management remain open.
   Offline checks alone are not evidence of better model coding performance.
 
