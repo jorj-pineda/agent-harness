@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import asyncio
 from collections.abc import Iterable
 from typing import cast
 
+import pytest
 from pydantic import BaseModel
 
 from harness.loop import DEFAULT_MAX_ITERATIONS, MAX_ITERATIONS_STUB, run_turn
@@ -293,6 +295,113 @@ async def test_tool_call_budget_stops_batched_calls_before_dispatch() -> None:
     assert response.escalated is True
     assert len(response.tool_errors) == 2
     assert all("not executed" in error for error in response.tool_errors)
+
+
+async def test_wall_budget_cancels_slow_provider_before_tool_dispatch() -> None:
+    class SlowProvider(FakeProvider):
+        async def chat(  # type: ignore[override]
+            self,
+            messages: list[ChatMessage],
+            *,
+            tools: list[ToolSpec] | None = None,
+            temperature: float = 0.0,
+            max_tokens: int | None = None,
+        ) -> ProviderResponse:
+            await asyncio.sleep(0.2)
+            return await super().chat(
+                messages, tools=tools, temperature=temperature, max_tokens=max_tokens
+            )
+
+    provider = SlowProvider([_response(content="too late")])
+    response = await run_turn(
+        session=Session(),
+        user_input="answer",
+        provider=provider,
+        registry=_registry(),
+        max_turn_wall_seconds=0.1,
+    )
+    assert response.completion_status == "budget_exhausted"
+    assert "wall-time" in (response.completion_reason or "")
+    assert response.answer != "too late"
+
+
+async def test_provider_timeout_is_not_misreported_as_wall_budget() -> None:
+    class TimeoutProvider(FakeProvider):
+        async def chat(  # type: ignore[override]
+            self,
+            messages: list[ChatMessage],
+            *,
+            tools: list[ToolSpec] | None = None,
+            temperature: float = 0.0,
+            max_tokens: int | None = None,
+        ) -> ProviderResponse:
+            raise TimeoutError("provider failed")
+
+    with pytest.raises(TimeoutError, match="provider failed"):
+        await run_turn(
+            session=Session(),
+            user_input="answer",
+            provider=TimeoutProvider([]),
+            registry=_registry(),
+            max_turn_wall_seconds=1,
+        )
+
+
+async def test_wall_budget_stops_next_batched_tool_after_inflight_tool_finishes() -> None:
+    invoked = 0
+
+    async def slow_tool(args: EchoInput) -> str:
+        nonlocal invoked
+        invoked += 1
+        await asyncio.sleep(0.2)
+        return args.text
+
+    provider = FakeProvider(
+        [
+            _response(
+                tool_calls=[
+                    ToolCall(id="first", name="slow", arguments={"text": "one"}),
+                    ToolCall(id="second", name="slow", arguments={"text": "two"}),
+                ]
+            )
+        ]
+    )
+    session = Session()
+    response = await run_turn(
+        session=session,
+        user_input="work",
+        provider=provider,
+        registry=_registry(Tool(name="slow", description="slow", input_model=EchoInput, fn=slow_tool)),
+        max_turn_wall_seconds=0.1,
+    )
+    assert invoked == 1
+    assert response.completion_status == "budget_exhausted"
+    assert [call.result for call in response.tool_calls] == ["one", None]
+    assert "not executed" in (response.tool_calls[1].error or "")
+    assert [message.role for message in session.messages] == ["user", "assistant", "tool", "tool"]
+
+
+async def test_wall_budget_skips_next_model_request_after_tool_finishes() -> None:
+    async def slow_tool(args: EchoInput) -> str:
+        await asyncio.sleep(0.2)
+        return args.text
+
+    provider = FakeProvider(
+        [
+            _response(tool_calls=[ToolCall(id="first", name="slow", arguments={"text": "ok"})]),
+            _response(content="unreached"),
+        ]
+    )
+    response = await run_turn(
+        session=Session(),
+        user_input="work",
+        provider=provider,
+        registry=_registry(Tool(name="slow", description="slow", input_model=EchoInput, fn=slow_tool)),
+        max_turn_wall_seconds=0.1,
+    )
+    assert len(provider.calls) == 1
+    assert response.tool_calls[0].result == "ok"
+    assert response.completion_status == "budget_exhausted"
 
 
 async def test_identical_unchanged_call_is_stopped_before_third_execution() -> None:

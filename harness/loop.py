@@ -19,6 +19,7 @@ misfire and the session remains usable.
 
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 import time
@@ -78,6 +79,7 @@ async def run_turn(
     require_plan_before_edit: bool = False,
     max_files_touched_per_turn: int = 0,
     max_tool_calls_per_turn: int = 0,
+    max_turn_wall_seconds: float = 0,
     max_identical_tool_calls: int = 0,
     max_completion_retries: int = 0,
     required_check: list[str] | None = None,
@@ -104,9 +106,38 @@ async def run_turn(
     completion_status: CompletionStatus = "completed"
     completion_reason: str | None = None
     completion_retries = 0
+    deadline = (
+        asyncio.get_running_loop().time() + max_turn_wall_seconds
+        if max_turn_wall_seconds > 0
+        else None
+    )
+    wall_limit_reason = f"Turn wall-time budget of {max_turn_wall_seconds:g}s reached."
 
     for iteration in range(max_iterations):
-        response = await provider.chat(session.messages, tools=tool_specs)
+        if deadline is not None and asyncio.get_running_loop().time() >= deadline:
+            final_answer = "(turn stopped before task completion)"
+            completion_status = "budget_exhausted"
+            completion_reason = wall_limit_reason
+            break
+        if deadline is None:
+            response = await provider.chat(session.messages, tools=tool_specs)
+        else:
+            budget_timeout = asyncio.timeout_at(deadline)
+            try:
+                async with budget_timeout:
+                    response = await provider.chat(session.messages, tools=tool_specs)
+            except TimeoutError:
+                if not budget_timeout.expired():
+                    raise
+                final_answer = "(turn stopped before task completion)"
+                completion_status = "budget_exhausted"
+                completion_reason = wall_limit_reason
+                break
+        if deadline is not None and asyncio.get_running_loop().time() >= deadline:
+            final_answer = "(turn stopped before task completion)"
+            completion_status = "budget_exhausted"
+            completion_reason = wall_limit_reason
+            break
 
         incomplete_reasons = {
             "length": "The model response was truncated.",
@@ -171,6 +202,10 @@ async def run_turn(
             try:
                 if stop_reason is not None:
                     raise ToolError("Tool not executed: this turn has already stopped.")
+                if deadline is not None and asyncio.get_running_loop().time() >= deadline:
+                    stop_reason = wall_limit_reason
+                    stop_status = "budget_exhausted"
+                    raise ToolError(f"Tool not executed: {stop_reason}")
                 if max_tool_calls_per_turn > 0 and len(turn.tool_calls) >= max_tool_calls_per_turn:
                     stop_reason = f"Tool-call limit of {max_tool_calls_per_turn} reached."
                     stop_status = "budget_exhausted"

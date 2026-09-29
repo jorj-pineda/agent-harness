@@ -125,6 +125,7 @@ async def run_configured_turn(
         require_plan_before_edit=settings.require_plan_before_edit,
         max_files_touched_per_turn=settings.max_files_touched_per_turn,
         max_tool_calls_per_turn=settings.max_tool_calls_per_turn,
+        max_turn_wall_seconds=settings.max_turn_wall_seconds,
         max_identical_tool_calls=settings.max_identical_tool_calls,
         max_completion_retries=settings.max_completion_retries,
         required_check=settings.project_check_argv,

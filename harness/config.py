@@ -73,6 +73,7 @@ class Settings(BaseSettings):
     # Harness budgets
     max_tool_iterations: int = Field(default=8, ge=1, le=32)
     max_tool_calls_per_turn: int = Field(default=24, ge=1, le=256)
+    max_turn_wall_seconds: float = Field(default=0, ge=0, le=3600)
     max_identical_tool_calls: int = Field(default=2, ge=0, le=10)
     max_completion_retries: int = Field(default=1, ge=0, le=3)
     request_timeout_seconds: int = Field(default=60, ge=1, le=600)
