@@ -63,6 +63,7 @@ def _make_turn(**kwargs: Any) -> MagicMock:
     turn.verification_status = kwargs.get("verification_status", "not_run")
     turn.check_attempts = kwargs.get("check_attempts", [])
     turn.tool_errors = kwargs.get("tool_errors", [])
+    turn.token_usage = kwargs.get("token_usage", {})
     return turn
 
 
@@ -237,6 +238,7 @@ def test_agent_client_chat_parses_envelope() -> None:
         "verification_status": "failed",
         "check_attempts": [{"argv": ["pytest", "-q"], "status": "failed"}],
         "tool_errors": ["read_file: missing"],
+        "token_usage": {"prompt_tokens": 10, "completion_tokens": 5},
         "tool_calls": [],
     }
     with patch("httpx.post", return_value=_ok_response(envelope)):
@@ -251,6 +253,7 @@ def test_agent_client_chat_parses_envelope() -> None:
     assert summary.completion_status == "incomplete"
     assert summary.check_attempts[0]["status"] == "failed"
     assert summary.tool_errors == ["read_file: missing"]
+    assert summary.token_usage == {"prompt_tokens": 10, "completion_tokens": 5}
 
 
 def test_agent_client_raises_on_http_error() -> None:
