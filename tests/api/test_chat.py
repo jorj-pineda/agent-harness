@@ -121,6 +121,7 @@ def test_chat_returns_full_envelope(harness: Harness, make_session: Callable[[st
     assert body["patch_summary"] == []
     assert body["check_attempts"] == []
     assert body["tool_errors"] == []
+    assert body["token_usage"] == {"prompt_tokens": None, "completion_tokens": None}
 
 
 def test_chat_scope_gate_refuses_delete_all_tests(

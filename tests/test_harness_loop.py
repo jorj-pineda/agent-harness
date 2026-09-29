@@ -13,6 +13,7 @@ from providers.base import (
     ChatMessage,
     FinishReason,
     ProviderResponse,
+    TokenUsage,
     ToolCall,
     ToolSpec,
 )
@@ -28,6 +29,7 @@ class FakeProvider:
     def __init__(self, responses: Iterable[ProviderResponse]) -> None:
         self._queue = list(responses)
         self.calls: list[tuple[list[ChatMessage], list[ToolSpec] | None]] = []
+        self.max_tokens_seen: list[int | None] = []
 
     async def chat(
         self,
@@ -38,6 +40,7 @@ class FakeProvider:
         max_tokens: int | None = None,
     ) -> ProviderResponse:
         self.calls.append(([m.model_copy(deep=True) for m in messages], tools))
+        self.max_tokens_seen.append(max_tokens)
         assert self._queue, "FakeProvider ran out of scripted responses"
         return self._queue.pop(0)
 
@@ -47,11 +50,14 @@ def _response(
     content: str = "",
     tool_calls: list[ToolCall] | None = None,
     finish_reason: str = "stop",
+    prompt_tokens: int | None = None,
+    completion_tokens: int | None = None,
 ) -> ProviderResponse:
     return ProviderResponse(
         content=content,
         tool_calls=tool_calls or [],
         finish_reason=cast(FinishReason, finish_reason),
+        usage=TokenUsage(prompt_tokens=prompt_tokens, completion_tokens=completion_tokens),
         model="fake-model",
         latency_ms=1.0,
     )
@@ -402,6 +408,84 @@ async def test_wall_budget_skips_next_model_request_after_tool_finishes() -> Non
     assert len(provider.calls) == 1
     assert response.tool_calls[0].result == "ok"
     assert response.completion_status == "budget_exhausted"
+
+
+async def test_output_budget_reduces_next_request_and_stops_tool_dispatch_at_limit() -> None:
+    provider = FakeProvider(
+        [
+            _response(
+                tool_calls=[ToolCall(id="first", name="echo", arguments={"text": "one"})],
+                prompt_tokens=12,
+                completion_tokens=3,
+            ),
+            _response(
+                tool_calls=[ToolCall(id="second", name="echo", arguments={"text": "two"})],
+                prompt_tokens=18,
+                completion_tokens=2,
+            ),
+        ]
+    )
+    session = Session()
+    response = await run_turn(
+        session=session,
+        user_input="work",
+        provider=provider,
+        registry=_registry(_echo_tool()),
+        max_completion_tokens_per_turn=5,
+    )
+    assert provider.max_tokens_seen == [5, 2]
+    assert response.token_usage == TokenUsage(prompt_tokens=30, completion_tokens=5)
+    assert response.tool_calls[0].result == "one"
+    assert "not executed" in (response.tool_calls[1].error or "")
+    assert response.completion_status == "budget_exhausted"
+    assert [message.role for message in session.messages] == [
+        "user", "assistant", "tool", "assistant", "tool"
+    ]
+
+
+async def test_output_budget_missing_usage_stops_before_tool_dispatch() -> None:
+    provider = FakeProvider(
+        [_response(tool_calls=[ToolCall(id="first", name="echo", arguments={"text": "one"})])]
+    )
+    response = await run_turn(
+        session=Session(),
+        user_input="work",
+        provider=provider,
+        registry=_registry(_echo_tool()),
+        max_completion_tokens_per_turn=5,
+    )
+    assert provider.max_tokens_seen == [5]
+    assert response.tool_calls[0].result is None
+    assert response.completion_status == "incomplete"
+    assert "did not report" in (response.completion_reason or "")
+    assert response.token_usage.completion_tokens is None
+
+
+async def test_output_budget_reports_provider_overage() -> None:
+    provider = FakeProvider([_response(content="done", prompt_tokens=10, completion_tokens=6)])
+    response = await run_turn(
+        session=Session(),
+        user_input="work",
+        provider=provider,
+        registry=_registry(),
+        max_completion_tokens_per_turn=5,
+    )
+    assert response.completion_status == "budget_exhausted"
+    assert "exceeded" in (response.completion_reason or "")
+    assert response.token_usage == TokenUsage(prompt_tokens=10, completion_tokens=6)
+
+
+async def test_final_response_at_output_limit_can_complete() -> None:
+    provider = FakeProvider([_response(content="done", completion_tokens=5)])
+    response = await run_turn(
+        session=Session(),
+        user_input="work",
+        provider=provider,
+        registry=_registry(),
+        max_completion_tokens_per_turn=5,
+    )
+    assert response.answer == "done"
+    assert response.completion_status == "completed"
 
 
 async def test_identical_unchanged_call_is_stopped_before_third_execution() -> None:

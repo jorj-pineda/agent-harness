@@ -136,3 +136,31 @@ async def test_runtime_uses_iteration_budget_and_scope_policy(tmp_path: Path) ->
         response = await run_configured_turn(message="Recall my preferences", **kwargs)
     assert response.answer == MAX_ITERATIONS_STUB
     assert len(provider.calls) == 1
+
+
+async def test_runtime_applies_output_budget_when_provider_omits_usage(tmp_path: Path) -> None:
+    provider = ScriptedProvider()
+    provider.script(
+        make_response(
+            tool_calls=[
+                ToolCall(
+                    id="edit",
+                    name="write_file",
+                    arguments={"path": "a.py", "content": "a=1"},
+                )
+            ]
+        )
+    )
+    with FactStore(tmp_path / "memory.db") as store:
+        response = await run_configured_turn(
+            settings=Settings(_env_file=None, max_completion_tokens_per_turn=5),
+            session=Session(workspace_root=str(tmp_path)),
+            user_id="dev",
+            message="Edit a.py",
+            provider=provider,
+            fact_store=store,
+            registry=build_registry(fact_store=store, user_id="dev", workspace_root=str(tmp_path)),
+        )
+    assert response.completion_status == "incomplete"
+    assert "did not report" in (response.completion_reason or "")
+    assert not (tmp_path / "a.py").exists()
