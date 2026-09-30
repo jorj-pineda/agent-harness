@@ -68,3 +68,85 @@ re-reading the file and using `write_file`, and was accepted.
   4,096-token window, that leaves less room for output.
 - The dominant obstacle is environmental and removable: the harness never told
   Ollama what context length to use. The first experiment changes only that.
+
+## 2026-09-29 — `gemma4:12b`, server context 16,384 (stopped early)
+
+The only change from the baseline was `OLLAMA_NUM_CTX=16384`; Ollama confirmed
+a 16,384-token context at the same 7.5 GiB footprint. The run was stopped after
+8 of 30 attempts because the failure had not gone away, only moved: the three
+tasks that had truncated at 4K now ended in `ProviderError` after about
+330–390 s, when the 300 s request timeout fired mid-generation. The runner wrote
+reports only at the end at the time, so just the progress log survives
+(`results/2026-09-29-gemma4-12b-ctx16k-partial.log`). No counts from this run are
+comparable.
+
+A direct probe then replayed the `slugify` step after `read_file` with output
+capped at 1,500 tokens. With the model default, the response carried about
+2,000 characters in Ollama's `thinking` field (571 output tokens, 61 s), which
+the provider discards. With `think: false`, the model called a tool after 77
+output tokens (22 s). This confirms that the empty output in the baseline was
+hidden reasoning.
+
+## 2026-09-30 — `gemma4:12b`, thinking off, server context 4,096
+
+The only change from the baseline was `OLLAMA_THINK=false`. Everything else
+matches: model, machine, server context 4,096, temperature 0.0, prompts, budgets,
+and task order.
+
+| Field | Value |
+|---|---|
+| Harness revision | `53199ba` (clean). This is the same code as this PR's `OLLAMA_THINK` and per-attempt report commits, before they were rebased onto `main`. |
+| Raw report | `results/2026-09-30-gemma4-12b-think-off-ctx4k.json` |
+
+```sh
+OLLAMA_MODEL=gemma4:12b OLLAMA_THINK=false MAX_TURN_WALL_SECONDS=600 \
+  REQUEST_TIMEOUT_SECONDS=300 uv run python -m evals.real_run --provider ollama \
+  --mode both --repeats 3 --report /tmp/agent-harness-exp-think-off.json
+```
+
+| Task | harness (baseline → thinking off) | minimal (baseline → thinking off) |
+|---|---|---|
+| decimal_total | 0/3 → 0/3 | 0/3 → 0/3 |
+| divide_zero | 3/3 → 3/3 | 3/3 → 3/3 |
+| parse_flags | 0/3 → 3/3 | 0/3 → 3/3 |
+| slugify | 0/3 → 3/3 | 0/3 → 0/3 |
+| stable_dedupe | 1/3 → 3/3 | 3/3 → 3/3 |
+| **total** | **4/15 → 12/15** | **6/15 → 9/15** |
+
+| Measure | harness | minimal |
+|---|---|---|
+| Terminations | 7 accepted, 3 iteration limit, 2 truncated (all 5 of those still passed acceptance), 3 iteration limit and failed | 9 accepted, 3 acceptance failed, 3 iteration limit and failed |
+| False completion | 0 | 3 (`slugify`: incorrect fix reported as done) |
+| Median latency | 63 s (baseline 178 s) | 55 s (baseline 191 s) |
+| Median reported tokens | 13,662 | 9,880 |
+| Verification | the model never ran a passing check (0/30) | same |
+
+### What the result shows
+
+- **Repeats were nearly identical.** At temperature 0 without thinking, the
+  three attempts per task and mode mostly produced the same trace. Treat each
+  cell as roughly one sample, not three independent ones. The harness versus
+  minimal difference (12 versus 9) is one task, `slugify`, and is not evidence
+  that either prompt is better.
+- **Thinking was the main obstacle in the baseline.** Every
+  task-and-mode cell except `decimal_total` improved or held. Latency fell by
+  about two thirds. This measures one model's configuration; it does not show
+  that thinking hurts coding in general.
+- **Some turns did not end cleanly but still left a correct artifact.** Five
+  harness attempts passed acceptance while ending at the iteration limit or
+  with a truncated final answer. The runtime reported them as not completed,
+  which is conservative, not a false claim.
+
+### Why attempts failed or wasted steps
+
+| Observation | Attempts | Label |
+|---|---|---|
+| `decimal_total`: two `write_file` edits, then two `python3 -m pytest` calls rejected by the allowlist, then the 8-iteration limit. The final code fails acceptance. | 6 (all) | tool interface + model reasoning |
+| `run_command` with `python3` rejected (only `python -m pytest` or `pytest` are allowed). Every check the model attempted in the run was `python3`. | 18 calls in 8 attempts | tool interface |
+| `replace_text` found no match: the model sent a literal backslash-n (`\n` as two characters) instead of newlines, as in the baseline. It recovered with `write_file` every time. | 9 calls in 8 attempts | tool interface / edit mechanics |
+| `slugify` minimal: an incorrect rewrite was declared done without a check. | 3 | model reasoning + premature completion |
+
+The next experiment, one variable again, makes these two tool errors
+actionable: it names the escaped-newline mismatch and tells the model to use
+`python` instead of `python3`. It does not rewrite the model's arguments.
+

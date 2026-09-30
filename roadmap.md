@@ -126,6 +126,17 @@ The harness does not need to make every model good at every task. It needs to id
   Ollama context the harness never configured. Two failed on literal `\n` in
   `replace_text` arguments. See `evals/BASELINES.md`; the prompt difference is
   not significant.
+- **2026-09-30 — Item 7 first experiments:** `OLLAMA_NUM_CTX` and
+  `OLLAMA_THINK` are now optional provider settings, recorded in real-task
+  runtime config, and the runner writes its report after every attempt. With a
+  16K context, hidden reasoning ran into request timeouts instead of the context
+  limit (run stopped early). With thinking off, one variable from the baseline,
+  `gemma4:12b` went from 4/15 to 12/15 in harness mode and from 6/15 to 9/15 in
+  minimal mode, at about a third of the latency. Repeats were nearly identical
+  at temperature 0, so each cell is close to one sample. The remaining
+  failures are `python3` commands rejected by the allowlist, escaped newlines in
+  `replace_text` arguments, and one task's reasoning. No attempt ran a passing
+  check. See `evals/BASELINES.md`.
 - **Next:** item 6's listed mechanics are in place; see the known limitations
   below before relying on them unattended. Item 7 starts with the repeated
   five-task baseline on the selected model. Model profiles and context
