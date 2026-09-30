@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pytest
 
-from evals.real_run import load_tasks, run_task, validate_task
+from evals import real_run
+from evals.real_run import load_tasks, run_task, summarize, summary_markdown, validate_task
 from harness.config import Settings
 from harness.prompts import BASE_SYSTEM_PROMPT, PROMPT_VERSION
 from providers.base import ToolCall
@@ -159,3 +161,70 @@ async def test_tool_budget_termination_is_separate_from_acceptance() -> None:
     assert "not executed" in result.tool_trace[1]["error"]
     assert result.prompt_tokens is None
     assert result.completion_tokens is None
+
+
+async def test_summary_counts_acceptance_false_completion_and_terminations() -> None:
+    task = load_tasks()[0]
+    fixed = "def divide(a: float, b: float) -> float:\n    return a / b\n"
+    solved_provider = ScriptedProvider()
+    solved_provider.script(
+        make_response(
+            tool_calls=[
+                ToolCall(
+                    id="edit",
+                    name="write_file",
+                    arguments={"path": "calc.py", "content": fixed},
+                )
+            ],
+            prompt_tokens=10,
+            completion_tokens=5,
+        ),
+        make_response(content="Fixed.", prompt_tokens=20, completion_tokens=5),
+    )
+    claimed_provider = ScriptedProvider()
+    claimed_provider.script(make_response(content="Fixed it."))
+    settings = Settings(_env_file=None)
+    results = [
+        await run_task(task, provider=solved_provider, settings=settings, mode="harness"),
+        await run_task(
+            task, provider=claimed_provider, settings=settings, mode="harness", attempt=2
+        ),
+    ]
+    summary = summarize(results)
+    assert list(summary) == ["harness"]
+    harness = summary["harness"]
+    assert harness["accepted"] == 1
+    assert harness["attempts"] == 2
+    assert harness["per_task"] == {"divide_zero": {"accepted": 1, "attempts": 2}}
+    assert harness["terminations"] == {"acceptance_failed": 1, "accepted": 1}
+    assert harness["false_completion"] == 1
+    assert harness["median_total_tokens"] == 40
+    assert harness["unreported_token_attempts"] == 1
+    assert [r.attempt for r in results] == [1, 2]
+    assert "| divide_zero | 1/2 |" in summary_markdown(summary)
+
+
+def test_cli_repeats_both_modes_and_alternates_order(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    provider = ScriptedProvider()
+    provider.script(*[make_response(content="not fixed") for _ in range(4)])
+    monkeypatch.setattr(real_run, "build_configured_provider", lambda name, settings: provider)
+    monkeypatch.setattr(real_run, "get_settings", lambda: Settings(_env_file=None))
+    report = tmp_path / "report.json"
+    assert (
+        real_run.main(
+            ["--task", "divide_zero", "--mode", "both", "--repeats", "2", "--report", str(report)]
+        )
+        == 0
+    )
+    data = json.loads(report.read_text(encoding="utf-8"))
+    assert [(r["mode"], r["attempt"]) for r in data["results"]] == [
+        ("harness", 1),
+        ("minimal", 1),
+        ("minimal", 2),
+        ("harness", 2),
+    ]
+    assert data["summary"]["harness"]["attempts"] == 2
+    assert data["sampling"] == {"temperature": 0.0}
+    assert set(data["harness_revision"]) == {"commit", "dirty"}

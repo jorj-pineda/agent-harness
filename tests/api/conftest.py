@@ -36,6 +36,7 @@ from providers.base import (
     Embedder,
     FinishReason,
     ProviderResponse,
+    TokenUsage,
     ToolCall,
     ToolSpec,
 )
@@ -86,11 +87,14 @@ def make_response(
     content: str = "",
     tool_calls: list[ToolCall] | None = None,
     finish_reason: str = "stop",
+    prompt_tokens: int | None = None,
+    completion_tokens: int | None = None,
 ) -> ProviderResponse:
     return ProviderResponse(
         content=content,
         tool_calls=tool_calls or [],
         finish_reason=cast(FinishReason, finish_reason),
+        usage=TokenUsage(prompt_tokens=prompt_tokens, completion_tokens=completion_tokens),
         model="scripted-model",
         latency_ms=1.0,
     )

@@ -118,6 +118,14 @@ The harness does not need to make every model good at every task. It needs to id
   estimate was 2,950 tokens against 1,781 reported. This is an estimate-based
   gate, not a strict cap. Exhausting the context stops the turn without
   compaction.
+- **2026-09-29 — Item 7 baseline recorded (Milestone 1 done-when met):** the
+  real-task runner now repeats attempts across both prompt modes and writes
+  per-mode raw counts with the harness revision. Local `gemma4:12b` completed
+  30 real attempts (5 tasks × 2 modes × 3): harness 4/15, minimal 6/15
+  accepted. Seventeen attempts ended when output filled the 4,096-token
+  Ollama context the harness never configured. Two failed on literal `\n` in
+  `replace_text` arguments. See `evals/BASELINES.md`; the prompt difference is
+  not significant.
 - **Next:** item 6's listed mechanics are in place; see the known limitations
   below before relying on them unattended. Item 7 starts with the repeated
   five-task baseline on the selected model. Model profiles and context
