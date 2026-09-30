@@ -13,7 +13,7 @@ Raw reports (traces, diffs, acceptance output, usage, runtime config) are in
 
 | Field | Value |
 |---|---|
-| Harness revision | `cb54ebe` (clean) |
+| Harness revision | `1cddce8` (clean). The raw report records `cb54ebe`: the same tree before its commit message was rewritten. |
 | Model | `gemma4:12b` (Q4_K_M) via Ollama 0.33.2, local |
 | Hardware | Apple M1 Pro, 16 GB unified memory |
 | Server context | 4,096 tokens: the Ollama default in this setup. The harness did not set it. |
