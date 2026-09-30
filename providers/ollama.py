@@ -37,9 +37,11 @@ class OllamaProvider:
         embed_model: str,
         *,
         timeout_seconds: float = 60.0,
+        num_ctx: int | None = None,
         transport: httpx.AsyncBaseTransport | None = None,
     ) -> None:
         self._model = model
+        self._num_ctx = num_ctx
         self._embed_model = embed_model
         self._client = httpx.AsyncClient(
             base_url=host.rstrip("/"),
@@ -61,6 +63,8 @@ class OllamaProvider:
         options: dict[str, Any] = {"temperature": temperature}
         if max_tokens is not None:
             options["num_predict"] = max_tokens
+        if self._num_ctx is not None:
+            options["num_ctx"] = self._num_ctx
         body: dict[str, Any] = {
             "model": self._model,
             "messages": [_message_to_ollama(m) for m in messages],
