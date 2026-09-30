@@ -428,6 +428,7 @@ async def test_chat_sends_configured_context_length() -> None:
         model="gemma4",
         embed_model="nomic-embed-text",
         num_ctx=16384,
+        think=False,
         transport=transport,
     )
 
@@ -435,6 +436,22 @@ async def test_chat_sends_configured_context_length() -> None:
 
     body = transport.captured["body"]  # type: ignore[attr-defined]
     assert body["options"] == {"temperature": 0.0, "num_ctx": 16384}
+    assert body["think"] is False
+
+
+async def test_chat_omits_think_and_context_by_default() -> None:
+    transport = _chat_response(
+        {"model": "gemma4", "message": {"role": "assistant", "content": "ok"}, "done": True}
+    )
+    provider = OllamaProvider(
+        host="http://fake", model="gemma4", embed_model="nomic-embed-text", transport=transport
+    )
+
+    await provider.chat([ChatMessage(role="user", content="go")])
+
+    body = transport.captured["body"]  # type: ignore[attr-defined]
+    assert "think" not in body
+    assert body["options"] == {"temperature": 0.0}
 
 
 async def test_chat_http_error_wraps_in_provider_error() -> None:

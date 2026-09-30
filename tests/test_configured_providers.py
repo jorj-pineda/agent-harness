@@ -113,8 +113,13 @@ async def test_compatible_wire_uses_custom_endpoint_model_and_tool_schema() -> N
     assert captured[0].headers["authorization"] == "Bearer local-token"
 
 
-def test_ollama_context_length_setting_reaches_provider() -> None:
-    provider = build_configured_provider("ollama", Settings(_env_file=None, ollama_num_ctx=8192))
+def test_ollama_generation_settings_reach_provider() -> None:
+    provider = build_configured_provider(
+        "ollama", Settings(_env_file=None, ollama_num_ctx=8192, ollama_think=False)
+    )
     assert isinstance(provider, OllamaProvider)
     assert provider._num_ctx == 8192
-    assert Settings(_env_file=None).ollama_num_ctx is None
+    assert provider._think is False
+    defaults = Settings(_env_file=None)
+    assert defaults.ollama_num_ctx is None
+    assert defaults.ollama_think is None

@@ -32,6 +32,7 @@ def build_configured_provider(name: str, settings: Settings) -> ChatProvider:
             embed_model=settings.ollama_embed_model,
             timeout_seconds=timeout,
             num_ctx=settings.ollama_num_ctx,
+            think=settings.ollama_think,
         )
     if name == "anthropic":
         assert settings.anthropic_api_key is not None

@@ -38,10 +38,12 @@ class OllamaProvider:
         *,
         timeout_seconds: float = 60.0,
         num_ctx: int | None = None,
+        think: bool | None = None,
         transport: httpx.AsyncBaseTransport | None = None,
     ) -> None:
         self._model = model
         self._num_ctx = num_ctx
+        self._think = think
         self._embed_model = embed_model
         self._client = httpx.AsyncClient(
             base_url=host.rstrip("/"),
@@ -73,6 +75,8 @@ class OllamaProvider:
         }
         if tools:
             body["tools"] = [_tool_to_ollama(t) for t in tools]
+        if self._think is not None:
+            body["think"] = self._think
 
         start = time.perf_counter()
         try:

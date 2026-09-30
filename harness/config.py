@@ -36,6 +36,10 @@ class Settings(BaseSettings):
         le=1_048_576,
         description="Context length requested per Ollama chat; unset uses the server default.",
     )
+    ollama_think: bool | None = Field(
+        default=None,
+        description="Enable or disable model thinking on Ollama; unset uses the model default.",
+    )
     anthropic_model: str = "claude-sonnet-4-6"
     openai_model: str = "gpt-4o-mini"
     openai_compatible_model: str | None = Field(default=None, validate_default=True)
