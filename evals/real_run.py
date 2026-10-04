@@ -319,6 +319,8 @@ async def run_task(
                 "require_verification_before_finish": settings.require_verification_before_finish,
                 "require_plan_before_edit": settings.require_plan_before_edit,
                 "max_files_touched_per_turn": settings.max_files_touched_per_turn,
+                "ollama_num_ctx": settings.ollama_num_ctx,
+                "ollama_think": settings.ollama_think,
             },
         )
 
@@ -397,7 +399,25 @@ def _harness_revision() -> dict[str, Any]:
     return {"commit": commit, "dirty": dirty}
 
 
-async def _run_cli(args: argparse.Namespace) -> list[RealTaskResult]:
+def write_report(path: Path, started: str, results: list[RealTaskResult]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(
+            {
+                "mode": "real-tools-trusted-fixtures",
+                "started_at": started,
+                "harness_revision": _harness_revision(),
+                "sampling": {"temperature": 0.0},
+                "summary": summarize(results),
+                "results": [asdict(r) for r in results],
+            },
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+
+
+async def _run_cli(args: argparse.Namespace, started: str = "") -> list[RealTaskResult]:
     tasks = load_tasks()
     selected = [task for task in tasks if args.task is None or task.id == args.task]
     if not selected:
@@ -420,6 +440,7 @@ async def _run_cli(args: argparse.Namespace) -> list[RealTaskResult]:
                         task, provider=provider, settings=settings, mode=mode, attempt=attempt
                     )
                     results.append(result)
+                    write_report(args.report, started, results)
                     print(
                         f"{task.id} {mode} #{attempt}: {result.termination} "
                         f"({result.latency_ms / 1000:.0f}s, {len(result.tool_trace)} tools)",
@@ -448,26 +469,12 @@ def main(argv: list[str] | None = None) -> int:
     if args.repeats < 1:
         parser.error("--repeats must be at least 1")
     started = datetime.now(UTC).isoformat(timespec="seconds")
-    results = asyncio.run(_run_cli(args))
+    results = asyncio.run(_run_cli(args, started))
     if args.validate_only:
         print("Selected task fixtures fail initially and their reference solutions pass.")
         return 0
+    write_report(args.report, started, results)
     summary = summarize(results)
-    args.report.parent.mkdir(parents=True, exist_ok=True)
-    args.report.write_text(
-        json.dumps(
-            {
-                "mode": "real-tools-trusted-fixtures",
-                "started_at": started,
-                "harness_revision": _harness_revision(),
-                "sampling": {"temperature": 0.0},
-                "summary": summary,
-                "results": [asdict(r) for r in results],
-            },
-            indent=2,
-        ),
-        encoding="utf-8",
-    )
     print(summary_markdown(summary))
     print(f"Wrote {args.report} ({sum(r.passed for r in results)}/{len(results)} accepted)")
     return 0

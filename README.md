@@ -158,7 +158,12 @@ Offline contracts retain their 0.50 default. Historical live results predate thi
 shared setup and should not be compared directly with new runs.
 
 The application and real-task evaluator also share chat provider configuration.
-`OLLAMA_HOST` and `OLLAMA_MODEL` select a local model. For an OpenAI-compatible
+`OLLAMA_HOST` and `OLLAMA_MODEL` select a local model. `OLLAMA_NUM_CTX` sets the
+context length sent with each Ollama chat request, and `OLLAMA_THINK=false`
+turns off model thinking. Both are unset by default, which keeps the server and
+model defaults. With local `gemma4:12b`, thinking off was the difference between
+most attempts failing and most succeeding in the real-task evaluation; see
+`evals/BASELINES.md`. For an OpenAI-compatible
 chat endpoint, set `OPENAI_COMPATIBLE_BASE_URL` and
 `OPENAI_COMPATIBLE_MODEL`, plus `OPENAI_COMPATIBLE_API_KEY` if required; then
 set `DEFAULT_PROVIDER=openai_compatible` for the app or pass

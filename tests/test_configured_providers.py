@@ -15,6 +15,7 @@ from harness.providers import (
     provider_endpoint,
 )
 from providers.base import ChatMessage, ToolSpec
+from providers.ollama import OllamaProvider
 from providers.openai import OpenAIProvider
 
 
@@ -110,3 +111,15 @@ async def test_compatible_wire_uses_custom_endpoint_model_and_tool_schema() -> N
     assert body["model"] == "small-coder"
     assert body["tools"][0]["function"]["name"] == "read_file"
     assert captured[0].headers["authorization"] == "Bearer local-token"
+
+
+def test_ollama_generation_settings_reach_provider() -> None:
+    provider = build_configured_provider(
+        "ollama", Settings(_env_file=None, ollama_num_ctx=8192, ollama_think=False)
+    )
+    assert isinstance(provider, OllamaProvider)
+    assert provider._num_ctx == 8192
+    assert provider._think is False
+    defaults = Settings(_env_file=None)
+    assert defaults.ollama_num_ctx is None
+    assert defaults.ollama_think is None
