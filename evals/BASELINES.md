@@ -150,3 +150,105 @@ The next experiment, one variable again, makes these two tool errors
 actionable: it names the escaped-newline mismatch and tells the model to use
 `python` instead of `python3`. It does not rewrite the model's arguments.
 
+## 2026-10-04 — `gemma4:12b`, clearer tool errors, thinking off, context 4,096
+
+This experiment changes the tool-error feedback from the thinking-off run:
+exact replacement errors suggest a unique match or copying the latest file
+content, identify literal backslash-n characters when converting them to line
+breaks would yield a unique match, and rejected `python3` commands recommend
+`python`. The tools still reject invalid calls without rewriting arguments or
+changing command permissions. The newline hint does not diagnose tab-only
+mismatches or change literal escapes that already match source text.
+
+| Field | Value |
+|---|---|
+| Harness revision | `a78f6e6` (clean) |
+| Model/server/hardware | Same local `gemma4:12b` Q4_K_M, Ollama 0.33.2, Apple M1 Pro, 16 GB |
+| Settings | Thinking off; server confirmed context 4,096; temperature 0.0 |
+| Comparison | All recorded runtime settings and fixture source hashes match the thinking-off run above; same prompts, budgets, repeats, and alternating mode order |
+| Attempts | 5 tasks × 2 modes × 3 repeats = 30, all included |
+| Raw report | `results/2026-10-04-gemma4-12b-tool-errors-ctx4k.json` |
+
+```sh
+OLLAMA_MODEL=gemma4:12b OLLAMA_THINK=false MAX_TURN_WALL_SECONDS=600 \
+  REQUEST_TIMEOUT_SECONDS=300 uv run python -m evals.real_run --provider ollama \
+  --mode both --repeats 3 --report /tmp/agent-harness-tool-errors.json
+```
+
+| Task | harness (thinking off → clearer errors) | minimal (thinking off → clearer errors) |
+|---|---|---|
+| decimal_total | 0/3 → 0/3 | 0/3 → 0/3 |
+| divide_zero | 3/3 → 3/3 | 3/3 → 3/3 |
+| parse_flags | 3/3 → 2/3 | 3/3 → 3/3 |
+| slugify | 3/3 → 3/3 | 0/3 → 0/3 |
+| stable_dedupe | 3/3 → 3/3 | 3/3 → 3/3 |
+| **total** | **12/15 → 11/15** | **9/15 → 9/15** |
+
+| Measure | harness | minimal |
+|---|---|---|
+| Terminations | 7 accepted, 5 iteration limit, 1 truncated, 1 blocked, 1 acceptance failed | 9 accepted, 2 iteration limit, 4 acceptance failed |
+| Completed status with failed acceptance | 1 | 4 |
+| Attempts with a passing model-run check | 1/15 (previously 0/15) | 0/15 (unchanged) |
+| Median latency | 87 s (previously 63 s) | 60 s (previously 55 s) |
+| Median tool-call records | 7 (previously 5) | 4 (unchanged) |
+| Median reported tokens | 18,733 (previously 13,662) | 9,527 (previously 9,880) |
+
+Four harness artifacts passed acceptance despite an incomplete terminal state:
+two `divide_zero` attempts reached the iteration limit, one `slugify` response
+was truncated, and another was blocked by repeated unchanged calls. Acceptance
+and clean completion remain distinct.
+
+### Recovery and remaining failures
+
+- **Newline hints:** 12 errors across nine attempts, versus nine errors across
+  eight attempts previously. Two harness `divide_zero` attempts corrected the
+  newlines and succeeded with `replace_text`. The other seven affected attempts
+  recovered with `write_file`; six passed acceptance. All three harness
+  `stable_dedupe` attempts repeated the newline error before falling back.
+  There is limited observed recovery, but no reduction in edit-error calls.
+- **Command hints:** 11 `python3` rejections, versus 18 previously. Only one
+  attempt, harness `divide_zero` repeat 3, switched to `python -m pytest` and
+  passed its visible test. It used the eighth iteration and still ended
+  incomplete. Fewer rejections do not by themselves show better recovery:
+  several attempts never tried a check. Other errors included one executable
+  named `python -m pytest` and two rejected `python -c` calls.
+- **Repeated-call blocking:** harness `slugify` repeat 3 emitted a batch of
+  repeated `python -c` calls after editing. The runtime stopped on an unchanged
+  repeated call and rejected the remaining 30 calls. Its 38 trace records
+  include attempted calls that were not dispatched; they are not 38 executed
+  tools. The final artifact passed acceptance.
+- **`decimal_total`:** all six attempts failed independent acceptance. Five
+  reached the iteration limit; minimal repeat 1 returned an empty answer with
+  no tools, leaving the fixture unchanged. None executed a check successfully.
+- **`parse_flags`:** harness repeat 3 stripped whole lines but failed to strip
+  the individual key and value. It declared completion without a check and
+  failed acceptance. This is the additional failed artifact versus the prior run.
+- **Minimal `slugify`:** all three incorrect fixes were declared complete
+  without checks, as before.
+
+The raw report's `false_completion` field counts completed runtime status with
+failed acceptance. Here the minimal count of four includes an empty answer,
+so it must not be read as four explicit prose claims of success. Three minimal
+`slugify` answers and one harness `parse_flags` answer did describe a completed
+fix that failed acceptance.
+
+### Interpretation and next experiment
+
+Clearer feedback did **not** improve task acceptance in this comparison. Two
+successful newline retries and one passing check are useful observations, not
+evidence of a reliable improvement. The one-task decline in harness acceptance
+also does not establish that the messages harmed performance.
+
+Temperature 0 did not make all traces identical: some attempts diverged before
+receiving any changed error feedback, including the empty minimal
+`decimal_total` turn. These small runs on different days do not isolate latency
+or token differences causally. Results remain limited to this model and five
+fixtures. The diagnostics are retained as accurate, actionable tool feedback;
+they do not add prompt instructions, permissions, or automatic argument repair.
+
+A focused next experiment could remove the demonstrated interpreter-name
+obstacle by accepting `python3 -m pytest` through the same controlled execution
+path as `python -m pytest`, while retaining the existing module restriction.
+That would be a separate implementation and comparison. Verification recovery
+and the empty-answer completion case remain open; this experiment does not
+justify a larger prompt or context-management framework.

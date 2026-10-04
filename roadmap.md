@@ -1,6 +1,6 @@
 # Roadmap: a coding harness for lower-tier models
 
-Updated: 2026-09-29
+Updated: 2026-10-04
 
 ## Direction
 
@@ -137,11 +137,21 @@ The harness does not need to make every model good at every task. It needs to id
   failures are `python3` commands rejected by the allowlist, escaped newlines in
   `replace_text` arguments, and one task's reasoning. No attempt ran a passing
   check. See `evals/BASELINES.md`.
+- **2026-10-04 — Item 7 clearer-tool-errors experiment recorded:** exact-edit
+  mismatch errors now give specific retry advice, and rejected `python3` calls
+  suggest `python`. Thirty local `gemma4:12b` attempts with thinking off and
+  matching recorded settings/fixtures yielded harness 11/15 and minimal 9/15
+  accepted, versus 12/15 and 9/15 previously. Two attempts recovered with exact
+  newline edits and one ran a passing check; task acceptance did not improve.
+  Repeats also varied before changed feedback. See `evals/BASELINES.md` and its
+  raw report; these results do not establish a causal regression or improvement.
 - **Next:** item 6's listed mechanics are in place; see the known limitations
-  below before relying on them unattended. Item 7 starts with the repeated
-  five-task baseline on the selected model. Model profiles and context
-  management remain open. Offline checks alone are not evidence of better model
-  coding performance.
+  below before relying on them unattended. Item 7 has a repeated baseline and
+  two completed comparisons. Consider a focused interpreter-alias experiment
+  for rejected `python3 -m pytest` calls before adding prompt complexity.
+  Verification recovery, empty-answer completion, model profiles, context
+  management, and item 8's personal-use workflow remain open. Offline checks
+  alone are not evidence of better model coding performance.
 
 ### Review baseline
 
