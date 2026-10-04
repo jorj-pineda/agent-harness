@@ -483,7 +483,7 @@ def _replace_mismatch_error(text: str, old_text: str, count: int) -> str:
             f"Expected exactly one old_text match; found {count}. "
             "Include more surrounding lines in old_text so it matches once."
         )
-    unescaped = old_text.replace("\\n", "\n").replace("\\t", "\t")
+    unescaped = old_text.replace("\\n", "\n")
     if "\n" not in old_text and unescaped != old_text and text.count(unescaped) == 1:
         return (
             "Expected exactly one old_text match; found 0. old_text contains the two "
@@ -505,7 +505,7 @@ def _validate_command_argv(argv: list[str]) -> None:
 
     root = argv[0]
     if root not in ALLOWED_ROOT_COMMANDS:
-        hint = " Use 'python', not 'python3'." if root.startswith("python") else ""
+        hint = " Use 'python', not 'python3'." if root == "python3" else ""
         raise ToolError(
             f"Command not allowlisted: {root!r}.{hint} Allowed: pytest, ruff, mypy, "
             "git diff/status/show, python -m pytest."

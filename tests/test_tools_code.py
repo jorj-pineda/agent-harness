@@ -150,7 +150,29 @@ async def test_replace_text_mismatch_errors_say_how_to_fix_the_call(tmp_path: Pa
         await replace("def dedupe(values):")
     with pytest.raises(ToolError, match="Copy old_text exactly"):
         await replace("missing\\nlines")
+    with pytest.raises(ToolError, match="Include more surrounding lines"):
+        await replace("e")
     assert target.read_text(encoding="utf-8") == source
+
+
+async def test_replace_text_preserves_literal_escapes_and_does_not_misdiagnose_tabs(
+    tmp_path: Path,
+) -> None:
+    target = tmp_path / "escapes.py"
+    target.write_text('value = "\\n"\n\tpass\n', encoding="utf-8")
+    reg = ToolRegistry()
+    register_code_tools(reg, workspace=Workspace(root=tmp_path))
+    sha = (await reg.invoke("read_file", {"path": "escapes.py"}))["sha256"]
+    with pytest.raises(ToolError, match="Copy old_text exactly"):
+        await reg.invoke(
+            "replace_text",
+            {"path": "escapes.py", "old_text": "\\tpass", "new_text": "x", "expected_sha256": sha},
+        )
+    await reg.invoke(
+        "replace_text",
+        {"path": "escapes.py", "old_text": '"\\n"', "new_text": '"x"', "expected_sha256": sha},
+    )
+    assert target.read_text(encoding="utf-8") == 'value = "x"\n\tpass\n'
 
 
 async def test_replace_text_rejects_escape_non_utf8_and_noop(tmp_path: Path) -> None:
