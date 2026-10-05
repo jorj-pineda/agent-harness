@@ -40,7 +40,7 @@ MAX_WRITE_BYTES = 512_000
 MAX_COMMAND_OUTPUT_CHARS = 32_000
 MAX_GREP_OUTPUT_BYTES = 2_000_000
 
-ALLOWED_ROOT_COMMANDS = frozenset({"pytest", "ruff", "mypy", "git", "python"})
+ALLOWED_ROOT_COMMANDS = frozenset({"pytest", "ruff", "mypy", "git", "python", "python3"})
 ALLOWED_GIT_SUBCOMMANDS = frozenset({"diff", "status", "show"})
 
 
@@ -109,7 +109,7 @@ class RunCommandInput(BaseModel):
         min_length=1,
         description=(
             "Command argv list, e.g. ['pytest', 'test_calc.py']. First token must be "
-            "allowlisted (pytest, ruff, mypy, git, python -m pytest)."
+            "allowlisted (pytest, ruff, mypy, git, python -m pytest, python3 -m pytest)."
         ),
     )
 
@@ -343,6 +343,9 @@ def build_code_tools(
         log.info("code_tool=run_command argv=%s", args.argv)
         argv = [str(token) for token in args.argv]
         _validate_command_argv(argv)
+        # Use the existing Python execution path, even if PATH has a different python3.
+        if argv[0] == "python3":
+            argv[0] = "python"
         executable = argv[0]
         if shutil.which(executable, path=command_environment(command_env).get("PATH")) is None:
             raise ToolError(f"Command not found on PATH: {executable}")
@@ -456,7 +459,7 @@ def build_code_tools(
             name="run_command",
             description=(
                 "Run an allowlisted verification command in the workspace root "
-                "(pytest, ruff, mypy, git diff/status/show, python -m pytest). "
+                "(pytest, ruff, mypy, git diff/status/show, python -m pytest, python3 -m pytest). "
                 "Returns exit_code, stdout, stderr, and success flag."
             ),
             input_model=RunCommandInput,
@@ -505,17 +508,18 @@ def _validate_command_argv(argv: list[str]) -> None:
 
     root = argv[0]
     if root not in ALLOWED_ROOT_COMMANDS:
-        hint = " Use 'python', not 'python3'." if root == "python3" else ""
         raise ToolError(
-            f"Command not allowlisted: {root!r}.{hint} Allowed: pytest, ruff, mypy, "
-            "git diff/status/show, python -m pytest."
+            f"Command not allowlisted: {root!r}. Allowed: pytest, ruff, mypy, "
+            "git diff/status/show, python -m pytest, python3 -m pytest."
         )
 
     if root == "git":
         if len(argv) < 2 or argv[1] not in ALLOWED_GIT_SUBCOMMANDS:
             raise ToolError("git subcommand not allowlisted (diff, status, show)")
-    elif root == "python" and (len(argv) < 3 or argv[1] != "-m" or argv[2] != "pytest"):
-        raise ToolError("python is only allowed as: python -m pytest ...")
+    elif root in {"python", "python3"} and (
+        len(argv) < 3 or argv[1] != "-m" or argv[2] != "pytest"
+    ):
+        raise ToolError(f"{root} is only allowed as: {root} -m pytest ...")
 
 
 def _truncate_output(text: str) -> str:

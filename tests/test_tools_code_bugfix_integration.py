@@ -38,7 +38,11 @@ def broken_repo(tmp_path: Path) -> Path:
     return dest
 
 
-async def test_bugfix_read_write_pytest_on_fixture_repo(broken_repo: Path) -> None:
+@pytest.mark.parametrize("root_argv", [["pytest"], ["python3", "-m", "pytest"]])
+async def test_bugfix_read_write_pytest_on_fixture_repo(
+    broken_repo: Path, root_argv: list[str]
+) -> None:
+    check_argv = [*root_argv, "test_calc.py", "-q"]
     provider = ScriptedProvider()
     provider.script(
         make_response(
@@ -60,7 +64,7 @@ async def test_bugfix_read_write_pytest_on_fixture_repo(broken_repo: Path) -> No
                 ToolCall(
                     id="t3",
                     name="run_command",
-                    arguments={"argv": ["pytest", "test_calc.py", "-q"]},
+                    arguments={"argv": check_argv},
                 )
             ],
             finish_reason="tool_use",
@@ -80,16 +84,21 @@ async def test_bugfix_read_write_pytest_on_fixture_repo(broken_repo: Path) -> No
         registry=registry,
         max_iterations=8,
         grounder=Grounder(escalation_threshold=0.55),
+        require_verification_before_finish=True,
+        required_check=check_argv,
     )
 
     assert response.answer == "Fixed divide to use float division; pytest passes."
     assert response.files_touched == ["calc.py"]
     assert response.verification_ran is True
+    assert response.completion_status == "completed"
+    assert response.verification_status == "passed"
     assert response.patch_summary == ["calc.py (154 bytes written)"]
 
     run_calls = [tc for tc in response.tool_calls if tc.name == "run_command"]
     assert len(run_calls) == 1
     assert run_calls[0].error is None
+    assert run_calls[0].arguments["argv"] == check_argv
     result = run_calls[0].result
     assert isinstance(result, dict)
     assert result.get("success") is True

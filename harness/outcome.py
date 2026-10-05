@@ -29,7 +29,7 @@ def is_verification_command(argv: list[str]) -> bool:
         return len(argv) >= 2 and argv[1] == "check"
     if root in VERIFICATION_ROOT_COMMANDS:
         return True
-    return root == "python" and len(argv) >= 3 and argv[1] == "-m" and argv[2] == "pytest"
+    return root in {"python", "python3"} and len(argv) >= 3 and argv[1:3] == ["-m", "pytest"]
 
 
 def harvest_files_touched(tool_calls: list[ToolCallRecord]) -> list[str]:

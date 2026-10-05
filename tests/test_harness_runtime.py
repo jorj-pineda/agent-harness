@@ -21,6 +21,8 @@ def test_project_check_settings_accept_json_env_and_reject_non_checks(
     monkeypatch.setenv("PROJECT_CHECK_ARGV", '["pytest", "-q"]')
     assert Settings(_env_file=None).project_check_argv == ["pytest", "-q"]
     monkeypatch.delenv("PROJECT_CHECK_ARGV")
+    alias = ["python3", "-m", "pytest", "-q"]
+    assert Settings(_env_file=None, project_check_argv=alias).project_check_argv == alias
     for argv in ([], ["pytest", "--version"], ["bash", "-c", "pytest"]):
         with pytest.raises(ValidationError):
             Settings(_env_file=None, project_check_argv=argv)
