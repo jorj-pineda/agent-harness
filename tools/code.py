@@ -299,7 +299,7 @@ def build_code_tools(
 
         count = before.count(args.old_text)
         if count != 1:
-            raise ToolError(f"Expected exactly one old_text match; found {count}.")
+            raise ToolError(_replace_mismatch_error(before, args.old_text, count))
         after = before.replace(args.old_text, args.new_text, 1)
         encoded = after.encode("utf-8")
         if len(encoded) > MAX_WRITE_BYTES:
@@ -477,6 +477,25 @@ def register_code_tools(
         registry.register(tool)
 
 
+def _replace_mismatch_error(text: str, old_text: str, count: int) -> str:
+    if count > 1:
+        return (
+            f"Expected exactly one old_text match; found {count}. "
+            "Include more surrounding lines in old_text so it matches once."
+        )
+    unescaped = old_text.replace("\\n", "\n")
+    if "\n" not in old_text and unescaped != old_text and text.count(unescaped) == 1:
+        return (
+            "Expected exactly one old_text match; found 0. old_text contains the two "
+            "characters backslash and n where the file has line breaks. Resend old_text "
+            "and new_text with real line breaks."
+        )
+    return (
+        "Expected exactly one old_text match; found 0. "
+        "Copy old_text exactly from the latest read_file content."
+    )
+
+
 def _validate_command_argv(argv: list[str]) -> None:
     if not argv:
         raise ToolError("argv must not be empty")
@@ -486,7 +505,11 @@ def _validate_command_argv(argv: list[str]) -> None:
 
     root = argv[0]
     if root not in ALLOWED_ROOT_COMMANDS:
-        raise ToolError(f"Command not allowlisted: {root!r}")
+        hint = " Use 'python', not 'python3'." if root == "python3" else ""
+        raise ToolError(
+            f"Command not allowlisted: {root!r}.{hint} Allowed: pytest, ruff, mypy, "
+            "git diff/status/show, python -m pytest."
+        )
 
     if root == "git":
         if len(argv) < 2 or argv[1] not in ALLOWED_GIT_SUBCOMMANDS:

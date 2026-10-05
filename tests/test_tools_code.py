@@ -130,6 +130,51 @@ async def test_replace_text_returns_diff_and_refuses_stale_or_ambiguous_edits(
         )
 
 
+async def test_replace_text_mismatch_errors_say_how_to_fix_the_call(tmp_path: Path) -> None:
+    target = tmp_path / "dedupe.py"
+    source = "def dedupe(items):\n    return list(set(items))\n"
+    target.write_text(source, encoding="utf-8")
+    reg = ToolRegistry()
+    register_code_tools(reg, workspace=Workspace(root=tmp_path))
+    sha = (await reg.invoke("read_file", {"path": "dedupe.py"}))["sha256"]
+
+    async def replace(old_text: str) -> None:
+        await reg.invoke(
+            "replace_text",
+            {"path": "dedupe.py", "old_text": old_text, "new_text": "x", "expected_sha256": sha},
+        )
+
+    with pytest.raises(ToolError, match="backslash and n where the file has line breaks"):
+        await replace("def dedupe(items):\\n    return list(set(items))")
+    with pytest.raises(ToolError, match="Copy old_text exactly"):
+        await replace("def dedupe(values):")
+    with pytest.raises(ToolError, match="Copy old_text exactly"):
+        await replace("missing\\nlines")
+    with pytest.raises(ToolError, match="Include more surrounding lines"):
+        await replace("e")
+    assert target.read_text(encoding="utf-8") == source
+
+
+async def test_replace_text_preserves_literal_escapes_and_does_not_misdiagnose_tabs(
+    tmp_path: Path,
+) -> None:
+    target = tmp_path / "escapes.py"
+    target.write_text('value = "\\n"\n\tpass\n', encoding="utf-8")
+    reg = ToolRegistry()
+    register_code_tools(reg, workspace=Workspace(root=tmp_path))
+    sha = (await reg.invoke("read_file", {"path": "escapes.py"}))["sha256"]
+    with pytest.raises(ToolError, match="Copy old_text exactly"):
+        await reg.invoke(
+            "replace_text",
+            {"path": "escapes.py", "old_text": "\\tpass", "new_text": "x", "expected_sha256": sha},
+        )
+    await reg.invoke(
+        "replace_text",
+        {"path": "escapes.py", "old_text": '"\\n"', "new_text": '"x"', "expected_sha256": sha},
+    )
+    assert target.read_text(encoding="utf-8") == 'value = "x"\n\tpass\n'
+
+
 async def test_replace_text_rejects_escape_non_utf8_and_noop(tmp_path: Path) -> None:
     target = tmp_path / "binary.py"
     target.write_bytes(b"\xff")
@@ -240,6 +285,8 @@ async def test_run_command_pytest_on_fixture(workspace: Workspace, registry: Too
 async def test_run_command_rejects_disallowed_executable(registry: ToolRegistry) -> None:
     with pytest.raises(ToolError, match="not allowlisted"):
         await registry.invoke("run_command", {"argv": ["bash", "-c", "echo hi"]})
+    with pytest.raises(ToolError, match="Use 'python', not 'python3'"):
+        await registry.invoke("run_command", {"argv": ["python3", "-m", "pytest"]})
 
 
 def test_build_code_tools_exposes_every_tool(workspace: Workspace) -> None:
