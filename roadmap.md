@@ -145,11 +145,22 @@ The harness does not need to make every model good at every task. It needs to id
   newline edits and one ran a passing check; task acceptance did not improve.
   Repeats also varied before changed feedback. See `evals/BASELINES.md` and its
   raw report; these results do not establish a causal regression or improvement.
+- **2026-10-04 — Item 7 Python pytest alias experiment recorded:**
+  `python3 -m pytest` now uses the existing `python` execution path; module
+  restrictions and exact configured-check matching remain. Tool descriptions
+  advertise the alias. Thirty local attempts with matching recorded settings
+  and fixtures yielded harness 8/15 and minimal 9/15 accepted, versus 11/15 and
+  9/15. All six submitted alias checks executed and passed, but their artifacts
+  failed independent acceptance on empty input. Two later edits made check
+  evidence stale. Harness `divide_zero` got blocked on repeated edit mismatches
+  in all repeats; empty final answers also received completed status. This is
+  basic tool-usability support, not a measured coding-quality gain. See the raw
+  report and limitations in `evals/BASELINES.md`.
 - **Next:** item 6's listed mechanics are in place; see the known limitations
   below before relying on them unattended. Item 7 has a repeated baseline and
-  two completed comparisons. Consider a focused interpreter-alias experiment
-  for rejected `python3 -m pytest` calls before adding prompt complexity.
-  Verification recovery, empty-answer completion, model profiles, context
+  three completed comparisons. Address empty-answer completion or repeated edit
+  mismatches with bounded recovery; a smaller-toolset experiment is supported
+  by observed exact-edit failures. Verification recovery, model profiles, context
   management, and item 8's personal-use workflow remain open. Offline checks
   alone are not evidence of better model coding performance.
 
