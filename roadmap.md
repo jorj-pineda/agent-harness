@@ -1,6 +1,6 @@
 # Roadmap: a coding harness for lower-tier models
 
-Updated: 2026-10-04
+Updated: 2026-10-05
 
 ## Direction
 
@@ -156,10 +156,21 @@ The harness does not need to make every model good at every task. It needs to id
   in all repeats; empty final answers also received completed status. This is
   basic tool-usability support, not a measured coding-quality gain. See the raw
   report and limitations in `evals/BASELINES.md`.
+- **2026-10-05 — Blank-final recovery and comparison recorded:** the shared loop
+  now treats empty or whitespace-only final replies as missing completion,
+  uses the existing completion-retry allowance, and returns incomplete with an
+  explicit fallback when recovery cannot finish. Verification and blank-answer
+  recovery share that allowance and retain existing budget/finish-reason gates.
+  Thirty matching local attempts yielded harness 10/15 and minimal 8/15
+  accepted, versus 8/15 and 9/15. No blank answer received completed status;
+  ten attempts reached the iteration limit and six decimal artifacts still
+  received completed status despite failed acceptance. This corrects completion
+  bookkeeping, without establishing a coding-quality gain. See
+  `evals/BASELINES.md` for raw results and limitations.
 - **Next:** item 6's listed mechanics are in place; see the known limitations
   below before relying on them unattended. Item 7 has a repeated baseline and
-  three completed comparisons. Address empty-answer completion or repeated edit
-  mismatches with bounded recovery; a smaller-toolset experiment is supported
+  four completed comparisons. Address repeated edit mismatches with bounded
+  recovery; a smaller-toolset experiment is supported
   by observed exact-edit failures. Verification recovery, model profiles, context
   management, and item 8's personal-use workflow remain open. Offline checks
   alone are not evidence of better model coding performance.
