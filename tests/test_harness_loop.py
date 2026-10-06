@@ -129,6 +129,231 @@ async def test_one_shot_answer_skips_tool_dispatch() -> None:
     assert session.turns[0].final_answer == "hello"
 
 
+@pytest.mark.parametrize("content", ["", " \t\n", "\u00a0"])
+async def test_blank_final_answer_is_incomplete_without_retries(content: str) -> None:
+    provider = FakeProvider([_response(content=content)])
+    session = Session()
+    response = await run_turn(
+        session=session, user_input="Explain the code", provider=provider, registry=_registry()
+    )
+    assert response.completion_status == "incomplete"
+    assert "empty final answer" in (response.completion_reason or "")
+    assert response.answer.strip()
+    assert response.escalated is True
+    assert session.messages[-1].content == content
+    assert session.turns[-1].final_answer == response.answer
+    assert len(provider.calls) == 1
+
+
+async def test_blank_read_only_reply_can_recover_without_requesting_checks() -> None:
+    provider = FakeProvider([_response(), _response(content="The code adds two integers.")])
+    response = await run_turn(
+        session=Session(),
+        user_input="Explain the code",
+        provider=provider,
+        registry=_registry(),
+        max_completion_retries=1,
+        require_verification_before_finish=True,
+    )
+    assert len(provider.calls) == 2
+    guidance = provider.calls[1][0][-1].content
+    assert "empty" in guidance and "non-empty answer" in guidance
+    assert "check" not in guidance
+    assert response.completion_status == "completed"
+    assert response.completion_reason is None
+    assert response.answer == "The code adds two integers."
+    assert response.tool_calls == []
+
+
+async def test_repeated_blank_final_replies_stop_after_shared_retry_limit() -> None:
+    provider = FakeProvider([_response(), _response(content=" \n")])
+    response = await run_turn(
+        session=Session(),
+        user_input="Explain",
+        provider=provider,
+        registry=_registry(),
+        max_completion_retries=1,
+    )
+    assert len(provider.calls) == 2
+    assert response.completion_status == "incomplete"
+    assert "empty final answer" in (response.completion_reason or "")
+    assert response.answer.strip()
+
+
+async def test_blank_reply_and_missing_check_use_one_retry_with_both_requirements() -> None:
+    provider = FakeProvider(
+        [
+            _response(
+                tool_calls=[ToolCall(id="edit", name="write_file", arguments={"path": "a.py"})]
+            ),
+            _response(),
+            _response(
+                tool_calls=[
+                    ToolCall(id="check", name="run_command", arguments={"argv": ["pytest", "-q"]})
+                ]
+            ),
+            _response(content="Updated a.py; pytest passed."),
+        ]
+    )
+    registry = _registry(
+        Tool(name="write_file", description="edit", input_model=PathInput, fn=_fake_write),
+        Tool(name="run_command", description="check", input_model=CommandInput, fn=_fake_check),
+    )
+    response = await run_turn(
+        session=Session(),
+        user_input="Fix a.py",
+        provider=provider,
+        registry=registry,
+        require_verification_before_finish=True,
+        required_check=["pytest", "-q"],
+        max_completion_retries=1,
+    )
+    guidance = provider.calls[2][0][-1].content
+    assert "empty" in guidance and '["pytest", "-q"]' in guidance
+    assert response.completion_status == "completed"
+    assert response.verification_status == "passed"
+    assert response.files_touched == ["a.py"]
+
+
+async def test_blank_reply_cannot_get_another_retry_after_missing_check_retry() -> None:
+    provider = FakeProvider(
+        [
+            _response(
+                tool_calls=[ToolCall(id="edit", name="write_file", arguments={"path": "a.py"})]
+            ),
+            _response(content="Done."),
+            _response(),
+        ]
+    )
+    registry = _registry(
+        Tool(name="write_file", description="edit", input_model=PathInput, fn=_fake_write),
+    )
+    response = await run_turn(
+        session=Session(),
+        user_input="Fix a.py",
+        provider=provider,
+        registry=registry,
+        require_verification_before_finish=True,
+        max_completion_retries=1,
+    )
+    assert len(provider.calls) == 3
+    assert response.completion_status == "incomplete"
+    assert "empty final answer" in (response.completion_reason or "")
+    assert "not verified" in (response.completion_reason or "")
+    assert response.files_touched == ["a.py"]
+
+
+async def test_blank_retry_failure_preserves_passing_check_and_partial_work() -> None:
+    provider = FakeProvider(
+        [
+            _response(
+                tool_calls=[
+                    ToolCall(id="edit", name="write_file", arguments={"path": "a.py"}),
+                    ToolCall(id="check", name="run_command", arguments={"argv": ["pytest", "-q"]}),
+                ]
+            ),
+            _response(),
+            _response(),
+        ]
+    )
+    registry = _registry(
+        Tool(name="write_file", description="edit", input_model=PathInput, fn=_fake_write),
+        Tool(name="run_command", description="check", input_model=CommandInput, fn=_fake_check),
+    )
+    response = await run_turn(
+        session=Session(),
+        user_input="Fix a.py",
+        provider=provider,
+        registry=registry,
+        require_verification_before_finish=True,
+        max_completion_retries=1,
+    )
+    assert len(provider.calls) == 3
+    assert response.completion_status == "incomplete"
+    assert response.verification_status == "passed"
+    assert response.files_touched == ["a.py"]
+    assert response.check_attempts[0].status == "passed"
+    assert "not verified" not in (response.completion_reason or "")
+
+
+async def test_blank_reply_on_last_iteration_does_not_retry() -> None:
+    provider = FakeProvider([_response()])
+    response = await run_turn(
+        session=Session(),
+        user_input="Explain",
+        provider=provider,
+        registry=_registry(),
+        max_iterations=1,
+        max_completion_retries=1,
+    )
+    assert len(provider.calls) == 1
+    assert response.completion_status == "incomplete"
+
+
+@pytest.mark.parametrize(
+    "limits,output,reason",
+    [
+        ({"max_completion_tokens_per_turn": 5}, 5, "output-token"),
+        ({"max_context_tokens": 20}, 1, "context limit"),
+        ({"max_total_tokens_per_turn": 20}, 1, "total token budget"),
+    ],
+)
+async def test_blank_retry_respects_pre_request_token_gates(
+    limits: dict[str, int],
+    output: int,
+    reason: str,
+) -> None:
+    provider = FakeProvider([_response(prompt_tokens=10, completion_tokens=output)])
+    response = await run_turn(
+        session=Session(),
+        user_input="hi",
+        provider=provider,
+        registry=_registry(),
+        max_completion_retries=1,
+        **limits,
+    )
+    assert len(provider.calls) == 1
+    assert response.completion_status == "budget_exhausted"
+    assert reason in (response.completion_reason or "")
+    assert response.token_usage == TokenUsage(prompt_tokens=10, completion_tokens=output)
+
+
+async def test_blank_recovery_does_not_bypass_tool_dispatch_limit() -> None:
+    provider = FakeProvider(
+        [
+            _response(tool_calls=[ToolCall(id="a", name="echo", arguments={"text": "first"})]),
+            _response(),
+            _response(tool_calls=[ToolCall(id="b", name="echo", arguments={"text": "second"})]),
+        ]
+    )
+    response = await run_turn(
+        session=Session(),
+        user_input="work",
+        provider=provider,
+        registry=_registry(_echo_tool()),
+        max_completion_retries=1,
+        max_tool_calls_per_turn=1,
+    )
+    assert response.completion_status == "budget_exhausted"
+    assert response.tool_calls[0].result == "first"
+    assert response.tool_calls[1].result is None
+    assert "Tool-call limit" in (response.tool_calls[1].error or "")
+
+
+async def test_truncated_blank_response_keeps_finish_reason_and_does_not_retry() -> None:
+    provider = FakeProvider([_response(finish_reason="length")])
+    response = await run_turn(
+        session=Session(),
+        user_input="work",
+        provider=provider,
+        registry=_registry(),
+        max_completion_retries=1,
+    )
+    assert len(provider.calls) == 1
+    assert response.completion_status == "incomplete"
+    assert "truncated" in (response.completion_reason or "")
+
+
 async def test_truncated_response_is_incomplete_and_does_not_execute_tools() -> None:
     provider = FakeProvider(
         [
@@ -440,7 +665,7 @@ async def test_output_budget_reduces_next_request_and_stops_tool_dispatch_at_lim
     assert "not executed" in (response.tool_calls[1].error or "")
     assert response.completion_status == "budget_exhausted"
     assert [message.role for message in session.messages] == [
-        "user", "assistant", "tool", "assistant", "tool"
+        "user", "assistant", "tool", "assistant", "tool",
     ]
 
 
