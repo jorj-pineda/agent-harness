@@ -252,3 +252,107 @@ path as `python -m pytest`, while retaining the existing module restriction.
 That would be a separate implementation and comparison. Verification recovery
 and the empty-answer completion case remain open; this experiment does not
 justify a larger prompt or context-management framework.
+
+## 2026-10-04 — `gemma4:12b`, Python pytest alias, thinking off, context 4,096
+
+This experiment adds `python3 -m pytest` as an alias for the existing
+PATH-resolved `python -m pytest` execution path. It does not select a separate
+`python3` interpreter. Other modules, script files, and `-c` remain rejected.
+Verification tracking recognizes the submitted alias; configured project checks
+still require exact submitted argv. For example, a configured `python -m pytest`
+check is not satisfied by submitting `python3 -m pytest`, despite the shared
+execution path. Configure the spelling that the model is instructed to use.
+
+Tool descriptions and allowed-command errors now advertise both spellings.
+This comparison measures that advertised interface together with alias
+execution, rather than isolating the execution change from its descriptions.
+Tool trace arguments retain the submitted `python3` argv, while the result's
+`argv` records the canonical `python` command that actually ran. Existing
+response fields are preserved.
+
+| Field | Value |
+|---|---|
+| Harness revision | `0ff51e6` (clean) |
+| Model/server/hardware | Same local `gemma4:12b` Q4_K_M, Ollama 0.33.2, Apple M1 Pro, 16 GB |
+| Settings | Thinking off; server confirmed context 4,096; temperature 0.0 |
+| Comparison | All recorded runtime settings and fixture source hashes match the clearer-errors run; same system prompts, budgets, three repeats, and alternating mode order |
+| Attempts | 5 tasks × 2 modes × 3 repeats = 30, all included |
+| Raw report | `results/2026-10-04-gemma4-12b-python3-alias-ctx4k.json` |
+
+```sh
+OLLAMA_MODEL=gemma4:12b OLLAMA_THINK=false MAX_TURN_WALL_SECONDS=600 \
+  REQUEST_TIMEOUT_SECONDS=300 uv run python -m evals.real_run --provider ollama \
+  --mode both --repeats 3 --report /tmp/agent-harness-python3-alias.json
+```
+
+| Task | harness (clearer errors → alias) | minimal (clearer errors → alias) |
+|---|---|---|
+| decimal_total | 0/3 → 0/3 | 0/3 → 0/3 |
+| divide_zero | 3/3 → 0/3 | 3/3 → 3/3 |
+| parse_flags | 2/3 → 3/3 | 3/3 → 3/3 |
+| slugify | 3/3 → 2/3 | 0/3 → 0/3 |
+| stable_dedupe | 3/3 → 3/3 | 3/3 → 3/3 |
+| **total** | **11/15 → 8/15** | **9/15 → 9/15** |
+
+| Measure | harness | minimal |
+|---|---|---|
+| Terminations | 8 accepted, 4 acceptance failed, 3 blocked | 9 accepted, 4 acceptance failed, 2 blocked |
+| Completed status with failed acceptance | 4 (previously 1) | 4 (unchanged) |
+| Attempts with a passing model-run check | 3/15 (previously 1/15) | 3/15 (previously 0/15) |
+| Final verification statuses | 3 passed, 12 not run | 1 passed, 2 stale, 12 not run |
+| Median latency | 80 s (previously 87 s) | 56 s (previously 60 s) |
+| Median tool-call records | 7 (unchanged) | 4 (unchanged) |
+| Median reported tokens | 16,682 (previously 18,733) | 9,577 (previously 9,527) |
+
+### What changed and what remains
+
+- **Alias execution worked:** the model submitted six `python3 -m pytest
+  test_visible.py` calls, one in every `decimal_total` attempt. All six executed
+  through `python` and passed. No command call was rejected. Previously only
+  one check executed and passed across the entire run.
+- **Passing checks did not establish a correct patch:** all six decimal-total
+  artifacts failed the independent empty-input check because the model used
+  `sum(Decimal(price) for price in prices)` without a Decimal starting value.
+  The resulting integer zero has no `quantize` method. Four attempts finished
+  with passed verification and failed acceptance. Minimal repeats 2 and 3 edited
+  after their checks, then hit repeated-write blocking; verification was stale.
+  Some attempts added visible tests, but those did not cover empty input and
+  cannot change authoritative acceptance.
+- **Harness `divide_zero` declined:** all three attempts repeatedly submitted
+  escaped-newline edits and were blocked before changing the fixture or calling
+  a command. The previous run accepted all three artifacts. This is an observed
+  regression for this configuration; the traces do not isolate why the model's
+  edit behavior changed before any alias invocation.
+- **Harness `slugify` declined:** repeat 3 deleted an underscore rather than
+  treating it as a separator; `One_two` became `onetwo`. Minimal mode's three
+  incorrect artifacts also remained unaccepted. None ran a check.
+- **Edit errors persisted:** 17 escaped-newline mismatch errors and five
+  repeated-call blocks were recorded. Three blocks involved exact replacements
+  in harness `divide_zero`; two involved whole-file writes in minimal
+  `decimal_total`. These attempted calls include calls rejected before dispatch.
+- **Empty final answers remain a completion problem:** all six `slugify`
+  attempts returned empty final answers while receiving completed runtime
+  status. Four of those artifacts failed acceptance. Consequently the report's
+  `false_completion` total of eight includes four empty answers, alongside four
+  decimal-total completion claims. It is a status/acceptance proxy, not a count
+  of eight explicit prose claims.
+
+### Interpretation and next slice
+
+The alias removes a demonstrated command-interface obstacle and enables real
+checks under the existing execution restrictions. It did **not** improve task
+acceptance: harness acceptance was worse and minimal acceptance unchanged.
+It is retained for basic tool usability, not as a measured coding-quality gain.
+
+This is still one model and five fixtures with nearly deterministic repeats.
+Changed tool descriptions, fresh workspace paths, and variation seen in earlier
+runs limit causal attribution; latency differences are descriptive. Do not assume
+that accepting more valid commands makes the model's patches more correct.
+
+The next focused work should address an observed failure: empty final-answer
+completion or repeated edit mismatches, with bounded recovery and a separate
+comparison. A smaller-toolset experiment is also supported by the repeated
+exact-edit failures and successful whole-file fallbacks. None of that work is
+implemented here, and adding a larger prompt or a model judge is not justified
+by this run. The personal-use persistence, cancellation, and diff workflow
+remains open.

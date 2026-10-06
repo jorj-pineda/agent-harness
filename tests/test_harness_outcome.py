@@ -45,6 +45,7 @@ def test_is_verification_command_accepts_pytest_ruff_mypy() -> None:
     assert is_verification_command(["ruff", "check", "."])
     assert is_verification_command(["mypy", "."])
     assert is_verification_command(["python", "-m", "pytest", "test_calc.py"])
+    assert is_verification_command(["python3", "-m", "pytest", "test_calc.py"])
 
 
 def test_is_verification_command_rejects_git_and_shell() -> None:
@@ -54,6 +55,10 @@ def test_is_verification_command_rejects_git_and_shell() -> None:
     assert not is_verification_command(["ruff", "--help"])
     assert not is_verification_command(["ruff"])
     assert not is_verification_command(["python", "-m", "pytest", "--collect-only"])
+    for args in (["--version"], ["--help"], ["--collect-only"]):
+        assert not is_verification_command(["python3", "-m", "pytest", *args])
+    assert not is_verification_command(["python3", "-m", "unittest"])
+    assert not is_verification_command(["python3", "-c", "print(1)"])
 
 
 def test_harvest_files_touched_collects_successful_writes_in_order() -> None:
@@ -173,3 +178,26 @@ def test_configured_check_requires_exact_argv() -> None:
         verification_status([edit, other_check, required_check], required_check=["pytest", "-q"])
         == "passed"
     )
+
+
+def test_python3_checks_preserve_exact_configuration_and_latest_check_status() -> None:
+    argv = ["python3", "-m", "pytest", "-q"]
+    passing = ToolCallRecord(
+        name="run_command",
+        arguments={"argv": argv},
+        result={"argv": ["python", *argv[1:]], "success": True, "exit_code": 0},
+    )
+    failing = ToolCallRecord(
+        name="run_command",
+        arguments={"argv": argv},
+        result={"success": False, "exit_code": 1},
+    )
+    edit = ToolCallRecord(name="write_file", result={"path": "calc.py"})
+    assert verification_status([edit, passing], required_check=argv) == "passed"
+    assert verification_status([passing, edit], required_check=argv) == "stale"
+    assert verification_status([edit, passing, failing], required_check=argv) == "failed"
+    canonical = ["python", *argv[1:]]
+    assert verification_status([edit, passing], required_check=canonical) == "not_run"
+    checks = harvest_checks([passing], required_check=argv)
+    assert [(c.argv, c.status, c.relevant) for c in checks] == [(argv, "passed", True)]
+    assert not harvest_checks([passing], required_check=canonical)[0].relevant

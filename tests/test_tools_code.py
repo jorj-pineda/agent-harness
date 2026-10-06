@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import shutil
 import subprocess
 from pathlib import Path
@@ -285,8 +286,40 @@ async def test_run_command_pytest_on_fixture(workspace: Workspace, registry: Too
 async def test_run_command_rejects_disallowed_executable(registry: ToolRegistry) -> None:
     with pytest.raises(ToolError, match="not allowlisted"):
         await registry.invoke("run_command", {"argv": ["bash", "-c", "echo hi"]})
-    with pytest.raises(ToolError, match="Use 'python', not 'python3'"):
-        await registry.invoke("run_command", {"argv": ["python3", "-m", "pytest"]})
+
+
+@pytest.mark.parametrize("root", ["python", "python3"])
+@pytest.mark.parametrize("args", [[], ["-c", "print(1)"], ["script.py"], ["-m", "unittest"]])
+async def test_python_commands_retain_pytest_module_restriction(
+    registry: ToolRegistry, root: str, args: list[str]
+) -> None:
+    with pytest.raises(ToolError, match=f"{root} is only allowed as"):
+        await registry.invoke("run_command", {"argv": [root, *args]})
+
+
+async def test_python3_alias_uses_python_environment_and_preserves_requested_argv(
+    tmp_path: Path,
+) -> None:
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    # A different python3 executable must not be selected by the alias.
+    (bin_dir / "python3").write_text("not an executable interpreter", encoding="utf-8")
+    (bin_dir / "python3").chmod(0o755)
+    (tmp_path / "test_ok.py").write_text("def test_ok():\n    assert True\n", encoding="utf-8")
+    reg = ToolRegistry()
+    register_code_tools(
+        reg,
+        workspace=Workspace(root=tmp_path),
+        command_env={
+            "PATH": os.pathsep.join((str(bin_dir), os.environ.get("PATH", ""))),
+            "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+        },
+    )
+    requested = ["python3", "-m", "pytest", "-q", "test_ok.py"]
+    result = await reg.invoke("run_command", {"argv": requested})
+    assert result["success"] is True
+    assert result["argv"] == ["python", *requested[1:]]
+    assert requested[0] == "python3"
 
 
 def test_build_code_tools_exposes_every_tool(workspace: Workspace) -> None:
