@@ -258,3 +258,22 @@ async def test_runtime_applies_context_limit_before_provider_request(tmp_path: P
     assert provider.calls == []
     assert response.completion_status == "budget_exhausted"
     assert "context limit" in (response.completion_reason or "")
+
+
+async def test_runtime_bounds_blank_final_recovery(tmp_path: Path) -> None:
+    provider = ScriptedProvider()
+    provider.script(make_response(content=""), make_response(content=" \n"))
+    with FactStore(tmp_path / "memory.db") as store:
+        response = await run_configured_turn(
+            settings=Settings(_env_file=None, max_tool_iterations=3, max_completion_retries=1),
+            session=Session(),
+            user_id="dev",
+            message="Explain the module",
+            provider=provider,
+            fact_store=store,
+            registry=build_registry(fact_store=store, user_id="dev", workspace_root=None),
+        )
+    assert len(provider.calls) == 2
+    assert response.completion_status == "incomplete"
+    assert "empty final answer" in (response.completion_reason or "")
+    assert response.answer.strip()

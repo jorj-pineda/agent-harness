@@ -197,17 +197,21 @@ async def run_turn(
             break
 
         if not usable_calls:
+            missing_answer = not response.content.strip()
             checked = verification_status(turn.tool_calls, required_check=required_check)
             edited = bool(harvest_files_touched(turn.tool_calls))
             blocked = unresolved_edit_blocks(turn.tool_calls)
             needs_check = require_verification_before_finish and edited and checked != "passed"
-            if needs_check or blocked:
+            if missing_answer or needs_check or blocked:
                 if completion_retries < max_completion_retries and iteration + 1 < max_iterations:
-                    guidance = (
-                        f"The edits to {', '.join(blocked)} were blocked. Resolve the tool error "
-                        "or report the task as incomplete."
-                        if blocked
-                        else (
+                    guidance = ""
+                    if blocked:
+                        guidance = (
+                            f"The edits to {', '.join(blocked)} were blocked. Resolve the tool "
+                            "error or report the task as incomplete."
+                        )
+                    elif needs_check:
+                        guidance = (
                             f"The latest edit is not verified. Run the configured check "
                             f"{json.dumps(required_check)} after editing, repair any failure, "
                             "then report the observed result."
@@ -215,17 +219,31 @@ async def run_turn(
                             else "The latest edit is not verified. Run a relevant check after "
                             "editing, repair any failure, then report the observed result."
                         )
-                    )
+                    if missing_answer:
+                        guidance = (
+                            "Your final reply was empty. Continue the task if needed, then "
+                            "provide a non-empty answer with the observed result and any "
+                            "unresolved problems."
+                        ) + (f" {guidance}" if guidance else "")
                     session.messages.append(ChatMessage(role="user", content=guidance))
                     completion_retries += 1
                     continue
                 completion_status = "incomplete"
+                reason = ""
+                if blocked:
+                    reason = f"Edits blocked for: {', '.join(blocked)}."
+                elif needs_check:
+                    reason = f"Final edits are not verified ({checked})."
                 completion_reason = (
-                    f"Edits blocked for: {', '.join(blocked)}."
-                    if blocked
-                    else f"Final edits are not verified ({checked})."
+                    "The model returned an empty final answer." + (f" {reason}" if reason else "")
+                    if missing_answer
+                    else reason
                 )
-            final_answer = response.content
+            final_answer = (
+                "(model returned an empty final answer before task completion)"
+                if missing_answer
+                else response.content
+            )
             break
 
         stop_reason = budget_stop.reason if budget_stop is not None else None

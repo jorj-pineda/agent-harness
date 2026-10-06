@@ -356,3 +356,102 @@ exact-edit failures and successful whole-file fallbacks. None of that work is
 implemented here, and adding a larger prompt or a model judge is not justified
 by this run. The personal-use persistence, cancellation, and diff workflow
 remains open.
+
+## 2026-10-05 — `gemma4:12b`, blank-final recovery, thinking off, context 4,096
+
+A normal final reply with no tool calls and empty or whitespace-only content now
+triggers the existing bounded completion recovery. Feedback asks for a non-empty
+answer with the observed result and unresolved problems. Missing verification
+or blocked edits use the same retry counter, with combined feedback when needed.
+After retries are exhausted, the runtime returns incomplete with an explicit
+fallback instead of marking the blank reply completed. Tool-bearing replies may
+still have empty content. Provider truncation and budget stops retain precedence;
+recovery uses the usual pre-request and tool-dispatch gates.
+
+This changes the shared application/evaluation loop. System prompts, tool
+schemas, fixtures, acceptance checks, and recorded runtime settings are unchanged
+from the Python alias comparison. The new feedback is injected only after a
+blank final reply. A non-empty answer is not proof that the patch works.
+
+| Field | Value |
+|---|---|
+| Harness revision | `35a2b59` (clean) |
+| Model/server/hardware | Same local `gemma4:12b` Q4_K_M, Ollama 0.33.2, Apple M1 Pro, 16 GB |
+| Settings | Thinking off; server confirmed context 4,096; temperature 0.0 |
+| Comparison | Runtime settings and fixture source hashes match the Python alias run; eight iterations, 24 tool attempts, one completion retry, 600 s wall dispatch deadline, 300 s request timeout; token gates and required verification disabled |
+| Attempts | 5 tasks × 2 modes × 3 repeats = 30, all included; alternating mode order |
+| Raw report | `results/2026-10-05-gemma4-12b-empty-final-ctx4k.json` |
+
+```sh
+OLLAMA_MODEL=gemma4:12b OLLAMA_THINK=false MAX_TURN_WALL_SECONDS=600 \
+  REQUEST_TIMEOUT_SECONDS=300 uv run python -m evals.real_run --provider ollama \
+  --mode both --repeats 3 --report /tmp/agent-harness-empty-final.json
+```
+
+| Task | harness (alias → blank recovery) | minimal (alias → blank recovery) |
+|---|---|---|
+| decimal_total | 0/3 → 0/3 | 0/3 → 0/3 |
+| divide_zero | 0/3 → 1/3 | 3/3 → 3/3 |
+| parse_flags | 3/3 → 3/3 | 3/3 → 2/3 |
+| slugify | 2/3 → 3/3 | 0/3 → 0/3 |
+| stable_dedupe | 3/3 → 3/3 | 3/3 → 3/3 |
+| **total** | **8/15 → 10/15** | **9/15 → 8/15** |
+
+| Measure | harness | minimal |
+|---|---|---|
+| Runtime statuses | 6 completed, 7 budget exhausted, 2 blocked | 11 completed, 3 budget exhausted, 1 incomplete |
+| Terminations | 3 accepted, 3 acceptance failed, 7 iteration limit, 2 blocked | 8 accepted, 3 acceptance failed, 3 iteration limit, 1 incomplete |
+| Blank final answers marked completed | 0 (previously 3) | 0 (previously 3) |
+| Completed status with failed acceptance | 3 (previously 4) | 3 (previously 4) |
+| Attempts with a passing model-run check | 3/15 (unchanged) | 3/15 (unchanged) |
+| Final verification statuses | 3 passed, 7 failed, 5 not run | 3 passed, 3 failed, 9 not run |
+| Median latency | 79 s (previously 80 s) | 53 s (previously 56 s) |
+| Median tool-call records | 7 (unchanged) | 4 (unchanged) |
+| Median reported tokens | 18,211 (previously 16,682) | 9,572 (previously 9,577) |
+
+### Observations and limitations
+
+- **Blank completion is prevented:** none of the 30 attempts received completed
+  status with blank text. Minimal `parse_flags` repeat 2 exhausted blank-final
+  recovery and returned the explicit incomplete fallback. It had only inspected
+  files, left the fixture unchanged, and failed acceptance.
+- **Recovery can lead to unhelpful tool work:** all six `slugify` turns and all
+  three harness `stable_dedupe` turns reached the iteration limit. Their traces
+  include rejected direct Python execution and pytest against a source module,
+  which collected no tests and exited with code 5. These are failed check
+  attempts, not verification. Across the full run there were 18 rejected
+  `python3 -c` calls. The previous run's six slug turns finished with blank text.
+- **Artifact acceptance and completion differ:** all three harness slug patches,
+  all three harness dedupe patches, and harness divide repeat 3 passed external
+  acceptance despite reaching the iteration limit. The report's termination
+  label records the runtime stop first; the primary acceptance count includes
+  these seven artifacts. Minimal slug patches still failed separator handling.
+- **Decimal correctness remains unresolved:** all six attempts ran passing
+  visible tests and received completed status, but failed the independent
+  empty-input case. `sum(Decimal(price) for price in prices)` returns integer
+  zero on an empty list, so the subsequent `quantize` call fails. The report's
+  six `false_completion` entries are these completed/failed-acceptance attempts;
+  unlike the preceding run, none involve empty final answers. This guard does
+  not prevent incorrect success claims in non-empty text.
+- **Exact-edit failures persist:** 12 escaped-newline mismatch errors and two
+  repeated-call blocks occurred, all in harness divide attempts. Two artifacts
+  were unchanged; repeat 3 fell back to a correct whole-file write. Its later
+  check collected no tests, and the turn reached the iteration limit.
+
+The raw report stores terminal answers and tool traces, but not each model
+response or injected recovery message. It cannot establish the exact number of
+successful blank-answer recoveries or locate every changed decision relative to
+feedback. Scripted tests establish the shared retry and budget contracts; the
+live report establishes final statuses and independently scored artifacts.
+
+Acceptance improved by two harness attempts and declined by one minimal attempt.
+These small, nearly deterministic repeats on five fixtures do not establish a
+reliable coding-quality gain. Fresh workspace paths and variation before changed
+feedback limit causal attribution; latency differences are descriptive. The guard
+is retained for honest completion bookkeeping, with extra tool work and iteration
+exhaustion documented as costs. No prompt expansion or model judge is justified.
+
+A next focused comparison could reduce exact-edit/tool-interface friction with a
+smaller toolset or targeted mismatch recovery. Verification guidance and the
+personal-use persistence, cancellation, and diff workflow remain open. Ollama
+was unloaded and the server started for this experiment was stopped afterward.
