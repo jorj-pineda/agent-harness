@@ -89,6 +89,12 @@ async def test_real_tool_edit_is_scored_from_final_files(tmp_path: Path) -> None
         "run_command",
     ]
     assert result.tool_trace[-1]["result"]["success"] is True
+    responses = [r for r in result.turn_trace if r["kind"] == "response"]
+    assert len(responses) == 4
+    assert responses[0]["content"] == ""
+    assert responses[0]["tool_calls"][0]["id"] == "read"
+    tool_results = [r for r in result.turn_trace if r["kind"] == "tool_result"]
+    assert [r["message"]["tool_call_id"] for r in tool_results] == ["read", "edit", "check"]
     assert result.prompt_version == PROMPT_VERSION
     assert len(result.source_revision) == 64
     assert (task.fixture / "calc.py").read_bytes() == original
@@ -237,4 +243,8 @@ def test_cli_repeats_both_modes_and_alternates_order(
     ]
     assert data["summary"]["harness"]["attempts"] == 2
     assert data["sampling"] == {"temperature": 0.0}
+    assert data["trace_format"] == "normalized-turn-v1"
+    assert all(
+        [r["kind"] for r in row["turn_trace"]] == ["request", "response"] for row in data["results"]
+    )
     assert set(data["harness_revision"]) == {"commit", "dirty"}

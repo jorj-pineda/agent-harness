@@ -43,6 +43,7 @@ from .outcome_types import CompletionStatus
 from .policy import edit_precondition_error, repeated_unchanged_call, unresolved_edit_blocks
 from .state import Session, ToolCallRecord, Turn, TurnResponse
 from .stream import EventCallback, ToolEndEvent, ToolStartEvent
+from .trace import MessageTrace, RequestFailureTrace, RequestTrace, ResponseTrace, TurnTraceRecord
 
 RESULT_SNIPPET_LIMIT = 600
 
@@ -89,6 +90,7 @@ async def run_turn(
     max_completion_retries: int = 0,
     required_check: list[str] | None = None,
     on_event: EventCallback | None = None,
+    trace: list[TurnTraceRecord] | None = None,
 ) -> TurnResponse:
     """Drive one user turn to completion via ReAct + tool dispatch.
 
@@ -99,6 +101,9 @@ async def run_turn(
 
     `on_event`, when supplied, observes each tool call (start/end) for live
     streaming — it never alters control flow.
+    `trace`, when supplied, collects normalized request/response and message
+    evidence outside model context. It excludes provider raw payloads and does
+    not change the response contract. Callers own storage and access control.
     """
     turn = Turn(user_input=user_input)
     session.turns.append(turn)
@@ -137,31 +142,69 @@ async def run_turn(
             completion_reason = wall_limit_reason
             break
         sent_count = len(session.messages)
-        if deadline is None:
-            if allowance is None:
-                response = await provider.chat(session.messages, tools=tool_specs)
-            else:
-                response = await provider.chat(
-                    session.messages, tools=tool_specs, max_tokens=allowance
+        if trace is not None:
+            trace.append(
+                RequestTrace(
+                    iteration=iteration,
+                    message_count=sent_count,
+                    estimated_prompt_tokens=budget.estimate_prompt(session.messages, tool_specs),
+                    max_tokens=allowance,
+                    initial_messages=[m.model_copy(deep=True) for m in session.messages]
+                    if iteration == 0
+                    else [],
                 )
-        else:
-            budget_timeout = asyncio.timeout_at(deadline)
-            try:
-                async with budget_timeout:
-                    if allowance is None:
-                        response = await provider.chat(session.messages, tools=tool_specs)
-                    else:
-                        response = await provider.chat(
-                            session.messages, tools=tool_specs, max_tokens=allowance
+            )
+        try:
+            if deadline is None:
+                if allowance is None:
+                    response = await provider.chat(session.messages, tools=tool_specs)
+                else:
+                    response = await provider.chat(
+                        session.messages, tools=tool_specs, max_tokens=allowance
+                    )
+            else:
+                budget_timeout = asyncio.timeout_at(deadline)
+                try:
+                    async with budget_timeout:
+                        if allowance is None:
+                            response = await provider.chat(session.messages, tools=tool_specs)
+                        else:
+                            response = await provider.chat(
+                                session.messages, tools=tool_specs, max_tokens=allowance
+                            )
+                except TimeoutError:
+                    if not budget_timeout.expired():
+                        raise
+                    if trace is not None:
+                        trace.append(
+                            RequestFailureTrace(iteration=iteration, exception_type="TimeoutError")
                         )
-            except TimeoutError:
-                if not budget_timeout.expired():
-                    raise
-                budget.mark_unknown()
-                final_answer = "(turn stopped before task completion)"
-                completion_status = "budget_exhausted"
-                completion_reason = wall_limit_reason
-                break
+                    budget.mark_unknown()
+                    final_answer = "(turn stopped before task completion)"
+                    completion_status = "budget_exhausted"
+                    completion_reason = wall_limit_reason
+                    break
+        except (Exception, asyncio.CancelledError) as exc:
+            if trace is not None:
+                trace.append(
+                    RequestFailureTrace(
+                        iteration=iteration,
+                        exception_type=type(exc).__name__,
+                    )
+                )
+            raise
+        if trace is not None:
+            trace.append(
+                ResponseTrace(
+                    iteration=iteration,
+                    content=response.content,
+                    tool_calls=[call.model_copy(deep=True) for call in response.tool_calls],
+                    finish_reason=response.finish_reason,
+                    usage=response.usage.model_copy(deep=True),
+                    model=response.model,
+                    latency_ms=response.latency_ms,
+                )
+            )
         budget.record(response.usage, sent_count)
         if deadline is not None and asyncio.get_running_loop().time() >= deadline:
             final_answer = "(turn stopped before task completion)"
@@ -225,7 +268,16 @@ async def run_turn(
                             "provide a non-empty answer with the observed result and any "
                             "unresolved problems."
                         ) + (f" {guidance}" if guidance else "")
-                    session.messages.append(ChatMessage(role="user", content=guidance))
+                    recovery_message = ChatMessage(role="user", content=guidance)
+                    session.messages.append(recovery_message)
+                    if trace is not None:
+                        trace.append(
+                            MessageTrace(
+                                kind="recovery",
+                                iteration=iteration,
+                                message=recovery_message.model_copy(deep=True),
+                            )
+                        )
                     completion_retries += 1
                     continue
                 completion_status = "incomplete"
@@ -309,14 +361,21 @@ async def run_turn(
                         result_snippet=_encode_tool_result(payload)[:RESULT_SNIPPET_LIMIT],
                     )
                 )
-            session.messages.append(
-                ChatMessage(
-                    role="tool",
-                    content=_encode_tool_result(payload),
-                    tool_call_id=tc.id,
-                    tool_name=tc.name,
-                )
+            tool_message = ChatMessage(
+                role="tool",
+                content=_encode_tool_result(payload),
+                tool_call_id=tc.id,
+                tool_name=tc.name,
             )
+            session.messages.append(tool_message)
+            if trace is not None:
+                trace.append(
+                    MessageTrace(
+                        kind="tool_result",
+                        iteration=iteration,
+                        message=tool_message.model_copy(deep=True),
+                    )
+                )
         if stop_reason is not None:
             final_answer = "(tool execution stopped before task completion)"
             completion_status = stop_status
