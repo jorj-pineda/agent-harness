@@ -839,3 +839,110 @@ escalation decisions with `scripted-contract` labels; these validate mechanics,
 not model quality. All 30 recorded configs, schemas, and fixture hashes were
 audited against the prior report; initial fixtures fail and reference solutions
 pass under external acceptance checks.
+
+## 2026-10-08 — Normalized turn-trace instrumentation smoke
+
+The shared runtime now accepts an optional trace collector; real-task reports
+always supply one. `trace_format: normalized-turn-v1` adds `turn_trace` without
+removing the existing tool trace or altering the application response contract.
+It captures each normalized provider response before finish-reason and budget
+handling, including blank replies and tool-call batches; exact recovery and tool
+messages carry iteration and call IDs. Request boundaries record the requested
+output allowance and estimated prompt tokens alongside each response's reported
+usage. Initial messages are copied once, so subsequent request transcripts can
+be reconstructed without duplicating full history every iteration. Provider
+failures retain only exception class. No raw provider payload/headers or exception
+text is stored. See `real_tasks/README.md` for format and reconstruction rules.
+
+This changes evidence collection only, with no new prompts, schemas, permission,
+or recovery allowance. It is not another five-task quality comparison. Four
+**real-tool instrumentation smoke attempts** exercised `divide_zero` and
+`parse_flags` in both prompt modes once, using disposable fixture copies and
+immutable external acceptance. Initial fixtures failed and reference solutions
+passed before inference. This is distinct from live-model simulated-tool smoke
+and scripted contracts.
+
+| Field | Value |
+|---|---|
+| Implementation revision | `7e2a5f3` |
+| Report revision status | Dirty: only `evals/real_tasks/README.md` was edited during inference; implementation/tests were committed and unchanged |
+| Local model | `gemma4:12b` Q4_K_M, ID `4eb23ef187e2`, Ollama 0.33.2, Apple M1 Pro, 16 GB |
+| Settings | Thinking off, server confirmed context 4,096, temperature 0; whole-file tools and configured `python3 -m pytest test_visible.py` |
+| Budgets | Eight iterations, 24 tool attempts, one completion retry, 600 s wall dispatch deadline, 300 s request timeout; token gates, required planning, and required verification disabled |
+| Comparability audit | All four runtime configurations, tool schemas, prompt versions, and fixture hashes match their cells in the #39 report |
+| Raw report | `results/2026-10-08-gemma4-12b-turn-traces-smoke.json` |
+
+| Task/mode | External acceptance | Turn status | Verification | Requests | Blank replies without calls | Injected recovery | Latency |
+|---|---|---|---|---|---|---|---|
+| divide_zero / harness | passed | budget exhausted (iteration limit) | passed | 8 | 0 | 0 | 56 s |
+| divide_zero / minimal | passed | completed | passed | 8 | 1 | 1 | 44 s |
+| parse_flags / harness | passed | completed | passed | 7 | 1 | 1 | 66 s |
+| parse_flags / minimal | failed | incomplete | not run | 4 | 2 | 1 | 35 s |
+
+All 27 requests have matching normalized responses; all 21 requested tool IDs
+match the 21 ordered tool-result messages and legacy tool records, including the
+last harness division batch before the iteration limit. Four blank no-call
+responses are now directly observable. Minimal division and harness flags each
+have one injected recovery followed by a non-empty completed reply; minimal flags
+has a second blank reply after its single recovery and returns the explicit
+incomplete runtime fallback. Three final artifacts passed acceptance, including
+one turn with an incomplete status. These counts describe this smoke run, not
+reconstructed counts for historical reports or evidence of a quality gain.
+
+Estimates remain labeled estimates and differ from reported usage (for example,
+harness division's first request estimated 2,677 prompt tokens, reported 1,614).
+Tracing adds copying/serialization overhead. It retains full normalized content
+in memory under existing turn limits, without a separate trace byte budget or
+redaction of model-visible content. Reports still checkpoint after each attempt;
+a process crash can lose the current attempt. Hidden reasoning, transport bytes,
+and durable application sessions are not captured. The evaluation-owned model
+was unloaded and server stopped afterward; no paid calls were made.
+
+Reproduce the instrumentation smoke with the prior report's non-secret settings:
+
+```sh
+uv run python - <<'PY'
+import asyncio
+import json
+from datetime import UTC, datetime
+from pathlib import Path
+from evals.real_run import load_tasks, validate_task, run_task, write_report
+from harness.config import Settings
+from harness.providers import build_configured_provider
+
+config = json.loads(Path(
+    "evals/results/2026-10-07-gemma4-12b-argv-feedback-ctx4k.json"
+).read_text())["results"][0]["runtime_config"]
+config.pop("tool_specs")
+settings = Settings(_env_file=None, ollama_model="gemma4:12b", **config)
+
+async def main():
+    tasks = [t for t in load_tasks() if t.id in ("divide_zero", "parse_flags")]
+    for task in tasks:
+        await validate_task(task)
+    provider = build_configured_provider("ollama", settings)
+    started = datetime.now(UTC).isoformat(timespec="seconds")
+    results = []
+    try:
+        for task in tasks:
+            for mode in ("harness", "minimal"):
+                results.append(await run_task(
+                    task, provider=provider, settings=settings, mode=mode
+                ))
+                write_report(Path("/tmp/agent-harness-turn-traces-smoke.json"), started, results)
+    finally:
+        await provider.aclose()
+
+asyncio.run(main())
+PY
+```
+
+Validation: 82 focused tests and 516 offline tests passed (five live deselected);
+Ruff and mypy passed. Contracts reconstruct provider requests, verify deep-copy
+isolation and exclusion of raw payloads/exception text, retain rejected final
+batches and truncated calls, cover request timeout/cancellation, and compare
+traced versus untraced prompts/output allowances/outcomes. Both scripted matrices
+passed 90/90 escalation decisions with their `scripted-contract` labels and metric
+limitations inspected. These tests establish mechanics, not model capability.
+Further bounded/failed-check recovery, context management, and personal-use
+persistence/cancellation/reviewable diffs remain open.
