@@ -176,13 +176,21 @@ The harness does not need to make every model good at every task. It needs to id
   decimal artifacts still passed visible checks and failed independent empty-input
   acceptance. Exact-edit errors disappeared without an aggregate gain; `full`
   remains the default. See `evals/BASELINES.md` for results and limitations.
+- **2026-10-07 — Configured-check guidance comparison recorded:** exercised the
+  existing shared project-check setting with the whole-file toolset held fixed;
+  required verification remained disabled. Thirty matching local attempts yielded
+  harness 9/15 and minimal 3/15 accepted, versus 9/15 and 8/15. Passing configured
+  checks occurred in 11 harness and seven minimal attempts, but minimal mode
+  repeatedly supplied string argv and stopped before editing five fixtures.
+  All six decimal artifacts still failed acceptance. No default or runtime
+  implementation changed; see `evals/BASELINES.md` for results and limitations.
 - **Next:** item 6's listed mechanics are in place; see the known limitations
   below before relying on them unattended. Item 7 has a repeated baseline and
-  five completed comparisons; the smaller-toolset experiment did not establish
-  a reliable gain. Verification guidance and bounded targeted recovery remain
-  candidates supported by observed failures. Model profiles, context management,
-  and item 8's personal-use workflow remain open. Offline checks alone are not
-  evidence of better model coding performance.
+  six completed comparisons; neither tool reduction nor configured-check guidance
+  established an acceptance gain. Targeted command-argument feedback and bounded
+  failed-check recovery remain candidates supported by observed failures. Model
+  profiles, context management, and item 8's personal-use workflow remain open.
+  Offline checks alone are not evidence of better model coding performance.
 
 ### Review baseline
 
