@@ -573,3 +573,140 @@ Validation: 500 offline tests passed (five live tests deselected); Ruff and mypy
 passed. Both scripted scenario matrices passed 90/90 escalation decisions and
 retained `scripted-contract` labels. Those validate harness contracts, not model
 coding quality.
+
+
+## 2026-10-07 — `gemma4:12b`, configured-check guidance, thinking off, context 4,096
+
+This results-only experiment exercises the existing shared `PROJECT_CHECK_ARGV`
+setting before adding recovery code. The only recorded configuration change from
+the whole-file comparison is `None` →
+`["python3", "-m", "pytest", "test_visible.py"]`. The shared runtime appends its
+existing one-sentence command guidance to both prompt modes and recognizes only
+that exact submitted argv as relevant verification. Required verification stays
+**disabled**, so this does not test enforcement or its completion-retry behavior.
+The fixture's visible check is supplied explicitly; no project detection or
+independent acceptance requirements are exposed to the model.
+
+The observed motivation was 12 rejected direct-Python calls, eight invalid
+multiline argv calls, and passing checks only in six incorrect decimal attempts
+in the preceding run. Keep `whole_file` fixed for this comparison to isolate
+configured guidance from the prior tool reduction. This does not promote that
+experimental toolset or change the application's `full` default.
+
+| Field | Value |
+|---|---|
+| Harness revision | `4371e7b` (clean, merged #37); runtime matches the prior experiment's implementation |
+| Model/server/hardware | Same local `gemma4:12b` Q4_K_M, Ollama 0.33.2, Apple M1 Pro, 16 GB |
+| Settings | Thinking off; server confirmed context 4,096; temperature 0.0; whole-file toolset |
+| Comparison | Budgets, fixture hashes, exposed schemas, and all recorded settings except `project_check_argv` match the preceding comparison |
+| Budgets | Eight iterations, 24 tool attempts, one completion retry, 600 s wall dispatch deadline, 300 s request timeout; token gates, required planning, and required verification disabled |
+| Attempts | 5 tasks × 2 modes × 3 repeats = 30; all included, alternating mode order |
+| Raw report | `results/2026-10-07-gemma4-12b-project-check-ctx4k.json` |
+
+Base prompt versions remain `coding-v2-whole-file-v1` and `minimal-v1`;
+`project_check_argv` records the additional shared system-message block. These
+version labels alone do not imply identical final system messages.
+
+The comparison loaded prior non-secret settings into isolated settings:
+
+```sh
+uv run python - <<'PY'
+import json
+from evals import real_run
+from harness.config import Settings
+
+with open("evals/results/2026-10-07-gemma4-12b-whole-file-ctx4k.json") as f:
+    config = json.load(f)["results"][0]["runtime_config"]
+config.pop("tool_specs")  # Report evidence, not a setting.
+config["project_check_argv"] = ["python3", "-m", "pytest", "test_visible.py"]
+settings = Settings(_env_file=None, ollama_model="gemma4:12b", **config)
+real_run.get_settings = lambda: settings
+real_run.main([
+    "--provider", "ollama", "--mode", "both", "--repeats", "3",
+    "--report", "/tmp/agent-harness-project-check.json",
+])
+PY
+```
+
+For ordinary application use, set `PROJECT_CHECK_ARGV` to an explicit command
+appropriate to the repository. `test_visible.py` is specific to these fixtures.
+The application and real evaluator already share this guidance path.
+
+| Task | harness (unguided → guided) | minimal (unguided → guided) |
+|---|---|---|
+| decimal_total | 0/3 → 0/3 | 0/3 → 0/3 |
+| divide_zero | 3/3 → 3/3 | 3/3 → 3/3 |
+| parse_flags | 3/3 → 3/3 | 0/3 → 0/3 |
+| slugify | 0/3 → 0/3 | 2/3 → 0/3 |
+| stable_dedupe | 3/3 → 3/3 | 3/3 → 0/3 |
+| **total** | **9/15 → 9/15** | **8/15 → 3/15** |
+
+| Measure | harness | minimal |
+|---|---|---|
+| Runtime statuses | 6 completed, 8 budget exhausted, 1 incomplete | 4 completed, 3 budget exhausted, 5 blocked, 3 incomplete |
+| Terminations | 6 accepted, 8 iteration limit, 1 incomplete | 3 accepted, 1 acceptance failed, 3 iteration limit, 5 blocked, 3 incomplete |
+| Completed status with failed acceptance | 0 (previously 4) | 1 (previously 4) |
+| Attempts with a passing configured check | 11/15 (previously 3/15 with any passing check) | 7/15 (previously 3/15 with any passing check) |
+| Final verification statuses | 9 passed, 4 stale, 1 failed, 1 not run | 6 passed, 1 stale, 8 not run |
+| Accepted artifacts with incomplete turns | 3 (previously 5) | 0 (unchanged) |
+| Median latency | 59 s (previously 61 s) | 43 s (previously 46 s) |
+| Median tool-call records | 7 (unchanged) | 6 (previously 4) |
+| Median reported tokens | 16,880 (previously 15,684) | 13,701 (previously 8,203) |
+
+### Observations and decision
+
+- **Valid checks became more common:** 25 command calls executed, all with the
+  configured argv (18 harness, seven minimal). Direct `python3 -c` and multiline
+  argv rejections disappeared. Harness dedupe and flags all finished cleanly with
+  passing checks; all three harness division artifacts passed but still reached
+  the iteration limit despite passing checks.
+- **Minimal mode introduced a different interface failure:** all three dedupe
+  turns and slug repeats 2/3 repeatedly supplied `argv` as a JSON string instead
+  of a list, hitting the existing repeated-call gate before any edit. Some also
+  guessed `test_dedupe.py` or `test_slug.py` rather than the supplied filename.
+  Those five unchanged fixtures failed acceptance. Across both modes there were
+  16 argument-validation errors, five repeated-call rejections, and three command
+  names containing Markdown punctuation rejected by the allowlist. These are
+  recorded errors, not automatic argument repair or executed commands.
+- **Checks still missed or failed to repair defects:** minimal slug repeat 1
+  passed the visible check, declared completion, and failed independent underscore
+  acceptance. Harness slug repeat 1 added an underscore test, ran it, and ended
+  with a failed check without repairing the defect. Repeat 2 added an underscore
+  test after its last check and did not rerun it, making verification stale.
+  Harness repeat 3 exhausted blank recovery after an incorrect edit without a
+  check. The added test cases are model choices, not authoritative acceptance.
+- **Decimal correctness stayed unresolved:** all six artifacts failed acceptance
+  and all six turns reached the iteration limit. Four failed on empty input;
+  harness repeats 2/3 changed quantization to `Decimal("1.00")` and failed half-up
+  rounding on `1.005` before reaching the empty-input case. Three harness turns
+  and minimal repeat 2 had stale final verification. Lower completed/failed counts
+  therefore do not establish safer or more correct patches.
+- **Blank completion remains bounded:** all three minimal flags turns left the
+  fixture unchanged after reads and returned incomplete. No blank final answer
+  received completed status in the full run.
+
+Configured guidance increased successful check invocation but did **not** improve
+artifact acceptance: harness stayed flat and minimal declined by five. It also
+coincided with more incomplete turns (20/30 versus 10/30), so the drop in the
+report's `false_completion` proxy from eight to one is not a correctness gain.
+This small historical comparison, fresh disposable paths, and variation at
+temperature 0 limit causal attribution. Latency differences are descriptive.
+It does not measure the `full` toolset, required-verification enforcement,
+other repositories, or other models. Terminal answers and tool traces still do
+not include every model response or injected recovery message.
+
+Keep the existing explicit project-check setting available for repository-specific
+use; change no default, tool permission, runtime prompt template, or enforcement
+policy on the strength of this run. Targeted feedback for malformed command
+arguments and bounded recovery after failed checks are supported candidates for
+a future focused slice. Personal-use persistence, cancellation, and diffs remain
+open. The evaluation-owned model was unloaded and server stopped afterward.
+
+Validation: the runner validated initial fixtures fail and reference solutions
+pass before inference; all 30 result settings/schemas/fixture hashes were audited
+against the prior report. Twelve focused configuration/verification tests passed.
+Both scripted scenario matrices passed 90/90 escalation decisions and retained
+`scripted-contract` labels, which validate harness mechanics, not model quality.
+No implementation or evaluation-runner behavior changed, so the full offline
+gate was not rerun for this documentation/results-only PR. The preceding
+implementation's 500-test/Ruff/mypy gate remains historical evidence.
