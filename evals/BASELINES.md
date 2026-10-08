@@ -710,3 +710,132 @@ Both scripted scenario matrices passed 90/90 escalation decisions and retained
 No implementation or evaluation-runner behavior changed, so the full offline
 gate was not rerun for this documentation/results-only PR. The preceding
 implementation's 500-test/Ruff/mypy gate remains historical evidence.
+
+
+## 2026-10-07 — `gemma4:12b`, string-argv feedback, thinking off, context 4,096
+
+`RunCommandInput` now rejects a string-valued `argv` with targeted feedback:
+resend a JSON array of separate strings rather than a quoted array or shell
+command, with an executable/module example, and use the configured project's
+exact check tokens when supplied. The Pydantic error is returned through the
+existing registry/loop path. It does not parse JSON strings, split shell text,
+rewrite arguments, or dispatch invalid input. Valid arrays, schemas, tool
+permissions, system prompts, and all budgets remain unchanged. Corrections must
+come from the model within the existing iteration/tool/repeated-call gates.
+
+The preceding guided run had 16 string-argv validation errors and five blocked
+turns before edits. This experiment changes only that error feedback. It leaves
+whole-file editing and explicit fixture-check guidance enabled for comparability;
+it does not establish either as an application default or test required
+verification enforcement.
+
+| Field | Value |
+|---|---|
+| Harness revision | `58b95f6` (clean) |
+| Model/server/hardware | Same local `gemma4:12b` Q4_K_M, Ollama 0.33.2, Apple M1 Pro, 16 GB |
+| Settings | Thinking off; server confirmed context 4,096; temperature 0.0; whole-file toolset; configured `python3 -m pytest test_visible.py` |
+| Comparison | All recorded runtime settings, exposed schemas, fixture hashes, and base prompts match the configured-check comparison |
+| Budgets | Eight iterations, 24 tool attempts, one completion retry, 600 s wall dispatch deadline, 300 s request timeout; token gates, required planning, and required verification disabled |
+| Attempts | 5 tasks × 2 modes × 3 repeats = 30; all included, alternating mode order |
+| Raw report | `results/2026-10-07-gemma4-12b-argv-feedback-ctx4k.json` |
+
+Reproduce with prior non-secret settings and a unique report path:
+
+```sh
+uv run python - <<'PY'
+import json
+from evals import real_run
+from harness.config import Settings
+
+with open("evals/results/2026-10-07-gemma4-12b-project-check-ctx4k.json") as f:
+    config = json.load(f)["results"][0]["runtime_config"]
+config.pop("tool_specs")
+settings = Settings(_env_file=None, ollama_model="gemma4:12b", **config)
+real_run.get_settings = lambda: settings
+real_run.main([
+    "--provider", "ollama", "--mode", "both", "--repeats", "3",
+    "--report", "/tmp/agent-harness-argv-feedback.json",
+])
+PY
+```
+
+| Task | harness (old errors → targeted feedback) | minimal (old errors → targeted feedback) |
+|---|---|---|
+| decimal_total | 0/3 → 0/3 | 0/3 → 0/3 |
+| divide_zero | 3/3 → 3/3 | 3/3 → 3/3 |
+| parse_flags | 3/3 → 3/3 | 0/3 → 0/3 |
+| slugify | 0/3 → 0/3 | 0/3 → 0/3 |
+| stable_dedupe | 3/3 → 3/3 | 0/3 → 2/3 |
+| **total** | **9/15 → 9/15** | **3/15 → 5/15** |
+
+| Measure | harness | minimal |
+|---|---|---|
+| Runtime statuses | 7 completed, 7 budget exhausted, 1 incomplete | 1 completed, 7 budget exhausted, 4 blocked, 3 incomplete |
+| Terminations | 7 accepted, 7 iteration limit, 1 incomplete | 1 accepted, 7 iteration limit, 4 blocked, 3 incomplete |
+| Completed status with failed acceptance | 0 (unchanged) | 0 (previously 1) |
+| Attempts with a passing configured check | 13/15 (previously 11/15) | 7/15 (unchanged) |
+| Final verification statuses | 11 passed, 2 stale, 1 failed, 1 not run | 5 passed, 2 stale, 8 not run |
+| Accepted artifacts with incomplete turns | 2 (previously 3) | 4 (previously 0) |
+| Median latency | 59 s (unchanged rounded) | 44 s (previously 43 s) |
+| Median tool-call records | 7 (unchanged) | 7 (previously 6) |
+| Median reported tokens | 16,859 (previously 16,880) | 14,957 (previously 13,701) |
+
+### Observations and limitations
+
+- **Later valid argv was observed:** 11 attempts contained string arguments;
+  six later dispatched a valid array: all three minimal division attempts,
+  minimal dedupe repeat 2, and harness decimal repeats 2/3. Some sequences first
+  changed shell-command text into a still-invalid quoted JSON array. Harness
+  decimal repeat 2 corrected the invocation, ran the initially failing fixture
+  check, then edited without rerunning, ending with stale verification. A valid
+  call is not equivalent to a passing check or a correct patch.
+- **Errors did not decline:** 23 string-argv validation errors were recorded,
+  versus 16 previously; all received the new instruction. Four repeated-call
+  blocks occurred versus five, with three malformed executable-name rejections
+  unchanged in count. All three minimal slug turns and minimal dedupe repeat 1
+  were blocked and left fixtures unchanged. Minimal dedupe repeat 3 produced a
+  correct artifact but never corrected its command arguments before the iteration
+  limit. The feedback does not reliably break this failure loop.
+- **The two new accepted dedupe artifacts were fixed before feedback:** repeats
+  2/3 inspected the visible test and edited before their first string-argv error.
+  In the prior report both stopped on malformed commands before editing. Their
+  acceptance difference therefore cannot be attributed solely to the changed
+  feedback. Repeat 2 subsequently used a valid array and finished cleanly;
+  repeat 3 ended incomplete with no check. Minimal division also diverged before
+  feedback, adding a visible-test read; all three artifacts passed, but the
+  additional failed command attempts exhausted iterations where prior turns
+  completed cleanly.
+- **Correctness failures remain:** all six decimal artifacts failed independent
+  empty-input acceptance and reached the iteration limit. Four final verification
+  states were passed and two stale. All three harness slug artifacts still
+  deleted underscores before separator conversion; two added visible tests but
+  did not repair the defect. Minimal flags left all three fixtures unchanged and
+  exhausted blank recovery. No blank final answer received completed status.
+
+Harness acceptance stayed flat and minimal rose by two, with observed corrections
+but more string-argument errors. These small historical comparisons on five
+fixtures do **not** establish a reliable coding-quality gain. Fresh workspace
+paths and observed decisions diverging before the changed feedback limit causal
+attribution. The raw report records terminal answers and tool-call order, not
+every model response or tool-batch boundary; later valid calls are observed
+sequences, not proof that the hint caused them. Latency/token differences are
+descriptive. Zero `false_completion` records reflect terminal status: 22/30
+turns were incomplete versus 20/30 previously, and 16 artifacts still failed
+acceptance. They do not prove correctness of all work or safer completion.
+
+Retain the accurate diagnostic as basic tool usability, without claiming a
+model-quality improvement or increasing execution permissions/retry budgets.
+Failed-check recovery, complete response traces, and personal-use persistence,
+cancellation, and diffs remain open. Any further recovery strategy needs a
+separate bounded implementation and measurement; this run does not justify a
+larger prompt, model judge, extra model, or premium supervisor. The evaluation-owned
+model was unloaded and server stopped afterward.
+
+Validation: 93 focused tests and 506 offline tests passed (five live tests
+deselected); Ruff and mypy passed. New regressions prove string arguments do not
+dispatch processes, valid list retries execute unchanged, and existing repeated-call
+and tool-call limits still stop recovery. Both scripted matrices passed 90/90
+escalation decisions with `scripted-contract` labels; these validate mechanics,
+not model quality. All 30 recorded configs, schemas, and fixture hashes were
+audited against the prior report; initial fixtures fail and reference solutions
+pass under external acceptance checks.
