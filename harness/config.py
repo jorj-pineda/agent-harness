@@ -4,12 +4,15 @@ from __future__ import annotations
 
 from functools import lru_cache
 from pathlib import Path
+from typing import Literal
 from urllib.parse import urlsplit
 
 from pydantic import Field, ValidationInfo, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from .outcome import is_verification_command
+
+CodingToolset = Literal["full", "whole_file"]
 
 
 class Settings(BaseSettings):
@@ -126,6 +129,10 @@ class Settings(BaseSettings):
     confidence_escalation_threshold: float = Field(default=0.55, ge=0.0, le=1.0)
 
     # Coding agent (Phase 4+)
+    coding_toolset: CodingToolset = Field(
+        default="full",
+        description="whole_file omits replace_text; all other tools remain unchanged.",
+    )
     require_verification_before_finish: bool = Field(
         default=False,
         description="Require the configured check after file-tool edits before completion.",

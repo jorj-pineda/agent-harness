@@ -13,6 +13,7 @@ from harness.state import Session, TurnResponse
 from memory import FactStore
 from providers.base import ToolCall
 from tests.api.conftest import ScriptedProvider, make_response
+from tools import ToolError
 
 
 def test_project_check_settings_accept_json_env_and_reject_non_checks(
@@ -277,3 +278,34 @@ async def test_runtime_bounds_blank_final_recovery(tmp_path: Path) -> None:
     assert response.completion_status == "incomplete"
     assert "empty final answer" in (response.completion_reason or "")
     assert response.answer.strip()
+
+
+def test_toolset_setting_validates_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("CODING_TOOLSET", "whole_file")
+    assert Settings(_env_file=None).coding_toolset == "whole_file"
+    monkeypatch.setenv("CODING_TOOLSET", "unknown")
+    with pytest.raises(ValidationError):
+        Settings(_env_file=None)
+
+
+async def test_whole_file_toolset_rejects_exact_edits_and_preserves_other_specs(
+    tmp_path: Path,
+) -> None:
+    target = tmp_path / "a.py"
+    target.write_text("original\n", encoding="utf-8")
+    with FactStore(tmp_path / "memory.db") as store:
+        full = build_registry(fact_store=store, user_id="dev", workspace_root=str(tmp_path))
+        reduced = build_registry(
+            fact_store=store,
+            user_id="dev",
+            workspace_root=str(tmp_path),
+            coding_toolset="whole_file",
+        )
+        assert reduced.as_tool_specs() == [
+            spec for spec in full.as_tool_specs() if spec.name != "replace_text"
+        ]
+        with pytest.raises(ToolError, match="Unknown tool"):
+            await reduced.invoke("replace_text", {"path": "a.py"})
+        assert target.read_text(encoding="utf-8") == "original\n"
+        await reduced.invoke("write_file", {"path": "a.py", "content": "changed\n"})
+        assert target.read_text(encoding="utf-8") == "changed\n"

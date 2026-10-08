@@ -121,9 +121,10 @@ async def test_editing_visible_test_does_not_change_acceptance() -> None:
     assert result.modified == ("test_visible.py",)
 
 
-async def test_minimal_baseline_uses_same_tools_and_budget() -> None:
+@pytest.mark.parametrize("toolset", ["full", "whole_file"])
+async def test_minimal_baseline_uses_same_tools_and_budget(toolset: str) -> None:
     task = load_tasks()[0]
-    settings = Settings(_env_file=None, max_tool_iterations=3)
+    settings = Settings(_env_file=None, max_tool_iterations=3, coding_toolset=toolset)
     harness_provider = ScriptedProvider()
     minimal_provider = ScriptedProvider()
     harness_provider.script(make_response(content="not fixed"))
@@ -135,6 +136,15 @@ async def test_minimal_baseline_uses_same_tools_and_budget() -> None:
     assert harness.runtime_config == minimal.runtime_config
     assert harness_provider.calls[0][1] == minimal_provider.calls[0][1]
     assert harness_provider.calls[0][0][0].content != minimal_provider.calls[0][0][0].content
+    specs = harness_provider.calls[0][1] or []
+    assert harness.runtime_config["coding_toolset"] == toolset
+    assert harness.runtime_config["tool_specs"] == [s.model_dump(mode="json") for s in specs]
+    assert ("replace_text" in {s.name for s in specs}) == (toolset == "full")
+    if toolset == "whole_file":
+        assert "replace_text" not in harness_provider.calls[0][0][0].content
+        assert "write_file" in harness_provider.calls[0][0][0].content
+        assert harness.prompt_version == "coding-v2-whole-file-v1"
+        assert minimal.prompt_version == "minimal-v1"
 
 
 async def test_tool_budget_termination_is_separate_from_acceptance() -> None:

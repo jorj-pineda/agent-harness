@@ -31,10 +31,10 @@ from evals.scorers import (
     patch_correctness,
     verification_score,
 )
-from harness.config import Settings, get_settings
+from harness.config import CodingToolset, Settings, get_settings
 from harness.grounding import Grounder
 from harness.loop import run_turn
-from harness.prompts import PROMPT_VERSION
+from harness.prompts import coding_prompt_version
 from harness.runtime import build_registry, run_configured_turn
 from harness.state import Session
 from memory import FactStore
@@ -172,7 +172,12 @@ def _build_eval_registry(
 
 
 def _build_live_simulated_registry(
-    scenario: dict[str, Any], *, store: FactStore, user_id: str, workspace_root: str
+    scenario: dict[str, Any],
+    *,
+    store: FactStore,
+    user_id: str,
+    workspace_root: str,
+    coding_toolset: CodingToolset = "full",
 ) -> ToolRegistry:
     """Expose production coding specs without executing any repository tool.
 
@@ -200,6 +205,7 @@ def _build_live_simulated_registry(
         workspace_root=workspace_root,
         support_tools=support_tools,
         code_tool_transform=simulate,
+        coding_toolset=coding_toolset,
     )
 
 
@@ -336,7 +342,11 @@ async def _run_one(
             # Never use DEFAULT_WORKSPACE_ROOT: this mode only simulates tools.
             workspace_root = str(db_path.parent.resolve())
             registry = _build_live_simulated_registry(
-                scenario, store=store, user_id=user_id, workspace_root=workspace_root
+                scenario,
+                store=store,
+                user_id=user_id,
+                workspace_root=workspace_root,
+                coding_toolset=settings.coding_toolset,
             )
             response = await run_configured_turn(
                 settings=settings,
@@ -379,8 +389,11 @@ async def _run_one(
         confidence=response.confidence,
         latency_ms=response.latency_ms,
         evaluation_mode=LIVE_SIMULATED_MODE if live else SCRIPTED_MODE,
-        prompt_version=PROMPT_VERSION if live else None,
+        prompt_version=coding_prompt_version(settings.coding_toolset)
+        if live and settings
+        else None,
         runtime_config={
+            "coding_toolset": settings.coding_toolset,
             "max_tool_iterations": settings.max_tool_iterations,
             "max_tool_calls_per_turn": settings.max_tool_calls_per_turn,
             "max_turn_wall_seconds": settings.max_turn_wall_seconds,
@@ -485,7 +498,8 @@ def render_report(
             "This is not a real coding benchmark. Historical scripted gold escalation labels "
             "may differ from application policy decisions."
         )
-        lines.append(f"Prompt version: `{PROMPT_VERSION}`.")
+        if results:
+            lines.append(f"Prompt version: `{results[0].prompt_version}`.")
         if results:
             lines.append(f"Runtime settings (non-secret): `{results[0].runtime_config}`.")
     else:

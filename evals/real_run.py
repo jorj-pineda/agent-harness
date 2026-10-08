@@ -26,7 +26,7 @@ import yaml
 
 from harness.config import Settings, get_settings
 from harness.loop import MAX_ITERATIONS_STUB
-from harness.prompts import BASE_SYSTEM_PROMPT, PROMPT_VERSION
+from harness.prompts import coding_prompt_version
 from harness.providers import (
     build_configured_provider,
     configured_model,
@@ -231,6 +231,7 @@ async def run_task(
                     fact_store=store,
                     user_id="eval",
                     workspace_root=str(copy.workspace.root),
+                    coding_toolset=settings.coding_toolset,
                     command_env={"PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1"},
                 )
                 answer = ""
@@ -248,7 +249,7 @@ async def run_task(
                         provider=observed,
                         fact_store=store,
                         registry=registry,
-                        system_prompt=MINIMAL_PROMPT if mode == "minimal" else BASE_SYSTEM_PROMPT,
+                        system_prompt=MINIMAL_PROMPT if mode == "minimal" else None,
                     )
                     answer = response.answer
                     completion_status = response.completion_status
@@ -286,7 +287,11 @@ async def run_task(
                 else observed.model
             ),
             endpoint=provider_endpoint(provider.name, settings),
-            prompt_version="minimal-v1" if mode == "minimal" else PROMPT_VERSION,
+            prompt_version=(
+                "minimal-v1"
+                if mode == "minimal"
+                else coding_prompt_version(settings.coding_toolset)
+            ),
             source_revision=_source_revision(copy),
             passed=acceptance.exit_code == 0,
             termination=termination,
@@ -305,6 +310,8 @@ async def run_task(
             latency_ms=latency_ms,
             tool_trace=[call.model_dump(mode="json") for call in trace],
             runtime_config={
+                "coding_toolset": settings.coding_toolset,
+                "tool_specs": [spec.model_dump(mode="json") for spec in registry.as_tool_specs()],
                 "max_tool_iterations": settings.max_tool_iterations,
                 "max_tool_calls_per_turn": settings.max_tool_calls_per_turn,
                 "max_turn_wall_seconds": settings.max_turn_wall_seconds,
