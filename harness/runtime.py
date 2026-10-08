@@ -28,6 +28,7 @@ from .policy import is_out_of_scope_request
 from .prompts import BASE_SYSTEM_PROMPT, coding_prompt
 from .state import Session, TurnResponse, WorkspaceChangeReport
 from .stream import EventCallback
+from .trace import TurnTraceRecord
 
 
 def build_registry(
@@ -108,6 +109,7 @@ async def run_configured_turn(
     grounder: Grounder | None = None,
     on_event: EventCallback | None = None,
     system_prompt: str | None = None,
+    trace: list[TurnTraceRecord] | None = None,
 ) -> TurnResponse:
     if is_out_of_scope_request(message):
         return out_of_scope_response()
@@ -147,6 +149,7 @@ async def run_configured_turn(
         max_completion_retries=settings.max_completion_retries,
         required_check=settings.project_check_argv,
         on_event=on_event,
+        trace=trace,
     )
     if tracked_root is not None and before is not None:
         response.workspace_changes = await _change_report(tracked_root, settings, before)

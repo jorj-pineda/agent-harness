@@ -1,6 +1,6 @@
 # Roadmap: a coding harness for lower-tier models
 
-Updated: 2026-10-07
+Updated: 2026-10-08
 
 ## Direction
 
@@ -193,11 +193,21 @@ The harness does not need to make every model good at every task. It needs to id
   before their first changed feedback, limiting causal attribution. Retain the
   accurate diagnostic as tool usability, not a demonstrated model-quality gain.
   See `evals/BASELINES.md` for results and limitations.
+- **2026-10-08 — Normalized response tracing prepared:** the shared loop now
+  supports opt-in request/response, recovery-message, and tool-result evidence
+  outside model context. Real-task reports collect it with tool-call IDs, batch
+  boundaries, finish reasons, per-request estimated/reported usage, and failures
+  by exception class. Four local real-tool instrumentation smoke attempts captured
+  two blank-final recoveries followed by non-empty completion and one exhausted
+  recovery. Three artifacts passed independent acceptance; one still hit the
+  iteration limit. This validates evidence capture, not improved coding quality.
+  Provider wire payloads/hidden reasoning, durable traces, and crash recovery
+  remain outside this slice. See `evals/real_tasks/README.md` and `evals/BASELINES.md`.
 - **Next:** item 6's listed mechanics are in place; see the known limitations
   below before relying on them unattended. Item 7 has a repeated baseline and
   seven completed comparisons. Argument feedback did not reliably break repeated
-  errors; further bounded recovery and complete response traces remain candidates
-  supported by observed failures. Failed-check recovery, model profiles, context
+  errors; normalized response traces now support inspecting subsequent recovery
+  experiments. Further bounded and failed-check recovery, model profiles, context
   management, and item 8's personal-use workflow remain open. Offline checks alone
   are not evidence of better model coding performance.
 

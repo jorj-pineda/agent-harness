@@ -17,7 +17,7 @@ import sys
 import tempfile
 import time
 from collections import Counter
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Literal
@@ -35,6 +35,7 @@ from harness.providers import (
 )
 from harness.runtime import build_registry, run_configured_turn
 from harness.state import Session, ToolCallRecord
+from harness.trace import TurnTraceRecord
 from memory import FactStore
 from providers.base import ChatMessage, ChatProvider, ProviderResponse, ToolSpec
 from tools.process import ProcessResult, run_process
@@ -84,6 +85,7 @@ class RealTaskResult:
     latency_ms: float
     tool_trace: list[dict[str, Any]]
     runtime_config: dict[str, Any]
+    turn_trace: list[dict[str, Any]] = field(default_factory=list)
 
 
 class ObservedProvider:
@@ -222,6 +224,7 @@ async def run_task(
     mode: Mode,
     attempt: int = 1,
 ) -> RealTaskResult:
+    turn_trace: list[TurnTraceRecord] = []
     observed = ObservedProvider(provider)
     with disposable_workspace(task.fixture) as copy:
         with tempfile.TemporaryDirectory(prefix="agent_harness_eval_memory_") as memory_dir:  # noqa: SIM117 — workspace must outlive memory for grading
@@ -250,6 +253,7 @@ async def run_task(
                         fact_store=store,
                         registry=registry,
                         system_prompt=MINIMAL_PROMPT if mode == "minimal" else None,
+                        trace=turn_trace,
                     )
                     answer = response.answer
                     completion_status = response.completion_status
@@ -309,6 +313,7 @@ async def run_task(
             completion_tokens=observed.completion_tokens,
             latency_ms=latency_ms,
             tool_trace=[call.model_dump(mode="json") for call in trace],
+            turn_trace=[record.model_dump(mode="json") for record in turn_trace],
             runtime_config={
                 "coding_toolset": settings.coding_toolset,
                 "tool_specs": [spec.model_dump(mode="json") for spec in registry.as_tool_specs()],
@@ -412,6 +417,7 @@ def write_report(path: Path, started: str, results: list[RealTaskResult]) -> Non
         json.dumps(
             {
                 "mode": "real-tools-trusted-fixtures",
+                "trace_format": "normalized-turn-v1",
                 "started_at": started,
                 "harness_revision": _harness_revision(),
                 "sampling": {"temperature": 0.0},
