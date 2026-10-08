@@ -317,6 +317,7 @@ async def _run_configured_turn(
         user_id=user_id,
         workspace_root=session.workspace_root,
         support_tools=support_registry,
+        coding_toolset=settings.coding_toolset,
     )
     return await run_configured_turn(
         settings=settings,

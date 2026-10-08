@@ -21,11 +21,11 @@ from tools.semantic import register_semantic_search_stub
 from workspace import SnapshotLimitError, Workspace, compare, snapshot
 from workspace.core import DEFAULT_IGNORE_GLOBS
 
-from .config import Settings
+from .config import CodingToolset, Settings
 from .grounding import Grounder
 from .loop import run_turn
 from .policy import is_out_of_scope_request
-from .prompts import BASE_SYSTEM_PROMPT
+from .prompts import BASE_SYSTEM_PROMPT, coding_prompt
 from .state import Session, TurnResponse, WorkspaceChangeReport
 from .stream import EventCallback
 
@@ -36,6 +36,7 @@ def build_registry(
     user_id: str,
     workspace_root: str | None,
     support_tools: Iterable[Tool] = (),
+    coding_toolset: CodingToolset = "full",
     code_tool_transform: Callable[[Tool], Tool] | None = None,
     command_env: Mapping[str, str] | None = None,
 ) -> ToolRegistry:
@@ -46,6 +47,8 @@ def build_registry(
     if workspace_root is not None:
         code_registry = ToolRegistry()
         for tool in build_code_tools(Workspace(root=Path(workspace_root)), command_env=command_env):
+            if coding_toolset == "whole_file" and tool.name == "replace_text":
+                continue
             code_registry.register(tool)
         register_semantic_search_stub(code_registry)
         for tool in code_registry:
@@ -104,7 +107,7 @@ async def run_configured_turn(
     registry: ToolRegistry,
     grounder: Grounder | None = None,
     on_event: EventCallback | None = None,
-    system_prompt: str = BASE_SYSTEM_PROMPT,
+    system_prompt: str | None = None,
 ) -> TurnResponse:
     if is_out_of_scope_request(message):
         return out_of_scope_response()
@@ -112,7 +115,9 @@ async def run_configured_turn(
         session,
         fact_store,
         user_id,
-        system_prompt=system_prompt,
+        system_prompt=system_prompt
+        if system_prompt is not None
+        else coding_prompt(settings.coding_toolset),
         project_check_argv=settings.project_check_argv,
     )
     tracked_root = (

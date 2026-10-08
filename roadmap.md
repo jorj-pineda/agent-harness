@@ -1,6 +1,6 @@
 # Roadmap: a coding harness for lower-tier models
 
-Updated: 2026-10-05
+Updated: 2026-10-07
 
 ## Direction
 
@@ -167,13 +167,22 @@ The harness does not need to make every model good at every task. It needs to id
   received completed status despite failed acceptance. This corrects completion
   bookkeeping, without establishing a coding-quality gain. See
   `evals/BASELINES.md` for raw results and limitations.
+- **2026-10-07 — Smaller-toolset comparison recorded:** an opt-in shared
+  `whole_file` setting removes only `replace_text` and adapts its one prompt
+  instruction. Reports record the toolset and exposed schemas. Thirty matching
+  local attempts yielded harness 9/15 and minimal 8/15 accepted, versus 10/15
+  and 8/15. Harness division improved from 1/3 to 3/3, but harness slug declined
+  from 3/3 to 0/3; minimal flags declined and minimal slug improved. All six
+  decimal artifacts still passed visible checks and failed independent empty-input
+  acceptance. Exact-edit errors disappeared without an aggregate gain; `full`
+  remains the default. See `evals/BASELINES.md` for results and limitations.
 - **Next:** item 6's listed mechanics are in place; see the known limitations
   below before relying on them unattended. Item 7 has a repeated baseline and
-  four completed comparisons. Address repeated edit mismatches with bounded
-  recovery; a smaller-toolset experiment is supported
-  by observed exact-edit failures. Verification recovery, model profiles, context
-  management, and item 8's personal-use workflow remain open. Offline checks
-  alone are not evidence of better model coding performance.
+  five completed comparisons; the smaller-toolset experiment did not establish
+  a reliable gain. Verification guidance and bounded targeted recovery remain
+  candidates supported by observed failures. Model profiles, context management,
+  and item 8's personal-use workflow remain open. Offline checks alone are not
+  evidence of better model coding performance.
 
 ### Review baseline
 

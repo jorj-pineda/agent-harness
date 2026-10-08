@@ -143,9 +143,7 @@ def test_chat_scope_gate_refuses_delete_all_tests(
     assert harness.provider.calls == []
 
 
-def test_chat_returns_patch_summary_after_write(
-    harness: Harness, tmp_path: Path
-) -> None:
+def test_chat_returns_patch_summary_after_write(harness: Harness, tmp_path: Path) -> None:
     repo = tmp_path / "repo"
     repo.mkdir()
     (repo / "calc.py").write_text("x = 1\n", encoding="utf-8")
@@ -385,3 +383,21 @@ def test_build_components_smoke(tmp_path: Path) -> None:
         assert components.fact_store is not None
     finally:
         components.fact_store.close()
+
+
+def test_api_whole_file_toolset_matches_real_eval(harness: Harness, tmp_path: Path) -> None:
+    harness.client.app.state.settings.coding_toolset = "whole_file"
+    response = harness.client.post(
+        "/sessions", json={"user_id": "tools", "workspace_root": str(tmp_path)}
+    )
+    session_id = response.json()["session_id"]
+    harness.provider.script(make_response(content="Inspected."))
+    response = harness.client.post(
+        "/chat", json={"user_id": "tools", "session_id": session_id, "message": "Inspect code"}
+    )
+    assert response.status_code == 200
+    messages, specs = harness.provider.calls[0]
+    assert "replace_text" not in {s.name for s in specs or []}
+    assert "write_file" in {s.name for s in specs or []}
+    assert "replace_text" not in messages[0].content
+    assert "Use `write_file` with the full file contents" in messages[0].content

@@ -228,7 +228,10 @@ async def test_live_smoke_uses_shared_prompt_memory_and_threshold(
     assert {spec.name for spec in specs or []} >= {"read_file", "write_file", "emit_plan"}
 
 
-async def test_simulated_tools_preserve_specs_without_executing_code(tmp_path: Path) -> None:
+@pytest.mark.parametrize("toolset", ["full", "whole_file"])
+async def test_simulated_tools_preserve_specs_without_executing_code(
+    tmp_path: Path, toolset: str
+) -> None:
     scenario = {
         "tool_results": {
             "write_file": [{"path": "must-not-exist.py", "bytes_written": 1}],
@@ -237,9 +240,15 @@ async def test_simulated_tools_preserve_specs_without_executing_code(tmp_path: P
     }
     with FactStore(tmp_path / "memory.db") as store:
         simulated = runner._build_live_simulated_registry(
-            scenario, store=store, user_id="dev", workspace_root=str(tmp_path)
+            scenario,
+            store=store,
+            user_id="dev",
+            workspace_root=str(tmp_path),
+            coding_toolset=toolset,
         )
-        production = build_registry(fact_store=store, user_id="dev", workspace_root=str(tmp_path))
+        production = build_registry(
+            fact_store=store, user_id="dev", workspace_root=str(tmp_path), coding_toolset=toolset
+        )
         assert simulated.as_tool_specs() == production.as_tool_specs()
         await simulated.invoke("write_file", {"path": "must-not-exist.py", "content": "x"})
         # A real command tool rejects this argv. Simulation must never execute it.

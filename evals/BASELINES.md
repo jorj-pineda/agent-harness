@@ -455,3 +455,121 @@ A next focused comparison could reduce exact-edit/tool-interface friction with a
 smaller toolset or targeted mismatch recovery. Verification guidance and the
 personal-use persistence, cancellation, and diff workflow remain open. Ollama
 was unloaded and the server started for this experiment was stopped afterward.
+
+
+## 2026-10-07 — `gemma4:12b`, whole-file toolset, thinking off, context 4,096
+
+The opt-in `CODING_TOOLSET=whole_file` experiment removes only `replace_text`
+from the shared application/evaluation registry (15 tools → 14). Retained
+schemas and descriptions are unchanged. The harness prompt replaces its one
+exact-edit instruction with a full-content `write_file` instruction, versioned
+as `coding-v2-whole-file-v1`. Minimal mode retains `minimal-v1`. This measures
+that tool reduction with the necessary matching instruction, not tool removal
+in isolation. Memory tools, the semantic-search stub, planning, execution,
+completion recovery, and permissions are unchanged. `full` remains the default.
+
+The reduction was chosen from observed failures: the preceding run had 12
+escaped-newline mismatch errors and two repeated-call blocks in harness
+`divide_zero`; its only accepted harness division artifact used a whole-file
+fallback. This experiment does not automatically repair tool arguments.
+
+| Field | Value |
+|---|---|
+| Harness revision | `c331f65` (clean) |
+| Model/server/hardware | Same local `gemma4:12b` Q4_K_M, Ollama 0.33.2, Apple M1 Pro, 16 GB |
+| Settings | Thinking off; server confirmed context 4,096; temperature 0.0 |
+| Comparison | All prior recorded runtime settings and fixture hashes match the blank-final run; eight iterations, 24 tool attempts, one completion retry, 600 s wall dispatch deadline, 300 s request timeout; token gates, required planning, and required verification disabled |
+| Attempts | 5 tasks × 2 modes × 3 repeats = 30; all included, alternating mode order |
+| Raw report | `results/2026-10-07-gemma4-12b-whole-file-ctx4k.json` |
+
+The run loaded the prior report's non-secret runtime settings into isolated
+`Settings(_env_file=None)` to avoid local `.env` drift:
+
+```sh
+uv run python - <<'PY'
+import json
+from evals import real_run
+from harness.config import Settings
+
+with open("evals/results/2026-10-05-gemma4-12b-empty-final-ctx4k.json") as f:
+    config = json.load(f)["results"][0]["runtime_config"]
+settings = Settings(
+    _env_file=None, ollama_model="gemma4:12b", coding_toolset="whole_file", **config
+)
+real_run.get_settings = lambda: settings
+real_run.main([
+    "--provider", "ollama", "--mode", "both", "--repeats", "3",
+    "--report", "/tmp/agent-harness-whole-file.json",
+])
+PY
+```
+
+For ordinary application/evaluator use, set `CODING_TOOLSET=whole_file` in the
+normal settings environment. The real report now records the selected toolset
+and full exposed tool specs; older reports lack those fields and represent the
+historical full registry.
+
+| Task | harness (blank recovery → whole-file) | minimal (blank recovery → whole-file) |
+|---|---|---|
+| decimal_total | 0/3 → 0/3 | 0/3 → 0/3 |
+| divide_zero | 1/3 → 3/3 | 3/3 → 3/3 |
+| parse_flags | 3/3 → 3/3 | 2/3 → 0/3 |
+| slugify | 3/3 → 0/3 | 0/3 → 2/3 |
+| stable_dedupe | 3/3 → 3/3 | 3/3 → 3/3 |
+| **total** | **10/15 → 9/15** | **8/15 → 8/15** |
+
+| Measure | harness | minimal |
+|---|---|---|
+| Runtime statuses | 8 completed, 7 budget exhausted | 12 completed, 3 incomplete |
+| Terminations | 4 accepted, 4 acceptance failed, 7 iteration limit | 8 accepted, 4 acceptance failed, 3 incomplete |
+| Completed status with failed acceptance | 4 (previously 3) | 4 (previously 3) |
+| Blank final answers marked completed | 0 | 0 |
+| Attempts with passing model-run checks | 3/15 | 3/15 |
+| Final verification statuses | 3 passed, 5 failed, 7 not run | 3 passed, 12 not run |
+| Median latency | 61 s (previously 79 s) | 46 s (previously 53 s) |
+| Median tool-call records | 7 (unchanged) | 4 (unchanged) |
+| Median reported tokens | 15,684 (previously 18,211) | 8,203 (previously 9,572) |
+
+### Observations and decision
+
+- **Division edit friction disappeared:** all six division artifacts passed.
+  No exact-edit calls, mismatch errors, or repeated-call blocks occurred in the
+  full run. Removing the tool removes that error opportunity; it does not prove
+  the model learned to recover. All three harness division turns still reached
+  the iteration limit after unsuitable checks.
+- **Other task behavior worsened or varied:** all three harness slug rewrites
+  deleted separators before converting them, failing acceptance. Two ended at
+  the iteration limit after four invalid multiline command calls each. Minimal
+  slug passed twice but failed separator handling once. All three minimal flags
+  turns only read files, exhausted blank-answer recovery, and left the fixture
+  unchanged. The traces do not isolate why these choices changed.
+- **Visible checks still missed correctness:** all six decimal artifacts passed
+  visible tests, including model-added cases, but failed independent empty-input
+  acceptance and received completed status. These six and two completed slug
+  failures account for the eight `false_completion` records. Editable tests
+  cannot redefine authoritative acceptance.
+- **Verification trouble remains:** 12 `python3 -c` rejections and eight invalid
+  multiline argv calls occurred. Passing model-run checks occurred only in the
+  six failed decimal attempts. Five accepted harness artifacts had incomplete
+  turns: three division and two dedupe artifacts.
+
+This small historical comparison does **not** establish a reliable coding-quality
+improvement. Harness acceptance declined by one and minimal acceptance stayed
+flat, hiding opposite changes across tasks. Fresh workspace paths, variation at
+temperature 0, changed tool-schema context, and the necessary prompt adaptation
+limit causal attribution. Latency/token differences are descriptive. The report
+still stores terminal answers and tool traces, not every model response or
+recovery message.
+
+Keep `full` as the application default. Retain the opt-in path for reproducible
+comparison, without recommending whole-file writes as a general improvement:
+larger files require more generation and lose exact-edit stale-hash protection.
+Verification guidance, bounded targeted recovery, and the personal-use
+persistence/cancellation/diff workflow remain open. No model judge, larger
+prompt, additional model, or premium supervisor was added. Ollama was unloaded
+and the evaluation-owned server stopped afterward.
+
+Validation: 500 offline tests passed (five live tests deselected); Ruff and mypy
+passed. Both scripted scenario matrices passed 90/90 escalation decisions and
+retained `scripted-contract` labels. Those validate harness contracts, not model
+coding quality.

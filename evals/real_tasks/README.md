@@ -40,3 +40,11 @@ runtime, tools, settings, and task copy for a same-model comparison.
 To compare verification behavior, set `PROJECT_CHECK_ARGV` and
 `REQUIRE_VERIFICATION_BEFORE_FINISH` identically for both runs. The exact argv
 is recorded in each report's runtime configuration.
+
+
+`CODING_TOOLSET=full` is the default. The opt-in `whole_file` experiment omits
+only `replace_text`, with a matching shared harness edit instruction; minimal
+mode keeps its original prompt. Application and real evaluations use the same
+selection. Reports record the toolset and exposed schemas. Keep settings and
+budgets identical when comparing toolsets, and use unique report paths. The
+initial comparison did not establish a reliable gain; see `evals/BASELINES.md`.
