@@ -5,11 +5,13 @@ import os
 import shutil
 import subprocess
 from pathlib import Path
+from unittest.mock import AsyncMock
 
 import pytest
 
 from tools import ToolError, ToolRegistry
 from tools.code import build_code_tools, register_code_tools
+from tools.process import ProcessResult
 from workspace import Workspace
 
 FIXTURE_REPO = Path(__file__).resolve().parent / "fixtures" / "tiny_repo"
@@ -286,6 +288,37 @@ async def test_run_command_pytest_on_fixture(workspace: Workspace, registry: Too
 async def test_run_command_rejects_disallowed_executable(registry: ToolRegistry) -> None:
     with pytest.raises(ToolError, match="not allowlisted"):
         await registry.invoke("run_command", {"argv": ["bash", "-c", "echo hi"]})
+
+
+@pytest.mark.parametrize(
+    "argv",
+    ['["python", "-m", "pytest"]', '["python",', "python -m pytest"],
+)
+async def test_string_argv_feedback_rejects_before_dispatch_and_accepts_list_retry(
+    registry: ToolRegistry, monkeypatch: pytest.MonkeyPatch, argv: str
+) -> None:
+    dispatch = AsyncMock(
+        return_value=ProcessResult(
+            argv=["python", "-m", "pytest"],
+            exit_code=0,
+            stdout="passed",
+            stderr="",
+            stdout_truncated=False,
+            stderr_truncated=False,
+        )
+    )
+    monkeypatch.setattr("tools.code.run_process", dispatch)
+    with pytest.raises(ToolError, match="Resend argv as a JSON array") as error:
+        await registry.invoke("run_command", {"argv": argv})
+    assert 'Example: {"argv": ["python", "-m", "pytest"]}' in str(error.value)
+    assert "configured project check's exact tokens" in str(error.value)
+    dispatch.assert_not_awaited()
+
+    corrected = ["python", "-m", "pytest"]
+    result = await registry.invoke("run_command", {"argv": corrected})
+    assert result["success"] is True
+    dispatch.assert_awaited_once()
+    assert dispatch.call_args.args[0] == corrected
 
 
 @pytest.mark.parametrize("root", ["python", "python3"])

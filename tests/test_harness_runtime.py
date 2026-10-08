@@ -309,3 +309,69 @@ async def test_whole_file_toolset_rejects_exact_edits_and_preserves_other_specs(
         assert target.read_text(encoding="utf-8") == "original\n"
         await reduced.invoke("write_file", {"path": "a.py", "content": "changed\n"})
         assert target.read_text(encoding="utf-8") == "changed\n"
+
+
+@pytest.mark.parametrize("mode", ["corrected", "repeated", "tool_limit"])
+async def test_string_command_recovery_uses_shared_feedback_and_existing_budgets(
+    tmp_path: Path, mode: str
+) -> None:
+    (tmp_path / "test_ok.py").write_text(
+        "from pathlib import Path\ndef test_ok():\n    Path('command-ran').write_text('yes')\n",
+        encoding="utf-8",
+    )
+    argv = ["python", "-m", "pytest", "-q", "test_ok.py"]
+    malformed = '["python", "-m", "pytest", "-q", "test_ok.py"]'
+    provider = ScriptedProvider()
+    provider.script(
+        make_response(
+            tool_calls=[ToolCall(id="bad", name="run_command", arguments={"argv": malformed})]
+        ),
+        make_response(
+            tool_calls=[
+                ToolCall(
+                    id="retry",
+                    name="run_command",
+                    arguments={"argv": malformed if mode == "repeated" else argv},
+                )
+            ]
+        ),
+        make_response(
+            tool_calls=[ToolCall(id="again", name="run_command", arguments={"argv": malformed})]
+        )
+        if mode == "repeated"
+        else make_response(content="Check passed."),
+    )
+    settings = Settings(
+        _env_file=None,
+        project_check_argv=argv,
+        max_tool_calls_per_turn=1 if mode == "tool_limit" else 24,
+    )
+    with FactStore(tmp_path / "memory.db") as store:
+        response = await run_configured_turn(
+            settings=settings,
+            session=Session(workspace_root=str(tmp_path)),
+            user_id="dev",
+            message="Run the configured check",
+            provider=provider,
+            fact_store=store,
+            registry=build_registry(
+                fact_store=store,
+                user_id="dev",
+                workspace_root=str(tmp_path),
+                command_env={"PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1"},
+            ),
+        )
+    assert response.tool_calls[0].arguments == {"argv": malformed}
+    assert "Resend argv as a JSON array" in (response.tool_calls[0].error or "")
+    tool_messages = [m for m in provider.calls[1][0] if m.role == "tool"]
+    assert "Resend argv as a JSON array" in tool_messages[-1].content
+    assert (tmp_path / "command-ran").exists() == (mode == "corrected")
+    if mode == "corrected":
+        assert response.completion_status == "completed"
+        assert response.verification_status == "passed"
+        assert response.tool_calls[1].arguments == {"argv": argv}
+    else:
+        assert response.completion_status == (
+            "blocked" if mode == "repeated" else "budget_exhausted"
+        )
+        assert all(call.result is None for call in response.tool_calls)

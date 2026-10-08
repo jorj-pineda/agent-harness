@@ -184,13 +184,22 @@ The harness does not need to make every model good at every task. It needs to id
   repeatedly supplied string argv and stopped before editing five fixtures.
   All six decimal artifacts still failed acceptance. No default or runtime
   implementation changed; see `evals/BASELINES.md` for results and limitations.
+- **2026-10-07 — String-argv feedback comparison recorded:** malformed command
+  strings now receive an array example and configured-check reminder without
+  coercion or execution. Existing budgets bound model correction attempts. Thirty
+  matching local attempts yielded harness 9/15 and minimal 5/15 accepted, versus
+  9/15 and 3/15. Six attempts later dispatched valid arrays, but string-argument
+  errors rose from 16 to 23. The two newly accepted dedupe artifacts were correct
+  before their first changed feedback, limiting causal attribution. Retain the
+  accurate diagnostic as tool usability, not a demonstrated model-quality gain.
+  See `evals/BASELINES.md` for results and limitations.
 - **Next:** item 6's listed mechanics are in place; see the known limitations
   below before relying on them unattended. Item 7 has a repeated baseline and
-  six completed comparisons; neither tool reduction nor configured-check guidance
-  established an acceptance gain. Targeted command-argument feedback and bounded
-  failed-check recovery remain candidates supported by observed failures. Model
-  profiles, context management, and item 8's personal-use workflow remain open.
-  Offline checks alone are not evidence of better model coding performance.
+  seven completed comparisons. Argument feedback did not reliably break repeated
+  errors; further bounded recovery and complete response traces remain candidates
+  supported by observed failures. Failed-check recovery, model profiles, context
+  management, and item 8's personal-use workflow remain open. Offline checks alone
+  are not evidence of better model coding performance.
 
 ### Review baseline
 
