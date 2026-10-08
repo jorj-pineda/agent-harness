@@ -18,7 +18,7 @@ from fnmatch import fnmatch
 from pathlib import Path
 from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from workspace import Workspace, WorkspaceError
 
@@ -112,6 +112,17 @@ class RunCommandInput(BaseModel):
             "allowlisted (pytest, ruff, mypy, git, python -m pytest, python3 -m pytest)."
         ),
     )
+
+    @field_validator("argv", mode="before")
+    @classmethod
+    def reject_string_argv(cls, value: object) -> object:
+        if isinstance(value, str):
+            raise ValueError(
+                "Resend argv as a JSON array of separate strings, not a quoted array "
+                'or shell command. Example: {"argv": ["python", "-m", "pytest"]}. '
+                "Use the configured project check's exact tokens when provided."
+            )
+        return value
 
 
 class EmitPlanInput(BaseModel):
