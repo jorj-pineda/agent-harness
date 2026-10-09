@@ -946,3 +946,146 @@ passed 90/90 escalation decisions with their `scripted-contract` labels and metr
 limitations inspected. These tests establish mechanics, not model capability.
 Further bounded/failed-check recovery, context management, and personal-use
 persistence/cancellation/reviewable diffs remain open.
+
+## 2026-10-08 — `gemma4:12b`, required verification, context 4,096
+
+This comparison enables the existing `require_verification_before_finish` setting
+while holding the preceding string-argv comparison's other recorded settings,
+tool schemas, prompt versions, and fixture hashes fixed. A final reply after a
+successful file-tool edit must have a passing exact configured check after the
+latest edit. Otherwise the shared loop can inject one bounded corrective message;
+blank-answer and verification recovery consume the same completion-retry counter.
+The iteration/tool/token/wall gates and provider finish-reason precedence remain.
+Read-only turns do not acquire a verification requirement.
+
+No implementation, evaluation-runner behavior, or default changed in this PR.
+The experiment exercises the shared application path already shipped, using
+#40's normalized traces to distinguish recovery from merely observing valid
+checks. It does not add a failed-check repair strategy or increase a budget.
+
+| Field | Value |
+|---|---|
+| Harness revision | `a711d76` (clean, #40 merged) |
+| Model/server/hardware | Local `gemma4:12b` Q4_K_M, ID `4eb23ef187e2`, Ollama 0.33.2, Apple M1 Pro, 16 GB |
+| Settings | Thinking off; server confirmed context 4,096; temperature 0; whole-file tools; exact `python3 -m pytest test_visible.py` project check |
+| Changed setting | `require_verification_before_finish`: false → true |
+| Budgets | Eight iterations, 24 tool attempts, one shared completion retry, 600 s wall dispatch deadline, 300 s request timeout; token gates and required planning disabled |
+| Attempts | Five tasks × two modes × three repeats = 30, all included; alternating mode order |
+| Historical comparator | `results/2026-10-07-gemma4-12b-argv-feedback-ctx4k.json` (#39) |
+| Raw report | `results/2026-10-08-gemma4-12b-required-verification-ctx4k.json` |
+
+Reproduce using the prior report's non-secret settings and a unique report path:
+
+```sh
+uv run python - <<'PY'
+import json
+from pathlib import Path
+from evals import real_run
+from harness.config import Settings
+
+config = json.loads(Path(
+    "evals/results/2026-10-07-gemma4-12b-argv-feedback-ctx4k.json"
+).read_text())["results"][0]["runtime_config"]
+config.pop("tool_specs")
+config["require_verification_before_finish"] = True
+settings = Settings(_env_file=None, ollama_model="gemma4:12b", **config)
+real_run.get_settings = lambda: settings
+real_run.main([
+    "--provider", "ollama", "--mode", "both", "--repeats", "3",
+    "--report", "/tmp/agent-harness-required-verification.json",
+])
+PY
+```
+
+| Task | harness (optional → required verification) | minimal (optional → required verification) |
+|---|---|---|
+| decimal_total | 0/3 → 0/3 | 0/3 → 0/3 |
+| divide_zero | 3/3 → 3/3 | 3/3 → 3/3 |
+| parse_flags | 3/3 → 3/3 | 0/3 → 0/3 |
+| slugify | 0/3 → 0/3 | 0/3 → 0/3 |
+| stable_dedupe | 3/3 → 3/3 | 2/3 → 2/3 |
+| **total** | **9/15 → 9/15** | **5/15 → 5/15** |
+
+| Measure | harness | minimal |
+|---|---|---|
+| Runtime statuses | 6 completed, 9 budget exhausted | 4 completed, 4 budget exhausted, 4 blocked, 3 incomplete |
+| Terminations | 6 accepted, 9 iteration limit | 4 accepted, 4 iteration limit, 4 blocked, 3 incomplete |
+| Completed status with failed acceptance | 0 (unchanged) | 0 (unchanged) |
+| Attempts with a passing configured check | 12/15 (previously 13/15) | 7/15 (unchanged) |
+| Final verification statuses | 9 passed, 3 stale, 3 failed | 5 passed, 2 stale, 8 not run |
+| Accepted artifacts with incomplete turns | 3 (previously 2) | 1 (previously 4) |
+| Median latency | 62 s (previously 59 s) | 46 s (previously 44 s) |
+| Median tool-call records | 8 (previously 7) | 7 (unchanged) |
+| Median reported tokens | 16,870 (previously 16,859) | 14,479 (previously 14,957) |
+
+### Recovery evidence and limitations
+
+**One verification-specific retry was observed.** Harness flags repeat 2 emitted
+`grep_repo`, `read_file`, `emit_plan`, and a correct `write_file`, then an empty
+no-call reply at zero-based iteration 4 without a check. The runtime injected
+one message combining the non-empty-answer requirement and the exact configured
+check. At iteration 5 the model ran that check successfully; at iteration 6 it
+returned a non-empty completed answer. Independent acceptance passed. The artifact
+was already correct before feedback, and blank recovery would have occurred even
+with verification optional. This observed sequence does not prove the extra check
+instruction was necessary or improved patch correctness.
+
+**The gate had little opportunity to act.** Replaying the ordered tool records
+at every no-call response found only that one post-edit response lacking a current
+passing check. No non-empty final reply was rejected for missing verification.
+The other 29 attempts received no verification-specific guidance. Thirteen turns
+reached the iteration limit, four blocked on repeated commands, and three minimal
+flags turns exhausted blank recovery without editing. A completion-time check gate
+cannot repair a tool loop that never offers a final reply.
+
+**Full traces make the recovery counts observable.** All 218 requests have
+normalized responses, with reported prompt/output usage; all 195 requested tool
+IDs match the 195 ordered tool-result messages and legacy records. Responses have
+195 `tool_use` and 23 `stop` finish reasons, with no provider truncation/failure in
+this run. Thirteen blank no-call replies produced ten injected recovery messages:
+nine blank-only messages (minimal division, decimal, and flags, three each), and
+one combined message for harness flags. Four recovery-bearing turns ended with
+non-empty completed replies (three minimal division and harness flags repeat 2);
+three minimal decimal turns continued with tools then hit the iteration limit;
+three minimal flags turns returned blank again and ended incomplete. Historical
+#39 reports lack full responses, so their exact recovery counts are not comparable.
+
+**Correctness failures remain.** All six decimal artifacts still fail independent
+empty-input acceptance. Five final verification states are stale and one passed;
+all six hit the iteration limit. Three harness slug artifacts still fail
+acceptance and their visible check; all stop at the iteration limit. All three
+minimal slug turns and minimal dedupe repeat 2 block before editing. Minimal
+flags leaves fixtures unchanged. Minimal dedupe repeat 1 has an accepted artifact
+but no check or completed reply; repeat 3 checks and finishes cleanly. No blank
+answer received completed status. Zero `false_completion` records reflect terminal
+statuses, not proof of correctness: 20/30 turns are incomplete and 16 artifacts
+still fail acceptance.
+
+Acceptance is unchanged in every task/mode cell. Completion counts moved from
+7/15 to 6/15 in harness and 1/15 to 4/15 in minimal, without establishing a
+coding-quality or causal completion gain. All three minimal division turns
+consume blank recovery **before editing**, finish with a check, and receive no
+verification-specific feedback; their better terminal statuses therefore cannot
+be attributed to the changed requirement. More broadly, the historical comparison
+is unpaired, repeated decisions vary at temperature 0, disposable paths change,
+and #40 adds trace collection between reports. Its copying/serialization overhead
+is not isolated. The full offline gate also ran during part of the final decimal
+pair, so latency differences are descriptive rather than an isolated measurement.
+
+Keep required verification available as the existing explicit check-enforcement
+option; this run does not justify making it the default, increasing budgets, or
+claiming a reliable coding-quality gain. Earlier bounded recovery remains a
+candidate, but needs evidence about where a retry can still fit and must distinguish
+initial failing fixtures from newly introduced failures. Failed-check recovery,
+context/model profiles, and personal-use persistence, cancellation, resume, and
+reviewable diffs remain open. No additional model, repository, or paid call was
+used. The evaluation-owned model was unloaded and server stopped afterward.
+
+Validation: the runner checked initial fixtures fail and reference solutions pass
+before inference. All 30 settings/schemas/prompt versions/fixture hashes were
+audited against #39 with exactly the one behavioral-setting difference. The raw
+report was copied byte-for-byte. Eighty-two focused regression tests and 516
+offline tests passed (five live deselected), Ruff and mypy passed. Both scripted
+scenario matrices passed 90/90 escalation decisions using unique temporary report
+paths; their `scripted-contract` labels and metric limitations were inspected.
+These checks validate harness mechanics, not model coding quality.

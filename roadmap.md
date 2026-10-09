@@ -203,11 +203,21 @@ The harness does not need to make every model good at every task. It needs to id
   iteration limit. This validates evidence capture, not improved coding quality.
   Provider wire payloads/hidden reasoning, durable traces, and crash recovery
   remain outside this slice. See `evals/real_tasks/README.md` and `evals/BASELINES.md`.
+- **2026-10-08 — Required-verification comparison recorded:** enabled the existing
+  post-edit check requirement, holding other recorded settings and budgets fixed.
+  Thirty matching local attempts yielded harness 9/15 and minimal 5/15 accepted,
+  unchanged in every task/mode cell. Full traces show one combined blank-answer
+  and verification retry followed by a passing check and non-empty completion;
+  the artifact was already correct. The other 29 attempts received no
+  verification-specific guidance. Thirteen turns reached the iteration limit,
+  and all six decimal artifacts still failed empty-input acceptance. No runtime
+  default or implementation changed; this measures the existing gate, without
+  establishing a coding-quality gain. See `evals/BASELINES.md` and its raw report.
 - **Next:** item 6's listed mechanics are in place; see the known limitations
   below before relying on them unattended. Item 7 has a repeated baseline and
-  seven completed comparisons. Argument feedback did not reliably break repeated
-  errors; normalized response traces now support inspecting subsequent recovery
-  experiments. Further bounded and failed-check recovery, model profiles, context
+  eight completed comparisons. Argument feedback did not reliably break repeated
+  errors; normalized traces show that completion-time verification recovery rarely
+  fires in this task envelope. Earlier bounded and failed-check recovery, model profiles, context
   management, and item 8's personal-use workflow remain open. Offline checks alone
   are not evidence of better model coding performance.
 
