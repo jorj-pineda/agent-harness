@@ -108,6 +108,10 @@ class Settings(BaseSettings):
     )
     max_identical_tool_calls: int = Field(default=2, ge=0, le=10)
     max_completion_retries: int = Field(default=1, ge=0, le=3)
+    recover_string_argv: bool = Field(
+        default=False,
+        description="Experiment: early string-argv guidance shares the completion retry budget.",
+    )
     request_timeout_seconds: int = Field(default=60, ge=1, le=600)
     project_check_argv: list[str] | None = Field(
         default=None,

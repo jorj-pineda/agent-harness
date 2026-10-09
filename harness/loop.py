@@ -88,6 +88,7 @@ async def run_turn(
     min_request_output_tokens: int = 1,
     max_identical_tool_calls: int = 0,
     max_completion_retries: int = 0,
+    recover_string_argv: bool = False,
     required_check: list[str] | None = None,
     on_event: EventCallback | None = None,
     trace: list[TurnTraceRecord] | None = None,
@@ -302,6 +303,7 @@ async def run_turn(
         stop_status: CompletionStatus = (
             budget_stop.status if budget_stop is not None else "completed"
         )
+        string_argv_rejected = False
         for tc in usable_calls:
             if on_event is not None:
                 await on_event(ToolStartEvent(tool=tc.name, arguments=dict(tc.arguments)))
@@ -340,6 +342,14 @@ async def run_turn(
                 result = await registry.invoke(tc.name, tc.arguments)
             except ToolError as exc:
                 error = str(exc)
+            if tc.name == "run_command":
+                # A later array call in the same batch supersedes format guidance,
+                # even if that call encounters a different execution failure.
+                string_argv_rejected = (
+                    isinstance(tc.arguments.get("argv"), str)
+                    and error is not None
+                    and error.startswith("Invalid arguments for tool 'run_command':")
+                )
             tool_latency = _now_ms() - tool_start
 
             turn.tool_calls.append(
@@ -381,6 +391,37 @@ async def run_turn(
             completion_status = stop_status
             completion_reason = stop_reason
             break
+        if (
+            recover_string_argv
+            and string_argv_rejected
+            and completion_retries < max_completion_retries
+            and iteration + 1 < max_iterations
+        ):
+            example = {"argv": required_check or ["python", "-m", "pytest"]}
+            recovery_message = ChatMessage(
+                role="user",
+                content=(
+                    "run_command rejected a string argv. Send an actual JSON array of "
+                    "separate strings, not a quoted array or shell command. "
+                    + (
+                        "The configured project check arguments are: "
+                        if required_check
+                        else "Example: "
+                    )
+                    + json.dumps(example)
+                    + ". Correct the tool call or report the task as incomplete."
+                ),
+            )
+            session.messages.append(recovery_message)
+            completion_retries += 1
+            if trace is not None:
+                trace.append(
+                    MessageTrace(
+                        kind="recovery",
+                        iteration=iteration,
+                        message=recovery_message.model_copy(deep=True),
+                    )
+                )
     else:
         final_answer = MAX_ITERATIONS_STUB
         max_iterations_reached = True

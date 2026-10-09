@@ -326,6 +326,7 @@ async def run_task(
                 "min_request_output_tokens": settings.min_request_output_tokens,
                 "max_identical_tool_calls": settings.max_identical_tool_calls,
                 "max_completion_retries": settings.max_completion_retries,
+                "recover_string_argv": settings.recover_string_argv,
                 "project_check_argv": settings.project_check_argv,
                 "request_timeout_seconds": settings.request_timeout_seconds,
                 "require_verification_before_finish": settings.require_verification_before_finish,
