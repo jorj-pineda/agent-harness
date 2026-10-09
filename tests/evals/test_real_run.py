@@ -248,37 +248,3 @@ def test_cli_repeats_both_modes_and_alternates_order(
         [r["kind"] for r in row["turn_trace"]] == ["request", "response"] for row in data["results"]
     )
     assert set(data["harness_revision"]) == {"commit", "dirty"}
-
-
-async def test_real_evaluator_records_opt_in_early_recovery() -> None:
-    provider = ScriptedProvider()
-    argv = ["python3", "-m", "pytest", "test_visible.py"]
-    provider.script(
-        make_response(
-            tool_calls=[
-                ToolCall(id="bad", name="run_command", arguments={"argv": json.dumps(argv)})
-            ]
-        ),
-        make_response(
-            tool_calls=[ToolCall(id="valid", name="run_command", arguments={"argv": argv})]
-        ),
-        make_response(content="The initial check fails; the fixture is unchanged."),
-    )
-    result = await run_task(
-        load_tasks()[0],
-        provider=provider,
-        mode="minimal",
-        settings=Settings(_env_file=None, recover_string_argv=True, project_check_argv=argv),
-    )
-    assert result.runtime_config["recover_string_argv"] is True
-    assert result.passed is False
-    assert result.modified == ()
-    recovery = [r for r in result.turn_trace if r["kind"] == "recovery"]
-    assert len(recovery) == 1
-    assert recovery[0]["iteration"] == 0
-    assert (
-        '"argv": ["python3", "-m", "pytest", "test_visible.py"]'
-        in recovery[0]["message"]["content"]
-    )
-    assert result.tool_trace[0]["error"]
-    assert result.tool_trace[1]["result"]["exit_code"] == 1

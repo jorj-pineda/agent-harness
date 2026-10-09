@@ -147,7 +147,6 @@ async def run_configured_turn(
         min_request_output_tokens=settings.min_request_output_tokens,
         max_identical_tool_calls=settings.max_identical_tool_calls,
         max_completion_retries=settings.max_completion_retries,
-        recover_string_argv=settings.recover_string_argv,
         required_check=settings.project_check_argv,
         on_event=on_event,
         trace=trace,
