@@ -4,8 +4,8 @@ Process-wide state is bundled into a `Components` dataclass and built once
 during the lifespan:
 
   * `ProviderRouter`   — name → ChatProvider, populated from `Settings`.
-  * `Embedder`         — single Ollama embedding client shared by RAG.
-  * `chromadb.Collection` — the persistent corpus collection.
+  * `Embedder` / `chromadb.Collection` — optional legacy support resources,
+    created only when support tools are explicitly enabled.
   * `FactStore`        — long-term personalization memory. sqlite3 binds the
     connection to its opening thread, so opening it on the event-loop
     thread (the lifespan's caller) keeps every async handler within reach
@@ -33,13 +33,12 @@ from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import TYPE_CHECKING
 
-import chromadb
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
-from data.embed import open_collection
 from harness.grounding import Grounder
 from harness.policy import classify_task, is_out_of_scope_request
 from harness.providers import build_configured_provider, configured_provider_names
@@ -51,11 +50,12 @@ from memory import FactStore
 from providers import create_embedder
 from providers.base import ChatProvider, Embedder
 from tools import ToolRegistry
-from tools.rag import register_rag_tool
-from tools.sql import register_sql_tools
 
 from .models import ChatRequest, ChatResponse, CreateSessionRequest, CreateSessionResponse
 from .settings import Settings, get_settings
+
+if TYPE_CHECKING:
+    import chromadb
 
 log = logging.getLogger(__name__)
 
@@ -66,8 +66,8 @@ class Components:
 
     providers: dict[str, ChatProvider]
     router: ProviderRouter
-    embedder: Embedder
-    collection: chromadb.Collection
+    embedder: Embedder | None
+    collection: chromadb.Collection | None
     fact_store: FactStore
     grounder: Grounder
     sessions: dict[str, Session] = field(default_factory=dict)
@@ -79,19 +79,25 @@ ComponentsFactory = Callable[[Settings], Components]
 def build_components(settings: Settings) -> Components:
     """Default factory: open real backends from the validated settings."""
     providers = _build_providers(settings)
-    embedder = create_embedder(
-        "ollama",
-        host=settings.ollama_host,
-        model=settings.ollama_model,
-        embed_model=settings.ollama_embed_model,
-        timeout_seconds=float(settings.request_timeout_seconds),
-    )
+    embedder = None
+    collection = None
+    if settings.enable_support_tools:
+        from data.embed import open_collection
+
+        collection = open_collection(chroma_dir=settings.chroma_path)
+        embedder = create_embedder(
+            "ollama",
+            host=settings.ollama_host,
+            model=settings.ollama_model,
+            embed_model=settings.ollama_embed_model,
+            timeout_seconds=float(settings.request_timeout_seconds),
+        )
     settings.memory_db_path.parent.mkdir(parents=True, exist_ok=True)
     return Components(
         providers=providers,
         router=ProviderRouter(providers, default=settings.default_provider),
         embedder=embedder,
-        collection=open_collection(chroma_dir=settings.chroma_path),
+        collection=collection,
         fact_store=FactStore(settings.memory_db_path),
         grounder=Grounder(escalation_threshold=settings.confidence_escalation_threshold),
     )
@@ -136,6 +142,10 @@ def create_app(
         components = components_factory(resolved_settings)
         app.state.components = components
         try:
+            if resolved_settings.enable_support_tools and (
+                components.collection is None or components.embedder is None
+            ):
+                raise RuntimeError("Support tools require a collection and embedder at startup")
             yield
         finally:
             await _close_components(components)
@@ -308,6 +318,11 @@ async def _run_configured_turn(
     """Refresh injected facts, build the per-request registry, and run the loop."""
     support_registry = ToolRegistry()
     if settings.enable_support_tools:
+        from tools.rag import register_rag_tool
+        from tools.sql import register_sql_tools
+
+        if components.collection is None or components.embedder is None:
+            raise RuntimeError("Support tools require a collection and embedder at startup")
         register_sql_tools(support_registry, db_path=settings.sqlite_db_path)
         register_rag_tool(
             support_registry, collection=components.collection, embedder=components.embedder

@@ -12,7 +12,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from pathlib import Path
 
-from api.server import build_components
+from api.server import _close_components, build_components
 from api.settings import Settings
 from memory.store import FACTS_HEADING
 from providers.base import ToolCall
@@ -369,12 +369,11 @@ def test_system_message_is_replaced_not_duplicated_across_turns(
     assert roles[0] == "system"
 
 
-def test_build_components_smoke(tmp_path: Path) -> None:
+async def test_build_components_smoke(tmp_path: Path) -> None:
     """build_components wires real backends from validated settings without raising.
 
-    Doesn't touch the network — Ollama provider construction is lazy and
-    Chroma is a local persistent client. Guards against signature drift in
-    the default factory.
+    Doesn't touch the network — provider construction is lazy and coding mode
+    does not allocate Chroma or an embedder. Guards against signature drift.
     """
     settings = Settings(
         _env_file=None,
@@ -388,8 +387,10 @@ def test_build_components_smoke(tmp_path: Path) -> None:
         assert "ollama" in components.providers
         assert components.router.resolve(None).name == "ollama"
         assert components.fact_store is not None
+        assert components.embedder is None and components.collection is None
+        assert not settings.chroma_path.exists()
     finally:
-        components.fact_store.close()
+        await _close_components(components)
 
 
 def test_api_whole_file_toolset_matches_real_eval(harness: Harness, tmp_path: Path) -> None:

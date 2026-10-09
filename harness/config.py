@@ -139,7 +139,7 @@ class Settings(BaseSettings):
     )
     enable_support_tools: bool = Field(
         default=False,
-        description="Register legacy SQL + RAG support tools (requires seeded support DB/corpus).",
+        description="Open legacy SQL/RAG resources and tools (requires seeded support DB/corpus).",
     )
     max_files_touched_per_turn: int = Field(
         default=5,
