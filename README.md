@@ -30,6 +30,20 @@ api/            FastAPI server — thin HTTP wrapper, per-request tool registry
 
 Legacy support data (`data/seed.py`, Chroma corpus) remains for regression evals — see [evals/scenarios_support.yaml](evals/scenarios_support.yaml).
 
+Coding-only startup (`ENABLE_SUPPORT_TOOLS=false`, the default) does not import
+Chroma, open support storage, or create an embedding client. It needs the selected
+chat backend and SQLite personalization memory; an embedding model and a seeded
+support corpus are unnecessary. Set `ENABLE_SUPPORT_TOOLS=true` to open the
+legacy collection and Ollama embedding client and expose the existing SQL/RAG
+tools. That mode still requires its seeded support database/corpus and embedding
+backend. Custom component factories must supply both support resources when the
+flag is enabled; missing resources fail during startup and allocated components
+are closed. The response contract and shared coding runtime are unchanged.
+
+Chroma remains in the package dependencies for legacy support tooling. This
+change removes its import/resource initialization from coding startup; separate
+installation extras are not part of this slice.
+
 Each layer depends only on the ones below it. Model-specific quirks (Gemma 4's tool-call format vs OpenAI's function-call shape) are normalized at the provider boundary, so adding a fourth backend is a single-file change.
 
 ## What's novel

@@ -249,6 +249,17 @@ The harness does not need to make every model good at every task. It needs to id
   tests, Ruff/mypy, and both 90/90 scripted matrices with evidence labels inspected.
   These checks validate coordination, not improved model coding quality; no live
   comparison is claimed.
+- **2026-10-08 — Coding-only startup prepared:** the API now imports and opens
+  legacy support retrieval resources only with `ENABLE_SUPPORT_TOOLS=true`.
+  Default coding startup allocates no embedding client or Chroma collection and
+  works with unavailable support storage. A fresh-interpreter regression blocks
+  support imports while completing a real file edit through the API. Explicit
+  support mode retains real retrieval and read-only SQL tools; missing resources
+  from a custom factory fail at startup with component cleanup. Package dependency
+  extras, persistence, cancellation, and resume remain outside this slice. Validation
+  passed 38 focused and 550 offline tests, Ruff/mypy, and both 90/90 scripted matrices
+  with evidence labels inspected. No model behavior or coding-quality improvement
+  is claimed.
 - **Next:** item 6's listed mechanics are in place; see the known limitations
   below before relying on them unattended. Item 7 has a repeated baseline and
   nine completed comparisons. Argument feedback did not reliably break repeated
@@ -394,7 +405,7 @@ Keep the loop flexible: inspect → edit → verify → repair is a useful defau
 - [ ] Show reviewable diffs, test output, and a partial-work summary on failure.
 - [ ] Provide checkpoints and an explicit revert-agent-changes action that preserves unrelated user work. Never automatically reset a dirty repository.
 - [ ] Make model switching possible without losing the task, while checking tool-history and context compatibility.
-- [ ] Remove mandatory support/RAG startup dependencies from coding-only operation.
+- [x] Remove mandatory support/RAG imports and resource initialization from coding-only startup. Chroma installation extras remain separate work.
 - [ ] Update onboarding, README, and development instructions to reflect the new purpose and tested model profiles.
 
 **Done when:** Jorge can start a task, interrupt it, restart the server, inspect its diff, and resume or safely discard only the agent's changes. At least one real project workflow works through the CLI and panel without manual API calls.
