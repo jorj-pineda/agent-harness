@@ -4,8 +4,8 @@ The API server's `create_app(components_factory=...)` seam lets tests inject
 fake provider/embedder instances without spinning up Ollama, Anthropic, or
 OpenAI. The fixtures here:
 
-  * Build a real `FactStore` and a real (empty) Chroma collection on
-    `tmp_path` so memory + RAG wiring runs end-to-end.
+  * Build a real `FactStore` on `tmp_path`; default coding mode does not
+    allocate a support collection or embedding client.
   * Plug a `ScriptedProvider` whose responses tests script per-test, with
     every `chat()` call recorded for cross-session assertions.
   * Hand back a `TestClient` whose lifespan opens (and closes) the real
@@ -26,14 +26,12 @@ from fastapi.testclient import TestClient
 
 from api.server import Components, create_app
 from api.settings import Settings
-from data.embed import open_collection
 from harness.grounding import Grounder
 from harness.router import ProviderRouter
 from memory import FactStore
 from providers.base import (
     ChatMessage,
     ChatProvider,
-    Embedder,
     FinishReason,
     ProviderResponse,
     TokenUsage,
@@ -117,13 +115,12 @@ class Harness:
 
 @pytest.fixture
 def harness(tmp_path: Path) -> Iterator[Harness]:
-    """Build a TestClient backed by fake provider + real FactStore + empty Chroma.
+    """Build a TestClient backed by fake provider + real FactStore in coding mode.
 
     The SQL tool DB path points at a non-existent file: the tool only opens
     it on invocation, and these tests never script a SQL tool call.
     """
     provider = ScriptedProvider()
-    fake_embedder = FakeEmbedder()
 
     settings = Settings(
         # _env_file=None keeps the suite hermetic: a developer's local .env
@@ -139,14 +136,12 @@ def harness(tmp_path: Path) -> Iterator[Harness]:
 
     def _factory(_: Settings) -> Components:
         providers: dict[str, ChatProvider] = {"scripted": provider}
-        embedder: Embedder = fake_embedder
-        collection = open_collection(chroma_dir=tmp_path / "chroma", name="test_api")
         fact_store = FactStore(tmp_path / "memory.db")
         return Components(
             providers=providers,
             router=ProviderRouter(providers, default="scripted"),
-            embedder=embedder,
-            collection=collection,
+            embedder=None,
+            collection=None,
             fact_store=fact_store,
             grounder=Grounder(escalation_threshold=settings.confidence_escalation_threshold),
         )
