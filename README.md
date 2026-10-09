@@ -94,8 +94,32 @@ concurrent edit by Jorge or another process during the turn is reported too.
 Ignored directories such as `.git`, `.venv`, `node_modules`, and caches are not
 tracked. When the workspace exceeds `MAX_TRACKED_FILES` or `MAX_TRACKED_BYTES`,
 the report is `unavailable` with a reason instead of a partial list; set
-`TRACK_WORKSPACE_CHANGES=false` to skip snapshots. This reports paths, not diff
-content, and snapshot time is outside the turn wall-time budget.
+`TRACK_WORKSPACE_CHANGES=false` to skip snapshots. Snapshot and diff-generation
+time are outside the turn wall-time budget and reported model/tool latency.
+
+`workspace_changes.diffs` adds reviewable unified text diffs to the API response,
+CLI, and expandable panel entries, including turns that exhaust a budget. Each
+entry has `path`, `diff`, and an optional `reason` when content is omitted. The
+baseline is the working tree at turn start, including staged and unstaged user
+edits, rather than Git HEAD. Git's index and stash are never used or changed.
+This also works outside Git. File modes, renames, and authorship are not inferred.
+
+Text is retained in memory from the same read as its fingerprint, with limits of
+`MAX_DIFF_FILE_BYTES` (128,000 UTF-8 source bytes per file) and
+`MAX_DIFF_SNAPSHOT_BYTES` (2,000,000 source bytes per snapshot). Capture is in
+sorted traversal order; unchanged files also consume that budget. Combined diff
+content is limited by `MAX_WORKSPACE_DIFF_BYTES` (64,000 UTF-8 bytes per turn).
+Files exceeding the output allowance are omitted completely; later smaller diffs
+can still be shown. Binary/non-UTF-8 files, symlink content, `.env` and `.env.*`
+content, and unreadable files receive omission reasons. Empty added/deleted files
+receive a descriptive entry. Other source content is not generally secret-redacted.
+On platforms without `O_NOFOLLOW`, text capture is unavailable but path tracking
+remains enabled. Set `MAX_WORKSPACE_DIFF_BYTES=0` to retain paths without text
+capture. These are ephemeral per-turn reviews, not durable checkpoints or patches
+for an automatic revert. Concurrent changes still cannot be attributed to the agent.
+
+The CLI displays unavailable confidence as `n/a`, so valid responses with a null
+confidence still show their completion status, checks, and diffs.
 
 The configured runtime also caps tool attempts per turn with
 `MAX_TOOL_CALLS_PER_TURN` and stops before repeating a tool call whose previous
