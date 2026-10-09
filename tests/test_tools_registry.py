@@ -65,3 +65,48 @@ def test_iter_yields_registered_tools_in_order() -> None:
     reg.register(b)
 
     assert list(reg) == [a, b]
+
+
+@pytest.mark.parametrize("stop", ["cancel", "timeout"])
+async def test_async_cleanup_settles_despite_repeated_caller_cancellation(stop: str) -> None:
+    import asyncio
+
+    started = asyncio.Event()
+    cleaning = asyncio.Event()
+    release = asyncio.Event()
+    cleaned = False
+
+    async def run(_args: _Args) -> None:
+        nonlocal cleaned
+        started.set()
+        try:
+            await asyncio.Event().wait()
+        finally:
+            cleaning.set()
+            await release.wait()
+            cleaned = True
+
+    reg = ToolRegistry()
+    reg.register(Tool(name="cleanup", description="test cleanup", input_model=_Args, fn=run))
+    call = asyncio.create_task(
+        reg.invoke("cleanup", {"x": 1}, timeout=0.02 if stop == "timeout" else 10)
+    )
+    try:
+        await asyncio.wait_for(started.wait(), 2)
+        if stop == "cancel":
+            call.cancel()
+        await asyncio.wait_for(cleaning.wait(), 2)
+        assert not call.done()
+        if stop == "cancel":
+            call.cancel()
+            await asyncio.sleep(0)
+            assert not call.done()
+    finally:
+        release.set()
+        if stop == "cancel":
+            with pytest.raises(asyncio.CancelledError):
+                await call
+        else:
+            with pytest.raises(ToolError, match="timed out"):
+                await call
+    assert cleaned

@@ -235,14 +235,29 @@ The harness does not need to make every model good at every task. It needs to id
   validate reporting, not model capability; no live comparison or quality gain
   is claimed. Durable checkpoints, revert, attribution, persistence, cancellation,
   and resume remain open.
+- **2026-10-08 — Process-local turn admission prepared:** the shared configured
+  runtime now rejects overlapping session/workspace turns before snapshots,
+  inference, transcript mutation, or tools. Reservations include final review
+  generation; unrelated workspace roots can progress concurrently. Owned tool
+  execution settles before timeout/cancellation returns, keeping a reservation
+  while synchronous writes finish or asynchronous cleanup runs. Busy submissions
+  receive a blocked envelope and explicit retry instruction, without being queued.
+  This addresses personal-use overlap within one process; cross-process locks,
+  external-writer attribution, persistence, cancellation endpoints, transcript
+  repair, and resume remain open. Worker cleanup can exceed deadlines; a stuck
+  synchronous worker remains busy. Validation passed 73 focused and 547 offline
+  tests, Ruff/mypy, and both 90/90 scripted matrices with evidence labels inspected.
+  These checks validate coordination, not improved model coding quality; no live
+  comparison is claimed.
 - **Next:** item 6's listed mechanics are in place; see the known limitations
   below before relying on them unattended. Item 7 has a repeated baseline and
   nine completed comparisons. Argument feedback did not reliably break repeated
   errors; normalized traces show that completion-time verification recovery rarely
   fires in this task envelope, and the earlier argument cue was not retained after
-  mixed outcomes. Item 8 now has bounded turn-diff review; failed-check recovery,
-  model profiles, context management, and the rest of the personal-use workflow
-  remain open. Offline checks alone are not evidence of better model coding performance.
+  mixed outcomes. The personal-use workflow now has bounded turn-diff review and
+  process-local turn admission; failed-check recovery, model profiles, context
+  management, and the rest of the personal-use workflow remain open. Offline checks
+  alone are not evidence of better model coding performance.
 
 ### Review baseline
 
@@ -316,7 +331,7 @@ The first baseline can use one already-supported provider. Configurable endpoint
 - [ ] Add exact text replacement with unique-match validation and a stale-content precondition. Return the applied diff or an actionable mismatch error.
 - [ ] Retain whole-file writes for new files and deliberate replacements; use atomic writes where possible.
 - [ ] Record the initial working-tree state and derive actual agent changes from snapshots/diffs, including changes made by commands and new untracked files.
-- [ ] Prevent overlapping writers to the same workspace and serialize turns within a session.
+- [x] Reject overlapping workspace and session turns within one configured-runtime process. Cross-process/external-writer coordination remains open.
 - [x] Replace code-tool worker-thread subprocess execution with managed processes: bounded output capture, explicit timeout, process-group termination on POSIX, and cancellation.
 - [ ] Align tool, provider, turn, and client timeouts so a reported timeout has a defined effect.
 - [ ] Use disposable execution environments for evaluations. Provide an explicit local workspace mode for trusted projects and an isolated mode before running unfamiliar repository code.
@@ -468,7 +483,7 @@ enters the queue when a real task or evaluation shows the limitation matters.
 
 | Limitation | Proposed fix |
 |---|---|
-| Changes cannot be attributed. A concurrent edit by Jorge or another process during a turn is reported as a turn change. | Add the Milestone 2 single-writer lock per workspace. Label each changed path as a file-tool edit (its hash matches the last tool result) or as a change from a command or another process. |
+| Process-local turn admission prevents overlapping configured-runtime turns, but changes from editors, other harness processes, or detached commands still cannot be attributed. | Add cross-process coordination before multiple API workers. Label changed paths using file-tool hash evidence where available; other changes still need explicit source uncertainty. |
 | Bounded per-turn text diffs are available, but capture/output limits omit content. There are no durable checkpoints and no revert. | Add durable working-tree checkpoints before a safe revert workflow. A temporary Git index (`git write-tree` without touching Jorge's index or stash) can capture Git trees; retain bounded copies outside Git. The current in-memory text capture is review evidence only. |
 | Ignored directories (`.git`, `.venv`, `node_modules`, caches) are not tracked, so dependency installs or Git metadata changes are invisible. | Record a cheap per-directory stat summary for ignored top-level directories and report "ignored directory changed" without listing its contents. |
 | Snapshot and diff-generation time count toward neither the wall-time budget nor `latency_ms`. | Measure review overhead, report it in the response, and start the wall deadline before the first snapshot. |
