@@ -1089,3 +1089,182 @@ offline tests passed (five live deselected), Ruff and mypy passed. Both scripted
 scenario matrices passed 90/90 escalation decisions using unique temporary report
 paths; their `scripted-contract` labels and metric limitations were inspected.
 These checks validate harness mechanics, not model coding quality.
+
+## 2026-10-08 — Early string-argv recovery trial (not retained)
+
+**Decision:** retire the experimental runtime option. Harness acceptance moved
+from 9/15 to 10/15 and minimal from 5/15 to 4/15, leaving aggregate acceptance
+14/30. Two minimal slug artifacts received completed status despite failing
+independent acceptance, versus zero previously. The trial often corrected tool
+arguments but did not establish a reliable coding-quality gain. The final branch
+restores the prior runtime, defaults, tests, and evaluator behavior. The frozen
+trial implementation and raw report remain available for inspection and replay;
+`recover_string_argv` is **not a supported setting on the final branch**.
+
+The observed obstacle was early malformed command input: #41's normalized traces
+show strings first failing as early as iteration 2 and repeating until a block
+or iteration limit. The trial introduced a default-off shared setting that, after
+a string-valued `run_command.argv` validation error, injected a concise user
+message with an actual argument-object example and the exact configured check.
+It did not parse strings, rewrite arguments, dispatch invalid input, add tools,
+change system prompts, or increase budgets. The model had to correct its own call.
+
+Feedback followed all tool results in a batch; a later array call in that batch
+superseded the format reminder. No prompt was added after a dispatch stop or on
+the last iteration. Early, blank-answer, and missing-verification recovery shared
+one counter. A consumed early allowance could therefore leave a later final reply
+without recovery. Subsequent provider/tool actions remained subject to the existing
+iteration, tool, wall, and token gates. This trial targeted string arguments, not
+failed checks, incorrect executable tokens inside arrays, or semantic patch repair.
+
+| Field | Value |
+|---|---|
+| Frozen trial revision | `c2d6626b504371a2feccbe67e4c813679dbf0567` (clean) |
+| Retirement revision | `e67107f` (reverts the trial's code/tests) |
+| Local model | `gemma4:12b` Q4_K_M, ID `4eb23ef187e2`, Ollama 0.33.2, Apple M1 Pro, 16 GB |
+| Settings | Thinking off; server confirmed context 4,096; temperature 0; whole-file tools; exact `python3 -m pytest test_visible.py`; required verification enabled |
+| Trial setting | `recover_string_argv=true`, added only at the frozen revision |
+| Budgets | Eight iterations, 24 tool attempts, one shared recovery allowance, 600 s wall dispatch deadline, 300 s request timeout; token gates and required planning disabled |
+| Attempts | Five tasks × two modes × three repeats = 30; all included, alternating mode order |
+| Comparator | `results/2026-10-08-gemma4-12b-required-verification-ctx4k.json` (#41) |
+| Raw report | `results/2026-10-08-gemma4-12b-early-argv-ctx4k.json` |
+
+The filename uses the local experiment date, October 8. The report's UTC start
+is October 9. All settings, schemas, prompt versions, and fixture hashes were
+audited against #41, with only the added early-recovery setting enabled. Fixtures
+and references were validated before inference; authoritative acceptance checks
+remained outside fresh disposable copies. The raw report was copied byte-for-byte.
+
+| Task | harness (#41 → early recovery) | minimal (#41 → early recovery) |
+|---|---|---|
+| decimal_total | 0/3 → 0/3 | 0/3 → 0/3 |
+| divide_zero | 3/3 → 3/3 | 3/3 → 3/3 |
+| parse_flags | 3/3 → 3/3 | 0/3 → 0/3 |
+| slugify | 0/3 → 1/3 | 0/3 → 0/3 |
+| stable_dedupe | 3/3 → 3/3 | 2/3 → 1/3 |
+| **total** | **9/15 → 10/15** | **5/15 → 4/15** |
+
+| Measure | harness | minimal |
+|---|---|---|
+| Runtime statuses | 6 completed, 9 budget exhausted | 6 completed, 6 budget exhausted, 3 incomplete |
+| Terminations | 6 accepted, 9 iteration limit | 4 accepted, 2 acceptance failed, 6 iteration limit, 3 incomplete |
+| Completed status with failed acceptance | 0 (unchanged) | 2 (previously 0) |
+| Attempts with a passing configured check | 12/15 (unchanged) | 9/15 (previously 7/15) |
+| Final verification statuses | 11 passed, 2 stale, 1 failed, 1 not run | 7 passed, 3 stale, 1 failed, 4 not run |
+| Accepted artifacts with incomplete turns | 4 (previously 3) | 0 (previously 1) |
+| Executed commands | 21 (unchanged) | 14 (previously 7) |
+| Median latency | 62 s (unchanged rounded) | 51 s (previously 46 s) |
+| Median tool records | 8 (unchanged) | 7 (unchanged) |
+| Median reported tokens | 16,880 (previously 16,870) | 14,856 (previously 14,479) |
+
+### Observed recovery and correctness
+
+Eleven early messages were injected in eleven distinct attempts. Ten later
+submitted a valid argv array: nine did so on the immediately following model
+iteration; minimal dedupe repeat 1 first repeated a quoted array, then sent a
+valid array naming a nonexistent `test_dedupe.py` before finding the configured
+file. Minimal dedupe repeat 3 never corrected its strings. A later array is not
+equivalent to an executed relevant check, a passing check, or a correct artifact.
+
+String-argv validation errors declined from 19 to 15 (harness 3→4, minimal 16→11).
+Repeated-call blocks declined from four to zero, but their removal did not yield
+accepted minimal slug artifacts. Two malformed executable-token arrays in harness
+slug repeat 1 remained rejected by the allowlist and did not trigger this narrow
+recovery. The trial recorded 222 requests and responses, 196 requested call IDs
+matching ordered tool-result messages/legacy records, and 22 recovery messages:
+11 early, eight blank-only, and three combining blank-answer and verification.
+There were 14 blank no-call responses. The shared allowance was never increased.
+
+| Early-feedback attempt | Later argv / terminal outcome |
+|---|---|
+| minimal division 1 | Immediate valid configured check; accepted artifact and completed turn |
+| harness dedupe 1 | Immediate valid initial failing check, then edit and passing check on last iteration; accepted artifact, incomplete turn |
+| harness decimal 1/3 | Immediate valid configured check, later edit without rerun; failed acceptance, stale verification, iteration limit |
+| harness slug 2 | Immediate valid passing visible check, later rewrite and another pass; accepted artifact and completed turn |
+| minimal slug 1/2 | Immediate valid initially failing check, edit and passing visible check; completed turns, failed acceptance |
+| minimal slug 3 | Immediate valid initially failing check, edit on last iteration; failed acceptance and stale verification |
+| minimal dedupe 1 | Initially repeats a string, then guessed filename, then configured check; unchanged fixture, failed acceptance, iteration limit |
+| minimal dedupe 2 | Immediate valid configured check; accepted artifact and completed turn |
+| minimal dedupe 3 | Strings persist despite feedback; unchanged fixture, failed acceptance, iteration limit |
+
+Independent replay of successful file-tool writes **before** the early message
+confirmed minimal division repeat 1 and minimal dedupe repeat 2 already passed
+acceptance. Their successful call correction does not explain creation of a
+working patch. Harness slug repeat 2's pre-feedback artifact failed underscore
+acceptance even though the subsequent visible check passed; a later rewrite
+preserved underscores through separator conversion and passed independent
+acceptance. The trace establishes temporal order, not that the feedback caused
+that semantic repair. No hidden reasoning or counterfactual model run is available.
+
+All six decimal artifacts still fail empty-input acceptance; five final check
+states are stale and one passed, and all six hit the iteration limit. All three
+minimal slug artifacts still discard underscores; repeats 1/2 now have passing
+configured checks and non-empty completed answers but fail independent acceptance.
+Harness slug repeats 1/3 also fail underscore acceptance. Minimal dedupe repeats
+1/3 remain unchanged; repeat 2 was correct before feedback. Minimal flags remains
+unchanged and exhausts blank recovery in all three attempts. The earlier prompt
+helps some argument formatting without establishing patch correctness.
+
+This historical comparison is unpaired, small, and confined to five fixtures.
+Decisions varied before changed feedback despite temperature 0, with fresh
+workspace paths; counts are observations, not a causal gain or regression claim.
+Correcting calls can expose semantic failures that blocked runs never reached.
+More passing visible checks and fewer repeated-call blocks did not improve total
+acceptance, and completed failed artifacts increased. Eighteen turns still ended
+incomplete, with four accepted artifacts among them; 16 artifacts still failed
+acceptance. Latency differences are descriptive. No premium supervisor, extra
+model, paid call, or additional repository was used. The evaluation-owned model
+was unloaded and server stopped after inference.
+
+The roadmap retains demonstrated improvements or changes required for correctness.
+This duplicate recovery cue does not meet that retention bar; it is removed rather
+than becoming an extra supported runtime option. Existing accurate tool validation
+feedback, bounded completion recovery, required verification, and normalized
+traces remain. Failed-check recovery, model/context profiles, and personal-use
+persistence, cancellation, resume, and reviewable diffs remain open.
+
+### Replay and validation
+
+Replay **only at the frozen implementation**, in an isolated worktree so existing
+user edits are preserved. The final branch does not implement the trial option:
+
+```sh
+git worktree add --detach /tmp/agent-harness-early-argv-replay c2d6626b504371a2feccbe67e4c813679dbf0567
+cd /tmp/agent-harness-early-argv-replay
+uv run python - <<'PY'
+import json
+from pathlib import Path
+from evals import real_run
+from harness.config import Settings
+
+config = json.loads(Path(
+    "evals/results/2026-10-08-gemma4-12b-required-verification-ctx4k.json"
+).read_text())["results"][0]["runtime_config"]
+config.pop("tool_specs")
+config["recover_string_argv"] = True
+settings = Settings(_env_file=None, ollama_model="gemma4:12b", **config)
+assert settings.recover_string_argv is True
+real_run.get_settings = lambda: settings
+real_run.main([
+    "--provider", "ollama", "--mode", "both", "--repeats", "3",
+    "--report", "/tmp/agent-harness-early-argv-replay.json",
+])
+PY
+```
+
+Use an unused worktree/report path and the configured local model. The replay
+requires an Ollama server; only stop processes owned by that evaluation. Historical
+report settings must not be loaded into the final branch to silently simulate
+this experiment: unknown settings are ignored by `Settings` there. The assertion
+above makes an unsupported replay fail explicitly.
+
+The frozen trial passed 95 focused and 529 offline tests (five live deselected),
+Ruff, and mypy. Its regressions cover rejected strings without process dispatch,
+model-submitted array correction, disabled/zero/exhausted recovery, last-iteration
+and tool/token gates, provider truncation, batch supersession, and sharing the
+allowance with later blank/verification recovery. Both scripted matrices passed
+90/90 with `scripted-contract` labels and metric limitations inspected. After
+retirement, the final runtime passed 516 offline tests (five live deselected),
+Ruff, mypy, and both 90/90 scripted matrices, with their evidence labels inspected.
+These validate mechanics, not model quality. No trial tests or behavior
+are shipped in the final diff.

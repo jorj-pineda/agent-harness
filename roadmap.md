@@ -213,12 +213,22 @@ The harness does not need to make every model good at every task. It needs to id
   and all six decimal artifacts still failed empty-input acceptance. No runtime
   default or implementation changed; this measures the existing gate, without
   establishing a coding-quality gain. See `evals/BASELINES.md` and its raw report.
+- **2026-10-08 — Early argument-recovery trial measured and retired:** a frozen
+  opt-in implementation injected a configured-check argument example immediately
+  after string-argv validation failure, sharing the existing recovery allowance.
+  Thirty matching local attempts yielded harness 10/15 and minimal 4/15 accepted,
+  versus 9/15 and 5/15: aggregate acceptance stayed 14/30. Ten of eleven early
+  prompts were followed by valid arrays, but two minimal slug artifacts completed
+  despite failed acceptance. The trial did not establish a reliable quality gain
+  or a correctness requirement, so its code/settings/tests were reverted. Its
+  immutable revision, raw evidence, and isolated replay instructions remain in
+  `evals/BASELINES.md`; no new runtime option or default is shipped.
 - **Next:** item 6's listed mechanics are in place; see the known limitations
   below before relying on them unattended. Item 7 has a repeated baseline and
-  eight completed comparisons. Argument feedback did not reliably break repeated
+  nine completed comparisons. Argument feedback did not reliably break repeated
   errors; normalized traces show that completion-time verification recovery rarely
-  fires in this task envelope. Earlier bounded and failed-check recovery, model profiles, context
-  management, and item 8's personal-use workflow remain open. Offline checks alone
+  fires in this task envelope, and the earlier argument cue was not retained after
+  mixed outcomes. Failed-check recovery, model profiles, context management, and item 8's personal-use workflow remain open. Offline checks alone
   are not evidence of better model coding performance.
 
 ### Review baseline
