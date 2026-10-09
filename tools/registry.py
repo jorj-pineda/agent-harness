@@ -17,7 +17,7 @@ import inspect
 from collections.abc import Iterator
 from typing import Any
 
-from pydantic import ValidationError
+from pydantic import BaseModel, ValidationError
 
 from providers.base import ToolSpec
 
@@ -65,12 +65,7 @@ class ToolRegistry:
             effective_timeout = DEFAULT_INVOKE_TIMEOUT_S
         try:
             async with asyncio.timeout(effective_timeout):
-                if inspect.iscoroutinefunction(tool.fn):
-                    return await tool.fn(validated)
-                # Run sync tools in a worker thread so the event loop stays
-                # responsive; the thread itself can't be interrupted, but control
-                # returns to the harness on schedule.
-                return await asyncio.to_thread(tool.fn, validated)
+                return await _execute_and_settle(tool, validated)
         except TimeoutError as exc:
             raise ToolError(f"Tool {name!r} timed out after {effective_timeout}s") from exc
         except ToolError:
@@ -86,3 +81,32 @@ class ToolRegistry:
 
     def __len__(self) -> int:
         return len(self._tools)
+
+
+async def _execute_and_settle(tool: Tool, validated: BaseModel) -> Any:
+    """Keep invocation alive until owned work has stopped, even on cancellation.
+
+    Sync worker threads cannot be interrupted. Async tools receive one cancel
+    request, then get time to finish cleanup (including managed subprocesses).
+    Further cancellation of the caller cannot abandon that cleanup. Deadlines
+    may therefore be exceeded; they do not imply hard execution-time bounds.
+    """
+    is_async = inspect.iscoroutinefunction(tool.fn)
+    task = asyncio.create_task(
+        tool.fn(validated) if is_async else asyncio.to_thread(tool.fn, validated)
+    )
+    try:
+        return await asyncio.shield(task)
+    except asyncio.CancelledError:
+        if is_async:
+            task.cancel()
+        while not task.done():
+            try:
+                await asyncio.shield(task)
+            except asyncio.CancelledError:
+                continue
+            except Exception:
+                break
+        if not task.cancelled():
+            task.exception()  # Retrieve errors without replacing the original cancellation.
+        raise

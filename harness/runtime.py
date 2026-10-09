@@ -23,6 +23,7 @@ from workspace import SnapshotLimitError, Workspace, compare, snapshot
 from workspace.changes import TextCapture, review_diffs
 from workspace.core import DEFAULT_IGNORE_GLOBS
 
+from .admission import turn_admission
 from .config import CodingToolset, Settings
 from .grounding import Grounder
 from .loop import run_turn
@@ -115,47 +116,57 @@ async def run_configured_turn(
 ) -> TurnResponse:
     if is_out_of_scope_request(message):
         return out_of_scope_response()
-    refresh_system_message(
-        session,
-        fact_store,
-        user_id,
-        system_prompt=system_prompt
-        if system_prompt is not None
-        else coding_prompt(settings.coding_toolset),
-        project_check_argv=settings.project_check_argv,
-    )
-    tracked_root = (
-        Path(session.workspace_root)
-        if settings.track_workspace_changes and session.workspace_root
-        else None
-    )
-    before = await _snapshot_or_reason(tracked_root, settings) if tracked_root else None
-    response = await run_turn(
-        session=session,
-        user_input=message,
-        provider=provider,
-        registry=registry,
-        max_iterations=settings.max_tool_iterations,
-        grounder=grounder
-        or Grounder(escalation_threshold=settings.confidence_escalation_threshold),
-        require_verification_before_finish=settings.require_verification_before_finish,
-        require_plan_before_edit=settings.require_plan_before_edit,
-        max_files_touched_per_turn=settings.max_files_touched_per_turn,
-        max_tool_calls_per_turn=settings.max_tool_calls_per_turn,
-        max_turn_wall_seconds=settings.max_turn_wall_seconds,
-        max_completion_tokens_per_turn=settings.max_completion_tokens_per_turn,
-        max_total_tokens_per_turn=settings.max_total_tokens_per_turn,
-        max_context_tokens=settings.max_context_tokens,
-        min_request_output_tokens=settings.min_request_output_tokens,
-        max_identical_tool_calls=settings.max_identical_tool_calls,
-        max_completion_retries=settings.max_completion_retries,
-        required_check=settings.project_check_argv,
-        on_event=on_event,
-        trace=trace,
-    )
-    if tracked_root is not None and before is not None:
-        response.workspace_changes = await _change_report(tracked_root, settings, before)
-    return response
+    with turn_admission.claim(session.session_id, session.workspace_root) as busy:
+        if busy is not None:
+            return TurnResponse(
+                answer=busy,
+                escalated=True,
+                completion_status="blocked",
+                completion_reason=busy,
+                provider="policy",
+                latency_ms=0.0,
+            )
+        refresh_system_message(
+            session,
+            fact_store,
+            user_id,
+            system_prompt=system_prompt
+            if system_prompt is not None
+            else coding_prompt(settings.coding_toolset),
+            project_check_argv=settings.project_check_argv,
+        )
+        tracked_root = (
+            Path(session.workspace_root)
+            if settings.track_workspace_changes and session.workspace_root
+            else None
+        )
+        before = await _snapshot_or_reason(tracked_root, settings) if tracked_root else None
+        response = await run_turn(
+            session=session,
+            user_input=message,
+            provider=provider,
+            registry=registry,
+            max_iterations=settings.max_tool_iterations,
+            grounder=grounder
+            or Grounder(escalation_threshold=settings.confidence_escalation_threshold),
+            require_verification_before_finish=settings.require_verification_before_finish,
+            require_plan_before_edit=settings.require_plan_before_edit,
+            max_files_touched_per_turn=settings.max_files_touched_per_turn,
+            max_tool_calls_per_turn=settings.max_tool_calls_per_turn,
+            max_turn_wall_seconds=settings.max_turn_wall_seconds,
+            max_completion_tokens_per_turn=settings.max_completion_tokens_per_turn,
+            max_total_tokens_per_turn=settings.max_total_tokens_per_turn,
+            max_context_tokens=settings.max_context_tokens,
+            min_request_output_tokens=settings.min_request_output_tokens,
+            max_identical_tool_calls=settings.max_identical_tool_calls,
+            max_completion_retries=settings.max_completion_retries,
+            required_check=settings.project_check_argv,
+            on_event=on_event,
+            trace=trace,
+        )
+        if tracked_root is not None and before is not None:
+            response.workspace_changes = await _change_report(tracked_root, settings, before)
+        return response
 
 
 @dataclass
