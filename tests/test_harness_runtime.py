@@ -221,6 +221,11 @@ async def test_runtime_reports_turn_changes_and_excludes_preexisting_edits(
     assert changes.modified == []
     assert changes.deleted == ["remove_me.txt"]
     assert response.files_touched == ["a.py"]
+    diffs = {entry.path: entry for entry in changes.diffs}
+    assert set(diffs) == {"a.py", "generated.txt", "remove_me.txt"}
+    assert "+a = 1\n" in diffs["a.py"].diff
+    assert "+from pytest\n\\ No newline at end of file" in diffs["generated.txt"].diff
+    assert "-x\n\\ No newline at end of file" in diffs["remove_me.txt"].diff
     assert (workspace / "user_dirty.py").read_text(encoding="utf-8").startswith("# user edit")
 
 
@@ -242,6 +247,56 @@ async def test_runtime_reports_unavailable_changes_over_limit(tmp_path: Path) ->
         workspace, tmp_path, Settings(_env_file=None, track_workspace_changes=False), edit
     )
     assert disabled.workspace_changes.status == "not_tracked"
+    assert disabled.workspace_changes.diffs == []
+
+
+async def test_runtime_diff_preserves_git_index_and_uses_dirty_start(tmp_path: Path) -> None:
+    import subprocess
+
+    workspace = tmp_path / "repo"
+    workspace.mkdir()
+
+    def git(*args: str) -> None:
+        subprocess.run(["git", "-C", str(workspace), *args], check=True, capture_output=True)
+
+    git("init")
+    (workspace / "a.py").write_text("staged = 1\n")
+    git("add", "a.py")
+    index_before = (workspace / ".git" / "index").read_bytes()
+    (workspace / "a.py").write_text("staged = 1\nuser = 2\n")
+    response = await _run_edit_turn(
+        workspace,
+        tmp_path,
+        Settings(_env_file=None, max_tool_iterations=1),
+        ToolCall(
+            id="w",
+            name="write_file",
+            arguments={
+                "path": "a.py",
+                "content": "staged = 1\nuser = 2\nagent = 3\n",
+            },
+        ),
+    )
+    assert response.completion_status == "budget_exhausted"
+    diff = response.workspace_changes.diffs[0].diff
+    assert " user = 2\n" in diff
+    assert "+agent = 3\n" in diff
+    assert "+user = 2\n" not in diff
+    assert (workspace / ".git" / "index").read_bytes() == index_before
+    assert (workspace / "a.py").read_text() == "staged = 1\nuser = 2\nagent = 3\n"
+
+
+async def test_runtime_can_disable_diff_capture_without_disabling_paths(tmp_path: Path) -> None:
+    workspace = tmp_path / "repo"
+    workspace.mkdir()
+    response = await _run_edit_turn(
+        workspace,
+        tmp_path,
+        Settings(_env_file=None, max_workspace_diff_bytes=0),
+        ToolCall(id="w", name="write_file", arguments={"path": "a.py", "content": "a = 1\n"}),
+    )
+    assert response.workspace_changes.added == ["a.py"]
+    assert response.workspace_changes.diffs == []
 
 
 async def test_runtime_applies_context_limit_before_provider_request(tmp_path: Path) -> None:

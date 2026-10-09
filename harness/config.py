@@ -157,6 +157,14 @@ class Settings(BaseSettings):
     )
     max_tracked_files: int = Field(default=20_000, ge=1, le=1_000_000)
     max_tracked_bytes: int = Field(default=256_000_000, ge=1, le=10_000_000_000)
+    max_workspace_diff_bytes: int = Field(
+        default=64_000,
+        ge=0,
+        le=10_000_000,
+        description="Maximum UTF-8 diff content per turn; 0 disables text capture.",
+    )
+    max_diff_file_bytes: int = Field(default=128_000, ge=1, le=10_000_000)
+    max_diff_snapshot_bytes: int = Field(default=2_000_000, ge=1, le=100_000_000)
     default_workspace_root: Path | None = Field(
         default=None,
         description="Optional default repo sandbox when sessions omit workspace_root.",

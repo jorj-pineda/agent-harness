@@ -204,6 +204,20 @@ function workspaceChangeItems(changes) {
   ];
 }
 
+function workspaceDiffSection(changes) {
+  const section = el("div", "env-section");
+  const diffs = changes?.diffs || [];
+  if (!diffs.length) section.classList.add("empty");
+  section.appendChild(el("div", "label", "turn diffs"));
+  for (const entry of diffs) {
+    const details = el("details", "workspace-diff");
+    details.appendChild(el("summary", null, entry.path));
+    details.appendChild(el("pre", null, entry.reason ? `Diff omitted: ${entry.reason}` : entry.diff));
+    section.appendChild(details);
+  }
+  return section;
+}
+
 function renderEnvelope(data) {
   els.envelope.replaceChildren();
 
@@ -231,6 +245,7 @@ function renderEnvelope(data) {
   els.envelope.appendChild(listSection("citations", data.citations));
   els.envelope.appendChild(listSection("files touched", data.files_touched));
   els.envelope.appendChild(listSection("workspace changes", workspaceChangeItems(data.workspace_changes)));
+  els.envelope.appendChild(workspaceDiffSection(data.workspace_changes));
   els.envelope.appendChild(listSection("patch summary", data.patch_summary));
   els.envelope.appendChild(listSection("completion", [
     `${data.completion_status || "completed"}${data.completion_reason ? `: ${data.completion_reason}` : ""}`,

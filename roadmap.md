@@ -223,13 +223,26 @@ The harness does not need to make every model good at every task. It needs to id
   or a correctness requirement, so its code/settings/tests were reverted. Its
   immutable revision, raw evidence, and isolated replay instructions remain in
   `evals/BASELINES.md`; no new runtime option or default is shipped.
+- **2026-10-08 — Personal-use turn diffs prepared:** shared snapshots now retain
+  bounded text alongside hashes and return per-file review diffs through the API,
+  CLI, and panel, including budget-exhausted turns. The working tree at turn start
+  is the baseline; staged and unstaged edits are preserved and Git's index/stash
+  are untouched. Binary, symlink, environment-file, unreadable, and over-limit
+  content has explicit omission reasons. The CLI also accepts null confidence
+  so valid partial results remain visible. This supports item 8's review workflow,
+  with 528 offline tests, Ruff/mypy, both 90/90 scripted matrices, and CLI/panel
+  checks against a temporary scripted-provider API using real file tools. These
+  validate reporting, not model capability; no live comparison or quality gain
+  is claimed. Durable checkpoints, revert, attribution, persistence, cancellation,
+  and resume remain open.
 - **Next:** item 6's listed mechanics are in place; see the known limitations
   below before relying on them unattended. Item 7 has a repeated baseline and
   nine completed comparisons. Argument feedback did not reliably break repeated
   errors; normalized traces show that completion-time verification recovery rarely
   fires in this task envelope, and the earlier argument cue was not retained after
-  mixed outcomes. Failed-check recovery, model profiles, context management, and item 8's personal-use workflow remain open. Offline checks alone
-  are not evidence of better model coding performance.
+  mixed outcomes. Item 8 now has bounded turn-diff review; failed-check recovery,
+  model profiles, context management, and the rest of the personal-use workflow
+  remain open. Offline checks alone are not evidence of better model coding performance.
 
 ### Review baseline
 
@@ -456,9 +469,9 @@ enters the queue when a real task or evaluation shows the limitation matters.
 | Limitation | Proposed fix |
 |---|---|
 | Changes cannot be attributed. A concurrent edit by Jorge or another process during a turn is reported as a turn change. | Add the Milestone 2 single-writer lock per workspace. Label each changed path as a file-tool edit (its hash matches the last tool result) or as a change from a command or another process. |
-| Only paths are reported, not diff content. There are no checkpoints and no revert. | In Git repositories, checkpoint the working tree with a temporary index (`git write-tree` without touching Jorge's index or stash) and diff or revert against it. Outside Git, keep bounded copies of changed text files. This is the Milestone 5 checkpoint/revert work. |
+| Bounded per-turn text diffs are available, but capture/output limits omit content. There are no durable checkpoints and no revert. | Add durable working-tree checkpoints before a safe revert workflow. A temporary Git index (`git write-tree` without touching Jorge's index or stash) can capture Git trees; retain bounded copies outside Git. The current in-memory text capture is review evidence only. |
 | Ignored directories (`.git`, `.venv`, `node_modules`, caches) are not tracked, so dependency installs or Git metadata changes are invisible. | Record a cheap per-directory stat summary for ignored top-level directories and report "ignored directory changed" without listing its contents. |
-| Snapshot time counts toward neither the wall-time budget nor `latency_ms`. | Measure snapshot time, report it in the response, and start the wall deadline before the first snapshot. |
+| Snapshot and diff-generation time count toward neither the wall-time budget nor `latency_ms`. | Measure review overhead, report it in the response, and start the wall deadline before the first snapshot. |
 | Each turn reads every tracked file twice, up to the limits. Large repositories hit `unavailable`. | Cache `(size, mtime_ns, inode)` beside each hash and rehash only files whose metadata changed. Reuse the previous turn's after-snapshot when metadata is unchanged. |
 | Five files on `main` fail `ruff format --check` (pre-existing). | Run a formatting-only PR with no behavior changes. |
 
