@@ -121,6 +121,32 @@ for an automatic revert. Concurrent changes still cannot be attributed to the ag
 The CLI displays unavailable confidence as `n/a`, so valid responses with a null
 confidence still show their completion status, checks, and diffs.
 
+The shared runtime admits one active turn per session and per overlapping
+workspace root within a harness process. Roots are resolved before admission;
+equal roots, parent/child roots, symlink aliases, and existing filesystem case
+aliases conflict. Separate workspaces can run concurrently. Admission covers
+system-message refresh, snapshots, inference, tools, and final diff generation,
+even when change tracking is disabled. Conflicting requests receive the existing
+response envelope with `completion_status=blocked`, `provider=policy`, and a
+retry instruction. HTTP returns that envelope normally; streaming returns it in
+`turn_done`. A rejected request does not alter session history or call the model,
+and is not queued or retried automatically. Retry after the active turn finishes.
+
+Tool invocation now waits for owned execution to settle on timeout/cancellation.
+Synchronous workers cannot be killed, so their invocation stays active until the
+worker finishes; asynchronous tools receive cancellation and finish their cleanup.
+Repeated caller cancellation does not abandon that cleanup. This keeps reservations
+held while an in-flight file write finishes and preserves managed subprocess
+cleanup. Timeout/cancellation latency can exceed the configured deadline, and a
+stuck synchronous worker can keep the workspace busy indefinitely. A timed-out
+write may have changed files; review the actual diff alongside its tool error.
+
+This guard is process-local: use one API worker for this personal-use workflow.
+Other servers, editors, detached subprocesses, and direct low-level `run_turn` or
+tool calls do not participate. This does not establish process isolation or
+attribute every workspace change. Persistence, explicit cancellation endpoints,
+repair of interrupted transcripts, idempotent retries, and safe resume remain open.
+
 The configured runtime also caps tool attempts per turn with
 `MAX_TOOL_CALLS_PER_TURN` and stops before repeating a tool call whose previous
 `MAX_IDENTICAL_TOOL_CALLS` consecutive outcomes were unchanged. Rejected calls
