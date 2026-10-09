@@ -410,6 +410,23 @@ button:disabled {
   display: none;
 }
 
+.workspace-diff {
+  margin: 8px 0;
+}
+
+.workspace-diff summary {
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+
+.workspace-diff pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 420px;
+  overflow: auto;
+  font-size: 12px;
+}
+
 .spinner {
   align-self: flex-start;
   color: var(--text-muted);

@@ -61,6 +61,12 @@ class CheckRecord(BaseModel):
     error: str | None = None
 
 
+class WorkspaceFileDiff(BaseModel):
+    path: str
+    diff: str = ""
+    reason: str | None = None
+
+
 class WorkspaceChangeReport(BaseModel):
     """Workspace content changes observed between the start and end of a turn.
 
@@ -73,6 +79,7 @@ class WorkspaceChangeReport(BaseModel):
     modified: list[str] = Field(default_factory=list)
     deleted: list[str] = Field(default_factory=list)
     reason: str | None = None
+    diffs: list[WorkspaceFileDiff] = Field(default_factory=list)
 
 
 class Turn(BaseModel):

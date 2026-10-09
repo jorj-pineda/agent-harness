@@ -115,6 +115,40 @@ def test_stream_out_of_scope_is_policy_turn(harness: Harness) -> None:
     assert done["escalated"] is True
 
 
+def test_stream_final_envelope_includes_actual_diff(harness: Harness, tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    (repo / "calc.py").write_text("user = 1\n")
+    session_id = _make_session(harness, "u-diff", workspace=repo)
+    harness.provider.script(
+        make_response(
+            tool_calls=[
+                ToolCall(
+                    id="edit",
+                    name="write_file",
+                    arguments={"path": "calc.py", "content": "user = 1\nagent = 2\n"},
+                )
+            ]
+        ),
+        make_response(content="Partial work ready."),
+    )
+    resp = harness.client.get(
+        "/chat/stream",
+        params={
+            "user_id": "u-diff",
+            "session_id": session_id,
+            "message": "update calc.py",
+        },
+    )
+    assert resp.status_code == 200
+    events = _parse_sse(resp.text)
+    done = json.loads(events[-1]["data"])["response"]
+    diff = done["workspace_changes"]["diffs"][0]
+    assert diff["path"] == "calc.py"
+    assert " user = 1\n+agent = 2\n" in diff["diff"]
+    assert diff["reason"] is None
+
+
 def test_stream_404_for_unknown_session(harness: Harness) -> None:
     resp = harness.client.get(
         "/chat/stream",

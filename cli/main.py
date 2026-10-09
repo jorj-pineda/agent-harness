@@ -83,11 +83,14 @@ def chat(
             continue
 
         typer.echo(f"\n{result.answer}\n")
-        confidence_label = (
-            "low" if result.confidence < 0.5 else "mid" if result.confidence < 0.7 else "high"
-        )
+        confidence = result.confidence
+        if confidence is None:
+            confidence_display = "n/a"
+        else:
+            label = "low" if confidence < 0.5 else "mid" if confidence < 0.7 else "high"
+            confidence_display = f"{confidence:.2f}({label})"
         typer.echo(
-            f"  conf={result.confidence:.2f}({confidence_label})"
+            f"  conf={confidence_display}"
             f"  escalated={result.escalated}"
             f"  provider={result.provider}"
             f"  latency={result.latency_ms:.0f}ms"
@@ -101,6 +104,12 @@ def chat(
                     typer.echo(f"  workspace_{kind}={changes[kind]}")
         elif changes.get("status") == "unavailable":
             typer.echo(f"  workspace_changes=unavailable ({changes.get('reason')})")
+        for entry in changes.get("diffs", []):
+            typer.echo(f"  turn diff: {entry['path']}")
+            if entry.get("reason"):
+                typer.echo(f"  diff omitted: {entry['reason']}")
+            else:
+                typer.echo(entry.get("diff", ""), nl=False)
         typer.echo(f"  status={result.completion_status} verification={result.verification_status}")
         if result.token_usage:
             typer.echo(f"  token_usage={result.token_usage}")

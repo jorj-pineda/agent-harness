@@ -96,6 +96,8 @@ async def test_real_tool_edit_is_scored_from_final_files(tmp_path: Path) -> None
     tool_results = [r for r in result.turn_trace if r["kind"] == "tool_result"]
     assert [r["message"]["tool_call_id"] for r in tool_results] == ["read", "edit", "check"]
     assert result.prompt_version == PROMPT_VERSION
+    assert result.runtime_config["max_workspace_diff_bytes"] == 64_000
+    assert result.runtime_config["max_diff_snapshot_bytes"] == 2_000_000
     assert len(result.source_revision) == 64
     assert (task.fixture / "calc.py").read_bytes() == original
     assert provider.calls[0][0][0].content.startswith(BASE_SYSTEM_PROMPT)

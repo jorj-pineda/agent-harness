@@ -17,7 +17,7 @@ class TurnSummary:
     """Flattened view of the TurnResponse envelope for CLI display."""
 
     answer: str
-    confidence: float
+    confidence: float | None
     escalated: bool
     provider: str
     latency_ms: float
@@ -64,7 +64,7 @@ class AgentClient:
         data = resp.json()
         return TurnSummary(
             answer=str(data.get("answer", "")),
-            confidence=float(data.get("confidence", 0.0)),
+            confidence=float(data["confidence"]) if data.get("confidence") is not None else None,
             escalated=bool(data.get("escalated", False)),
             provider=str(data.get("provider", "")),
             latency_ms=float(data.get("latency_ms", 0.0)),

@@ -90,11 +90,16 @@ def test_chat_shows_observed_workspace_changes() -> None:
         instance.create_session.return_value = "sess-changes"
         instance.chat.side_effect = [
             _make_turn(
+                confidence=None,
                 workspace_changes={
                     "status": "tracked",
                     "added": ["generated.txt"],
                     "modified": ["calc.py"],
                     "deleted": [],
+                    "diffs": [
+                        {"path": "calc.py", "diff": "--- a/calc.py\n+++ b/calc.py\n-old\n+new\n"},
+                        {"path": "generated.txt", "reason": "Text capture byte limit exceeded"},
+                    ],
                 }
             ),
             _make_turn(
@@ -106,8 +111,11 @@ def test_chat_shows_observed_workspace_changes() -> None:
 
     assert result.exit_code == 0, result.output
     assert "workspace_added=['generated.txt']" in result.output
+    assert "conf=n/a" in result.output
     assert "workspace_modified=['calc.py']" in result.output
     assert "workspace_deleted" not in result.output
+    assert "--- a/calc.py\n+++ b/calc.py\n-old\n+new" in result.output
+    assert "diff omitted: Text capture byte limit exceeded" in result.output
     assert "workspace_changes=unavailable (Workspace too large)" in result.output
 
 
@@ -291,3 +299,10 @@ def test_agent_client_raises_on_http_error() -> None:
         client = AgentClient()
         with pytest.raises(httpx.HTTPStatusError):
             client.chat("u", "bad-session", "hi")
+
+
+@pytest.mark.parametrize("envelope", [{"confidence": None}, {}])
+def test_agent_client_preserves_unavailable_confidence(envelope: dict) -> None:
+    with patch("httpx.post", return_value=_ok_response(envelope)):
+        summary = AgentClient().chat("u", "s", "inspect")
+    assert summary.confidence is None

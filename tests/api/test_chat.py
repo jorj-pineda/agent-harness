@@ -182,6 +182,13 @@ def test_chat_returns_patch_summary_after_write(harness: Harness, tmp_path: Path
         "modified": ["calc.py"],
         "deleted": [],
         "reason": None,
+        "diffs": [
+            {
+                "path": "calc.py",
+                "diff": "--- a/calc.py\n+++ b/calc.py\n@@ -1 +1 @@\n-x = 1\n+x = 2\n",
+                "reason": None,
+            }
+        ],
     }
 
 

@@ -10,6 +10,7 @@ from __future__ import annotations
 import asyncio
 import json
 from collections.abc import Callable, Iterable, Mapping
+from dataclasses import dataclass
 from pathlib import Path
 
 from memory import FactStore
@@ -19,6 +20,7 @@ from tools.code import build_code_tools
 from tools.memory import register_memory_tools
 from tools.semantic import register_semantic_search_stub
 from workspace import SnapshotLimitError, Workspace, compare, snapshot
+from workspace.changes import TextCapture, review_diffs
 from workspace.core import DEFAULT_IGNORE_GLOBS
 
 from .config import CodingToolset, Settings
@@ -26,7 +28,7 @@ from .grounding import Grounder
 from .loop import run_turn
 from .policy import is_out_of_scope_request
 from .prompts import BASE_SYSTEM_PROMPT, coding_prompt
-from .state import Session, TurnResponse, WorkspaceChangeReport
+from .state import Session, TurnResponse, WorkspaceChangeReport, WorkspaceFileDiff
 from .stream import EventCallback
 from .trace import TurnTraceRecord
 
@@ -156,15 +158,28 @@ async def run_configured_turn(
     return response
 
 
-async def _snapshot_or_reason(root: Path, settings: Settings) -> dict[str, str] | str:
+@dataclass
+class _TurnSnapshot:
+    fingerprints: dict[str, str]
+    text: TextCapture | None
+
+
+async def _snapshot_or_reason(root: Path, settings: Settings) -> _TurnSnapshot | str:
+    text = (
+        TextCapture(settings.max_diff_file_bytes, settings.max_diff_snapshot_bytes)
+        if settings.max_workspace_diff_bytes
+        else None
+    )
     try:
-        return await asyncio.to_thread(
+        fingerprints = await asyncio.to_thread(
             snapshot,
             root,
             ignore=DEFAULT_IGNORE_GLOBS,
             max_files=settings.max_tracked_files,
             max_bytes=settings.max_tracked_bytes,
+            text_capture=text,
         )
+        return _TurnSnapshot(fingerprints, text)
     except SnapshotLimitError as exc:
         return f"{exc}; change tracking skipped."
     except OSError as exc:
@@ -172,15 +187,29 @@ async def _snapshot_or_reason(root: Path, settings: Settings) -> dict[str, str] 
 
 
 async def _change_report(
-    root: Path, settings: Settings, before: dict[str, str] | str
+    root: Path, settings: Settings, before: _TurnSnapshot | str
 ) -> WorkspaceChangeReport:
     after = before if isinstance(before, str) else await _snapshot_or_reason(root, settings)
     if isinstance(before, str) or isinstance(after, str):
         return WorkspaceChangeReport(status="unavailable", reason=str(after))
-    changes = compare(before, after)
+    changes = compare(before.fingerprints, after.fingerprints)
+    diffs = (
+        await asyncio.to_thread(
+            review_diffs,
+            changes,
+            before.text,
+            after.text,
+            max_bytes=settings.max_workspace_diff_bytes,
+        )
+        if before.text is not None and after.text is not None
+        else []
+    )
     return WorkspaceChangeReport(
         status="tracked",
         added=list(changes.added),
         modified=list(changes.modified),
         deleted=list(changes.deleted),
+        diffs=[
+            WorkspaceFileDiff(path=item.path, diff=item.diff, reason=item.reason) for item in diffs
+        ],
     )
