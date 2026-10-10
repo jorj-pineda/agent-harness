@@ -101,6 +101,17 @@ class AgentClient:
         resp.raise_for_status()
         return dict(resp.json())
 
+    def workspace_review(
+        self, user_id: str, session_id: str, *, max_paths: int = 100
+    ) -> dict[str, Any]:
+        resp = httpx.get(
+            f"{self._base}/sessions/{session_id}/workspace-review",
+            params={"user_id": user_id, "max_paths": max_paths},
+            timeout=120,
+        )
+        resp.raise_for_status()
+        return dict(resp.json())
+
 
 def summarize(data: dict[str, Any]) -> TurnSummary:
     """Use the same review presentation for live and saved final envelopes."""

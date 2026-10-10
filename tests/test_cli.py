@@ -504,3 +504,27 @@ def test_cli_lost_response_retry_reuses_one_real_tool_turn(tmp_path) -> None:
         assert len(record) == 1
         assert len(provider.calls) == 2
         assert (repo / "a.py").read_text() == "user = 1\nagent = 2\n"
+
+
+def test_workspace_review_command_only_reads_and_explains_scope():
+    review = {
+        "status": "changed",
+        "turn_id": "t1",
+        "modified": ["a.py"],
+        "modified_count": 2,
+        "paths_truncated": True,
+        "excluded_patterns": [".git", ".env"],
+        "scope_note": "Read-only review, not permission to resume or revert.",
+    }
+    with patch("httpx.get", return_value=_ok_response(review)) as get, patch("httpx.post") as post:
+        result = runner.invoke(
+            app, ["workspace-review", "s1", "--user-id", "dev", "--max-paths", "1"]
+        )
+    assert result.exit_code == 0, result.output
+    assert "workspace=changed baseline_turn=t1" in result.output
+    assert "modified: ['a.py'] (total 2)" in result.output
+    assert "Path list truncated" in result.output
+    assert "not permission" in result.output
+    assert get.call_args.args[0].endswith("/sessions/s1/workspace-review")
+    assert get.call_args.kwargs["params"] == {"user_id": "dev", "max_paths": 1}
+    post.assert_not_called()

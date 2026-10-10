@@ -55,3 +55,48 @@ def test_snapshot_limits_fail_instead_of_reporting_partial_changes(tmp_path: Pat
     with pytest.raises(SnapshotLimitError, match="bytes"):
         snapshot(tmp_path, ignore=(), max_bytes=12)
     assert len(snapshot(tmp_path, ignore=(), max_files=3, max_bytes=15)) == 3
+
+
+def test_strict_snapshot_rejects_missing_root_and_read_failures(tmp_path: Path, monkeypatch):
+    import workspace.changes as changes
+
+    with pytest.raises(OSError):
+        snapshot(tmp_path / "missing", ignore=(), strict=True)
+    (tmp_path / "a").write_text("value")
+
+    def fail(*args, **kwargs):
+        raise PermissionError("fixture denied")
+
+    monkeypatch.setattr(changes, "_hash_file", fail)
+    assert snapshot(tmp_path, ignore=())["a"].startswith("unreadable:")
+    with pytest.raises(PermissionError):
+        snapshot(tmp_path, ignore=(), strict=True)
+
+
+def test_strict_snapshot_rejects_walk_errors(tmp_path: Path, monkeypatch):
+    import workspace.changes as changes
+
+    def fail_walk(root, *, followlinks, onerror):
+        onerror(PermissionError("fixture traversal denied"))
+        return iter(())
+
+    monkeypatch.setattr(changes.os, "walk", fail_walk)
+    assert snapshot(tmp_path, ignore=()) == {}
+    with pytest.raises(PermissionError):
+        snapshot(tmp_path, ignore=(), strict=True)
+
+
+def test_strict_snapshot_stops_reading_a_file_that_grows(tmp_path: Path, monkeypatch):
+    import workspace.changes as changes
+
+    path = tmp_path / "growing"
+    path.write_text("small")
+    original = changes._hash_file
+
+    def grow(path, capture_bytes, **kwargs):
+        path.write_text("now much larger")
+        return original(path, capture_bytes, **kwargs)
+
+    monkeypatch.setattr(changes, "_hash_file", grow)
+    with pytest.raises(SnapshotLimitError, match="grew"):
+        snapshot(tmp_path, ignore=(), max_bytes=5, strict=True)

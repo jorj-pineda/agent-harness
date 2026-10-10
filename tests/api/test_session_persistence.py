@@ -81,6 +81,12 @@ def test_restart_preserves_final_review_and_blocks_continuation(
         assert "+agent = 2\n" in response["workspace_changes"]["diffs"][0]["diff"]
         saved = client.get(f"/sessions/{sid}", params={"user_id": "dev"}).json()
         assert saved["responses"][0]["response"] == response
+        assert (
+            client.get(f"/sessions/{sid}/workspace-review", params={"user_id": "dev"}).json()[
+                "status"
+            ]
+            == "unchanged"
+        )
         if not limited:
             provider.script(make_response(content="Second answer"))
             assert (

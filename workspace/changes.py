@@ -53,7 +53,9 @@ def _ignored(name: str, patterns: Iterable[str]) -> bool:
     return any(fnmatch(name, pattern) for pattern in patterns)
 
 
-def _hash_file(path: Path, capture_bytes: int | None) -> tuple[str, bytes | None]:
+def _hash_file(
+    path: Path, capture_bytes: int | None, *, max_read_bytes: int | None = None
+) -> tuple[str, bytes | None]:
     digest = hashlib.sha256()
     content: bytearray | None = bytearray() if capture_bytes is not None else None
     # Do not follow a file replaced by a symlink between enumeration and opening.
@@ -61,7 +63,17 @@ def _hash_file(path: Path, capture_bytes: int | None) -> tuple[str, bytes | None
     with os.fdopen(fd, "rb") as stream:
         if not stat_module.S_ISREG(os.fstat(stream.fileno()).st_mode):
             raise OSError("Snapshot entry is no longer a regular file")
-        for chunk in iter(lambda: stream.read(64 * 1024), b""):
+        bytes_read = 0
+        while True:
+            read_size = 64 * 1024
+            if max_read_bytes is not None:
+                read_size = min(read_size, max_read_bytes - bytes_read + 1)
+            chunk = stream.read(read_size)
+            if not chunk:
+                break
+            bytes_read += len(chunk)
+            if max_read_bytes is not None and bytes_read > max_read_bytes:
+                raise SnapshotLimitError("File grew beyond its bounded snapshot read")
             digest.update(chunk)
             if content is not None and capture_bytes is not None:
                 if len(content) + len(chunk) <= capture_bytes:
@@ -78,19 +90,29 @@ def snapshot(
     max_files: int = 0,
     max_bytes: int = 0,
     text_capture: TextCapture | None = None,
+    strict: bool = False,
 ) -> dict[str, str]:
     """Map repo-relative POSIX paths to content fingerprints.
 
     Symlinks are not followed; a link is fingerprinted by its target string.
     Unreadable files are fingerprinted by size and mtime. Nonzero limits raise
     `SnapshotLimitError` before hashing more than they allow.
+    Strict mode rejects missing roots, traversal/read failures, vanished files,
+    and special file types rather than silently recording incomplete evidence.
     An optional fresh `TextCapture` retains bounded UTF-8 content alongside hashes;
     omitted text does not prevent path tracking. This is not an atomic snapshot.
     """
+    if strict and not root.is_dir():
+        raise OSError("Workspace root is not a directory")
+
+    def walk_error(error: OSError) -> None:
+        if strict:
+            raise error
+
     patterns = tuple(ignore)
     fingerprints: dict[str, str] = {}
     total_bytes = 0
-    for directory, dirs, files in os.walk(root, followlinks=False):
+    for directory, dirs, files in os.walk(root, followlinks=False, onerror=walk_error):
         parent = Path(directory)
         dirs[:] = sorted(name for name in dirs if not _ignored(name, patterns))
         entries = [name for name in dirs if (parent / name).is_symlink()]
@@ -108,8 +130,12 @@ def snapshot(
             try:
                 stat = path.stat()
             except FileNotFoundError:
+                if strict:
+                    raise
                 continue
             if not path.is_file():
+                if strict:
+                    raise OSError("Workspace contains an unsupported file type")
                 continue
             total_bytes += stat.st_size
             if max_bytes and total_bytes > max_bytes:
@@ -128,7 +154,11 @@ def snapshot(
                             text_capture.max_file_bytes,
                             text_capture.max_bytes - text_capture.bytes_used,
                         )
-                fingerprint, content = _hash_file(path, limit)
+                fingerprint, content = (
+                    _hash_file(path, limit, max_read_bytes=stat.st_size)
+                    if strict
+                    else _hash_file(path, limit)
+                )
                 fingerprints[relative] = fingerprint
                 if text_capture is not None and limit is not None:
                     if content is None:
@@ -144,8 +174,12 @@ def snapshot(
                             text_capture.texts[relative] = text
                             text_capture.bytes_used += len(content)
             except FileNotFoundError:
+                if strict:
+                    raise
                 continue
             except OSError:
+                if strict:
+                    raise
                 fingerprints[relative] = f"unreadable:{stat.st_size}:{stat.st_mtime_ns}"
                 if text_capture is not None:
                     text_capture.omitted[relative] = "File content could not be read safely"

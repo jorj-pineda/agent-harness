@@ -16,6 +16,7 @@ from pydantic import BaseModel, Field
 
 from .runs import RequestConflictError, RunInput, RunRecord
 from .state import Session, TurnResponse
+from .workspace_review import WorkspaceReviewBaseline
 
 
 class SavedTurnResponse(BaseModel):
@@ -38,6 +39,11 @@ class SessionSummary(BaseModel):
     turn_count: int
 
 
+class SavedWorkspaceReview(BaseModel):
+    turn_id: str
+    baseline: WorkspaceReviewBaseline
+
+
 class SessionStore:
     """Single-thread, application-lifecycle-owned archive connection."""
 
@@ -54,6 +60,10 @@ class SessionStore:
             "run_id TEXT PRIMARY KEY, user_id TEXT NOT NULL, request_id TEXT NOT NULL, "
             "session_id TEXT NOT NULL, status TEXT NOT NULL, created_at TEXT NOT NULL, "
             "record TEXT NOT NULL, UNIQUE(user_id, request_id))"
+        )
+        self._conn.execute(
+            "CREATE TABLE IF NOT EXISTS workspace_reviews ("
+            "session_id TEXT PRIMARY KEY, record TEXT NOT NULL)"
         )
         self._conn.commit()
 
@@ -162,6 +172,7 @@ class SessionStore:
         response: TurnResponse,
         *,
         session: Session | None = None,
+        workspace_baseline: WorkspaceReviewBaseline | None = None,
     ) -> None:
         record = self.get_run(run_id)
         if record is None or record.status != "running":
@@ -183,6 +194,19 @@ class SessionStore:
         with self._conn:
             if session is not None and payload is not None:
                 self._write_archive(session, payload)
+                if workspace_baseline is None:
+                    self._conn.execute(
+                        "DELETE FROM workspace_reviews WHERE session_id = ?", (session.session_id,)
+                    )
+                else:
+                    saved = SavedWorkspaceReview(
+                        turn_id=session.turns[-1].turn_id, baseline=workspace_baseline
+                    )
+                    self._conn.execute(
+                        "INSERT INTO workspace_reviews VALUES (?, ?) "
+                        "ON CONFLICT(session_id) DO UPDATE SET record=excluded.record",
+                        (session.session_id, saved.model_dump_json()),
+                    )
             self._update_run(record)
 
     def fail_run(self, run_id: str) -> None:
@@ -226,6 +250,13 @@ class SessionStore:
             (user_id, session_id, session_id, request_id, request_id, limit, offset),
         ).fetchall()
         return [RunRecord.model_validate_json(row[0]) for row in rows]
+
+    def get_workspace_review(self, session_id: str) -> SavedWorkspaceReview | None:
+        row = self._conn.execute(
+            "SELECT record FROM workspace_reviews WHERE session_id = ?",
+            (session_id,),
+        ).fetchone()
+        return SavedWorkspaceReview.model_validate_json(row[0]) if row else None
 
     def get(self, session_id: str) -> SessionArchive | None:
         row = self._conn.execute(
