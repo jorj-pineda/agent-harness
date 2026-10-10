@@ -10,7 +10,7 @@ improvements in model coding ability.
 
 Most agent tutorials stop at `LangChain.AgentExecutor`. **agent-harness** is the opposite: a hand-written ReAct loop, grounding layer, and memory store you can read in an afternoon — built to show how a **senior coding agent** is wired, not how to import a framework. No LangChain, LlamaIndex, or LangGraph. One FastAPI process, pluggable providers (Ollama / Anthropic / OpenAI), workspace-scoped code tools, and an eval harness that scores every turn from the same metadata envelope.
 
-Three ideas carry the portfolio story. **Grounded confidence:** every evidence-backed turn gets a deterministic score and file:line citations; below threshold → `escalated=true` without a second LLM judge. **Cross-session repo memory:** SQLite facts per `user_id` injected into the system prompt so conventions survive across sessions. **Eval honesty:** offline scores replay scripted tool traces (30 scenarios); live Ollama runs are documented separately — the README table measures harness shape, not which model wins.
+Three ideas carry the portfolio story. **Observed run evidence:** completion status, check attempts, tool failures, and bounded working-tree diffs support review. The retained `confidence` field is a legacy tool heuristic, not patch correctness. **Cross-session repo memory:** SQLite facts per `user_id` injected into the system prompt so conventions survive across sessions. **Eval honesty:** offline scores replay scripted tool traces (30 scenarios); live Ollama runs are documented separately — the README table measures harness shape, not which model wins.
 
 **Run it in five minutes:** `docker compose up --build -d`, `ollama pull gemma4`, then `POST /sessions` + `POST /chat` against the vendored `tiny_repo` fixture. Step-by-step curls, envelope field guide, and Windows PowerShell notes: [demo.md](demo.md). Live provider behavior (Mac Docker OOM, 4070 gemma4 multi-turn validation): [evals/LIVE.md](evals/LIVE.md).
 
@@ -50,7 +50,7 @@ Each layer depends only on the ones below it. Model-specific quirks (Gemma 4's t
 
 Every response ships one envelope — `{answer, confidence, citations, escalated, tool_calls, memory_writes, files_touched, verification_ran, patch_summary, provider, latency_ms}` — so consumers and eval scorers never re-parse prose.
 
-**Grounded confidence.** [harness/grounding.py](harness/grounding.py) scores evidence turns with `top_score × coverage × health` over cited file spans. Pure chitchat → `confidence=null`. Threshold breach → `escalated=true`.
+**Legacy evidence score.** [harness/grounding.py](harness/grounding.py) retains `confidence` and its escalation threshold for API compatibility. It scores tool results with `top_score × coverage × health`; a successful file read can score 1.0 even when unrelated to the answer. Citations identify tool-reported source locations without validating the answer's claims. Neither field establishes answer or patch correctness. No evidence tool call yields `confidence=null`.
 
 **Cross-session repo memory.** [memory/store.py](memory/store.py) persists facts per `user_id`; [api/server.py](api/server.py) injects them at turn start. Memory tools are factory-bound to the session user — no cross-user leakage.
 
@@ -132,8 +132,13 @@ remains enabled. Set `MAX_WORKSPACE_DIFF_BYTES=0` to retain paths without text
 capture. These are ephemeral per-turn reviews, not durable checkpoints or patches
 for an automatic revert. Concurrent changes still cannot be attributed to the agent.
 
-The CLI displays unavailable confidence as `n/a`, so valid responses with a null
-confidence still show their completion status, checks, and diffs.
+The panel and CLI lead with completion and check status, followed by review
+evidence: working-tree diffs, check attempts, and tool failures. `completed`
+records how the run ended; passing checks cover only the commands actually run,
+not independent task acceptance. The panel places the legacy evidence score in
+collapsed details without success coloring; the CLI labels it as a tool heuristic
+and displays unavailable values as `n/a`. Numeric fields and escalation behavior
+remain unchanged for existing API consumers.
 
 The shared runtime admits one active turn per session and per overlapping
 workspace root within a harness process. Roots are resolved before admission;
@@ -322,7 +327,7 @@ agent-harness chat --workspace "$(pwd)/tests/fixtures/tiny_repo"   # terminal RE
 The panel calls the same `/sessions` + `/chat` API; tool calls stream in live as
 cards over SSE (`GET /chat/stream`), with the response envelope on a side rail.
 
-![agent-harness panel after a bugfix turn — live tool cards (read_file, write_file, run_command/pytest), the answer, and the grounding envelope rail (confidence 1.00, verified, citations, files touched, patch summary).](docs/panel.png)
+![agent-harness panel after a bugfix turn — live tool cards (read_file, write_file, run_command/pytest), the answer, and the historical envelope rail (legacy confidence and verified labels; current panel uses turn review evidence).](docs/panel.png)
 
 _Capture above is offline-deterministic — the `scripted` provider chip in the rail
 is the test `FakeProvider`; the workspace edit and pytest run are real. Reproduce

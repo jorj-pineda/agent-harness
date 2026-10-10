@@ -1,6 +1,6 @@
 # Roadmap: a coding harness for lower-tier models
 
-Updated: 2026-10-08
+Updated: 2026-10-09
 
 ## Direction
 
@@ -260,6 +260,17 @@ The harness does not need to make every model good at every task. It needs to id
   passed 38 focused and 550 offline tests, Ruff/mypy, and both 90/90 scripted matrices
   with evidence labels inspected. No model behavior or coding-quality improvement
   is claimed.
+- **2026-10-09 — Evidence-first turn review prepared:** the panel and CLI now
+  lead with completion and observed check status. The panel removes confidence
+  success coloring and the broad "verified" badge; the legacy score appears in
+  collapsed details explaining that reads can score 1.0 without establishing
+  correctness. Source locations are labeled as tool-harvested evidence, and
+  unavailable-check errors are visible. API numeric fields and escalation
+  mechanics remain compatible. Validation passed 35 focused and 553 offline
+  tests, Ruff/mypy, both 90/90 scripted matrices with labels inspected, and
+  browser rendering checks across partial, stale, failed, unavailable, missing,
+  and passed states. These validate presentation, not model coding quality.
+  Persistence, cancellation, resume, and independent acceptance remain open.
 - **Next:** item 6's listed mechanics are in place; see the known limitations
   below before relying on them unattended. Item 7 has a repeated baseline and
   nine completed comparisons. Argument feedback did not reliably break repeated
@@ -366,7 +377,7 @@ The first baseline can use one already-supported provider. Configurable endpoint
 - [ ] Detect repeated identical calls and repeated unchanged failures; stop or change strategy instead of spending the full budget on a loop.
 - [ ] Respect provider truncation and finish reasons. A token-limited partial answer is not successful completion.
 - [ ] Apply explicit total budgets for wall time, model tokens, tool calls, and recovery attempts. Reserve enough budget to report partial work clearly.
-- [ ] Replace confidence-as-correctness in the UI with observed evidence and completion status. Preserve existing fields temporarily if needed, but document their limited meaning.
+- [x] Replace confidence-as-correctness in the UI with observed evidence and completion status. Preserve existing fields temporarily if needed, but document their limited meaning.
 - [ ] Report actual files changed, checks run, outstanding failures, and why execution stopped.
 
 Keep the loop flexible: inspect → edit → verify → repair is a useful default, not a rigid requirement to manufacture activity. Existing unrelated test failures must be reported separately from newly introduced failures; they should not cause endless repair attempts.
