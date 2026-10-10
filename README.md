@@ -242,7 +242,8 @@ rewritten as complete snapshots, so long histories increase storage and save cos
 Failed or externally interrupted execution also retires the live session; only
 its last committed snapshot remains available. Partial interrupted/crashed-turn evidence, live
 events, checkpoints, safe resume,
-cross-process coordination, and CLI/panel history views remain separate work.
+and cross-process coordination remain separate work. Client run history is available
+through the review controls described below.
 Out-of-scope and busy rejections do not create runtime turns or archive responses.
 
 ### Cancel an active turn
@@ -278,12 +279,12 @@ than claiming the run stopped.
 
 Disconnecting either transport leaves the application-owned turn running under
 its existing budgets. Inspect the archive or explicitly cancel it. The panel
-closes a failed stream without POST retry or automatic reconnection, and disables
+closes a failed stream without automatic POST retry or reconnection, and disables
 submission on that session while the outcome is unknown. A normal API shutdown
 requests cancellation and waits for detached work and archive writes before closing
 providers/stores. A forced process exit can still lose partial turn evidence; saved
-run identity records the interruption without rerunning it. Event replay, client
-reconnection/history, and safe resume remain open.
+run identity records the interruption without rerunning it. Event replay, automatic
+reconnection/polling, and safe resume remain open.
 
 ### Submit and inspect durable runs
 
@@ -291,7 +292,7 @@ reconnection/history, and safe resume remain open.
 `RunRecord` immediately (202 while running, 200 for a saved record), and executes
 under the existing budgets independently of the HTTP connection. Inspect with
 `GET /runs/<run_id>?user_id=dev1` or list with `GET /runs?user_id=dev1` (optional
-`session_id`, `limit` 1–100, and `offset`; newest first). Cancel through the existing
+`session_id`, `request_id`, `limit` 1–100, and `offset`; newest first). Cancel through the existing
 session cancellation endpoint and wait for the final run result.
 
 ```json
@@ -309,7 +310,7 @@ retain their final response envelope with an additive `run_id`. Matching active
 retries await the same task; finished/cancelled retries return the saved response,
 including after restart or session retirement. A duplicate SSE stream receives
 only the final event, without tool-event replay. Omitting the key creates a distinct
-run each time; the current CLI/panel do not yet retain keys for retry/reconnection.
+run each time. The CLI/panel now retain keys for explicit recovery as described below.
 
 Run identity is committed before execution. The final response and session archive
 are saved in one transaction before admission release and final delivery. A run
@@ -327,6 +328,56 @@ Runs retain input and final evidence in `SESSION_DB_PATH`, without event journal
 partial transcript repair, durable checkpoints, retention policy, or safe resume.
 Deduplication prevents transport retries from starting a second run; it cannot
 undo partial edits or guarantee individual tool side effects across crashes.
+
+### Review and recover from the clients
+
+The CLI prints a fresh `request_id` **before** each submission and the `run_id`
+when the final response arrives. If the response is lost, it retains the exact
+message/key in that REPL and blocks new tasks. `/check` reads saved state;
+`/retry` explicitly resubmits the same input/key, joining the existing run or
+replaying its result. Neither action occurs automatically. After recovering a
+final result, the REPL exits for review; start a new chat after inspecting the
+workspace. Ctrl-C while waiting still requests cancellation, rather than merely
+detaching the request.
+
+Read history from another terminal or after a server/client restart:
+
+```sh
+agent-harness runs --user-id cli-user
+agent-harness runs --user-id cli-user --request-id <printed-key>
+agent-harness run <run-id> --user-id cli-user
+agent-harness run <run-id> --user-id cli-user --json
+```
+
+`runs` also accepts `--session-id`, `--limit` (1–100), and `--offset`.
+`run` shows lifecycle/model identity, completion/check status, tool failures,
+and bounded diffs using the same presentation as live results. Both commands
+only issue GETs. The CLI does not save retry input on disk: after exiting, use
+the printed key and server history for review rather than automatic resubmission.
+
+The panel saves one pending request's exact message, session, provider override,
+and key in browser local storage **before** sending. Storage failure prevents
+submission and preserves the typed task. Reload restores a review view with Send
+disabled; it sends no task automatically. **Check run** reads the saved record;
+**Retry submission** explicitly uses the retained input/key, even if the provider
+selector has since changed. A recovered final result keeps Send disabled. Create
+a new session after reviewing the workspace.
+
+**Refresh history**, **Newer**, and **Older** browse saved runs for the panel's
+stable user ID. Selecting a run fetches its record and shows saved task/evidence
+without enabling continuation. Running, failed, and interrupted records do not
+invent a final response; cancelled results retain their partial review evidence.
+**Forget pending** only removes the browser's retry reference; it does not cancel
+server work or delete history. Use it deliberately after checking the workspace
+if abandoning an unresolved submission. New session stays disabled while a pending
+reference is retained.
+
+Browser local storage contains task text until final delivery/review or explicit
+forgetting. This is one pending reference per browser origin, without cross-tab
+coordination, client-side retention management, event replay, or automatic polling.
+History is scoped to the existing user ID (not authentication); CLI and panel
+use different default IDs. These controls provide submission recovery and review,
+not workspace-checked resume or checkpoints/revert.
 
 ### Eval honesty
 
@@ -477,7 +528,7 @@ docker compose up --build -d            # optional smoke; see demo.md
 - **Semantic codebase search.** Ripgrep-first is enough for v1; Mission 8 / [tools/semantic.py](tools/semantic.py) when explore evals fail grep-only.
 - **Agent panel demo UI.** Mission 9 — Typer CLI + local web panel over `/chat`; plan in [GUI-integ.md](GUI-integ.md). Not a full IDE.
 - **Streaming `/chat` (SSE).** Slice 9c; live tool-trace in the agent panel.
-- **Safe session resume.** SQLite retains finalized review snapshots after restart; crash recovery, workspace-checked resume, and client history views remain open.
+- **Safe session resume.** SQLite retains finalized review snapshots after restart; partial crash recovery and workspace-checked resume remain open.
 - **LLM-judge confidence.** Deterministic heuristic is inspectable; validate before swapping.
 - **Per-sentence citation attribution.** Turn-level file:line citations today.
 - **Router fallback across providers.** Plain dispatch table until error patterns justify failover.

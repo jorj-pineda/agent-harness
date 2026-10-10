@@ -329,6 +329,26 @@ The harness does not need to make every model good at every task. It needs to id
   partial crash evidence, profile/configuration capture, cross-process execution
   coordination, checkpoints/revert, and workspace-checked resume remain open.
   Milestone 5 remains incomplete.
+- **2026-10-10 — Client run review and explicit submission recovery prepared:**
+  CLI chat prints/retains a stable submission key before dispatch, blocks new
+  messages after an uncertain outcome, and offers read-only `/check` plus explicit
+  same-input/key `/retry`. New `runs`/`run` commands inspect server history and
+  final evidence without submitting work. The panel retains one exact pending
+  request before sending, restores it read-only after reload, and offers explicit
+  check/retry plus paged history. History and recovered results never enable
+  continuation; forgetting a local reference does not cancel server work.
+  An owner-scoped request-key filter finds a run when its ID response was lost.
+  Validation passed 48 focused CLI/API tests, 596 offline tests (five live
+  deselected), Ruff/mypy, JavaScript syntax, and both 90/90 scripted matrices with
+  labels inspected. A real-tool CLI regression loses the response after archive
+  commit and recovers the same turn with one edit. Browser checks against a
+  temporary scripted-provider API covered real file-tool active retries, reload,
+  lost POST response, read-only history after restart, failed/interrupted/cancelled
+  presentation, and local-storage failure before dispatch. The server was stopped;
+  no inference or coding-quality comparison ran. Browser pending input is stored
+  locally; CLI retry input lasts only within its REPL. Cross-tab coordination,
+  event replay, automatic reconnection/polling, checkpoints/revert, profile capture,
+  and workspace-checked resume remain open. Milestone 5 remains incomplete.
 - **Next:** item 6's listed mechanics are in place; see the known limitations
   below before relying on them unattended. Item 7 has a repeated baseline and
   nine completed comparisons. Argument feedback did not reliably break repeated
@@ -336,7 +356,7 @@ The harness does not need to make every model good at every task. It needs to id
   fires in this task envelope, and the earlier argument cue was not retained after
   mixed outcomes. The personal-use workflow now has bounded turn-diff review,
   finalized-session archives, explicit cancellation, durable run identity and keyed
-  submission, and process-local turn admission; failed-check recovery, model profiles, context
+  submission, client run-history/recovery controls, and process-local turn admission; failed-check recovery, model profiles, context
   management, and the rest of the personal-use workflow remain open. Offline checks
   alone are not evidence of better model coding performance.
 
