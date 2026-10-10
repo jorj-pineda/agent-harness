@@ -389,6 +389,30 @@ The harness does not need to make every model good at every task. It needs to id
   Profile capture, broader workspace coverage, transcript repair, partial crash
   recovery, explicit guarded resume, checkpoints/revert, and panel review controls
   remain open. Milestone 5 remains incomplete.
+- **2026-10-10 — Durable configured execution evidence prepared:** the shared
+  runtime now exposes an optional pre-execution snapshot callback inside admission,
+  after transcript validation and before prompt refresh/snapshots/inference/tools.
+  API runs bind an allowlisted configuration snapshot once in SQLite; storage
+  failure prevents execution. Final turn archives copy it atomically with final
+  run/session/baseline evidence. Snapshot fields include budgets/policies/review
+  limits, provider/configured model, applicable Ollama options, tool names, and
+  hashes of base prompt, exposed schemas, configured endpoint and check argv.
+  Credentials, raw endpoints/check arguments, data paths, and injected facts are
+  excluded from this metadata; sensitive/invalid endpoint and unknown custom
+  provider identities remain unknown. Existing transcripts/traces are not redacted.
+  API detail/history and CLI run review retain the original snapshot across restart
+  and keyed retry, even when current settings differ; older/unadmitted records have
+  no invented profile. Validation passed 97 focused and 662 offline tests (five
+  live deselected), Ruff/mypy, and both 90/90 scripted matrices with labels inspected.
+  Tests cover pre-inference durability, storage rollback/failure, final evidence
+  atomicity, abandonment, privacy, legacy records, and real file-tool preservation.
+  No inference or coding-quality comparison ran. This records configured evidence,
+  not backend attestation or a selectable model-profile system. Matching hashes do
+  not establish compatibility: implementation/runtime revisions, server/provider
+  defaults, environment routing, command environment, facts, and capabilities are
+  outside capture. Automatic restore, compatibility/context gates, broader workspace
+  preconditions, explicit resume, crash repair, checkpoints/revert, and panel profile
+  controls remain open; saved sessions remain read-only and Milestone 5 incomplete.
 - **Next:** item 6's listed mechanics are in place; see the known limitations
   below before relying on them unattended. Item 7 has a repeated baseline and
   nine completed comparisons. Argument feedback did not reliably break repeated
@@ -397,8 +421,9 @@ The harness does not need to make every model good at every task. It needs to id
   mixed outcomes. The personal-use workflow now has bounded turn-diff review,
   finalized-session archives, explicit cancellation, durable run identity and keyed
   submission, client run-history/recovery controls, durable scoped workspace review,
-  transcript integrity guards/review, and process-local turn admission; failed-check
-  recovery, model profiles, context management, and the rest of the personal-use workflow remain open. Offline checks
+  transcript integrity guards/review, durable configured execution evidence, and
+  process-local turn admission; failed-check recovery, model profiles, context
+  management, and the rest of the personal-use workflow remain open. Offline checks
   alone are not evidence of better model coding performance.
 
 ### Review baseline

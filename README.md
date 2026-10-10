@@ -464,6 +464,54 @@ the workspace nor grants permission to resume. Interrupted history repair,
 profile capture, broader workspace coverage, and explicit guarded continuation
 remain separate work; saved sessions remain read-only.
 
+### Saved execution configuration
+
+`GET /runs/<id>?user_id=...` and each saved turn in
+`GET /sessions/<id>?user_id=...` now include an optional `execution_profile`.
+`agent-harness run <run-id>` shows a short configured-profile/budget summary;
+`--json` exposes the full snapshot. The existing final turn-response envelope
+is unchanged. This is captured configuration evidence, not a new selectable
+model-profile system or permission to continue a saved session.
+
+After admission and transcript validation, the shared runtime captures an
+explicit allowlist of turn limits, completion/verification policies, review
+limits, toolset/support mode, grounding threshold, configured provider/model,
+and applicable Ollama context/thinking options. It also records the coding
+prompt version (null for a custom prompt), SHA-256 of the base prompt, actual
+exposed tool schemas/descriptions in their order, configured endpoint identity,
+and configured project-check argv. Tool names remain readable; endpoints,
+prompt text, schemas, and check arguments are represented only by hashes.
+Credentials, data paths, injected memory/facts, and workspace contents are not
+part of this metadata. Endpoints containing credentials, query parameters,
+fragments, or invalid URL structure have unknown identity rather than saving
+or hashing those strings. Unknown custom provider model/endpoint identities
+remain null. Named hosted-provider default endpoint markers identify configured
+routing, not actual SDK/environment/server routing.
+
+The API commits the snapshot to its running run record **before** prompt refresh,
+workspace snapshots, inference, and tools. A storage failure returns 503 and
+prevents execution; the prior archive remains reviewable and the live session is
+retired. Finalization copies the saved snapshot into the turn archive atomically
+with final run/session/baseline evidence. Capture binds once; matching keyed
+retries and inspection after restart never recompute it from current settings.
+Failed or abandoned admitted runs retain captured configuration even when they
+have no final result. Policy/busy/invalid-history rejections have no captured
+profile. Older records, and newly accepted async submissions before capture,
+show null; inspect the durable run record rather than inferring execution from
+profile presence or absence.
+
+This metadata does not redact existing transcripts or tool traces, which can
+already include configured check argv and user-supplied content. Hashes are
+comparison identifiers, not encryption or secret storage. It records configured
+values, without attesting what a custom adapter or remote server actually used.
+Tool implementations, provider defaults, environment routing, command environment,
+backend capabilities, current facts, and runtime revision are not captured here;
+a matching snapshot alone cannot establish compatibility or context fit.
+Capture overhead is outside current turn wall deadlines and latency reporting.
+Automatic restore, compatibility gates, explicit workspace-checked continuation,
+partial crash repair, checkpoints/revert, and panel profile controls remain
+separate work. Saved sessions stay read-only after restart.
+
 ### Eval honesty
 
 The legacy scenario runner has two modes, neither of which executes real coding
