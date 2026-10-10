@@ -1,6 +1,6 @@
 # Roadmap: a coding harness for lower-tier models
 
-Updated: 2026-10-09
+Updated: 2026-10-10
 
 ## Direction
 
@@ -271,12 +271,30 @@ The harness does not need to make every model good at every task. It needs to id
   browser rendering checks across partial, stale, failed, unavailable, missing,
   and passed states. These validate presentation, not model coding quality.
   Persistence, cancellation, resume, and independent acceptance remain open.
+- **2026-10-10 — Finalized-session review persistence prepared:** the API now
+  archives session creation and finalized runtime turns in a separate SQLite
+  store, including transcript, turn records, full final response envelopes,
+  configured model IDs, observed completion/check evidence, and bounded diffs.
+  Owner-scoped list/detail routes expose committed snapshots after a fresh API
+  lifecycle, even without the original workspace. Saved history is read-only
+  after restart; both chat transports reject continuation before inference.
+  Saves run before admission release and final delivery; storage failure surfaces
+  an error and retires the live session. Failed/interrupted execution retains
+  only the previous saved snapshot and cannot reuse its unfinished transcript.
+  Validation passed 75 focused and 560 offline tests (five live deselected),
+  Ruff/mypy, and both 90/90 scripted matrices with evidence labels inspected.
+  These validate persistence mechanics, not coding quality; no inference or model
+  comparison was run. Interrupted-turn recovery, live-event persistence, profile
+  configuration capture, cancellation endpoints, workspace-checked resume,
+  checkpoints/revert, retention/deletion, cross-process coordination, and CLI/panel
+  history views remain open. This completes only the review-persistence slice
+  of item 8; Milestone 5 is not complete.
 - **Next:** item 6's listed mechanics are in place; see the known limitations
   below before relying on them unattended. Item 7 has a repeated baseline and
   nine completed comparisons. Argument feedback did not reliably break repeated
   errors; normalized traces show that completion-time verification recovery rarely
   fires in this task envelope, and the earlier argument cue was not retained after
-  mixed outcomes. The personal-use workflow now has bounded turn-diff review and
+  mixed outcomes. The personal-use workflow now has bounded turn-diff review, finalized-session archives, and
   process-local turn admission; failed-check recovery, model profiles, context
   management, and the rest of the personal-use workflow remain open. Offline checks
   alone are not evidence of better model coding performance.
