@@ -111,7 +111,7 @@ def test_chat_shows_observed_workspace_changes() -> None:
 
     assert result.exit_code == 0, result.output
     assert "workspace_added=['generated.txt']" in result.output
-    assert "conf=n/a" in result.output
+    assert "legacy_evidence_score=n/a" in result.output
     assert "workspace_modified=['calc.py']" in result.output
     assert "workspace_deleted" not in result.output
     assert "--- a/calc.py\n+++ b/calc.py\n-old\n+new" in result.output
@@ -182,11 +182,38 @@ def test_chat_displays_envelope_fields() -> None:
 
         result = runner.invoke(app, ["chat"], input="task\n/quit\n")
 
-    assert "conf=0.45" in result.output
-    assert "low" in result.output  # confidence label
+    assert "legacy_evidence_score=0.45" in result.output
+    assert "not patch correctness" in result.output
     assert "escalated=True" in result.output
     assert "provider=ollama" in result.output
     assert "999ms" in result.output
+
+
+@pytest.mark.parametrize("verification", ["failed", "stale", "not_run"])
+def test_high_legacy_score_does_not_hide_partial_work(verification: str) -> None:
+    with patch("cli.main.AgentClient") as mock_client:
+        client = mock_client.return_value
+        client.create_session.return_value = "partial"
+        client.chat.return_value = _make_turn(
+            confidence=1.0,
+            completion_status="incomplete",
+            completion_reason="Remaining work requires review.",
+            verification_status=verification,
+            check_attempts=[{
+                "argv": ["pytest", "-q"], "status": "unavailable",
+                "error": "Executable unavailable",
+            }],
+            tool_errors=["read_file: missing"],
+        )
+        result = runner.invoke(app, ["chat"], input="fix\n/quit\n")
+    assert result.exit_code == 0, result.output
+    assert f"status=incomplete checks={verification}" in result.output
+    assert "Remaining work requires review." in result.output
+    assert "check_error=Executable unavailable" in result.output
+    assert "tool_error=read_file: missing" in result.output
+    assert "legacy_evidence_score=1.00 (tool heuristic; not patch correctness)" in result.output
+    assert result.output.index("status=incomplete") < result.output.index("legacy_evidence_score")
+    assert "(high)" not in result.output
 
 
 # ---------------------------------------------------------------------------

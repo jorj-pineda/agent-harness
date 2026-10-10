@@ -177,13 +177,6 @@ function completeToolCard(card, ev) {
   }
 }
 
-function confidenceClass(conf) {
-  if (conf == null) return "conf-mid";
-  if (conf >= 0.7) return "conf-high";
-  if (conf >= 0.5) return "conf-mid";
-  return "conf-low";
-}
-
 function listSection(label, items) {
   const section = el("div", "env-section");
   if (!items || items.length === 0) section.classList.add("empty");
@@ -222,34 +215,29 @@ function renderEnvelope(data) {
   els.envelope.replaceChildren();
 
   const badges = el("div", "badges");
-  const conf = data.confidence;
-  const confLabel = conf == null ? "conf n/a" : `conf ${conf.toFixed(2)}`;
-  badges.appendChild(el("span", `badge ${confidenceClass(conf)}`, confLabel));
-  badges.appendChild(
-    el(
-      "span",
-      `badge ${data.escalated ? "escalated" : "ok"}`,
-      data.escalated ? "escalated" : "not escalated",
-    ),
-  );
+  const status = data.completion_status || "unknown";
+  const verification = data.verification_status || "unknown";
+  badges.appendChild(el("span", `badge ${status === "completed" ? "ok" : "escalated"}`,
+    `completion: ${status}`));
+  badges.appendChild(el("span", `badge ${verification === "failed" ? "escalated" : "ok"}`,
+    `checks: ${verification}`));
+  badges.appendChild(el("span", `badge ${data.escalated ? "escalated" : "ok"}`,
+    data.escalated ? "review requested" : "no escalation flag"));
   badges.appendChild(el("span", "badge ok", data.provider || "—"));
-  badges.appendChild(
-    el("span", "badge ok", `${(data.latency_ms || 0).toFixed(0)}ms`),
-  );
-  badges.appendChild(
-    el("span", `badge ${data.verification_ran ? "conf-high" : "ok"}`,
-      data.verification_ran ? "verified" : "no verify"),
-  );
+  badges.appendChild(el("span", "badge ok", `${(data.latency_ms || 0).toFixed(0)}ms`));
   els.envelope.appendChild(badges);
+  els.envelope.appendChild(el("p", "review-note",
+    "Completion records how the run ended. Passed checks cover only the checks run; review the diff and remaining failures."));
 
-  els.envelope.appendChild(listSection("citations", data.citations));
+
+  els.envelope.appendChild(listSection("source locations from tools", data.citations));
   els.envelope.appendChild(listSection("files touched", data.files_touched));
   els.envelope.appendChild(listSection("workspace changes", workspaceChangeItems(data.workspace_changes)));
   els.envelope.appendChild(workspaceDiffSection(data.workspace_changes));
   els.envelope.appendChild(listSection("patch summary", data.patch_summary));
   els.envelope.appendChild(listSection("completion", [
-    `${data.completion_status || "completed"}${data.completion_reason ? `: ${data.completion_reason}` : ""}`,
-    `verification: ${data.verification_status || "not_run"}`,
+    `${data.completion_status || "unknown"}${data.completion_reason ? `: ${data.completion_reason}` : ""}`,
+    `verification: ${data.verification_status || "unknown"}`,
   ]));
   els.envelope.appendChild(listSection("model tokens", [
     `prompt: ${data.token_usage?.prompt_tokens ?? "unreported"}`,
@@ -259,10 +247,17 @@ function renderEnvelope(data) {
     (check) => `${(check.argv || []).join(" ")}: ${check.status}`
       + `${check.exit_code == null ? "" : ` (exit ${check.exit_code})`}`
       + `${check.relevant ? "" : " (not configured check)"}`
-      + `${check.superseded_by_edit ? " (superseded by later edit)" : ""}`,
+      + `${check.superseded_by_edit ? " (superseded by later edit)" : ""}`
+      + `${check.error ? `: ${check.error}` : ""}`,
   )));
   els.envelope.appendChild(listSection("tool errors", data.tool_errors));
   els.envelope.appendChild(listSection("memory writes", data.memory_writes));
+  const legacy = el("details", "env-section");
+  legacy.appendChild(el("summary", null, "Legacy evidence score"));
+  legacy.appendChild(el("p", "review-note",
+    `${data.confidence == null ? "Unavailable" : data.confidence.toFixed(2)} — tool-result heuristic. A file read can score 1.00; this does not measure answer or patch correctness. Source locations are harvested from tools, without checking the answer's claims.`));
+  els.envelope.appendChild(legacy);
+
 }
 
 // ---- API --------------------------------------------------------------

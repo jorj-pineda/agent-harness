@@ -117,8 +117,14 @@ class TurnResponse(BaseModel):
     """
 
     answer: str
-    confidence: float | None = None
-    citations: list[str] = Field(default_factory=list)
+    confidence: float | None = Field(
+        default=None,
+        description="Legacy tool-evidence heuristic; not answer or patch correctness.",
+    )
+    citations: list[str] = Field(
+        default_factory=list,
+        description="Source locations harvested from tools; answer claims are not validated.",
+    )
     escalated: bool = False
     tool_calls: list[ToolCallRecord] = Field(default_factory=list)
     memory_writes: list[str] = Field(default_factory=list)

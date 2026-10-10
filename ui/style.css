@@ -358,24 +358,6 @@ button:disabled {
   border: 1px solid var(--border);
 }
 
-.badge.conf-high {
-  background: rgba(63, 185, 80, 0.15);
-  border-color: var(--good);
-  color: var(--good);
-}
-
-.badge.conf-mid {
-  background: rgba(210, 153, 34, 0.15);
-  border-color: var(--warn);
-  color: var(--warn);
-}
-
-.badge.conf-low {
-  background: rgba(248, 81, 73, 0.15);
-  border-color: var(--bad);
-  color: var(--bad);
-}
-
 .badge.escalated {
   background: rgba(248, 81, 73, 0.15);
   border-color: var(--bad);
@@ -464,4 +446,10 @@ button:disabled {
   #workspace {
     max-width: 60vw;
   }
+}
+
+.review-note {
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.5;
 }
