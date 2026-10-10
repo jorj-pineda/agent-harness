@@ -331,3 +331,48 @@ def transcript_review(
     if review.get("issues_truncated"):
         typer.echo("Issue list truncated; count covers the full transcript.")
     typer.echo(review["scope_note"])
+
+
+@app.command()
+def configuration_review(
+    session_id: str = typer.Argument(...),
+    base_url: str = typer.Option("http://localhost:8000", "--base-url"),
+    user_id: str = typer.Option("cli-user", "--user-id"),
+    provider: str | None = typer.Option(None, "--provider"),
+    message: str = typer.Option("", "--message", help="Proposed input for estimation only."),
+) -> None:
+    """Review saved configuration and estimated context without starting work."""
+    try:
+        review = AgentClient(base_url).configuration_review(
+            user_id, session_id, provider=provider, message=message
+        )
+    except Exception as exc:
+        typer.echo(f"Configuration review failed: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+    typer.echo(f"review={review['status']} provider={review.get('provider')}")
+    if review.get("reason"):
+        typer.echo(review["reason"])
+    if review.get("configuration"):
+        config = review["configuration"]
+        typer.echo(f"configuration={config['status']}")
+        typer.echo(
+            f"changed_fields={config['changed_fields']} unknown_fields={config['unknown_fields']}"
+        )
+        if config.get("reason"):
+            typer.echo(config["reason"])
+    if review.get("transcript"):
+        typer.echo(f"transcript={review['transcript']['status']}")
+    if review.get("context"):
+        context = review["context"]
+        typer.echo(
+            f"context={context['status']} "
+            f"estimated_prompt_tokens={context['estimated_prompt_tokens']} "
+            f"includes_proposed_message={context['includes_proposed_message']}"
+        )
+        typer.echo(
+            f"harness_context_limit={context.get('max_context_tokens')} "
+            f"request_output_allowance={context.get('request_output_allowance')}"
+        )
+        if context.get("reason"):
+            typer.echo(context["reason"])
+    typer.echo(review["scope_note"])
