@@ -42,6 +42,7 @@ from fastapi.staticfiles import StaticFiles
 
 from harness.admission import turn_admission
 from harness.cancellation import TurnCancellation
+from harness.execution_profile import ExecutionProfile
 from harness.grounding import Grounder
 from harness.policy import classify_task, is_out_of_scope_request
 from harness.providers import build_configured_provider, configured_model, configured_provider_names
@@ -662,6 +663,18 @@ async def _execute_turn(
 
     workspace_baseline: WorkspaceReviewBaseline | None = None
 
+    def save_execution_profile(profile: ExecutionProfile) -> None:
+        if run_id is None:
+            return
+        try:
+            _session_store(components).record_execution_profile(run_id, profile)
+        except Exception as exc:
+            log.error("api=execution_profile_failed exception=%s", type(exc).__name__)
+            raise HTTPException(
+                status_code=503,
+                detail="Execution configuration storage failed; no inference or tools started.",
+            ) from exc
+
     def capture_workspace_review(baseline: WorkspaceReviewBaseline) -> None:
         nonlocal workspace_baseline
         workspace_baseline = baseline
@@ -702,6 +715,7 @@ async def _execute_turn(
             on_event=on_event,
             on_finalized=save_finalized,
             on_workspace_review=capture_workspace_review,
+            on_execution_profile=save_execution_profile if run_id is not None else None,
             cancellation=cancellation,
         )
     except BaseException:

@@ -14,6 +14,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
+from .execution_profile import ExecutionProfile
 from .runs import RequestConflictError, RunInput, RunRecord
 from .state import Session, TurnResponse
 from .workspace_review import WorkspaceReviewBaseline
@@ -22,6 +23,14 @@ from .workspace_review import WorkspaceReviewBaseline
 class SavedTurnResponse(BaseModel):
     turn_id: str
     configured_model: str | None = None
+    execution_profile: ExecutionProfile | None = Field(
+        default=None,
+        description=(
+            "Allowlisted configured execution evidence; null when not captured, "
+            "including legacy/unadmitted work. "
+            "Does not attest backend behavior or grant resume permission."
+        ),
+    )
     response: TurnResponse
 
 
@@ -84,6 +93,7 @@ class SessionStore:
         response: TurnResponse | None,
         *,
         configured_model: str | None,
+        execution_profile: ExecutionProfile | None = None,
     ) -> str:
         if not session.user_id:
             raise ValueError("Archived sessions require a user_id")
@@ -101,6 +111,7 @@ class SessionStore:
                 SavedTurnResponse(
                     turn_id=turn_id,
                     configured_model=configured_model,
+                    execution_profile=execution_profile,
                     response=response,
                 )
             )
@@ -166,6 +177,20 @@ class SessionStore:
             (record.status, record.model_dump_json(), record.run_id),
         )
 
+    def record_execution_profile(self, run_id: str, profile: ExecutionProfile) -> None:
+        """Bind once before execution; failures prevent inference and tools."""
+        record = self.get_run(run_id)
+        if record is None or record.status != "running" or record.execution_profile is not None:
+            raise ValueError("Execution profile requires an unbound running run")
+        if (profile.provider, profile.configured_model) != (
+            record.provider,
+            record.configured_model,
+        ):
+            raise ValueError("Execution profile does not match run provider/model identity")
+        record.execution_profile = profile
+        with self._conn:
+            self._update_run(record)
+
     def finish_run(
         self,
         run_id: str,
@@ -187,6 +212,7 @@ class SessionStore:
                 session,
                 response,
                 configured_model=record.configured_model,
+                execution_profile=record.execution_profile,
             )
         record.status = "cancelled" if response.completion_status == "cancelled" else "finished"
         record.response = response

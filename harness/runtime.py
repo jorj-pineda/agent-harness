@@ -26,6 +26,7 @@ from workspace.core import DEFAULT_IGNORE_GLOBS
 from .admission import turn_admission
 from .cancellation import TurnCancellation
 from .config import CodingToolset, Settings
+from .execution_profile import ExecutionProfile, capture_execution_profile
 from .grounding import Grounder
 from .loop import run_turn
 from .policy import is_out_of_scope_request
@@ -119,11 +120,14 @@ async def run_configured_turn(
     on_finalized: Callable[[Session, TurnResponse], None] | None = None,
     cancellation: TurnCancellation | None = None,
     on_workspace_review: Callable[[WorkspaceReviewBaseline], None] | None = None,
+    on_execution_profile: Callable[[ExecutionProfile], None] | None = None,
 ) -> TurnResponse:
     """Execute a turn, optionally committing final evidence before releasing admission.
 
     The synchronous finalization callback runs only for actual finalized turns,
     after workspace review. Its failure propagates rather than reporting success.
+    The optional execution-profile callback runs inside admission before prompt
+    refresh or snapshots. Its failure prevents inference and tool dispatch.
     """
     if is_out_of_scope_request(message):
         return out_of_scope_response()
@@ -145,6 +149,12 @@ async def run_configured_turn(
                 completion_reason=integrity_reason,
                 provider="policy",
                 latency_ms=0.0,
+            )
+        if on_execution_profile is not None:
+            on_execution_profile(
+                capture_execution_profile(
+                    settings, provider.name, registry, system_prompt=system_prompt
+                )
             )
         refresh_system_message(
             session,
