@@ -572,3 +572,49 @@ def test_run_command_shows_configured_profile_and_keeps_json_read_only():
     assert "context_limit=8192" in result.output
     assert "Configured settings only" in result.output
     assert '"execution_profile"' in raw.output
+
+
+def test_configuration_review_calls_only_read_only_computation_endpoint():
+    review = {
+        "status": "reviewed",
+        "provider": "ollama",
+        "configuration": {
+            "status": "changed",
+            "changed_fields": ["settings.max_context_tokens"],
+            "unknown_fields": [],
+        },
+        "transcript": {"status": "valid"},
+        "context": {
+            "status": "blocked",
+            "estimated_prompt_tokens": 500,
+            "includes_proposed_message": True,
+            "reason": "Does not fit",
+        },
+        "scope_note": "Read-only review, not resume permission.",
+    }
+    with patch("httpx.post", return_value=_ok_response(review)) as post, patch("httpx.get") as get:
+        result = runner.invoke(
+            app,
+            [
+                "configuration-review",
+                "s1",
+                "--user-id",
+                "dev",
+                "--provider",
+                "ollama",
+                "--message",
+                "next task",
+            ],
+        )
+    assert result.exit_code == 0, result.output
+    assert "configuration=changed" in result.output
+    assert "context=blocked" in result.output
+    assert "not resume permission" in result.output
+    assert post.call_count == 1
+    assert post.call_args.args[0].endswith("/sessions/s1/configuration-review")
+    assert post.call_args.kwargs["json"] == {
+        "user_id": "dev",
+        "provider": "ollama",
+        "message": "next task",
+    }
+    get.assert_not_called()

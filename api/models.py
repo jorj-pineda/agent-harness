@@ -52,6 +52,16 @@ class SubmitRunRequest(ChatRequest):
     request_id: RequestId
 
 
+class ConfigurationReviewRequest(BaseModel):
+    user_id: str = Field(min_length=1)
+    provider: str | None = None
+    message: str = Field(
+        default="",
+        max_length=100_000,
+        description="Proposed next input for estimation only; never submitted for execution.",
+    )
+
+
 class CancelSessionRequest(BaseModel):
     user_id: str = Field(..., min_length=1)
 
@@ -69,6 +79,7 @@ __all__ = [
     "CancelSessionResponse",
     "ChatRequest",
     "ChatResponse",
+    "ConfigurationReviewRequest",
     "CreateSessionRequest",
     "CreateSessionResponse",
     "SubmitRunRequest",

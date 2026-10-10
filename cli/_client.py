@@ -101,6 +101,17 @@ class AgentClient:
         resp.raise_for_status()
         return dict(resp.json())
 
+    def configuration_review(
+        self, user_id: str, session_id: str, *, provider: str | None = None, message: str = ""
+    ) -> dict[str, Any]:
+        resp = httpx.post(
+            f"{self._base}/sessions/{session_id}/configuration-review",
+            json={"user_id": user_id, "provider": provider, "message": message},
+            timeout=30,
+        )
+        resp.raise_for_status()
+        return dict(resp.json())
+
     def transcript_review(
         self, user_id: str, session_id: str, *, max_issues: int = 100
     ) -> dict[str, Any]:

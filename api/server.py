@@ -29,6 +29,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import sqlite3
 import uuid
 from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager, suppress
@@ -42,6 +43,7 @@ from fastapi.staticfiles import StaticFiles
 
 from harness.admission import turn_admission
 from harness.cancellation import TurnCancellation
+from harness.configuration_review import ConfigurationReview, review_configuration
 from harness.execution_profile import ExecutionProfile
 from harness.grounding import Grounder
 from harness.policy import classify_task, is_out_of_scope_request
@@ -58,12 +60,14 @@ from memory import FactStore
 from providers import create_embedder
 from providers.base import ChatProvider, Embedder
 from tools import ToolRegistry
+from workspace.core import WorkspaceError
 
 from .models import (
     CancelSessionRequest,
     CancelSessionResponse,
     ChatRequest,
     ChatResponse,
+    ConfigurationReviewRequest,
     CreateSessionRequest,
     CreateSessionResponse,
     SubmitRunRequest,
@@ -254,6 +258,36 @@ def _register_routes(app: FastAPI) -> None:
         review = inspect_transcript(archive.session.messages, max_issues=max_issues)
         review.turn_id = archive.session.turns[-1].turn_id if archive.session.turns else None
         return review
+
+    @app.post("/sessions/{session_id}/configuration-review", response_model=ConfigurationReview)
+    async def inspect_configuration(
+        session_id: str, req: ConfigurationReviewRequest, request: Request
+    ) -> ConfigurationReview:
+        """Read-only configuration/context computation; never creates or resumes a run."""
+        components: Components = request.app.state.components
+        archive = _lookup_archive(components, session_id, req.user_id)
+        provider = _resolve_provider_or_400(components, req.provider)
+        with turn_admission.claim(session_id, archive.session.workspace_root) as busy:
+            if busy is not None:
+                return ConfigurationReview(status="busy", reason=busy, provider=provider.name)
+            settings: Settings = request.app.state.settings
+            try:
+                registry = _build_turn_registry(components, settings, archive.session, req.user_id)
+                return review_configuration(
+                    archive,
+                    settings=settings,
+                    provider=provider.name,
+                    registry=registry,
+                    fact_store=components.fact_store,
+                    user_id=req.user_id,
+                    message=req.message,
+                )
+            except (OSError, ValueError, RuntimeError, WorkspaceError, sqlite3.Error) as exc:
+                return ConfigurationReview(
+                    status="unavailable",
+                    provider=provider.name,
+                    reason=f"Configuration review unavailable ({type(exc).__name__}).",
+                )
 
     @app.get("/sessions/{session_id}/workspace-review", response_model=WorkspaceReview)
     async def inspect_workspace(
@@ -625,6 +659,30 @@ async def _run_configured_turn(
     return await asyncio.shield(task)
 
 
+def _build_turn_registry(
+    components: Components, settings: Settings, session: Session, user_id: str
+) -> ToolRegistry:
+    """Construct current tool definitions without invoking them."""
+    support_registry = ToolRegistry()
+    if settings.enable_support_tools:
+        from tools.rag import register_rag_tool
+        from tools.sql import register_sql_tools
+
+        if components.collection is None or components.embedder is None:
+            raise RuntimeError("Support tools require a collection and embedder at startup")
+        register_sql_tools(support_registry, db_path=settings.sqlite_db_path)
+        register_rag_tool(
+            support_registry, collection=components.collection, embedder=components.embedder
+        )
+    return build_registry(
+        fact_store=components.fact_store,
+        user_id=user_id,
+        workspace_root=session.workspace_root,
+        support_tools=support_registry,
+        coding_toolset=settings.coding_toolset,
+    )
+
+
 async def _execute_turn(
     *,
     components: Components,
@@ -638,24 +696,7 @@ async def _execute_turn(
     run_id: str | None = None,
 ) -> TurnResponse:
     """Refresh injected facts, build the per-request registry, and run the loop."""
-    support_registry = ToolRegistry()
-    if settings.enable_support_tools:
-        from tools.rag import register_rag_tool
-        from tools.sql import register_sql_tools
-
-        if components.collection is None or components.embedder is None:
-            raise RuntimeError("Support tools require a collection and embedder at startup")
-        register_sql_tools(support_registry, db_path=settings.sqlite_db_path)
-        register_rag_tool(
-            support_registry, collection=components.collection, embedder=components.embedder
-        )
-    registry = build_registry(
-        fact_store=components.fact_store,
-        user_id=user_id,
-        workspace_root=session.workspace_root,
-        support_tools=support_registry,
-        coding_toolset=settings.coding_toolset,
-    )
+    registry = _build_turn_registry(components, settings, session, user_id)
     try:
         model = configured_model(provider.name, settings)
     except ValueError:
