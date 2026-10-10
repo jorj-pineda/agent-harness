@@ -215,13 +215,15 @@ class SessionStore:
         user_id: str,
         *,
         session_id: str | None = None,
+        request_id: str | None = None,
         limit: int = 50,
         offset: int = 0,
     ) -> list[RunRecord]:
         rows = self._conn.execute(
             "SELECT record FROM runs WHERE user_id = ? AND (? IS NULL OR session_id = ?) "
+            "AND (? IS NULL OR request_id = ?) "
             "ORDER BY created_at DESC, run_id DESC LIMIT ? OFFSET ?",
-            (user_id, session_id, session_id, limit, offset),
+            (user_id, session_id, session_id, request_id, request_id, limit, offset),
         ).fetchall()
         return [RunRecord.model_validate_json(row[0]) for row in rows]
 
