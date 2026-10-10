@@ -52,6 +52,19 @@
       </section>
 
       <aside class="rail" aria-label="Response envelope">
+        <h2>Saved runs</h2>
+        <button id="refresh-runs">Refresh history</button>
+        <div id="run-history" aria-live="polite"></div>
+        <div class="history-pages">
+          <button id="previous-runs" disabled>Newer</button>
+          <button id="next-runs" disabled>Older</button>
+        </div>
+        <div id="pending-controls" hidden>
+          <p class="review-note">A submission is retained on this browser. Check its saved state or retry the same input. Forgetting it does not cancel server work.</p>
+          <button id="check-run">Check run</button>
+          <button id="retry-run">Retry submission</button>
+          <button id="forget-run">Forget pending</button>
+        </div>
         <h2>Turn review</h2>
         <div id="envelope" class="envelope">
           <div class="empty-state small">No turn yet.</div>

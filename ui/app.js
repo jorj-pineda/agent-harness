@@ -15,6 +15,14 @@ const els = {
   input: document.getElementById("input"),
   send: document.getElementById("send"),
   envelope: document.getElementById("envelope"),
+  refreshRuns: document.getElementById("refresh-runs"),
+  history: document.getElementById("run-history"),
+  previousRuns: document.getElementById("previous-runs"),
+  nextRuns: document.getElementById("next-runs"),
+  pendingControls: document.getElementById("pending-controls"),
+  checkRun: document.getElementById("check-run"),
+  retryRun: document.getElementById("retry-run"),
+  forgetRun: document.getElementById("forget-run"),
 };
 
 // Persist a stable user_id across reloads so cross-session memory can be
@@ -33,6 +41,9 @@ let busy = false;
 let sessionUsable = true;
 let uncertain = false;
 let cancelRequested = false;
+let pendingRequest = null;
+let historyOffset = 0;
+const pendingStorageKey = "panel_pending_request";
 
 // ---- helpers ----------------------------------------------------------
 
@@ -59,7 +70,15 @@ function setBusy(value) {
   els.input.disabled = sessionId == null || !sessionUsable;
   els.cancelTurn.disabled = sessionId == null || !(busy || uncertain) || cancelRequested;
   els.cancelTurn.textContent = cancelRequested ? "Cancelling…" : "Cancel turn";
-  els.newSession.disabled = busy;
+  els.newSession.disabled = busy || pendingRequest != null;
+  els.refreshRuns.disabled = busy;
+  els.previousRuns.disabled = busy || historyOffset === 0;
+  els.nextRuns.disabled = busy || !els.nextRuns.dataset.more;
+  els.pendingControls.hidden = pendingRequest == null;
+  els.checkRun.disabled = busy;
+  els.retryRun.disabled = busy;
+  els.forgetRun.disabled = busy;
+  for (const button of els.history.querySelectorAll("button")) button.disabled = busy;
 }
 
 function pretty(value) {
@@ -217,7 +236,7 @@ function workspaceDiffSection(changes) {
   return section;
 }
 
-function renderEnvelope(data) {
+function renderEnvelope(data, includeRunId = true) {
   els.envelope.replaceChildren();
 
   const badges = el("div", "badges");
@@ -234,6 +253,7 @@ function renderEnvelope(data) {
   els.envelope.appendChild(badges);
   els.envelope.appendChild(el("p", "review-note",
     "Completion records how the run ended. Passed checks cover only the checks run; review the diff and remaining failures."));
+  if (includeRunId && data.run_id) els.envelope.appendChild(listSection("run ID", [data.run_id]));
 
 
   els.envelope.appendChild(listSection("source locations from tools", data.citations));
@@ -269,6 +289,7 @@ function renderEnvelope(data) {
 // ---- API --------------------------------------------------------------
 
 async function createSession() {
+  if (busy || pendingRequest != null) return;
   const body = { user_id: userId };
   const workspace = els.workspace.value.trim();
   if (workspace) body.workspace_root = workspace;
@@ -304,16 +325,37 @@ async function createSession() {
 
 // Entry point for a turn. Prefer SSE (live tool cards); fall back to POST.
 function sendMessage(message) {
-  addUserMessage(message);
+  let request;
+  try {
+    request = {
+      user_id: userId, session_id: sessionId, message, request_id: crypto.randomUUID(),
+    };
+    if (els.provider.value) request.provider = els.provider.value;
+    // Commit exact retry input locally before starting any server work.
+    localStorage.setItem(pendingStorageKey, JSON.stringify(request));
+  } catch (err) {
+    addErrorMessage(`Could not retain submission: ${err}. No request was sent.`);
+    return false;
+  }
+  pendingRequest = request;
+  dispatchRequest(request);
+  return true;
+}
+
+function dispatchRequest(request, reviewOnly = false) {
+  request = { ...request };
+  const reviewAfter = reviewOnly || !sessionUsable;
+  if (!reviewAfter) addUserMessage(request.message);
+  else els.messages.appendChild(el("p", "review-note", "Retrying the retained submission…"));
   if (typeof window.EventSource === "function") {
-    streamTurn(message);
+    streamTurn(request, reviewAfter);
   } else {
-    postTurn(message);
+    postTurn(request, reviewAfter);
   }
 }
 
 // Live path: open an EventSource and draw tool cards as events arrive.
-function streamTurn(message) {
+function streamTurn(request, reviewAfter) {
   const block = el("div", "turn-block");
   const tools = el("div", "tools");
   block.appendChild(tools);
@@ -323,16 +365,14 @@ function streamTurn(message) {
   scrollToBottom();
   setBusy(true);
 
-  const params = new URLSearchParams({ user_id: userId, session_id: sessionId, message });
-  const provider = els.provider.value;
-  if (provider) params.set("provider", provider);
+  const params = new URLSearchParams(request);
 
   let es;
   try {
     es = new EventSource(`/chat/stream?${params.toString()}`);
   } catch (err) {
     block.remove();
-    postTurn(message);
+    postTurn(request, reviewAfter);
     return;
   }
 
@@ -364,9 +404,10 @@ function streamTurn(message) {
   es.addEventListener("turn_done", (e) => {
     done = true;
     const data = JSON.parse(e.data).response;
-    sessionUsable = data.completion_status !== "cancelled";
+    sessionUsable = !reviewAfter && data.completion_status !== "cancelled";
     cancelRequested = false;
     uncertain = false;
+    clearPending();
     finishWith(el("div", "msg assistant", data.answer || "(no answer)"));
     renderEnvelope(data);
   });
@@ -383,6 +424,7 @@ function streamTurn(message) {
       }
       sessionUsable = false;
       cancelRequested = false;
+      uncertain = true;
       finishWith(el("div", "msg error", `Turn failed: ${detail}. Inspect saved review and create a new session.`));
       return;
     }
@@ -391,15 +433,13 @@ function streamTurn(message) {
     uncertain = true;
     sessionUsable = false;
     finishWith(el("div", "msg error",
-      "Stream disconnected. The server run may still be active; use Cancel turn or inspect saved review. This task will not be resubmitted."));
+      "Stream disconnected. The server run may still be active. Check run reads saved state; Retry submission uses the retained key. Nothing is retried automatically."));
   });
 }
 
 // Fallback path: single POST /chat, render the full turn when it returns.
-async function postTurn(message) {
-  const body = { user_id: userId, session_id: sessionId, message };
-  const provider = els.provider.value;
-  if (provider) body.provider = provider;
+async function postTurn(request, reviewAfter) {
+  const body = request;
 
   const spinner = addSpinner();
   setBusy(true);
@@ -412,19 +452,23 @@ async function postTurn(message) {
     spinner.remove();
     if (!resp.ok) {
       const detail = await resp.text();
-      addErrorMessage(`Turn failed (${resp.status}): ${detail}`);
+      uncertain = true;
+      sessionUsable = false;
+      addErrorMessage(`Turn failed (${resp.status}): ${detail}. Check run before new work.`);
       return;
     }
     const data = await resp.json();
-    sessionUsable = data.completion_status !== "cancelled";
+    sessionUsable = !reviewAfter && data.completion_status !== "cancelled";
     cancelRequested = false;
+    uncertain = false;
+    clearPending();
     addTurn(data);
     renderEnvelope(data);
   } catch (err) {
     spinner.remove();
     uncertain = true;
     sessionUsable = false;
-    addErrorMessage(`Network error: ${err}. The server run may still be active; use Cancel turn or inspect saved review.`);
+    addErrorMessage(`Network error: ${err}. The server run may still be active; use Check run, Retry submission, or Cancel turn.`);
   } finally {
     setBusy(false);
   }
@@ -434,7 +478,7 @@ async function cancelTurn() {
   cancelRequested = true;
   setBusy(busy);
   try {
-    const resp = await fetch(`/sessions/${encodeURIComponent(sessionId)}/cancel`, {
+    const resp = await fetch(`/sessions/${encodeURIComponent(pendingRequest?.session_id || sessionId)}/cancel`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ user_id: userId }),
@@ -454,8 +498,131 @@ async function cancelTurn() {
   }
 }
 
+// ---- read-only recovery/history ---------------------------------------
+
+function clearPending() {
+  pendingRequest = null;
+  try { localStorage.removeItem(pendingStorageKey); } catch (_) { /* review remains available */ }
+}
+
+async function getRuns(params = {}) {
+  const query = new URLSearchParams({ user_id: userId, ...params });
+  const resp = await fetch(`/runs?${query}`);
+  if (!resp.ok) throw new Error(`Run lookup failed (${resp.status})`);
+  return resp.json();
+}
+
+function showRun(record) {
+  // Viewing history never makes a saved session executable.
+  sessionId = record.request.session_id;
+  sessionUsable = false;
+  els.sessionPill.textContent = `review ${sessionId.slice(0, 8)}`;
+  els.sessionPill.title = sessionId;
+  els.messages.replaceChildren();
+  els.envelope.replaceChildren();
+  addUserMessage(record.request.message);
+  addErrorMessage(`Saved run ${record.run_id}: ${record.status}. Review only; inspect the workspace before a new session.`);
+  if (record.response) {
+    addTurn(record.response);
+    renderEnvelope(record.response, false);
+  } else {
+    addErrorMessage(record.error || "No saved final response yet; workspace edits may exist.");
+  }
+  els.envelope.prepend(listSection("run identity", [
+    record.run_id, `lifecycle: ${record.status}`, `request: ${record.request.request_id}`,
+    `model: ${record.configured_model || "unrecorded"}`,
+  ]));
+  if (pendingRequest?.request_id === record.request.request_id && record.status !== "running") {
+    clearPending();
+    uncertain = false;
+    cancelRequested = false;
+  }
+  setBusy(false);
+}
+
+async function inspectRun(runId) {
+  if (busy) return;
+  setBusy(true);
+  try {
+    const query = new URLSearchParams({ user_id: userId });
+    const resp = await fetch(`/runs/${encodeURIComponent(runId)}?${query}`);
+    if (!resp.ok) throw new Error(`Run lookup failed (${resp.status})`);
+    showRun(await resp.json());
+  } catch (err) {
+    addErrorMessage(String(err));
+  } finally { setBusy(false); }
+}
+
+async function loadHistory() {
+  if (busy) return;
+  setBusy(true);
+  try {
+    const records = await getRuns({ limit: 20, offset: historyOffset });
+    els.history.replaceChildren();
+    for (const record of records) {
+      const completion = record.response?.completion_status || "unknown";
+      const checks = record.response?.verification_status || "unknown";
+      const button = el("button", "history-run", `${record.request.message.slice(0, 80)} — ${record.status}; completion: ${completion}; checks: ${checks}`);
+      button.title = record.run_id;
+      button.addEventListener("click", () => inspectRun(record.run_id));
+      els.history.appendChild(button);
+    }
+    if (!records.length) els.history.appendChild(el("p", "review-note", "No saved runs on this page."));
+    els.nextRuns.dataset.more = records.length === 20 ? "yes" : "";
+  } catch (err) { addErrorMessage(String(err)); }
+  finally { setBusy(false); }
+}
+
+async function checkPending() {
+  if (busy || !pendingRequest) return;
+  setBusy(true);
+  try {
+    const records = await getRuns({ request_id: pendingRequest.request_id });
+    if (records.length) showRun(records[0]);
+    else addErrorMessage("No saved run found. Explicit Retry submission will reuse the retained input and key.");
+  } catch (err) { addErrorMessage(String(err)); }
+  finally { setBusy(false); }
+}
+
+function restorePending() {
+  try {
+    const request = JSON.parse(localStorage.getItem(pendingStorageKey));
+    if (!request) return;
+    if (request.user_id !== userId || typeof request.session_id !== "string" ||
+        typeof request.message !== "string" || typeof request.request_id !== "string") {
+      throw new Error("Invalid retained submission");
+    }
+    pendingRequest = request;
+    sessionId = request.session_id;
+    uncertain = true;
+    sessionUsable = false;
+    els.sessionPill.textContent = `review ${sessionId.slice(0, 8)}`;
+    addUserMessage(request.message);
+    addErrorMessage("Retained submission restored for review. Check run reads saved state; nothing has been submitted on reload.");
+  } catch (err) {
+    addErrorMessage(`Could not restore retained submission: ${err}`);
+  }
+}
+
 // ---- events -----------------------------------------------------------
 
+els.refreshRuns.addEventListener("click", () => { historyOffset = 0; loadHistory(); });
+els.previousRuns.addEventListener("click", () => { historyOffset = Math.max(0, historyOffset - 20); loadHistory(); });
+els.nextRuns.addEventListener("click", () => { historyOffset += 20; loadHistory(); });
+els.checkRun.addEventListener("click", checkPending);
+els.retryRun.addEventListener("click", () => {
+  if (busy || !pendingRequest) return;
+  // Restored/recovered history remains read-only after the result arrives.
+  dispatchRequest(pendingRequest);
+});
+els.forgetRun.addEventListener("click", () => {
+  if (busy) return;
+  clearPending();
+  uncertain = false;
+  sessionUsable = false;
+  addErrorMessage("Local pending submission forgotten. Server work was not cancelled; use history to inspect saved runs before new work.");
+  setBusy(false);
+});
 els.cancelTurn.addEventListener("click", cancelTurn);
 
 els.newSession.addEventListener("click", createSession);
@@ -465,8 +632,7 @@ els.composer.addEventListener("submit", (event) => {
   if (busy || sessionId == null || !sessionUsable) return;
   const message = els.input.value.trim();
   if (!message) return;
-  els.input.value = "";
-  sendMessage(message);
+  if (sendMessage(message)) els.input.value = "";
 });
 
 els.input.addEventListener("keydown", (event) => {
@@ -476,4 +642,5 @@ els.input.addEventListener("keydown", (event) => {
   }
 });
 
+restorePending();
 setBusy(false);
