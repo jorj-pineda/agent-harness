@@ -163,7 +163,7 @@ write may have changed files; review the actual diff alongside its tool error.
 This guard is process-local: use one API worker for this personal-use workflow.
 Other servers, editors, detached subprocesses, and direct low-level `run_turn` or
 tool calls do not participate. This does not establish process isolation or
-attribute every workspace change. Persistence, explicit cancellation endpoints,
+attribute every workspace change. Interrupted-turn crash recovery,
 repair of interrupted transcripts, idempotent retries, and safe resume remain open.
 
 The configured runtime also caps tool attempts per turn with
@@ -240,9 +240,48 @@ are not included. There is no automatic retention/deletion policy. Sessions are
 rewritten as complete snapshots, so long histories increase storage and save cost.
 Failed or externally interrupted execution also retires the live session; only
 its last committed snapshot remains available. Interrupted/crashed turns, live
-events, checkpoints, cancellation endpoints, safe resume,
+events, checkpoints, safe resume,
 cross-process coordination, and CLI/panel history views remain separate work.
 Out-of-scope and busy rejections do not create runtime turns or archive responses.
+
+### Cancel an active turn
+
+Use `POST /sessions/<id>/cancel` with `{"user_id":"dev1"}`. A 202 response
+means **requested**, not finished: the runtime stops further model requests and
+tool dispatch, cancels in-flight inference/async tools, and waits for owned cleanup.
+Synchronous workers cannot be forcibly stopped; a write may finish before
+cancellation returns, and a stuck worker can keep the workspace busy indefinitely.
+Repeated requests do not interrupt cleanup. Idle, archived, or finalizing sessions
+return 409; ownership and unknown-session checks retain 403/404 behavior.
+
+The original HTTP response or SSE `turn_done` then carries
+`completion_status="cancelled"`, partial tool/check evidence, and bounded workspace
+diffs. It is archived before delivery, and the session becomes read-only. Review
+it with the saved-session routes above, then create a new session after inspecting
+the workspace. Cancellation never resets files, repairs a transcript for reuse,
+or grants permission to resume. If storage fails, the previous snapshot remains
+available and the final delivery is an error.
+
+An interrupted invocation has `interrupted=true`; its result may be unavailable
+even if a worker finished a mutation. Earlier check evidence becomes stale when
+an interrupted file edit or command may have changed the workspace. Interrupted
+model-request usage is unknown, not zero. Cancellation does not undo a provider's
+remote computation or guarantee that billing has stopped.
+
+The panel has **Cancel turn**; it keeps Send disabled until final evidence arrives
+and requires a new session after cancellation. The CLI supports
+`agent-harness cancel <session-id> --user-id dev1` from another terminal; Ctrl-C
+while waiting in `chat` sends the same request and exits. A cancel request can fail
+or race finalization: clients report that cancellation was not confirmed rather
+than claiming the run stopped.
+
+Disconnecting either transport leaves the application-owned turn running under
+its existing budgets. Inspect the archive or explicitly cancel it. The panel
+closes a failed stream without POST retry or automatic reconnection, and disables
+submission on that session while the outcome is unknown. A normal API shutdown
+requests cancellation and waits for detached work and archive writes before closing
+providers/stores. A forced process exit can still lose the active turn; run IDs,
+idempotent submissions, reconnection, crash recovery, and safe resume remain open.
 
 ### Eval honesty
 
@@ -393,7 +432,7 @@ docker compose up --build -d            # optional smoke; see demo.md
 - **Semantic codebase search.** Ripgrep-first is enough for v1; Mission 8 / [tools/semantic.py](tools/semantic.py) when explore evals fail grep-only.
 - **Agent panel demo UI.** Mission 9 — Typer CLI + local web panel over `/chat`; plan in [GUI-integ.md](GUI-integ.md). Not a full IDE.
 - **Streaming `/chat` (SSE).** Slice 9c; live tool-trace in the agent panel.
-- **Safe session resume.** SQLite retains finalized review snapshots after restart; interrupted turns, cancellation, workspace-checked resume, and client history views remain open.
+- **Safe session resume.** SQLite retains finalized review snapshots after restart; crash recovery, workspace-checked resume, and client history views remain open.
 - **LLM-judge confidence.** Deterministic heuristic is inspectable; validate before swapping.
 - **Per-sentence citation attribution.** Turn-level file:line citations today.
 - **Router fallback across providers.** Plain dispatch table until error patterns justify failover.

@@ -289,13 +289,34 @@ The harness does not need to make every model good at every task. It needs to id
   checkpoints/revert, retention/deletion, cross-process coordination, and CLI/panel
   history views remain open. This completes only the review-persistence slice
   of item 8; Milestone 5 is not complete.
+- **2026-10-10 — Explicit turn cancellation prepared:** a per-turn cancellation
+  signal now stops further inference/tool dispatch and settles owned async/sync
+  work before returning `cancelled`. The API exposes an owner-scoped cancellation
+  request, with 202 meaning requested and 409 for idle/finalizing/read-only state.
+  Cancelled results retain partial evidence and bounded diffs, are archived before
+  delivery, and retire the session instead of granting continuation. Interrupted
+  invocations are marked explicitly; prior checks become stale when an interrupted
+  edit/command may have changed files. HTTP/SSE disconnects leave app-owned turns
+  running under their budgets; shutdown requests cancellation and waits before
+  closing resources. CLI cancellation and Ctrl-C handling share the endpoint;
+  the panel adds Cancel and removes stream-error POST resubmission.
+  Validation passed focused API/runtime/tool/CLI regressions, 574 offline tests
+  (five live deselected), Ruff/mypy, and both 90/90 scripted matrices with labels
+  inspected. A real subprocess regression prevents descendant writes after
+  cancellation; browser checks exercised real file-tool cancellation through a
+  scripted-provider API and a simulated stream disconnect without resubmission.
+  The temporary server was stopped. No inference or coding-quality comparison ran.
+  Synchronous workers remain uninterruptible and can delay cleanup indefinitely;
+  remote inference/billing cannot be guaranteed to stop. Cross-process coordination,
+  run IDs/idempotence, reconnection, crash recovery, checkpoints/revert, and safe
+  resume remain open. Milestone 5 remains incomplete.
 - **Next:** item 6's listed mechanics are in place; see the known limitations
   below before relying on them unattended. Item 7 has a repeated baseline and
   nine completed comparisons. Argument feedback did not reliably break repeated
   errors; normalized traces show that completion-time verification recovery rarely
   fires in this task envelope, and the earlier argument cue was not retained after
-  mixed outcomes. The personal-use workflow now has bounded turn-diff review, finalized-session archives, and
-  process-local turn admission; failed-check recovery, model profiles, context
+  mixed outcomes. The personal-use workflow now has bounded turn-diff review,
+  finalized-session archives, explicit cancellation, and process-local turn admission; failed-check recovery, model profiles, context
   management, and the rest of the personal-use workflow remain open. Offline checks
   alone are not evidence of better model coding performance.
 
