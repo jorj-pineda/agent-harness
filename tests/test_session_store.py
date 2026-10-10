@@ -67,6 +67,7 @@ def test_run_identity_and_final_archive_commit_are_atomic(tmp_path: Path, monkey
     import pytest
 
     from harness.runs import RequestConflictError, RunInput
+    from harness.workspace_review import WorkspaceReviewBaseline
 
     store = SessionStore(tmp_path / "sessions.db")
     try:
@@ -88,6 +89,12 @@ def test_run_identity_and_final_archive_commit_are_atomic(tmp_path: Path, monkey
             Turn(user_input="Fix", final_answer="Done", finished_at=datetime.now(UTC))
         )
         response = TurnResponse(answer="Done", provider="ollama", latency_ms=1, run_id=run.run_id)
+        baseline = WorkspaceReviewBaseline(
+            status="recorded",
+            root="/fixture",
+            root_identity=(1, 2),
+            fingerprints={"a.py": "fixture"},
+        )
         original_update = store._update_run
 
         def fail(record):
@@ -95,11 +102,13 @@ def test_run_identity_and_final_archive_commit_are_atomic(tmp_path: Path, monkey
 
         monkeypatch.setattr(store, "_update_run", fail)
         with pytest.raises(sqlite3.OperationalError):
-            store.finish_run(run.run_id, response, session=session)
+            store.finish_run(run.run_id, response, session=session, workspace_baseline=baseline)
         assert store.get(session.session_id).responses == []
         assert store.get_run(run.run_id).status == "running"
+        assert store.get_workspace_review(session.session_id) is None
         monkeypatch.setattr(store, "_update_run", original_update)
-        store.finish_run(run.run_id, response, session=session)
+        store.finish_run(run.run_id, response, session=session, workspace_baseline=baseline)
+        assert store.get_workspace_review(session.session_id).baseline == baseline
         store.recover_runs()
         assert store.get_run(run.run_id).response == response
         assert store.get(session.session_id).responses[0].response == response

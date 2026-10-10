@@ -40,6 +40,7 @@ from fastapi import FastAPI, HTTPException, Query, Request, Response
 from fastapi.responses import StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
+from harness.admission import turn_admission
 from harness.cancellation import TurnCancellation
 from harness.grounding import Grounder
 from harness.policy import classify_task, is_out_of_scope_request
@@ -50,6 +51,7 @@ from harness.runtime import build_registry, out_of_scope_response, run_configure
 from harness.session_store import SessionArchive, SessionStore, SessionSummary
 from harness.state import Session, TurnResponse
 from harness.stream import ErrorEvent, EventCallback, StreamEvent, TurnDoneEvent
+from harness.workspace_review import WorkspaceReview, WorkspaceReviewBaseline, compare_workspace
 from memory import FactStore
 from providers import create_embedder
 from providers.base import ChatProvider, Embedder
@@ -237,6 +239,51 @@ def _register_routes(app: FastAPI) -> None:
     ) -> SessionArchive:
         """Inspect saved transcript and final evidence; this does not enable resume."""
         return _lookup_archive(request.app.state.components, session_id, user_id)
+
+    @app.get("/sessions/{session_id}/workspace-review", response_model=WorkspaceReview)
+    async def inspect_workspace(
+        session_id: str,
+        request: Request,
+        user_id: str = Query(min_length=1),
+        max_paths: int = Query(default=100, ge=1, le=1000),
+    ) -> WorkspaceReview:
+        """Compare scoped workspace state to its saved final baseline; never resumes work."""
+        components: Components = request.app.state.components
+        archive = _lookup_archive(components, session_id, user_id)
+        saved = _session_store(components).get_workspace_review(session_id)
+        if saved is None:
+            return WorkspaceReview(
+                status="not_recorded",
+                reason="No durable final workspace baseline for this session.",
+            )
+        if (
+            not archive.session.turns
+            or saved.turn_id != archive.session.turns[-1].turn_id
+            or saved.baseline.root != archive.session.workspace_root
+        ):
+            return WorkspaceReview(
+                status="unavailable",
+                reason="Saved baseline does not match the latest archived turn.",
+            )
+
+        async def compare_saved() -> WorkspaceReview:
+            with turn_admission.claim(session_id, archive.session.workspace_root) as busy:
+                if busy is not None:
+                    return WorkspaceReview(status="busy", turn_id=saved.turn_id, reason=busy)
+                settings: Settings = request.app.state.settings
+                comparison = await asyncio.to_thread(
+                    compare_workspace,
+                    saved.baseline,
+                    max_files=settings.max_tracked_files,
+                    max_bytes=settings.max_tracked_bytes,
+                    max_paths=max_paths,
+                )
+                comparison.turn_id = saved.turn_id
+                return comparison
+
+        task = asyncio.create_task(compare_saved())
+        _own_task(components, task)
+        return await asyncio.shield(task)
 
     @app.post(
         "/sessions/{session_id}/cancel", response_model=CancelSessionResponse, status_code=202
@@ -599,13 +646,21 @@ async def _execute_turn(
     except ValueError:
         model = None  # Custom test/factory providers may have no configured model.
 
+    workspace_baseline: WorkspaceReviewBaseline | None = None
+
+    def capture_workspace_review(baseline: WorkspaceReviewBaseline) -> None:
+        nonlocal workspace_baseline
+        workspace_baseline = baseline
+
     def save_finalized(session: Session, response: TurnResponse) -> None:
         try:
             if run_id is None:
                 _session_store(components).save(session, response, configured_model=model)
             else:
                 response.run_id = run_id
-                _session_store(components).finish_run(run_id, response, session=session)
+                _session_store(components).finish_run(
+                    run_id, response, session=session, workspace_baseline=workspace_baseline
+                )
         except Exception as exc:
             # The workspace may already have changed. Do not let a retry silently
             # continue from state whose final evidence failed to reach storage.
@@ -632,6 +687,7 @@ async def _execute_turn(
             grounder=components.grounder,
             on_event=on_event,
             on_finalized=save_finalized,
+            on_workspace_review=capture_workspace_review,
             cancellation=cancellation,
         )
     except BaseException:

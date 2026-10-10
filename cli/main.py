@@ -267,3 +267,27 @@ def run(
         typer.echo(json.dumps(record, indent=2))
     else:
         show_run(record)
+
+
+@app.command()
+def workspace_review(
+    session_id: str = typer.Argument(...),
+    base_url: str = typer.Option("http://localhost:8000", "--base-url"),
+    user_id: str = typer.Option("cli-user", "--user-id"),
+    max_paths: int = typer.Option(100, "--max-paths", min=1, max=1000),
+) -> None:
+    """Compare the current workspace to its saved final baseline; never resumes work."""
+    try:
+        review = AgentClient(base_url).workspace_review(user_id, session_id, max_paths=max_paths)
+    except Exception as exc:
+        typer.echo(f"Workspace review failed: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+    typer.echo(f"workspace={review['status']} baseline_turn={review.get('turn_id')}")
+    for kind in ("added", "modified", "deleted"):
+        typer.echo(f"{kind}: {review.get(kind, [])} (total {review.get(kind + '_count', 0)})")
+    if review.get("paths_truncated"):
+        typer.echo("Path list truncated; counts cover the full comparison.")
+    if review.get("reason"):
+        typer.echo(review["reason"])
+    typer.echo(f"Excluded patterns: {review.get('excluded_patterns', [])}")
+    typer.echo(review.get("scope_note", "Read-only review, not permission to resume or revert."))

@@ -33,6 +33,7 @@ from .prompts import BASE_SYSTEM_PROMPT, coding_prompt
 from .state import Session, TurnResponse, WorkspaceChangeReport, WorkspaceFileDiff
 from .stream import EventCallback
 from .trace import TurnTraceRecord
+from .workspace_review import WorkspaceReviewBaseline, review_fingerprints
 
 
 def build_registry(
@@ -116,6 +117,7 @@ async def run_configured_turn(
     trace: list[TurnTraceRecord] | None = None,
     on_finalized: Callable[[Session, TurnResponse], None] | None = None,
     cancellation: TurnCancellation | None = None,
+    on_workspace_review: Callable[[WorkspaceReviewBaseline], None] | None = None,
 ) -> TurnResponse:
     """Execute a turn, optionally committing final evidence before releasing admission.
 
@@ -175,8 +177,27 @@ async def run_configured_turn(
         )
         if cancellation is not None:
             cancellation.close()
+        baseline: WorkspaceReviewBaseline | None = None
+        if on_workspace_review is not None:
+            baseline = WorkspaceReviewBaseline(
+                status="not_tracked",
+                root=session.workspace_root,
+                reason="No workspace configured or workspace tracking disabled.",
+            )
         if tracked_root is not None and before is not None:
-            response.workspace_changes = await _change_report(tracked_root, settings, before)
+            response.workspace_changes, after = await _change_report(tracked_root, settings, before)
+            if on_workspace_review is not None:
+                baseline = WorkspaceReviewBaseline(
+                    status="unavailable" if isinstance(after, str) else "recorded",
+                    root=str(tracked_root),
+                    root_identity=None if isinstance(after, str) else after.root_identity,
+                    fingerprints={}
+                    if isinstance(after, str)
+                    else review_fingerprints(after.fingerprints),
+                    reason=after if isinstance(after, str) else None,
+                )
+        if on_workspace_review is not None and baseline is not None:
+            on_workspace_review(baseline)
         if on_finalized is not None:
             on_finalized(session, response)
         return response
@@ -186,6 +207,7 @@ async def run_configured_turn(
 class _TurnSnapshot:
     fingerprints: dict[str, str]
     text: TextCapture | None
+    root_identity: tuple[int, int]
 
 
 async def _snapshot_or_reason(root: Path, settings: Settings) -> _TurnSnapshot | str:
@@ -195,6 +217,7 @@ async def _snapshot_or_reason(root: Path, settings: Settings) -> _TurnSnapshot |
         else None
     )
     try:
+        initial_stat = await asyncio.to_thread(root.stat)
         fingerprints = await asyncio.to_thread(
             snapshot,
             root,
@@ -202,8 +225,13 @@ async def _snapshot_or_reason(root: Path, settings: Settings) -> _TurnSnapshot |
             max_files=settings.max_tracked_files,
             max_bytes=settings.max_tracked_bytes,
             text_capture=text,
+            strict=True,
         )
-        return _TurnSnapshot(fingerprints, text)
+        final_stat = await asyncio.to_thread(root.stat)
+        identity = (initial_stat.st_dev, initial_stat.st_ino)
+        if (final_stat.st_dev, final_stat.st_ino) != identity:
+            raise OSError("Workspace root changed during snapshot")
+        return _TurnSnapshot(fingerprints, text, identity)
     except SnapshotLimitError as exc:
         return f"{exc}; change tracking skipped."
     except OSError as exc:
@@ -212,10 +240,10 @@ async def _snapshot_or_reason(root: Path, settings: Settings) -> _TurnSnapshot |
 
 async def _change_report(
     root: Path, settings: Settings, before: _TurnSnapshot | str
-) -> WorkspaceChangeReport:
+) -> tuple[WorkspaceChangeReport, _TurnSnapshot | str]:
     after = before if isinstance(before, str) else await _snapshot_or_reason(root, settings)
     if isinstance(before, str) or isinstance(after, str):
-        return WorkspaceChangeReport(status="unavailable", reason=str(after))
+        return WorkspaceChangeReport(status="unavailable", reason=str(after)), str(after)
     changes = compare(before.fingerprints, after.fingerprints)
     diffs = (
         await asyncio.to_thread(
@@ -236,4 +264,4 @@ async def _change_report(
         diffs=[
             WorkspaceFileDiff(path=item.path, diff=item.diff, reason=item.reason) for item in diffs
         ],
-    )
+    ), after
