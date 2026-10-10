@@ -88,6 +88,13 @@ def test_http_and_stream_share_turn_admission(
             assert blocked["tool_calls"] == []
             assert not (repo / "second.py").exists()
             assert harness.provider.calls == []
+            # A busy response must not save the other turn's mutable transcript.
+            for sid in sessions:
+                saved = harness.client.get(
+                    f"/sessions/{sid}", params={"user_id": "dev"}
+                ).json()
+                assert saved["session"]["turns"] == []
+                assert saved["responses"] == []
         finally:
             release.set()
             completed = first.result(timeout=5)

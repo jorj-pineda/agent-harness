@@ -66,7 +66,8 @@ def test_coding_api_import_startup_and_turn_without_support_modules(tmp_path: Pa
         support = root / 'support-unavailable'
         support.write_text('not a directory')
         settings = Settings(_env_file=None, default_provider='scripted',
-            memory_db_path=root/'memory.db', chroma_path=support/'chroma',
+            memory_db_path=root/'memory.db', session_db_path=root/'sessions.db',
+            chroma_path=support/'chroma',
             sqlite_db_path=support/'db', ollama_host='http://127.0.0.1:1')
         app = server.create_app(settings=settings)
         with TestClient(app) as client:
@@ -101,6 +102,7 @@ def test_explicit_support_mode_opens_resources_and_executes_support_tools(
         enable_support_tools=True,
         default_provider="scripted",
         memory_db_path=tmp_path / "memory.db",
+        session_db_path=tmp_path / "sessions.db",
         chroma_path=tmp_path / "chroma",
         sqlite_db_path=tmp_path / "support.db",
     )
@@ -178,6 +180,7 @@ def test_support_custom_factory_fails_at_startup_and_closes_open_resources(
         _env_file=None,
         default_provider="scripted",
         memory_db_path=tmp_path / "memory.db",
+        session_db_path=tmp_path / "sessions.db",
         enable_support_tools=True,
     )
     provider = ScriptedProvider()

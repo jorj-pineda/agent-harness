@@ -208,6 +208,42 @@ context stops the turn; compaction is not implemented.
 
 **Local agent panel.** A Typer CLI (`agent-harness serve`/`chat`) and a zero-build static panel (`ui/`) make the envelope legible — tool cards stream in live over SSE (`GET /chat/stream`). Both are thin HTTP clients; the ReAct loop is never duplicated in the frontend.
 
+### Saved session review
+
+The API saves session creation and each finalized runtime turn to SQLite at
+`SESSION_DB_PATH` (default `data/sessions.db`). Keep this path stable across
+restarts and mount it on durable storage when running in a container. The store
+is separate from remembered facts and support retrieval resources.
+
+List saved sessions with `GET /sessions?user_id=dev1` (newest first; `limit` is
+1–100, default 50; `offset` defaults to 0). Inspect one with
+`GET /sessions/<id>?user_id=dev1`. These routes are also available in `/docs`.
+The detail response contains `schema_version`, `read_only`, the saved `session`
+(transcript and turn records), and `responses` pairing each turn ID with its full
+final response envelope and configured model ID. Unknown custom providers have
+no configured model ID. Stored completion, checks, errors, token usage, and
+bounded diffs retain their original review limitations; they do not certify the
+current workspace or independently prove a patch works.
+
+After restart, saved sessions are read-only: `/chat` and `/chat/stream` return
+409 for them. Create a new session after inspecting the workspace to begin new
+work. History is never restored into executable session state. While a session
+is live, review shows its last committed snapshot, excluding unfinished work.
+A final response is saved before HTTP success or SSE `turn_done`; a save failure
+returns an error and prevents further continuation of that session, because edits
+may already exist in the workspace.
+
+This is a single-process, local review archive. The existing `user_id` ownership
+checks are not authentication. The database contains model-visible conversation,
+tool results, and source diffs; settings credentials and provider wire payloads
+are not included. There is no automatic retention/deletion policy. Sessions are
+rewritten as complete snapshots, so long histories increase storage and save cost.
+Failed or externally interrupted execution also retires the live session; only
+its last committed snapshot remains available. Interrupted/crashed turns, live
+events, checkpoints, cancellation endpoints, safe resume,
+cross-process coordination, and CLI/panel history views remain separate work.
+Out-of-scope and busy rejections do not create runtime turns or archive responses.
+
 ### Eval honesty
 
 The legacy scenario runner has two modes, neither of which executes real coding
@@ -357,7 +393,7 @@ docker compose up --build -d            # optional smoke; see demo.md
 - **Semantic codebase search.** Ripgrep-first is enough for v1; Mission 8 / [tools/semantic.py](tools/semantic.py) when explore evals fail grep-only.
 - **Agent panel demo UI.** Mission 9 — Typer CLI + local web panel over `/chat`; plan in [GUI-integ.md](GUI-integ.md). Not a full IDE.
 - **Streaming `/chat` (SSE).** Slice 9c; live tool-trace in the agent panel.
-- **Session persistence.** In-memory sessions; swap for Redis/SQLite when multi-worker or restart-safe demos matter.
+- **Safe session resume.** SQLite retains finalized review snapshots after restart; interrupted turns, cancellation, workspace-checked resume, and client history views remain open.
 - **LLM-judge confidence.** Deterministic heuristic is inspectable; validate before swapping.
 - **Per-sentence citation attribution.** Turn-level file:line citations today.
 - **Router fallback across providers.** Plain dispatch table until error patterns justify failover.

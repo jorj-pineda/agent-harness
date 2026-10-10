@@ -11,8 +11,8 @@ during the lifespan:
     thread (the lifespan's caller) keeps every async handler within reach
     without `asyncio.to_thread`.
   * `Grounder`         — confidence-scoring heuristic.
-  * `sessions`         — in-memory `dict[session_id, Session]`. Persistence
-    is deferred (see commit message for the trade-off).
+  * `sessions`         — live conversations for this process only.
+  * `session_store`    — SQLite review archives; never restored for execution.
 
 A `ToolRegistry` is built **per request** so the memory tools can close over
 the request's `user_id`. That closure is the only structural barrier
@@ -35,15 +35,16 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.responses import StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
 from harness.grounding import Grounder
 from harness.policy import classify_task, is_out_of_scope_request
-from harness.providers import build_configured_provider, configured_provider_names
+from harness.providers import build_configured_provider, configured_model, configured_provider_names
 from harness.router import ProviderNotFoundError, ProviderRouter
 from harness.runtime import build_registry, out_of_scope_response, run_configured_turn
+from harness.session_store import SessionArchive, SessionStore, SessionSummary
 from harness.state import Session, TurnResponse
 from harness.stream import ErrorEvent, EventCallback, StreamEvent, TurnDoneEvent
 from memory import FactStore
@@ -71,6 +72,7 @@ class Components:
     fact_store: FactStore
     grounder: Grounder
     sessions: dict[str, Session] = field(default_factory=dict)
+    session_store: SessionStore | None = None
 
 
 ComponentsFactory = Callable[[Settings], Components]
@@ -126,6 +128,8 @@ async def _close_components(components: Components) -> None:
     if embedder_close is not None:
         await embedder_close()
     components.fact_store.close()
+    if components.session_store is not None:
+        components.session_store.close()
 
 
 def create_app(
@@ -146,6 +150,8 @@ def create_app(
                 components.collection is None or components.embedder is None
             ):
                 raise RuntimeError("Support tools require a collection and embedder at startup")
+            if components.session_store is None:
+                components.session_store = SessionStore(resolved_settings.session_db_path)
             yield
         finally:
             await _close_components(components)
@@ -181,6 +187,7 @@ def _register_routes(app: FastAPI) -> None:
             req.workspace_root or _default_workspace_root(settings)
         )
         session = Session(user_id=req.user_id, workspace_root=workspace_root)
+        _session_store(components).save(session)
         components.sessions[session.session_id] = session
         log.info(
             "api=create_session user_id=%s session_id=%s workspace_root=%s",
@@ -189,6 +196,25 @@ def _register_routes(app: FastAPI) -> None:
             workspace_root,
         )
         return CreateSessionResponse(session_id=session.session_id)
+
+    @app.get("/sessions", response_model=list[SessionSummary])
+    async def list_sessions(
+        request: Request,
+        user_id: str = Query(min_length=1),
+        limit: int = Query(default=50, ge=1, le=100),
+        offset: int = Query(default=0, ge=0),
+    ) -> list[SessionSummary]:
+        """List committed review snapshots for this user (newest first)."""
+        return _session_store(request.app.state.components).list(
+            user_id, limit=limit, offset=offset
+        )
+
+    @app.get("/sessions/{session_id}", response_model=SessionArchive)
+    async def inspect_session(
+        session_id: str, request: Request, user_id: str = Query(min_length=1)
+    ) -> SessionArchive:
+        """Inspect saved transcript and final evidence; this does not enable resume."""
+        return _lookup_archive(request.app.state.components, session_id, user_id)
 
     @app.post("/chat", response_model=ChatResponse)
     async def chat(req: ChatRequest, request: Request) -> ChatResponse:
@@ -287,10 +313,31 @@ def _lookup_session(components: Components, session_id: str, user_id: str) -> Se
     """Fetch a session, enforcing existence (404) and ownership (403)."""
     session = components.sessions.get(session_id)
     if session is None:
-        raise HTTPException(status_code=404, detail="Unknown session_id")
+        _lookup_archive(components, session_id, user_id)
+        raise HTTPException(
+            status_code=409,
+            detail=(
+                "Saved session is read-only after restart. "
+                "Create a new session; resume is not supported."
+            ),
+        )
     if session.user_id != user_id:
         raise HTTPException(status_code=403, detail="Session does not belong to this user_id")
     return session
+
+
+def _session_store(components: Components) -> SessionStore:
+    assert components.session_store is not None
+    return components.session_store
+
+
+def _lookup_archive(components: Components, session_id: str, user_id: str) -> SessionArchive:
+    archive = _session_store(components).get(session_id)
+    if archive is None:
+        raise HTTPException(status_code=404, detail="Unknown session_id")
+    if archive.session.user_id != user_id:
+        raise HTTPException(status_code=403, detail="Session does not belong to this user_id")
+    return archive
 
 
 def _resolve_provider_or_400(components: Components, provider_name: str | None) -> ChatProvider:
@@ -334,17 +381,46 @@ async def _run_configured_turn(
         support_tools=support_registry,
         coding_toolset=settings.coding_toolset,
     )
-    return await run_configured_turn(
-        settings=settings,
-        session=session,
-        user_id=user_id,
-        message=message,
-        provider=provider,
-        fact_store=components.fact_store,
-        registry=registry,
-        grounder=components.grounder,
-        on_event=on_event,
-    )
+    try:
+        model = configured_model(provider.name, settings)
+    except ValueError:
+        model = None  # Custom test/factory providers may have no configured model.
+
+    def save_finalized(session: Session, response: TurnResponse) -> None:
+        try:
+            _session_store(components).save(session, response, configured_model=model)
+        except Exception as exc:
+            # The workspace may already have changed. Do not let a retry silently
+            # continue from state whose final evidence failed to reach storage.
+            components.sessions.pop(session.session_id, None)
+            log.error("api=archive_failed exception=%s", type(exc).__name__)
+            raise HTTPException(
+                status_code=503,
+                detail=(
+                    "Session archive failed; workspace edits may exist. "
+                    "Only the previous saved snapshot is available for review. "
+                    "Create a new session after inspecting the workspace."
+                ),
+            ) from exc
+
+    try:
+        return await run_configured_turn(
+            settings=settings,
+            session=session,
+            user_id=user_id,
+            message=message,
+            provider=provider,
+            fact_store=components.fact_store,
+            registry=registry,
+            grounder=components.grounder,
+            on_event=on_event,
+            on_finalized=save_finalized,
+        )
+    except BaseException:
+        # Failed/interrupted execution can leave an unfinished transcript. Keep
+        # the committed review snapshot, but never archive or reuse that state.
+        components.sessions.pop(session.session_id, None)
+        raise
 
 
 def _default_workspace_root(settings: Settings) -> str | None:
