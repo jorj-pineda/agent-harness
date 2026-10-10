@@ -212,6 +212,22 @@ def show_run(record: dict) -> None:
     typer.echo(
         f"provider={record['provider']} model={record.get('configured_model') or 'unrecorded'}"
     )
+    profile = record.get("execution_profile")
+    if profile is None:
+        typer.echo("execution_profile=unrecorded (configuration not captured in this record)")
+    else:
+        limits = profile["settings"]
+        typer.echo(
+            f"execution_profile=v{profile['schema_version']} "
+            f"prompt={profile.get('prompt_version') or 'custom'} "
+            f"toolset={limits['coding_toolset']} tools={len(profile['tool_names'])}"
+        )
+        typer.echo(
+            f"  context_limit={limits['max_context_tokens']} "
+            f"output_budget={limits['max_completion_tokens_per_turn']} "
+            f"tool_budget={limits['max_tool_calls_per_turn']} (0 disables token limits)"
+        )
+        typer.echo("  Configured settings only; inspect --json for hashes and full limits.")
     if record.get("error"):
         typer.echo(record["error"])
     if record.get("response") is not None:

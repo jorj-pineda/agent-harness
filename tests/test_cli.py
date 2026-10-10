@@ -551,3 +551,24 @@ def test_transcript_review_only_reads_with_bounded_diagnostics():
     assert get.call_args.args[0].endswith("/sessions/s1/transcript-review")
     assert get.call_args.kwargs["params"] == {"user_id": "dev", "max_issues": 1}
     post.assert_not_called()
+
+
+def test_run_command_shows_configured_profile_and_keeps_json_read_only():
+    from harness.config import Settings
+    from harness.execution_profile import capture_execution_profile
+    from tools import ToolRegistry
+
+    record = _saved_run()
+    record["execution_profile"] = capture_execution_profile(
+        Settings(_env_file=None, max_context_tokens=8192), "ollama", ToolRegistry()
+    ).model_dump(mode="json")
+    with patch("cli.main.AgentClient") as mock:
+        mock.return_value.run.return_value = record
+        result = runner.invoke(app, ["run", "r1"])
+        raw = runner.invoke(app, ["run", "r1", "--json"])
+        mock.return_value.chat.assert_not_called()
+    assert result.exit_code == 0, result.output
+    assert "execution_profile=v1" in result.output
+    assert "context_limit=8192" in result.output
+    assert "Configured settings only" in result.output
+    assert '"execution_profile"' in raw.output

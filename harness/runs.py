@@ -8,6 +8,7 @@ from typing import Annotated, Literal
 
 from pydantic import BaseModel, Field
 
+from .execution_profile import ExecutionProfile
 from .state import TurnResponse
 
 RequestId = Annotated[
@@ -34,6 +35,14 @@ class RunRecord(BaseModel):
     request: RunInput
     provider: str
     configured_model: str | None = None
+    execution_profile: ExecutionProfile | None = Field(
+        default=None,
+        description=(
+            "Allowlisted configured execution evidence; null when not captured, "
+            "including legacy/unadmitted work. "
+            "Does not attest backend behavior or grant resume permission."
+        ),
+    )
     status: Literal["running", "finished", "cancelled", "failed", "interrupted"] = "running"
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     finished_at: datetime | None = None
