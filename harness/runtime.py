@@ -207,13 +207,21 @@ async def run_configured_turn(
         if tracked_root is not None and before is not None:
             response.workspace_changes, after = await _change_report(tracked_root, settings, before)
             if on_workspace_review is not None:
+                saved_fingerprints = (
+                    {} if isinstance(after, str) else review_fingerprints(after.fingerprints)
+                )
                 baseline = WorkspaceReviewBaseline(
                     status="unavailable" if isinstance(after, str) else "recorded",
                     root=str(tracked_root),
                     root_identity=None if isinstance(after, str) else after.root_identity,
-                    fingerprints={}
+                    fingerprints=saved_fingerprints,
+                    file_modes=None
                     if isinstance(after, str)
-                    else review_fingerprints(after.fingerprints),
+                    else {
+                        path: mode
+                        for path, mode in after.file_modes.items()
+                        if path in saved_fingerprints
+                    },
                     reason=after if isinstance(after, str) else None,
                 )
         if on_workspace_review is not None and baseline is not None:
@@ -228,6 +236,7 @@ class _TurnSnapshot:
     fingerprints: dict[str, str]
     text: TextCapture | None
     root_identity: tuple[int, int]
+    file_modes: dict[str, int]
 
 
 async def _snapshot_or_reason(root: Path, settings: Settings) -> _TurnSnapshot | str:
@@ -236,6 +245,7 @@ async def _snapshot_or_reason(root: Path, settings: Settings) -> _TurnSnapshot |
         if settings.max_workspace_diff_bytes
         else None
     )
+    file_modes: dict[str, int] = {}
     try:
         initial_stat = await asyncio.to_thread(root.stat)
         fingerprints = await asyncio.to_thread(
@@ -245,13 +255,14 @@ async def _snapshot_or_reason(root: Path, settings: Settings) -> _TurnSnapshot |
             max_files=settings.max_tracked_files,
             max_bytes=settings.max_tracked_bytes,
             text_capture=text,
+            file_modes=file_modes,
             strict=True,
         )
         final_stat = await asyncio.to_thread(root.stat)
         identity = (initial_stat.st_dev, initial_stat.st_ino)
         if (final_stat.st_dev, final_stat.st_ino) != identity:
             raise OSError("Workspace root changed during snapshot")
-        return _TurnSnapshot(fingerprints, text, identity)
+        return _TurnSnapshot(fingerprints, text, identity, file_modes)
     except SnapshotLimitError as exc:
         return f"{exc}; change tracking skipped."
     except OSError as exc:

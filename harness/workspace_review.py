@@ -24,6 +24,7 @@ class WorkspaceReviewBaseline(BaseModel):
     root: str | None
     root_identity: tuple[int, int] | None = None
     fingerprints: dict[str, str] = Field(default_factory=dict)
+    file_modes: dict[str, int] | None = None
     excluded_patterns: tuple[str, ...] = REVIEW_IGNORE
     reason: str | None = None
 
@@ -42,10 +43,13 @@ class WorkspaceReview(BaseModel):
     paths_truncated: bool = False
     excluded_patterns: tuple[str, ...] = REVIEW_IGNORE
     reason: str | None = None
+    mode_coverage: Literal["compared", "not_recorded", "not_checked"] = "not_checked"
     read_only: Literal[True] = True
     scope_note: str = (
-        "Compares observed non-excluded file contents and symlink targets, not modes or ignored "
-        "directory contents. This non-atomic review is not permission to resume or revert."
+        "Compares observed non-excluded file contents and symlink targets, plus regular-file "
+        "permission bits when mode_coverage is compared. Ignores directory modes, ignored "
+        "contents, ACLs, ownership, extended attributes, and symlink referents. "
+        "This non-atomic review is not permission to resume or revert."
     )
 
 
@@ -84,12 +88,14 @@ def compare_workspace(
         if root.resolve() != root or (stat.st_dev, stat.st_ino) != baseline.root_identity:
             result.reason = "Workspace root was replaced or redirected."
             return result
+        file_modes: dict[str, int] = {}
         fingerprints = snapshot(
             root,
             ignore=baseline.excluded_patterns,
             max_files=max_files,
             max_bytes=max_bytes,
             strict=True,
+            file_modes=file_modes,
         )
         final_stat = root.stat()
         if (
@@ -102,6 +108,15 @@ def compare_workspace(
         result.reason = f"Workspace comparison unavailable ({type(exc).__name__})."
         return result
     changes = compare(baseline.fingerprints, review_fingerprints(fingerprints))
+    result.mode_coverage = "not_recorded" if baseline.file_modes is None else "compared"
+    modified = set(changes.modified)
+    if baseline.file_modes is not None:
+        modified.update(
+            path
+            for path in baseline.fingerprints.keys() & fingerprints.keys()
+            if baseline.file_modes.get(path) != file_modes.get(path)
+        )
+    changes = type(changes)(changes.added, tuple(sorted(modified)), changes.deleted)
     result.status = (
         "changed" if any((changes.added, changes.modified, changes.deleted)) else "unchanged"
     )
