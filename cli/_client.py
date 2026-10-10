@@ -45,6 +45,15 @@ class AgentClient:
         resp.raise_for_status()
         return str(resp.json()["session_id"])
 
+    def cancel(self, user_id: str, session_id: str) -> str:
+        resp = httpx.post(
+            f"{self._base}/sessions/{session_id}/cancel",
+            json={"user_id": user_id},
+            timeout=30,
+        )
+        resp.raise_for_status()
+        return str(resp.json()["detail"])
+
     def chat(
         self,
         user_id: str,

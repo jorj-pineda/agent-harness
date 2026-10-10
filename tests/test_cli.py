@@ -333,3 +333,27 @@ def test_agent_client_preserves_unavailable_confidence(envelope: dict) -> None:
     with patch("httpx.post", return_value=_ok_response(envelope)):
         summary = AgentClient().chat("u", "s", "inspect")
     assert summary.confidence is None
+
+
+def test_cancel_command_and_ctrl_c_request_explicit_cancellation() -> None:
+    with patch("cli.main.AgentClient") as mock:
+        client = mock.return_value
+        client.cancel.return_value = "Cancellation requested; wait for cleanup."
+        result = runner.invoke(app, ["cancel", "s1", "--user-id", "dev"])
+        assert result.exit_code == 0, result.output
+        client.cancel.assert_called_once_with("dev", "s1")
+        assert "wait for cleanup" in result.output
+        client.reset_mock()
+        client.create_session.return_value = "s2"
+        client.chat.side_effect = KeyboardInterrupt
+        result = runner.invoke(app, ["chat"], input="fix\n")
+        assert result.exit_code == 0, result.output
+        client.cancel.assert_called_once_with("cli-user", "s2")
+        assert "Inspect saved session review" in result.output
+
+
+def test_client_cancel_uses_owner_scoped_endpoint() -> None:
+    with patch("httpx.post", return_value=_ok_response({"detail": "Requested"})) as post:
+        assert AgentClient().cancel("dev", "s1") == "Requested"
+    assert post.call_args.args[0] == "http://localhost:8000/sessions/s1/cancel"
+    assert post.call_args.kwargs["json"] == {"user_id": "dev"}
