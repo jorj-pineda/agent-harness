@@ -82,6 +82,7 @@ class Settings(BaseSettings):
     sqlite_db_path: Path = Path("data/support.db")
     chroma_path: Path = Path("data/chroma")
     memory_db_path: Path = Path("data/memory.db")
+    session_db_path: Path = Path("data/sessions.db")
 
     # Harness budgets
     max_tool_iterations: int = Field(default=8, ge=1, le=32)

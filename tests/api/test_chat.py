@@ -381,6 +381,7 @@ async def test_build_components_smoke(tmp_path: Path) -> None:
         sqlite_db_path=tmp_path / "support.db",
         chroma_path=tmp_path / "chroma",
         memory_db_path=tmp_path / "memory.db",
+        session_db_path=tmp_path / "sessions.db",
     )
     components = build_components(settings)
     try:

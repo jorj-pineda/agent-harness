@@ -130,6 +130,7 @@ def harness(tmp_path: Path) -> Iterator[Harness]:
         sqlite_db_path=tmp_path / "support.db",
         chroma_path=tmp_path / "chroma",
         memory_db_path=tmp_path / "memory.db",
+        session_db_path=tmp_path / "sessions.db",
         confidence_escalation_threshold=0.55,
         max_tool_iterations=8,
     )

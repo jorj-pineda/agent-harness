@@ -113,7 +113,13 @@ async def run_configured_turn(
     on_event: EventCallback | None = None,
     system_prompt: str | None = None,
     trace: list[TurnTraceRecord] | None = None,
+    on_finalized: Callable[[Session, TurnResponse], None] | None = None,
 ) -> TurnResponse:
+    """Execute a turn, optionally committing final evidence before releasing admission.
+
+    The synchronous finalization callback runs only for actual finalized turns,
+    after workspace review. Its failure propagates rather than reporting success.
+    """
     if is_out_of_scope_request(message):
         return out_of_scope_response()
     with turn_admission.claim(session.session_id, session.workspace_root) as busy:
@@ -166,6 +172,8 @@ async def run_configured_turn(
         )
         if tracked_root is not None and before is not None:
             response.workspace_changes = await _change_report(tracked_root, settings, before)
+        if on_finalized is not None:
+            on_finalized(session, response)
         return response
 
 
