@@ -379,6 +379,53 @@ History is scoped to the existing user ID (not authentication); CLI and panel
 use different default IDs. These controls provide submission recovery and review,
 not workspace-checked resume or checkpoints/revert.
 
+### Compare a saved workspace after restart
+
+After a finalized API turn, SQLite now retains its final workspace fingerprints
+and root identity in a separate review record, atomically with the session archive
+and run result. This reuses the final snapshot; it saves no file copies and does
+not turn bounded diffs into revert patches. Older sessions have no invented
+baseline, and interrupted/failed runs retain only the previous finalized baseline.
+
+```sh
+agent-harness workspace-review <session-id> --user-id cli-user
+```
+
+The command calls `GET /sessions/<id>/workspace-review?user_id=...`. Both accept
+`max_paths` (`--max-paths` in the CLI), from 1–1000, default 100. The comparison
+reports added/modified/deleted paths since the **saved final state**, not since
+the initial user workspace. Counts cover the full comparison; a capped path list
+sets `paths_truncated=true`. The response names its archived turn and baseline
+time. It does not update the archive or baseline, submit inference, run commands,
+change files, or enable session continuation.
+
+Statuses distinguish `unchanged`, `changed`, `unavailable`, `busy`, `not_recorded`
+(older/session-creation-only archives), and `not_tracked` (no workspace or tracking
+disabled). Missing/replaced/redirected roots, traversal/read failures, special
+files, snapshot limits, and files growing beyond their measured size cannot be
+reported as unchanged. Comparison uses the current `MAX_TRACKED_FILES` and
+`MAX_TRACKED_BYTES` limits; tightening those limits can make it unavailable.
+Process-local admission covers comparison reads through completion, including
+transport disconnect and shutdown, and rejects overlapping owned turns.
+
+**Unchanged means only the recorded scope matched. It is not permission to resume.**
+This review compares non-excluded file contents and symlink target identity;
+it does not follow symlinks, inspect their referents, compare permissions/modes,
+or inspect `.git`, dependency/cache directories, and `.env`/`.env.*` files. The
+response lists exclusions and explains the scope. Environment-file hashes and
+raw symlink targets are not saved in this record; the API returns comparison
+summaries rather than the fingerprint map. No settings credentials are recorded.
+
+Capture/comparison remain non-atomic against editors, other processes, or detached
+commands. If harness storage is inside the tracked workspace, archive writes after
+the capture can themselves appear as later changes; keep application storage
+outside the repository being reviewed when you want a stable comparison. Root device/inode identity conservatively rejects directory replacement
+or some filesystem moves. Saved hashes cannot restore deleted content, repair
+interrupted transcripts, prove patch acceptance, or establish compatible model/
+profile settings. Snapshot/review overhead remains outside turn wall deadlines
+and `latency_ms`. Explicit resume, broader workspace coverage, profile/transcript
+compatibility, checkpoints/revert, and panel comparison controls are separate work.
+
 ### Eval honesty
 
 The legacy scenario runner has two modes, neither of which executes real coding
