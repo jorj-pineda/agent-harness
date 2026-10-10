@@ -52,6 +52,7 @@ def test_serve_reload_flag() -> None:
 
 def _make_turn(**kwargs: Any) -> MagicMock:
     turn = MagicMock(spec=TurnSummary)
+    turn.run_id = kwargs.get("run_id")
     turn.answer = kwargs.get("answer", "Done.")
     turn.confidence = kwargs.get("confidence", 0.9)
     turn.escalated = kwargs.get("escalated", False)
@@ -81,7 +82,8 @@ def test_chat_creates_session_and_sends_message() -> None:
     assert "Bug fixed." in result.output
     assert "foo.py" in result.output
     instance.create_session.assert_called_once_with("cli-user", None)
-    instance.chat.assert_called_once_with("cli-user", "sess-abc", "fix the bug", None)
+    assert instance.chat.call_args.args == ("cli-user", "sess-abc", "fix the bug", None)
+    assert instance.chat.call_args.kwargs["request_id"] in result.output
 
 
 def test_chat_shows_observed_workspace_changes() -> None:
@@ -100,7 +102,7 @@ def test_chat_shows_observed_workspace_changes() -> None:
                         {"path": "calc.py", "diff": "--- a/calc.py\n+++ b/calc.py\n-old\n+new\n"},
                         {"path": "generated.txt", "reason": "Text capture byte limit exceeded"},
                     ],
-                }
+                },
             ),
             _make_turn(
                 workspace_changes={"status": "unavailable", "reason": "Workspace too large"}
@@ -155,7 +157,7 @@ def test_chat_passes_provider_and_workspace() -> None:
         )
 
     instance.create_session.assert_called_once_with("u1", "/tmp/repo")
-    instance.chat.assert_called_once_with("u1", "sess-ws", "hello", "anthropic")
+    assert instance.chat.call_args.args == ("u1", "sess-ws", "hello", "anthropic")
 
 
 def test_chat_skips_blank_lines() -> None:
@@ -199,10 +201,13 @@ def test_high_legacy_score_does_not_hide_partial_work(verification: str) -> None
             completion_status="incomplete",
             completion_reason="Remaining work requires review.",
             verification_status=verification,
-            check_attempts=[{
-                "argv": ["pytest", "-q"], "status": "unavailable",
-                "error": "Executable unavailable",
-            }],
+            check_attempts=[
+                {
+                    "argv": ["pytest", "-q"],
+                    "status": "unavailable",
+                    "error": "Executable unavailable",
+                }
+            ],
             tool_errors=["read_file: missing"],
         )
         result = runner.invoke(app, ["chat"], input="fix\n/quit\n")
@@ -231,16 +236,19 @@ def test_chat_exits_on_session_error() -> None:
     assert result.exit_code == 1
 
 
-def test_chat_continues_after_message_error() -> None:
+def test_chat_retains_key_and_blocks_new_message_after_error() -> None:
     with patch("cli.main.AgentClient") as MockClient:
         instance = MockClient.return_value
         instance.create_session.return_value = "sess-err"
         instance.chat.side_effect = [Exception("timeout"), _make_turn(answer="Recovered.")]
 
-        result = runner.invoke(app, ["chat"], input="msg1\nmsg2\n/quit\n")
+        result = runner.invoke(app, ["chat"], input="msg1\nmsg2\n/retry\n/quit\n")
 
     assert result.exit_code == 0
     assert "Recovered." in result.output
+    assert "Outcome unknown" in result.output
+    assert instance.chat.call_count == 2
+    assert instance.chat.call_args_list[0] == instance.chat.call_args_list[1]
 
 
 # ---------------------------------------------------------------------------
@@ -357,3 +365,142 @@ def test_client_cancel_uses_owner_scoped_endpoint() -> None:
         assert AgentClient().cancel("dev", "s1") == "Requested"
     assert post.call_args.args[0] == "http://localhost:8000/sessions/s1/cancel"
     assert post.call_args.kwargs["json"] == {"user_id": "dev"}
+
+
+def _saved_run(status="finished", response=None):
+    return {
+        "run_id": "r1",
+        "status": status,
+        "provider": "ollama",
+        "configured_model": "local",
+        "request": {"session_id": "s1", "request_id": "key1", "message": "Fix"},
+        "response": response,
+        "error": "Workspace edits may exist" if status == "interrupted" else None,
+    }
+
+
+def test_check_recovers_review_without_resubmission() -> None:
+    with patch("cli.main.AgentClient") as mock:
+        client = mock.return_value
+        client.create_session.return_value = "s1"
+        client.chat.side_effect = httpx.ReadTimeout("lost response")
+        client.runs.return_value = [
+            _saved_run(
+                response={
+                    "answer": "Partial",
+                    "completion_status": "incomplete",
+                    "verification_status": "failed",
+                    "workspace_changes": {"diffs": [{"path": "a.py", "diff": "-old\n+new\n"}]},
+                }
+            )
+        ]
+        result = runner.invoke(app, ["chat"], input="Fix\n/check\nnew edit\n")
+    assert result.exit_code == 0, result.output
+    assert "status=incomplete checks=failed" in result.output
+    assert "-old\n+new" in result.output
+    assert "Review only" in result.output
+    client.chat.assert_called_once()
+    client.runs.assert_called_once_with(
+        "cli-user", request_id=client.chat.call_args.kwargs["request_id"]
+    )
+
+
+@pytest.mark.parametrize("status", ["running", "failed", "interrupted", "cancelled"])
+def test_history_commands_only_read_and_label_run_state(status: str) -> None:
+    with patch("cli.main.AgentClient") as mock:
+        client = mock.return_value
+        record = _saved_run(status)
+        client.runs.return_value = [record]
+        client.run.return_value = record
+        listing = runner.invoke(app, ["runs", "--user-id", "dev", "--request-id", "key1"])
+        detail = runner.invoke(app, ["run", "r1", "--user-id", "dev"])
+        raw = runner.invoke(app, ["run", "r1", "--user-id", "dev", "--json"])
+    assert listing.exit_code == detail.exit_code == raw.exit_code == 0
+    assert f"r1 {status}" in listing.output
+    assert f"status={status}" in detail.output
+    assert "No saved final response" in detail.output
+    assert '"run_id": "r1"' in raw.output
+    client.chat.assert_not_called()
+    client.create_session.assert_not_called()
+    client.cancel.assert_not_called()
+
+
+def test_client_history_requests_are_gets_and_chat_retains_explicit_key() -> None:
+    with patch("httpx.get", return_value=_ok_response([])) as get:
+        AgentClient().runs("dev", session_id="s1", request_id="key1", limit=20, offset=2)
+        assert get.call_args.kwargs["params"] == {
+            "user_id": "dev",
+            "session_id": "s1",
+            "request_id": "key1",
+            "limit": 20,
+            "offset": 2,
+        }
+    with patch("httpx.get", return_value=_ok_response(_saved_run())) as get:
+        AgentClient().run("dev", "r1")
+        assert get.call_args.args[0].endswith("/runs/r1")
+        assert get.call_args.kwargs["params"] == {"user_id": "dev"}
+    with patch("httpx.post", return_value=_ok_response({"run_id": "r1"})) as post:
+        summary = AgentClient().chat("dev", "s1", "Fix", "ollama", request_id="retained")
+        assert post.call_args.kwargs["json"]["request_id"] == "retained"
+        assert summary.run_id == "r1"
+
+
+def test_history_lookup_failure_does_not_start_work() -> None:
+    with patch("cli.main.AgentClient") as mock:
+        client = mock.return_value
+        client.run.side_effect = httpx.ConnectError("offline")
+        result = runner.invoke(app, ["run", "missing"])
+    assert result.exit_code == 1
+    assert "Run lookup failed" in result.output
+    client.chat.assert_not_called()
+
+
+def test_cli_lost_response_retry_reuses_one_real_tool_turn(tmp_path) -> None:
+    from fastapi.testclient import TestClient
+
+    from providers.base import ToolCall
+    from tests.api.conftest import ScriptedProvider, make_response
+    from tests.api.test_session_persistence import make_app
+
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    (repo / "a.py").write_text("user = 1\n")
+    provider = ScriptedProvider()
+    provider.script(
+        make_response(
+            tool_calls=[
+                ToolCall(
+                    id="edit",
+                    name="write_file",
+                    arguments={"path": "a.py", "content": "user = 1\nagent = 2\n"},
+                )
+            ]
+        ),
+        make_response(content="Saved review"),
+    )
+    chat_requests = []
+    with TestClient(make_app(tmp_path, provider)) as api_client:
+
+        def post(url, **kwargs):
+            response = api_client.post(url, json=kwargs["json"])
+            if url.endswith("/chat"):
+                chat_requests.append(kwargs["json"])
+                if len(chat_requests) == 1:
+                    raise httpx.ReadTimeout("Lost final response after archive commit")
+            return response
+
+        with patch("httpx.post", side_effect=post):
+            result = runner.invoke(
+                app, ["chat", "--workspace", str(repo)], input="Update a.py\n/retry\n"
+            )
+        assert result.exit_code == 0, result.output
+        assert "Saved review" in result.output
+        assert "Recovered result is for review" in result.output
+        assert "--- a/a.py" in result.output
+        assert chat_requests[0] == chat_requests[1]
+        record = api_client.get(
+            "/runs", params={"user_id": "cli-user", "request_id": chat_requests[0]["request_id"]}
+        ).json()
+        assert len(record) == 1
+        assert len(provider.calls) == 2
+        assert (repo / "a.py").read_text() == "user = 1\nagent = 2\n"

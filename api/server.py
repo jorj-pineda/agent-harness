@@ -264,12 +264,14 @@ def _register_routes(app: FastAPI) -> None:
         request: Request,
         user_id: str = Query(min_length=1),
         session_id: str | None = Query(default=None, min_length=1),
+        request_id: RequestId | None = None,
         limit: int = Query(default=50, ge=1, le=100),
         offset: int = Query(default=0, ge=0),
     ) -> list[RunRecord]:
         return _session_store(request.app.state.components).list_runs(
             user_id,
             session_id=session_id,
+            request_id=request_id,
             limit=limit,
             offset=offset,
         )

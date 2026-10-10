@@ -7,7 +7,9 @@ directly. All agent logic stays in the server; the client calls /sessions and
 
 from __future__ import annotations
 
+import uuid
 from dataclasses import dataclass, field
+from typing import Any
 
 import httpx
 
@@ -29,6 +31,7 @@ class TurnSummary:
     tool_errors: list[str] = field(default_factory=list)
     token_usage: dict[str, int | None] = field(default_factory=dict)
     workspace_changes: dict[str, object] = field(default_factory=dict)
+    run_id: str | None = None
 
 
 class AgentClient:
@@ -60,29 +63,60 @@ class AgentClient:
         session_id: str,
         message: str,
         provider: str | None = None,
+        *,
+        request_id: str | None = None,
     ) -> TurnSummary:
         payload: dict[str, str] = {
             "user_id": user_id,
             "session_id": session_id,
             "message": message,
+            "request_id": request_id or uuid.uuid4().hex,
         }
         if provider is not None:
             payload["provider"] = provider
         resp = httpx.post(f"{self._base}/chat", json=payload, timeout=120)
         resp.raise_for_status()
-        data = resp.json()
-        return TurnSummary(
-            answer=str(data.get("answer", "")),
-            confidence=float(data["confidence"]) if data.get("confidence") is not None else None,
-            escalated=bool(data.get("escalated", False)),
-            provider=str(data.get("provider", "")),
-            latency_ms=float(data.get("latency_ms", 0.0)),
-            files_touched=list(data.get("files_touched", [])),
-            completion_status=str(data.get("completion_status", "completed")),
-            completion_reason=data.get("completion_reason"),
-            verification_status=str(data.get("verification_status", "not_run")),
-            check_attempts=list(data.get("check_attempts", [])),
-            tool_errors=list(data.get("tool_errors", [])),
-            token_usage=dict(data.get("token_usage", {})),
-            workspace_changes=dict(data.get("workspace_changes", {})),
-        )
+        return summarize(resp.json())
+
+    def runs(
+        self,
+        user_id: str,
+        *,
+        session_id: str | None = None,
+        request_id: str | None = None,
+        limit: int = 50,
+        offset: int = 0,
+    ) -> list[dict[str, Any]]:
+        params: dict[str, str | int] = {"user_id": user_id, "limit": limit, "offset": offset}
+        if session_id is not None:
+            params["session_id"] = session_id
+        if request_id is not None:
+            params["request_id"] = request_id
+        resp = httpx.get(f"{self._base}/runs", params=params, timeout=30)
+        resp.raise_for_status()
+        return list(resp.json())
+
+    def run(self, user_id: str, run_id: str) -> dict[str, Any]:
+        resp = httpx.get(f"{self._base}/runs/{run_id}", params={"user_id": user_id}, timeout=30)
+        resp.raise_for_status()
+        return dict(resp.json())
+
+
+def summarize(data: dict[str, Any]) -> TurnSummary:
+    """Use the same review presentation for live and saved final envelopes."""
+    return TurnSummary(
+        run_id=data.get("run_id"),
+        answer=str(data.get("answer", "")),
+        confidence=float(data["confidence"]) if data.get("confidence") is not None else None,
+        escalated=bool(data.get("escalated", False)),
+        provider=str(data.get("provider", "")),
+        latency_ms=float(data.get("latency_ms", 0.0)),
+        files_touched=list(data.get("files_touched", [])),
+        completion_status=str(data.get("completion_status", "completed")),
+        completion_reason=data.get("completion_reason"),
+        verification_status=str(data.get("verification_status", "not_run")),
+        check_attempts=list(data.get("check_attempts", [])),
+        tool_errors=list(data.get("tool_errors", [])),
+        token_usage=dict(data.get("token_usage", {})),
+        workspace_changes=dict(data.get("workspace_changes", {})),
+    )

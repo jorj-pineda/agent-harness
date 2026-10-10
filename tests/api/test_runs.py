@@ -234,3 +234,43 @@ def test_cancelled_run_is_replayable_without_reusing_session(tmp_path: Path) -> 
         assert client.post("/chat", json={**payload, "request_id": "new"}).status_code == 409
     with TestClient(make_app(tmp_path, ScriptedProvider())) as client:
         assert client.post("/chat", json=payload).json() == response
+
+
+def test_request_key_lookup_is_owner_scoped_and_combines_filters(tmp_path: Path) -> None:
+    provider = ScriptedProvider()
+    provider.script(*(make_response(content="Done") for _ in range(3)))
+    with TestClient(make_app(tmp_path, provider)) as client:
+        sessions = {
+            user: client.post("/sessions", json={"user_id": user}).json()["session_id"]
+            for user in ("dev", "other")
+        }
+        for user, key in [("dev", "one"), ("dev", "two"), ("other", "one")]:
+            assert (
+                client.post(
+                    "/chat",
+                    json={
+                        "user_id": user,
+                        "session_id": sessions[user],
+                        "message": "Explain",
+                        "request_id": key,
+                    },
+                ).status_code
+                == 200
+            )
+        records = client.get("/runs", params={"user_id": "dev", "request_id": "one"}).json()
+        assert len(records) == 1
+        assert records[0]["request"]["user_id"] == "dev"
+        assert records[0]["request"]["request_id"] == "one"
+        assert (
+            client.get(
+                "/runs",
+                params={"user_id": "dev", "request_id": "one", "session_id": sessions["other"]},
+            ).json()
+            == []
+        )
+        assert client.get("/runs", params={"user_id": "dev", "request_id": "missing"}).json() == []
+        assert (
+            client.get("/runs", params={"user_id": "dev", "request_id": "bad key"}).status_code
+            == 422
+        )
+        assert len(provider.calls) == 3  # All lookups are read-only.
