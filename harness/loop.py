@@ -26,9 +26,10 @@ import time
 from datetime import UTC, datetime
 from typing import Any
 
-from providers.base import ChatMessage, ChatProvider, TokenUsage
+from providers.base import ChatMessage, ChatProvider, ProviderResponse, TokenUsage, ToolCall
 from tools import ToolError, ToolRegistry
 
+from .cancellation import TurnCancellation, TurnCancelled
 from .context import BudgetStop, TokenBudget
 from .grounding import Grounder
 from .memory import harvest_memory_writes
@@ -91,6 +92,7 @@ async def run_turn(
     required_check: list[str] | None = None,
     on_event: EventCallback | None = None,
     trace: list[TurnTraceRecord] | None = None,
+    cancellation: TurnCancellation | None = None,
 ) -> TurnResponse:
     """Drive one user turn to completion via ReAct + tool dispatch.
 
@@ -127,9 +129,15 @@ async def run_turn(
         if max_turn_wall_seconds > 0
         else None
     )
+    cancel_reason = "Cancellation requested; owned tool work has settled. Review partial work."
     wall_limit_reason = f"Turn wall-time budget of {max_turn_wall_seconds:g}s reached."
 
     for iteration in range(max_iterations):
+        if cancellation is not None and cancellation.requested:
+            final_answer = "(turn cancelled before task completion)"
+            completion_status = "cancelled"
+            completion_reason = cancel_reason
+            break
         allowance = budget.request_allowance(session.messages, tool_specs)
         if isinstance(allowance, BudgetStop):
             final_answer = "(model token budget exhausted before task completion)"
@@ -154,36 +162,48 @@ async def run_turn(
                     else [],
                 )
             )
+
+        request_output: int | None = allowance
+
+        async def request_model(max_tokens: int | None = request_output) -> ProviderResponse:
+            if max_tokens is None:
+                return await provider.chat(session.messages, tools=tool_specs)
+            return await provider.chat(session.messages, tools=tool_specs, max_tokens=max_tokens)
+
+        budget_timeout = asyncio.timeout_at(deadline)
         try:
-            if deadline is None:
-                if allowance is None:
-                    response = await provider.chat(session.messages, tools=tool_specs)
-                else:
-                    response = await provider.chat(
-                        session.messages, tools=tool_specs, max_tokens=allowance
+            async with budget_timeout:
+                response = (
+                    await cancellation.run(request_model)
+                    if cancellation is not None
+                    else await request_model()
+                )
+        except TurnCancelled:
+            if trace is not None:
+                trace.append(
+                    RequestFailureTrace(iteration=iteration, exception_type="TurnCancelled")
+                )
+            budget.mark_unknown()
+            final_answer = "(turn cancelled before task completion)"
+            completion_status = "cancelled"
+            completion_reason = cancel_reason
+            break
+        except TimeoutError:
+            if not budget_timeout.expired():
+                if trace is not None:
+                    trace.append(
+                        RequestFailureTrace(iteration=iteration, exception_type="TimeoutError")
                     )
-            else:
-                budget_timeout = asyncio.timeout_at(deadline)
-                try:
-                    async with budget_timeout:
-                        if allowance is None:
-                            response = await provider.chat(session.messages, tools=tool_specs)
-                        else:
-                            response = await provider.chat(
-                                session.messages, tools=tool_specs, max_tokens=allowance
-                            )
-                except TimeoutError:
-                    if not budget_timeout.expired():
-                        raise
-                    if trace is not None:
-                        trace.append(
-                            RequestFailureTrace(iteration=iteration, exception_type="TimeoutError")
-                        )
-                    budget.mark_unknown()
-                    final_answer = "(turn stopped before task completion)"
-                    completion_status = "budget_exhausted"
-                    completion_reason = wall_limit_reason
-                    break
+                raise
+            if trace is not None:
+                trace.append(
+                    RequestFailureTrace(iteration=iteration, exception_type="TimeoutError")
+                )
+            budget.mark_unknown()
+            final_answer = "(turn stopped before task completion)"
+            completion_status = "budget_exhausted"
+            completion_reason = wall_limit_reason
+            break
         except (Exception, asyncio.CancelledError) as exc:
             if trace is not None:
                 trace.append(
@@ -210,6 +230,12 @@ async def run_turn(
             final_answer = "(turn stopped before task completion)"
             completion_status = "budget_exhausted"
             completion_reason = wall_limit_reason
+            break
+
+        if cancellation is not None and cancellation.requested:
+            final_answer = "(turn cancelled before task completion)"
+            completion_status = "cancelled"
+            completion_reason = cancel_reason
             break
 
         incomplete_reasons = {
@@ -308,7 +334,11 @@ async def run_turn(
             tool_start = _now_ms()
             result: Any = None
             error: str | None = None
+            interrupted = False
             try:
+                if cancellation is not None and cancellation.requested:
+                    stop_reason = cancel_reason
+                    stop_status = "cancelled"
                 if stop_reason is not None:
                     raise ToolError("Tool not executed: this turn has already stopped.")
                 if deadline is not None and asyncio.get_running_loop().time() >= deadline:
@@ -337,7 +367,20 @@ async def run_turn(
                 )
                 if precondition_error is not None:
                     raise ToolError(precondition_error)
-                result = await registry.invoke(tc.name, tc.arguments)
+
+                async def invoke_tool(call: ToolCall = tc) -> Any:
+                    return await registry.invoke(call.name, call.arguments)
+
+                result = (
+                    await cancellation.run(invoke_tool)
+                    if cancellation is not None
+                    else await invoke_tool()
+                )
+            except TurnCancelled:
+                interrupted = True
+                stop_reason = cancel_reason
+                stop_status = "cancelled"
+                error = "Tool interrupted by cancellation; work has settled, result unavailable."
             except ToolError as exc:
                 error = str(exc)
             tool_latency = _now_ms() - tool_start
@@ -349,6 +392,7 @@ async def run_turn(
                     result=result,
                     error=error,
                     latency_ms=tool_latency,
+                    interrupted=interrupted,
                 )
             )
             payload = error if error is not None else result
@@ -376,6 +420,9 @@ async def run_turn(
                         message=tool_message.model_copy(deep=True),
                     )
                 )
+        if cancellation is not None and cancellation.requested:
+            stop_reason = cancel_reason
+            stop_status = "cancelled"
         if stop_reason is not None:
             final_answer = "(tool execution stopped before task completion)"
             completion_status = stop_status

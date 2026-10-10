@@ -73,16 +73,23 @@ def harvest_patch_summary(tool_calls: list[ToolCallRecord]) -> list[str]:
     return summaries
 
 
+def _may_have_mutated(call: ToolCallRecord) -> bool:
+    return (
+        call.name in EDIT_TOOL_NAMES and call.error is None and isinstance(call.result, dict)
+    ) or (call.interrupted and call.name in {*EDIT_TOOL_NAMES, RUN_COMMAND_TOOL_NAME})
+
+
 def harvest_checks(
     tool_calls: list[ToolCallRecord], *, required_check: list[str] | None = None
 ) -> list[CheckRecord]:
     """List observed verification attempts; a later edit supersedes earlier evidence."""
     checks: list[CheckRecord] = []
     for call in tool_calls:
-        if call.name in EDIT_TOOL_NAMES and call.error is None and isinstance(call.result, dict):
+        if _may_have_mutated(call):
             for check in checks:
                 check.superseded_by_edit = True
-            continue
+            if call.name in EDIT_TOOL_NAMES:
+                continue
         argv = call.arguments.get("argv")
         if call.name != RUN_COMMAND_TOOL_NAME or not isinstance(argv, list):
             continue
@@ -126,9 +133,10 @@ def verification_status(
     """Summarize the latest check, invalidating it when a later edit succeeds."""
     status: VerificationStatus = "not_run"
     for call in tool_calls:
-        if call.name in EDIT_TOOL_NAMES and call.error is None and isinstance(call.result, dict):
+        if _may_have_mutated(call):
             status = "stale" if status != "not_run" else "not_run"
-            continue
+            if call.name in EDIT_TOOL_NAMES:
+                continue
         if call.name != RUN_COMMAND_TOOL_NAME:
             continue
         argv = call.arguments.get("argv")

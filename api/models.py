@@ -7,6 +7,8 @@ module — callers don't need to know which inner layer owns the schema.
 
 from __future__ import annotations
 
+from typing import Literal
+
 from pydantic import BaseModel, Field
 
 from harness.state import TurnResponse
@@ -38,10 +40,21 @@ class ChatRequest(BaseModel):
     )
 
 
+class CancelSessionRequest(BaseModel):
+    user_id: str = Field(..., min_length=1)
+
+
+class CancelSessionResponse(BaseModel):
+    status: Literal["requested"] = "requested"
+    detail: str = "Cancellation requested; wait for final evidence while owned work settles."
+
+
 ChatResponse = TurnResponse
 
 
 __all__ = [
+    "CancelSessionRequest",
+    "CancelSessionResponse",
     "ChatRequest",
     "ChatResponse",
     "CreateSessionRequest",
