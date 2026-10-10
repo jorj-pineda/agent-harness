@@ -55,13 +55,14 @@ def _ignored(name: str, patterns: Iterable[str]) -> bool:
 
 def _hash_file(
     path: Path, capture_bytes: int | None, *, max_read_bytes: int | None = None
-) -> tuple[str, bytes | None]:
+) -> tuple[str, bytes | None, int]:
     digest = hashlib.sha256()
     content: bytearray | None = bytearray() if capture_bytes is not None else None
     # Do not follow a file replaced by a symlink between enumeration and opening.
     fd = os.open(path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0))
     with os.fdopen(fd, "rb") as stream:
-        if not stat_module.S_ISREG(os.fstat(stream.fileno()).st_mode):
+        opened_stat = os.fstat(stream.fileno())
+        if not stat_module.S_ISREG(opened_stat.st_mode):
             raise OSError("Snapshot entry is no longer a regular file")
         bytes_read = 0
         while True:
@@ -80,7 +81,11 @@ def _hash_file(
                     content.extend(chunk)
                 else:
                     content = None
-    return digest.hexdigest(), bytes(content) if content is not None else None
+    return (
+        digest.hexdigest(),
+        bytes(content) if content is not None else None,
+        stat_module.S_IMODE(opened_stat.st_mode),
+    )
 
 
 def snapshot(
@@ -91,6 +96,7 @@ def snapshot(
     max_bytes: int = 0,
     text_capture: TextCapture | None = None,
     strict: bool = False,
+    file_modes: dict[str, int] | None = None,
 ) -> dict[str, str]:
     """Map repo-relative POSIX paths to content fingerprints.
 
@@ -100,7 +106,9 @@ def snapshot(
     Strict mode rejects missing roots, traversal/read failures, vanished files,
     and special file types rather than silently recording incomplete evidence.
     An optional fresh `TextCapture` retains bounded UTF-8 content alongside hashes;
-    omitted text does not prevent path tracking. This is not an atomic snapshot.
+    omitted text does not prevent path tracking. Optional file_modes records regular-file
+    permission bits from the same open descriptor as the content read (no symlink modes).
+    This is not an atomic snapshot.
     """
     if strict and not root.is_dir():
         raise OSError("Workspace root is not a directory")
@@ -154,12 +162,14 @@ def snapshot(
                             text_capture.max_file_bytes,
                             text_capture.max_bytes - text_capture.bytes_used,
                         )
-                fingerprint, content = (
+                fingerprint, content, mode = (
                     _hash_file(path, limit, max_read_bytes=stat.st_size)
                     if strict
                     else _hash_file(path, limit)
                 )
                 fingerprints[relative] = fingerprint
+                if file_modes is not None:
+                    file_modes[relative] = mode
                 if text_capture is not None and limit is not None:
                     if content is None:
                         text_capture.omitted[relative] = "Text capture byte limit exceeded"

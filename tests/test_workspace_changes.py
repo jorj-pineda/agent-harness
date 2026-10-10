@@ -100,3 +100,15 @@ def test_strict_snapshot_stops_reading_a_file_that_grows(tmp_path: Path, monkeyp
     monkeypatch.setattr(changes, "_hash_file", grow)
     with pytest.raises(SnapshotLimitError, match="grew"):
         snapshot(tmp_path, ignore=(), max_bytes=5, strict=True)
+
+
+def test_optional_modes_use_opened_regular_file_and_do_not_follow_links(tmp_path: Path):
+    file = tmp_path / "script"
+    file.write_text("echo hi\n")
+    file.chmod(0o750)
+    (tmp_path / "link").symlink_to(file)
+    modes = {}
+    fingerprints = snapshot(tmp_path, ignore=(), strict=True, file_modes=modes)
+    assert modes == {"script": 0o750}
+    file.chmod(0o640)
+    assert snapshot(tmp_path, ignore=(), strict=True) == fingerprints

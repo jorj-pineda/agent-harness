@@ -522,6 +522,7 @@ def test_workspace_review_command_only_reads_and_explains_scope():
         )
     assert result.exit_code == 0, result.output
     assert "workspace=changed baseline_turn=t1" in result.output
+    assert "Regular-file mode coverage: not_recorded" in result.output
     assert "modified: ['a.py'] (total 2)" in result.output
     assert "Path list truncated" in result.output
     assert "not permission" in result.output

@@ -305,6 +305,7 @@ def workspace_review(
         typer.echo("Path list truncated; counts cover the full comparison.")
     if review.get("reason"):
         typer.echo(review["reason"])
+    typer.echo(f"Regular-file mode coverage: {review.get('mode_coverage', 'not_recorded')}")
     typer.echo(f"Excluded patterns: {review.get('excluded_patterns', [])}")
     typer.echo(review.get("scope_note", "Read-only review, not permission to resume or revert."))
 

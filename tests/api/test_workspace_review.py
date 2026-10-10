@@ -152,6 +152,8 @@ def test_ignored_content_and_environment_hashes_are_excluded_explicitly(tmp_path
         assert (repo / ".git" / "index").read_text() == "user index change"
     store = SessionStore(tmp_path / "sessions.db")
     baseline = store.get_workspace_review(sid).baseline
+    assert ".env" not in baseline.file_modes
+    assert ".git/index" not in baseline.file_modes
     assert ".env" not in baseline.fingerprints
     assert ".git/index" not in baseline.fingerprints
     assert "fixture-secret" not in baseline.model_dump_json()
@@ -239,4 +241,43 @@ def test_comparison_read_failure_and_new_limits_return_unavailable(tmp_path: Pat
         assert review["status"] == "unavailable"
         assert "PermissionError" in review["reason"]
         assert "fixture failure" not in review["reason"]
+        assert restarted.calls == []
+
+
+def test_permission_only_drift_is_durable_capped_and_read_only(tmp_path: Path):
+    provider = ScriptedProvider()
+    repo = completed_session(tmp_path, provider)
+    (repo / "a.py").chmod(0o640)
+    (repo / "gone.txt").chmod(0o600)
+    with TestClient(make_app(tmp_path, provider)) as client:
+        sid = client.post("/sessions", json={"user_id": "dev", "workspace_root": str(repo)}).json()[
+            "session_id"
+        ]
+        client.post("/chat", json={"user_id": "dev", "session_id": sid, "message": "Update"})
+        saved = client.get(f"/sessions/{sid}", params={"user_id": "dev"}).json()
+    store = SessionStore(tmp_path / "sessions.db")
+    baseline = store.get_workspace_review(sid).baseline
+    assert baseline.file_modes == {"a.py": 0o640, "gone.txt": 0o600}
+    store.close()
+    restarted = ScriptedProvider()
+    with TestClient(make_app(tmp_path, restarted)) as client:
+        endpoint = f"/sessions/{sid}/workspace-review"
+        review = client.get(endpoint, params={"user_id": "dev"}).json()
+        assert review["status"] == "unchanged"
+        assert review["mode_coverage"] == "compared"
+        (repo / "a.py").chmod(0o750)
+        (repo / "gone.txt").chmod(0o644)
+        review = client.get(endpoint, params={"user_id": "dev", "max_paths": 1}).json()
+        assert review["status"] == "changed"
+        assert review["modified"] == ["a.py"]
+        assert review["modified_count"] == 2
+        assert review["paths_truncated"] is True
+        assert (repo / "a.py").read_text() == "user = 1\nagent = 2\n"
+        assert client.get(f"/sessions/{sid}", params={"user_id": "dev"}).json() == saved
+        assert (
+            client.post(
+                "/chat", json={"user_id": "dev", "session_id": sid, "message": "Continue"}
+            ).status_code
+            == 409
+        )
         assert restarted.calls == []
