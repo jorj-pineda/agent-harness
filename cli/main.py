@@ -83,17 +83,16 @@ def chat(
             continue
 
         typer.echo(f"\n{result.answer}\n")
-        confidence = result.confidence
-        if confidence is None:
-            confidence_display = "n/a"
-        else:
-            label = "low" if confidence < 0.5 else "mid" if confidence < 0.7 else "high"
-            confidence_display = f"{confidence:.2f}({label})"
+        typer.echo(f"  status={result.completion_status} checks={result.verification_status}")
+        if result.completion_reason:
+            typer.echo(f"  reason={result.completion_reason}")
         typer.echo(
-            f"  conf={confidence_display}"
             f"  escalated={result.escalated}"
             f"  provider={result.provider}"
             f"  latency={result.latency_ms:.0f}ms"
+        )
+        typer.echo(
+            "  Completion records how the run ended; passed checks cover only the checks run."
         )
         if result.files_touched:
             typer.echo(f"  files_touched={result.files_touched}")
@@ -110,17 +109,18 @@ def chat(
                 typer.echo(f"  diff omitted: {entry['reason']}")
             else:
                 typer.echo(entry.get("diff", ""), nl=False)
-        typer.echo(f"  status={result.completion_status} verification={result.verification_status}")
         if result.token_usage:
             typer.echo(f"  token_usage={result.token_usage}")
-        if result.completion_reason:
-            typer.echo(f"  reason={result.completion_reason}")
         for check in result.check_attempts:
             typer.echo(
                 f"  check={check.get('argv')} status={check.get('status')} "
                 f"exit={check.get('exit_code')} relevant={check.get('relevant')} "
                 f"stale={check.get('superseded_by_edit')}"
             )
+            if check.get("error"):
+                typer.echo(f"  check_error={check['error']}")
         for error in result.tool_errors:
             typer.echo(f"  tool_error={error}")
+        score = "n/a" if result.confidence is None else f"{result.confidence:.2f}"
+        typer.echo(f"  legacy_evidence_score={score} (tool heuristic; not patch correctness)")
         typer.echo()

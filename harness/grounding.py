@@ -1,26 +1,10 @@
-"""Grounding layer: convert answer + tool-call history into rule-#5 metadata.
+"""Legacy tool-evidence heuristic and source-location harvesting.
 
-`Grounder.ground()` harvests citations from retrieval tool results, scores
-confidence with a deterministic heuristic, and decides escalation against
-a threshold. Deliberately no LLM calls — the confidence signal is
-inspectable, cheap, and measurable by the eval harness directly.
-
-Evidence sources (pivot Phase 3):
-
-* **Support RAG** — `search_docs` hits with Chroma similarity scores.
-* **Code tools** — `read_file` / `grep_repo` results mapped to file:line
-  citation keys (`path:start-end` on the wire in `TurnResponse.citations`).
-
-Heuristic shape (unchanged):
-
-    confidence = top_score * coverage_factor * health_factor
-
-If no retrieval or code-evidence tool ran, confidence is `None` — ungrounded
-chitchat. If evidence tools ran but returned nothing usable, confidence is
-0.0 and escalation fires.
-
-Planned upgrades (see CLAUDE.md "Deferred"): LLM-judge confidence,
-per-sentence attribution, answer rewriting on escalation.
+The retained ``confidence`` field measures tool-result scores and health, not
+answer or patch correctness. A file read receives 1.0 even if unrelated to the
+answer. Citations are harvested from tool results without inspecting claims.
+Escalation thresholds retain historical behavior for compatibility; completion,
+check records, and workspace diffs provide separate observed run evidence.
 """
 
 from __future__ import annotations
