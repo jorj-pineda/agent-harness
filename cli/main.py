@@ -34,6 +34,21 @@ def serve(
 
 
 @app.command()
+def cancel(
+    session_id: str = typer.Argument(..., help="Session with an active turn."),
+    base_url: str = typer.Option("http://localhost:8000", "--base-url"),
+    user_id: str = typer.Option("cli-user", "--user-id"),
+) -> None:
+    """Request cancellation; final review is saved after owned work settles."""
+    try:
+        detail = AgentClient(base_url).cancel(user_id, session_id)
+    except Exception as exc:
+        typer.echo(f"Cancellation failed: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+    typer.echo(detail)
+
+
+@app.command()
 def chat(
     base_url: str = typer.Option("http://localhost:8000", "--base-url", help="API base URL."),
     user_id: str = typer.Option("cli-user", "--user-id", help="Stable user identifier."),
@@ -78,6 +93,13 @@ def chat(
 
         try:
             result = client.chat(user_id, session_id, message, provider)
+        except KeyboardInterrupt:
+            try:
+                typer.echo(client.cancel(user_id, session_id))
+            except Exception as exc:
+                typer.echo(f"Cancellation not confirmed: {exc}", err=True)
+            typer.echo("Inspect saved session review after cleanup. Bye.")
+            break
         except Exception as exc:
             typer.echo(f"  error: {exc}", err=True)
             continue
@@ -124,3 +146,6 @@ def chat(
         score = "n/a" if result.confidence is None else f"{result.confidence:.2f}"
         typer.echo(f"  legacy_evidence_score={score} (tool heuristic; not patch correctness)")
         typer.echo()
+        if result.completion_status == "cancelled":
+            typer.echo("Cancelled session is read-only. Start a new session after review.")
+            break

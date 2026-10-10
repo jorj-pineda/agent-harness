@@ -24,6 +24,7 @@ from workspace.changes import TextCapture, review_diffs
 from workspace.core import DEFAULT_IGNORE_GLOBS
 
 from .admission import turn_admission
+from .cancellation import TurnCancellation
 from .config import CodingToolset, Settings
 from .grounding import Grounder
 from .loop import run_turn
@@ -114,6 +115,7 @@ async def run_configured_turn(
     system_prompt: str | None = None,
     trace: list[TurnTraceRecord] | None = None,
     on_finalized: Callable[[Session, TurnResponse], None] | None = None,
+    cancellation: TurnCancellation | None = None,
 ) -> TurnResponse:
     """Execute a turn, optionally committing final evidence before releasing admission.
 
@@ -169,7 +171,10 @@ async def run_configured_turn(
             required_check=settings.project_check_argv,
             on_event=on_event,
             trace=trace,
+            cancellation=cancellation,
         )
+        if cancellation is not None:
+            cancellation.close()
         if tracked_root is not None and before is not None:
             response.workspace_changes = await _change_report(tracked_root, settings, before)
         if on_finalized is not None:

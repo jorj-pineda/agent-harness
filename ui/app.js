@@ -7,6 +7,7 @@
 const els = {
   workspace: document.getElementById("workspace"),
   provider: document.getElementById("provider"),
+  cancelTurn: document.getElementById("cancel-turn"),
   newSession: document.getElementById("new-session"),
   sessionPill: document.getElementById("session-pill"),
   messages: document.getElementById("messages"),
@@ -29,6 +30,9 @@ const userId = (() => {
 
 let sessionId = null;
 let busy = false;
+let sessionUsable = true;
+let uncertain = false;
+let cancelRequested = false;
 
 // ---- helpers ----------------------------------------------------------
 
@@ -50,9 +54,11 @@ function scrollToBottom() {
 
 function setBusy(value) {
   busy = value;
-  const canSend = !busy && sessionId != null;
+  const canSend = !busy && sessionId != null && sessionUsable;
   els.send.disabled = !canSend;
-  els.input.disabled = sessionId == null;
+  els.input.disabled = sessionId == null || !sessionUsable;
+  els.cancelTurn.disabled = sessionId == null || !(busy || uncertain) || cancelRequested;
+  els.cancelTurn.textContent = cancelRequested ? "Cancelling…" : "Cancel turn";
   els.newSession.disabled = busy;
 }
 
@@ -281,6 +287,10 @@ async function createSession() {
     }
     const data = await resp.json();
     sessionId = data.session_id;
+    sessionUsable = true;
+    uncertain = false;
+    cancelRequested = false;
+    els.sessionPill.title = sessionId;
     els.sessionPill.textContent = sessionId.slice(0, 8);
     els.sessionPill.classList.remove("muted");
     els.messages.replaceChildren();
@@ -327,7 +337,6 @@ function streamTurn(message) {
   }
 
   const pending = [];
-  let received = false;
   let done = false;
 
   const finishWith = (node) => {
@@ -339,7 +348,6 @@ function streamTurn(message) {
   };
 
   es.addEventListener("tool_start", (e) => {
-    received = true;
     const card = runningToolCard(JSON.parse(e.data));
     tools.appendChild(card);
     pending.push(card);
@@ -347,7 +355,6 @@ function streamTurn(message) {
   });
 
   es.addEventListener("tool_end", (e) => {
-    received = true;
     const data = JSON.parse(e.data);
     const card = pending.find((c) => c._tool === data.tool && !c._done);
     if (card) completeToolCard(card, data);
@@ -355,9 +362,11 @@ function streamTurn(message) {
   });
 
   es.addEventListener("turn_done", (e) => {
-    received = true;
     done = true;
     const data = JSON.parse(e.data).response;
+    sessionUsable = data.completion_status !== "cancelled";
+    cancelRequested = false;
+    uncertain = false;
     finishWith(el("div", "msg assistant", data.answer || "(no answer)"));
     renderEnvelope(data);
   });
@@ -372,17 +381,17 @@ function streamTurn(message) {
       } catch (_) {
         /* keep raw */
       }
-      finishWith(el("div", "msg error", `Turn failed: ${detail}`));
+      sessionUsable = false;
+      cancelRequested = false;
+      finishWith(el("div", "msg error", `Turn failed: ${detail}. Inspect saved review and create a new session.`));
       return;
     }
     if (done) return; // clean close after turn_done
     es.close();
-    if (!received) {
-      block.remove(); // never connected — fall back to POST
-      postTurn(message);
-    } else {
-      finishWith(el("div", "msg error", "Stream interrupted."));
-    }
+    uncertain = true;
+    sessionUsable = false;
+    finishWith(el("div", "msg error",
+      "Stream disconnected. The server run may still be active; use Cancel turn or inspect saved review. This task will not be resubmitted."));
   });
 }
 
@@ -407,23 +416,53 @@ async function postTurn(message) {
       return;
     }
     const data = await resp.json();
+    sessionUsable = data.completion_status !== "cancelled";
+    cancelRequested = false;
     addTurn(data);
     renderEnvelope(data);
   } catch (err) {
     spinner.remove();
-    addErrorMessage(`Network error: ${err}`);
+    uncertain = true;
+    sessionUsable = false;
+    addErrorMessage(`Network error: ${err}. The server run may still be active; use Cancel turn or inspect saved review.`);
   } finally {
     setBusy(false);
   }
 }
 
+async function cancelTurn() {
+  cancelRequested = true;
+  setBusy(busy);
+  try {
+    const resp = await fetch(`/sessions/${encodeURIComponent(sessionId)}/cancel`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user_id: userId }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) {
+      cancelRequested = false;
+      addErrorMessage(`Cancellation not confirmed: ${data.detail}`);
+    } else if (uncertain) {
+      addErrorMessage("Cancellation requested. Inspect saved session review after owned work settles.");
+    }
+  } catch (err) {
+    cancelRequested = false;
+    addErrorMessage(`Cancellation not confirmed: ${err}`);
+  } finally {
+    setBusy(busy);
+  }
+}
+
 // ---- events -----------------------------------------------------------
+
+els.cancelTurn.addEventListener("click", cancelTurn);
 
 els.newSession.addEventListener("click", createSession);
 
 els.composer.addEventListener("submit", (event) => {
   event.preventDefault();
-  if (busy || sessionId == null) return;
+  if (busy || sessionId == null || !sessionUsable) return;
   const message = els.input.value.trim();
   if (!message) return;
   els.input.value = "";

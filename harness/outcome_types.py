@@ -3,4 +3,4 @@
 from typing import Literal
 
 VerificationStatus = Literal["not_run", "passed", "failed", "stale"]
-CompletionStatus = Literal["completed", "incomplete", "blocked", "budget_exhausted"]
+CompletionStatus = Literal["completed", "incomplete", "blocked", "budget_exhausted", "cancelled"]

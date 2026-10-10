@@ -33,12 +33,13 @@ from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.responses import StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
+from harness.cancellation import TurnCancellation
 from harness.grounding import Grounder
 from harness.policy import classify_task, is_out_of_scope_request
 from harness.providers import build_configured_provider, configured_model, configured_provider_names
@@ -52,7 +53,14 @@ from providers import create_embedder
 from providers.base import ChatProvider, Embedder
 from tools import ToolRegistry
 
-from .models import ChatRequest, ChatResponse, CreateSessionRequest, CreateSessionResponse
+from .models import (
+    CancelSessionRequest,
+    CancelSessionResponse,
+    ChatRequest,
+    ChatResponse,
+    CreateSessionRequest,
+    CreateSessionResponse,
+)
 from .settings import Settings, get_settings
 
 if TYPE_CHECKING:
@@ -73,6 +81,9 @@ class Components:
     grounder: Grounder
     sessions: dict[str, Session] = field(default_factory=dict)
     session_store: SessionStore | None = None
+    cancellations: dict[str, TurnCancellation] = field(default_factory=dict)
+    tasks: set[asyncio.Task[Any]] = field(default_factory=set)
+    closing: bool = False
 
 
 ComponentsFactory = Callable[[Settings], Components]
@@ -120,6 +131,12 @@ def _build_providers(settings: Settings) -> dict[str, ChatProvider]:
 
 
 async def _close_components(components: Components) -> None:
+    # Keep stores/providers alive until detached turns finish cancellation and review.
+    components.closing = True
+    for cancellation in components.cancellations.values():
+        cancellation.request()
+    if components.tasks:
+        await asyncio.gather(*components.tasks, return_exceptions=True)
     for provider in components.providers.values():
         aclose = getattr(provider, "aclose", None)
         if aclose is not None:
@@ -216,6 +233,20 @@ def _register_routes(app: FastAPI) -> None:
         """Inspect saved transcript and final evidence; this does not enable resume."""
         return _lookup_archive(request.app.state.components, session_id, user_id)
 
+    @app.post(
+        "/sessions/{session_id}/cancel", response_model=CancelSessionResponse, status_code=202
+    )
+    async def cancel_session(
+        session_id: str, req: CancelSessionRequest, request: Request
+    ) -> CancelSessionResponse:
+        """Request cancellation; 202 does not mean cleanup or review has finished."""
+        components: Components = request.app.state.components
+        _lookup_session(components, session_id, req.user_id)
+        cancellation = components.cancellations.get(session_id)
+        if cancellation is None or not cancellation.request():
+            raise HTTPException(status_code=409, detail="No cancellable turn; idle or finalizing.")
+        return CancelSessionResponse()
+
     @app.post("/chat", response_model=ChatResponse)
     async def chat(req: ChatRequest, request: Request) -> ChatResponse:
         components: Components = request.app.state.components
@@ -296,15 +327,12 @@ def _register_routes(app: FastAPI) -> None:
                 finally:
                     await queue.put(None)
 
-            task = asyncio.create_task(runner())
-            try:
-                while True:
-                    event = await queue.get()
-                    if event is None:
-                        break
-                    yield _sse(event)
-            finally:
-                await task
+            _own_task(components, asyncio.create_task(runner()))
+            while True:
+                event = await queue.get()
+                if event is None:
+                    break
+                yield _sse(event)
 
         return StreamingResponse(event_gen(), media_type="text/event-stream")
 
@@ -317,7 +345,7 @@ def _lookup_session(components: Components, session_id: str, user_id: str) -> Se
         raise HTTPException(
             status_code=409,
             detail=(
-                "Saved session is read-only after restart. "
+                "Saved session is read-only after restart or interrupted execution. "
                 "Create a new session; resume is not supported."
             ),
         )
@@ -352,6 +380,17 @@ def _sse(event: StreamEvent) -> str:
     return f"event: {event.type}\ndata: {event.model_dump_json()}\n\n"
 
 
+def _own_task(components: Components, task: asyncio.Task[Any]) -> None:
+    components.tasks.add(task)
+
+    def settled(task: asyncio.Task[Any]) -> None:
+        components.tasks.discard(task)
+        if not task.cancelled():
+            task.exception()  # Retrieve failures even when the transport disconnected.
+
+    task.add_done_callback(settled)
+
+
 async def _run_configured_turn(
     *,
     components: Components,
@@ -361,6 +400,49 @@ async def _run_configured_turn(
     message: str,
     provider: ChatProvider,
     on_event: EventCallback | None = None,
+) -> TurnResponse:
+    cancellation = TurnCancellation()
+    if components.closing:
+        cancellation.request()
+    owns_signal = session.session_id not in components.cancellations
+    if owns_signal:
+        components.cancellations[session.session_id] = cancellation
+
+    async def execute() -> TurnResponse:
+        try:
+            response = await _execute_turn(
+                components=components,
+                settings=settings,
+                session=session,
+                user_id=user_id,
+                message=message,
+                provider=provider,
+                on_event=on_event,
+                cancellation=cancellation,
+            )
+            if response.completion_status == "cancelled":
+                components.sessions.pop(session.session_id, None)
+            return response
+        finally:
+            cancellation.close()
+            if owns_signal:
+                components.cancellations.pop(session.session_id, None)
+
+    task = asyncio.create_task(execute())
+    _own_task(components, task)
+    return await asyncio.shield(task)
+
+
+async def _execute_turn(
+    *,
+    components: Components,
+    settings: Settings,
+    session: Session,
+    user_id: str,
+    message: str,
+    provider: ChatProvider,
+    on_event: EventCallback | None = None,
+    cancellation: TurnCancellation,
 ) -> TurnResponse:
     """Refresh injected facts, build the per-request registry, and run the loop."""
     support_registry = ToolRegistry()
@@ -415,6 +497,7 @@ async def _run_configured_turn(
             grounder=components.grounder,
             on_event=on_event,
             on_finalized=save_finalized,
+            cancellation=cancellation,
         )
     except BaseException:
         # Failed/interrupted execution can leave an unfinished transcript. Keep

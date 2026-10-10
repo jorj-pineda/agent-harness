@@ -48,6 +48,10 @@ class ToolCallRecord(BaseModel):
     result: Any = None
     error: str | None = None
     latency_ms: float = 0.0
+    interrupted: bool = Field(
+        default=False,
+        description="Cancelled invocation settled with no result; mutations may have occurred.",
+    )
 
 
 class CheckRecord(BaseModel):
