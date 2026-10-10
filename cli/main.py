@@ -291,3 +291,27 @@ def workspace_review(
         typer.echo(review["reason"])
     typer.echo(f"Excluded patterns: {review.get('excluded_patterns', [])}")
     typer.echo(review.get("scope_note", "Read-only review, not permission to resume or revert."))
+
+
+@app.command()
+def transcript_review(
+    session_id: str = typer.Argument(...),
+    base_url: str = typer.Option("http://localhost:8000", "--base-url"),
+    user_id: str = typer.Option("cli-user", "--user-id"),
+    max_issues: int = typer.Option(100, "--max-issues", min=1, max=1000),
+) -> None:
+    """Inspect saved transcript structure without repairing or continuing work."""
+    try:
+        review = AgentClient(base_url).transcript_review(user_id, session_id, max_issues=max_issues)
+    except Exception as exc:
+        typer.echo(f"Transcript review failed: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+    typer.echo(
+        f"transcript={review['status']} messages={review['message_count']} "
+        f"issues={review['issue_count']}"
+    )
+    for issue in review.get("issues", []):
+        typer.echo(f"message[{issue['message_index']}]: {issue['code']}")
+    if review.get("issues_truncated"):
+        typer.echo("Issue list truncated; count covers the full transcript.")
+    typer.echo(review["scope_note"])

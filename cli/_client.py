@@ -101,6 +101,17 @@ class AgentClient:
         resp.raise_for_status()
         return dict(resp.json())
 
+    def transcript_review(
+        self, user_id: str, session_id: str, *, max_issues: int = 100
+    ) -> dict[str, Any]:
+        resp = httpx.get(
+            f"{self._base}/sessions/{session_id}/transcript-review",
+            params={"user_id": user_id, "max_issues": max_issues},
+            timeout=30,
+        )
+        resp.raise_for_status()
+        return dict(resp.json())
+
     def workspace_review(
         self, user_id: str, session_id: str, *, max_paths: int = 100
     ) -> dict[str, Any]:

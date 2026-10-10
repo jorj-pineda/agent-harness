@@ -45,6 +45,7 @@ from .policy import edit_precondition_error, repeated_unchanged_call, unresolved
 from .state import Session, ToolCallRecord, Turn, TurnResponse
 from .stream import EventCallback, ToolEndEvent, ToolStartEvent
 from .trace import MessageTrace, RequestFailureTrace, RequestTrace, ResponseTrace, TurnTraceRecord
+from .transcript import tool_batch_issue, transcript_block_reason
 
 RESULT_SNIPPET_LIMIT = 600
 
@@ -107,6 +108,15 @@ async def run_turn(
     evidence outside model context. It excludes provider raw payloads and does
     not change the response contract. Callers own storage and access control.
     """
+    integrity_reason = transcript_block_reason(session.messages)
+    if integrity_reason is not None:
+        return TurnResponse(
+            answer=integrity_reason,
+            completion_status="blocked",
+            completion_reason=integrity_reason,
+            provider=provider.name,
+            latency_ms=0.0,
+        )
     turn = Turn(user_input=user_input)
     session.turns.append(turn)
     session.messages.append(ChatMessage(role="user", content=user_input))
@@ -244,6 +254,12 @@ async def run_turn(
             "error": "The provider reported an error finish reason.",
         }
         usable_calls = [] if response.finish_reason in incomplete_reasons else response.tool_calls
+        batch_issue = tool_batch_issue(usable_calls)
+        if batch_issue is not None:
+            final_answer = "(model returned an invalid tool-call batch; no tools dispatched)"
+            completion_status = "incomplete"
+            completion_reason = f"Tool-call integrity check failed ({batch_issue})."
+            break
         session.messages.append(
             ChatMessage(
                 role="assistant",

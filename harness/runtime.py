@@ -33,6 +33,7 @@ from .prompts import BASE_SYSTEM_PROMPT, coding_prompt
 from .state import Session, TurnResponse, WorkspaceChangeReport, WorkspaceFileDiff
 from .stream import EventCallback
 from .trace import TurnTraceRecord
+from .transcript import transcript_block_reason
 from .workspace_review import WorkspaceReviewBaseline, review_fingerprints
 
 
@@ -133,6 +134,15 @@ async def run_configured_turn(
                 escalated=True,
                 completion_status="blocked",
                 completion_reason=busy,
+                provider="policy",
+                latency_ms=0.0,
+            )
+        integrity_reason = transcript_block_reason(session.messages)
+        if integrity_reason is not None:
+            return TurnResponse(
+                answer=integrity_reason,
+                completion_status="blocked",
+                completion_reason=integrity_reason,
                 provider="policy",
                 latency_ms=0.0,
             )

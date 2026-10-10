@@ -528,3 +528,26 @@ def test_workspace_review_command_only_reads_and_explains_scope():
     assert get.call_args.args[0].endswith("/sessions/s1/workspace-review")
     assert get.call_args.kwargs["params"] == {"user_id": "dev", "max_paths": 1}
     post.assert_not_called()
+
+
+def test_transcript_review_only_reads_with_bounded_diagnostics():
+    review = {
+        "status": "invalid",
+        "message_count": 5,
+        "issue_count": 2,
+        "issues": [{"message_index": 1, "code": "missing_tool_result"}],
+        "issues_truncated": True,
+        "scope_note": "Read-only, not permission to resume.",
+    }
+    with patch("httpx.get", return_value=_ok_response(review)) as get, patch("httpx.post") as post:
+        result = runner.invoke(
+            app, ["transcript-review", "s1", "--user-id", "dev", "--max-issues", "1"]
+        )
+    assert result.exit_code == 0, result.output
+    assert "transcript=invalid messages=5 issues=2" in result.output
+    assert "message[1]: missing_tool_result" in result.output
+    assert "Issue list truncated" in result.output
+    assert "not permission" in result.output
+    assert get.call_args.args[0].endswith("/sessions/s1/transcript-review")
+    assert get.call_args.kwargs["params"] == {"user_id": "dev", "max_issues": 1}
+    post.assert_not_called()

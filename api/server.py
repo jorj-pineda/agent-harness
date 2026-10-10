@@ -51,6 +51,7 @@ from harness.runtime import build_registry, out_of_scope_response, run_configure
 from harness.session_store import SessionArchive, SessionStore, SessionSummary
 from harness.state import Session, TurnResponse
 from harness.stream import ErrorEvent, EventCallback, StreamEvent, TurnDoneEvent
+from harness.transcript import TranscriptReview, inspect_transcript
 from harness.workspace_review import WorkspaceReview, WorkspaceReviewBaseline, compare_workspace
 from memory import FactStore
 from providers import create_embedder
@@ -239,6 +240,19 @@ def _register_routes(app: FastAPI) -> None:
     ) -> SessionArchive:
         """Inspect saved transcript and final evidence; this does not enable resume."""
         return _lookup_archive(request.app.state.components, session_id, user_id)
+
+    @app.get("/sessions/{session_id}/transcript-review", response_model=TranscriptReview)
+    async def review_transcript(
+        session_id: str,
+        request: Request,
+        user_id: str = Query(min_length=1),
+        max_issues: int = Query(default=100, ge=1, le=1000),
+    ) -> TranscriptReview:
+        """Inspect committed history structure without repair, inference, or resume."""
+        archive = _lookup_archive(request.app.state.components, session_id, user_id)
+        review = inspect_transcript(archive.session.messages, max_issues=max_issues)
+        review.turn_id = archive.session.turns[-1].turn_id if archive.session.turns else None
+        return review
 
     @app.get("/sessions/{session_id}/workspace-review", response_model=WorkspaceReview)
     async def inspect_workspace(
