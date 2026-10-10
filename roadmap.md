@@ -413,6 +413,29 @@ The harness does not need to make every model good at every task. It needs to id
   outside capture. Automatic restore, compatibility/context gates, broader workspace
   preconditions, explicit resume, crash repair, checkpoints/revert, and panel profile
   controls remain open; saved sessions remain read-only and Milestone 5 incomplete.
+- **2026-10-10 — Read-only configuration/context review prepared:** an owner-scoped
+  API computation and thin CLI command compare the latest saved execution snapshot
+  with the selected current provider/settings/tools. They report changed field
+  names, unknown identities, missing profiles, and inconsistent archive identities
+  without exposing compared values or replacing original evidence. Context review
+  refreshes detached history with current owner facts/check/prompt/tool schemas and
+  optional proposed input, reusing the configured runtime's first-request budget
+  math. Invalid transcripts/inconsistent archives skip estimation; exhausted
+  context/total budgets are blocked estimates, and disabled context limits or
+  omitted proposed input are labeled explicitly. Shared API registry setup preserves
+  coding-only startup and support-resource separation. Process-local admission
+  rejects overlapping owned turns/reviews; no run, inference, tools, facts, files,
+  or archive mutations result from review. Validation passed 90 focused and 686
+  offline tests (five live deselected), Ruff/mypy, and both 90/90 scripted matrices
+  with evidence labels inspected. Restart tests cover matching/drift/unknown,
+  exhausted budgets, missing workspace, ownership, preserved user edits/archives,
+  and unchanged run history. No model inference or coding-quality comparison ran.
+  All reviews explicitly retain read_only=true and resume_supported=false. Matching
+  fields and byte estimates do not establish backend/tool compatibility, true model
+  context fit, workspace state, task completion, or a lease for later execution.
+  Runtime/implementation identity, broader workspace coverage, actual compatibility
+  enforcement inside execution admission, explicit continuation, crash repair,
+  checkpoints/revert, and panel controls remain open; Milestone 5 is incomplete.
 - **Next:** item 6's listed mechanics are in place; see the known limitations
   below before relying on them unattended. Item 7 has a repeated baseline and
   nine completed comparisons. Argument feedback did not reliably break repeated
@@ -421,8 +444,8 @@ The harness does not need to make every model good at every task. It needs to id
   mixed outcomes. The personal-use workflow now has bounded turn-diff review,
   finalized-session archives, explicit cancellation, durable run identity and keyed
   submission, client run-history/recovery controls, durable scoped workspace review,
-  transcript integrity guards/review, durable configured execution evidence, and
-  process-local turn admission; failed-check recovery, model profiles, context
+  transcript integrity guards/review, durable configured execution evidence,
+  read-only configuration/context review, and process-local turn admission; failed-check recovery, model profiles, context
   management, and the rest of the personal-use workflow remain open. Offline checks
   alone are not evidence of better model coding performance.
 

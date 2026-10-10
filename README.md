@@ -512,6 +512,59 @@ Automatic restore, compatibility gates, explicit workspace-checked continuation,
 partial crash repair, checkpoints/revert, and panel profile controls remain
 separate work. Saved sessions stay read-only after restart.
 
+### Compare configuration and estimated context after restart
+
+```sh
+agent-harness configuration-review <session-id> --user-id cli-user \
+  --message "Continue investigating the failing check"
+```
+
+The thin CLI calls read-only `POST /sessions/<id>/configuration-review` with
+`user_id`, optional `provider`, and optional proposed `message` (up to 100,000
+characters). The provider defaults to the **current** server selection. POST
+carries input for computation; it creates no run, requests no inference, invokes
+no tools, changes no facts/files/history, and does not restore a live session.
+Unknown session/owner/provider and invalid inputs retain normal 404/403/400/422
+behavior. Process-local admission prevents overlapping owned turns/reviews;
+a busy review returns without computing comparison or context.
+
+The response names the latest archived turn, checks turn/response alignment and
+saved provider/model identity, and reports:
+
+- Configuration: `matching`, `changed`, `unknown`, `not_recorded`, or
+  `unavailable`. Changed fields are names such as `settings.max_context_tokens`
+  or `tool_specs_sha256`, without old/new values. Unknown fields remain visible
+  even alongside changes. Equal null identities cannot produce matching.
+- Transcript: the existing structural review of committed history. Invalid
+  structure or inconsistent archive evidence prevents context estimation.
+- Context: `estimated_fit`, `blocked`, `unbounded_context`, or `not_checked`,
+  estimated prompt tokens, current harness context limit, and optional next
+  request output allowance. A detached copy receives the current coding prompt,
+  project check, owner-scoped facts, current tool schemas, and proposed message,
+  using the same refresh and first-request budget math as configured execution.
+  `includes_proposed_message=false` explicitly labels a history-only estimate when
+  input is omitted. A configured total-token budget can block a request even
+  when the harness context limit is disabled.
+
+Missing workspace/current resources yield a generic `unavailable` review without
+exposing paths, credentials, facts, or proposed message contents in diagnostics.
+Current tools are constructed through the same API setup as execution; support
+resources are still opened only when support mode is enabled. Archived profiles
+and final envelopes are preserved rather than rewritten using current settings.
+
+**This endpoint always returns `read_only=true` and `resume_supported=false`.**
+Matching configured fields do not establish backend/tool compatibility, task
+completion, or unchanged workspace state. It does not inspect workspace contents,
+unsaved crash changes, tool implementations, runtime revision, backend defaults,
+or capabilities. The byte-based estimate checks harness limits, not the actual
+provider tokenizer/server window; a smaller server context may still truncate.
+Scope matches and estimates become stale after review. No token or permission is
+granted for a later chat call, and saved chat sessions remain read-only. Explicit
+continuation must enforce current preconditions again inside execution admission;
+broader workspace coverage, compatibility enforcement, crash repair, checkpoints/
+revert, and panel controls remain separate work. No model-quality improvement is
+claimed from these deterministic review checks.
+
 ### Eval honesty
 
 The legacy scenario runner has two modes, neither of which executes real coding
