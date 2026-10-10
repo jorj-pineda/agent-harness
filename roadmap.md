@@ -310,13 +310,33 @@ The harness does not need to make every model good at every task. It needs to id
   remote inference/billing cannot be guaranteed to stop. Cross-process coordination,
   run IDs/idempotence, reconnection, crash recovery, checkpoints/revert, and safe
   resume remain open. Milestone 5 remains incomplete.
+- **2026-10-10 — Durable run identity/idempotent submission prepared:** API
+  submissions now receive a saved run ID. Optional per-user request keys on HTTP
+  and SSE, required on asynchronous `POST /runs`, bind exact input before work
+  starts. Matching retries join the active task or replay its saved result;
+  conflicting input returns 409. Owner-scoped run inspection/listing exposes
+  lifecycle status and the full final envelope, including bounded review evidence.
+  Run result and finalized session archive commit atomically before admission
+  release and final delivery. Startup marks abandoned running records interrupted
+  without dispatching tools; failed/interrupted keys never start another run.
+  Validation passed 62 focused API/storage tests, 587 offline tests (five live
+  deselected), Ruff/mypy, and both 90/90 scripted matrices with evidence labels
+  inspected. Real file-tool regressions verify one edit across duplicate
+  HTTP/SSE/async submissions, restart replay, cancellation replay, busy/conflicting
+  submissions, and storage-failure rollback. No inference or model-quality
+  comparison ran. Legacy unkeyed calls remain distinct; current clients do not
+  retain retry keys or expose run-history/reconnection flows. Tool-event replay,
+  partial crash evidence, profile/configuration capture, cross-process execution
+  coordination, checkpoints/revert, and workspace-checked resume remain open.
+  Milestone 5 remains incomplete.
 - **Next:** item 6's listed mechanics are in place; see the known limitations
   below before relying on them unattended. Item 7 has a repeated baseline and
   nine completed comparisons. Argument feedback did not reliably break repeated
   errors; normalized traces show that completion-time verification recovery rarely
   fires in this task envelope, and the earlier argument cue was not retained after
   mixed outcomes. The personal-use workflow now has bounded turn-diff review,
-  finalized-session archives, explicit cancellation, and process-local turn admission; failed-check recovery, model profiles, context
+  finalized-session archives, explicit cancellation, durable run identity and keyed
+  submission, and process-local turn admission; failed-check recovery, model profiles, context
   management, and the rest of the personal-use workflow remain open. Offline checks
   alone are not evidence of better model coding performance.
 

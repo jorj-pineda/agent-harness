@@ -59,3 +59,49 @@ def test_archive_roundtrip_retains_observed_evidence_and_identity(tmp_path: Path
         assert saved.read_only
     finally:
         store.close()
+
+
+def test_run_identity_and_final_archive_commit_are_atomic(tmp_path: Path, monkeypatch) -> None:
+    import sqlite3
+
+    import pytest
+
+    from harness.runs import RequestConflictError, RunInput
+
+    store = SessionStore(tmp_path / "sessions.db")
+    try:
+        session = Session(user_id="dev")
+        store.save(session)
+        request = RunInput(
+            user_id="dev", session_id=session.session_id, message="Fix", request_id="one"
+        )
+        run, created = store.create_run(request, provider="ollama", configured_model="gemma4:12b")
+        assert created
+        assert store.create_run(request, provider="changed", configured_model=None) == (run, False)
+        with pytest.raises(RequestConflictError):
+            store.create_run(
+                request.model_copy(update={"message": "Other"}),
+                provider="ollama",
+                configured_model=None,
+            )
+        session.turns.append(
+            Turn(user_input="Fix", final_answer="Done", finished_at=datetime.now(UTC))
+        )
+        response = TurnResponse(answer="Done", provider="ollama", latency_ms=1, run_id=run.run_id)
+        original_update = store._update_run
+
+        def fail(record):
+            raise sqlite3.OperationalError("disk full")
+
+        monkeypatch.setattr(store, "_update_run", fail)
+        with pytest.raises(sqlite3.OperationalError):
+            store.finish_run(run.run_id, response, session=session)
+        assert store.get(session.session_id).responses == []
+        assert store.get_run(run.run_id).status == "running"
+        monkeypatch.setattr(store, "_update_run", original_update)
+        store.finish_run(run.run_id, response, session=session)
+        store.recover_runs()
+        assert store.get_run(run.run_id).response == response
+        assert store.get(session.session_id).responses[0].response == response
+    finally:
+        store.close()

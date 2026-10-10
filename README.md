@@ -225,8 +225,9 @@ no configured model ID. Stored completion, checks, errors, token usage, and
 bounded diffs retain their original review limitations; they do not certify the
 current workspace or independently prove a patch works.
 
-After restart, saved sessions are read-only: `/chat` and `/chat/stream` return
-409 for them. Create a new session after inspecting the workspace to begin new
+After restart, saved sessions are read-only: new `/chat` and `/chat/stream`
+submissions return 409 for them. Matching keyed retries can replay saved run
+results as described below. Create a new session after inspecting the workspace to begin new
 work. History is never restored into executable session state. While a session
 is live, review shows its last committed snapshot, excluding unfinished work.
 A final response is saved before HTTP success or SSE `turn_done`; a save failure
@@ -239,7 +240,7 @@ tool results, and source diffs; settings credentials and provider wire payloads
 are not included. There is no automatic retention/deletion policy. Sessions are
 rewritten as complete snapshots, so long histories increase storage and save cost.
 Failed or externally interrupted execution also retires the live session; only
-its last committed snapshot remains available. Interrupted/crashed turns, live
+its last committed snapshot remains available. Partial interrupted/crashed-turn evidence, live
 events, checkpoints, safe resume,
 cross-process coordination, and CLI/panel history views remain separate work.
 Out-of-scope and busy rejections do not create runtime turns or archive responses.
@@ -280,8 +281,52 @@ its existing budgets. Inspect the archive or explicitly cancel it. The panel
 closes a failed stream without POST retry or automatic reconnection, and disables
 submission on that session while the outcome is unknown. A normal API shutdown
 requests cancellation and waits for detached work and archive writes before closing
-providers/stores. A forced process exit can still lose the active turn; run IDs,
-idempotent submissions, reconnection, crash recovery, and safe resume remain open.
+providers/stores. A forced process exit can still lose partial turn evidence; saved
+run identity records the interruption without rerunning it. Event replay, client
+reconnection/history, and safe resume remain open.
+
+### Submit and inspect durable runs
+
+`POST /runs` accepts the chat input plus a required `request_id`, returns a
+`RunRecord` immediately (202 while running, 200 for a saved record), and executes
+under the existing budgets independently of the HTTP connection. Inspect with
+`GET /runs/<run_id>?user_id=dev1` or list with `GET /runs?user_id=dev1` (optional
+`session_id`, `limit` 1–100, and `offset`; newest first). Cancel through the existing
+session cancellation endpoint and wait for the final run result.
+
+```json
+{"user_id":"dev1","session_id":"<session-id>","message":"Fix a.py","request_id":"edit-001"}
+```
+
+The key is scoped to `user_id`, across sessions and transports. It must be 1–128
+ASCII letters/digits, dots, underscores, colons, or hyphens, starting with a letter
+or digit. Reuse the same key and exact session/message/provider override when
+retrying the same submission. Different input returns 409. Provider/model identity
+is captured when the run is first created; retries do not resolve changed defaults.
+
+Existing `POST /chat` and `GET /chat/stream` accept an optional `request_id` and
+retain their final response envelope with an additive `run_id`. Matching active
+retries await the same task; finished/cancelled retries return the saved response,
+including after restart or session retirement. A duplicate SSE stream receives
+only the final event, without tool-event replay. Omitting the key creates a distinct
+run each time; the current CLI/panel do not yet retain keys for retry/reconnection.
+
+Run identity is committed before execution. The final response and session archive
+are saved in one transaction before admission release and final delivery. A run
+with a result is `finished` or `cancelled`; **finished does not mean the coding task
+succeeded**. Read `response.completion_status`, check evidence, and bounded diffs.
+Busy/out-of-scope results are also saved for that key; a new attempt needs a new key.
+Execution/final-storage errors produce `failed` records. At startup, abandoned
+`running` rows become `interrupted`. These records never rerun automatically;
+chat retries without a saved result return an error (409 on HTTP, an error event
+on SSE). Inspect the workspace before starting new work with a new session/key.
+
+This remains one API process per database/workspace, with process-local admission;
+there is no cross-process execution coordination or authenticated ownership.
+Runs retain input and final evidence in `SESSION_DB_PATH`, without event journals,
+partial transcript repair, durable checkpoints, retention policy, or safe resume.
+Deduplication prevents transport retries from starting a second run; it cannot
+undo partial edits or guarantee individual tool side effects across crashes.
 
 ### Eval honesty
 

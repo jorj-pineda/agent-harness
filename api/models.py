@@ -11,6 +11,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
+from harness.runs import RequestId
 from harness.state import TurnResponse
 
 
@@ -31,6 +32,13 @@ class CreateSessionResponse(BaseModel):
 
 
 class ChatRequest(BaseModel):
+    request_id: RequestId | None = Field(
+        default=None,
+        description=(
+            "Per-user idempotency key. Matching input joins/replays one run; "
+            "conflicts return 409. Omit for a distinct run."
+        ),
+    )
     user_id: str = Field(..., min_length=1)
     session_id: str = Field(..., min_length=1)
     message: str = Field(..., min_length=1)
@@ -38,6 +46,10 @@ class ChatRequest(BaseModel):
         default=None,
         description="Optional provider override; falls back to the configured default.",
     )
+
+
+class SubmitRunRequest(ChatRequest):
+    request_id: RequestId
 
 
 class CancelSessionRequest(BaseModel):
@@ -59,4 +71,5 @@ __all__ = [
     "ChatResponse",
     "CreateSessionRequest",
     "CreateSessionResponse",
+    "SubmitRunRequest",
 ]

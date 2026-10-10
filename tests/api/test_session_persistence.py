@@ -145,7 +145,7 @@ def test_archive_failure_surfaces_and_prevents_retry_continuation(
         def fail(*args, **kwargs):
             raise sqlite3.OperationalError("disk full")
 
-        monkeypatch.setattr(SessionStore, "save", fail)
+        monkeypatch.setattr(SessionStore, "finish_run", fail)
         payload = {"user_id": "dev", "session_id": sid, "message": "Explain"}
         result = client.post("/chat", json=payload)
         assert result.status_code == 503
