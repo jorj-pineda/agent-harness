@@ -436,6 +436,22 @@ The harness does not need to make every model good at every task. It needs to id
   Runtime/implementation identity, broader workspace coverage, actual compatibility
   enforcement inside execution admission, explicit continuation, crash repair,
   checkpoints/revert, and panel controls remain open; Milestone 5 is incomplete.
+- **2026-10-10 — Saved regular-file permission review prepared:** finalized workspace
+  baselines now retain non-excluded regular-file permission bits from the same
+  open descriptor used for content hashing, without another filesystem sweep.
+  Restart review detects permission-only drift in the existing modified-path
+  lists/counts and reports mode coverage explicitly through API and CLI. Older
+  baselines remain content-only with not-recorded coverage; skipped/failed reviews
+  do not claim mode comparison. Environment metadata remains excluded. Per-turn
+  content diffs retain their existing scope. Validation passed 80 focused and 690
+  offline tests (five live deselected), Ruff/mypy, and both 90/90 scripted matrices
+  with labels and metric limits inspected. Real-file restart regressions preserve
+  user content/archives and reject restored continuation; no inference or coding
+  quality comparison ran. Directory/symlink modes, ownership, ACLs, extended
+  attributes, ignored contents, and symlink referents remain outside comparison.
+  Non-atomic external-writer races, explicit guarded continuation, checkpoints/
+  revert, crash repair, and panel review controls remain open. Milestone 5 remains
+  incomplete; permission evidence does not authorize resume.
 - **Next:** item 6's listed mechanics are in place; see the known limitations
   below before relying on them unattended. Item 7 has a repeated baseline and
   nine completed comparisons. Argument feedback did not reliably break repeated

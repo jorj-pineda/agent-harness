@@ -409,12 +409,25 @@ Process-local admission covers comparison reads through completion, including
 transport disconnect and shutdown, and rejects overlapping owned turns.
 
 **Unchanged means only the recorded scope matched. It is not permission to resume.**
-This review compares non-excluded file contents and symlink target identity;
-it does not follow symlinks, inspect their referents, compare permissions/modes,
-or inspect `.git`, dependency/cache directories, and `.env`/`.env.*` files. The
+This review compares non-excluded file contents and symlink target identity. New
+final baselines also retain regular-file permission bits (including executable
+and special permission bits), captured from the same descriptor as the content
+read. Permission-only changes appear in `modified`, once per path alongside any
+content changes. `mode_coverage=compared` means these bits were compared; older
+baselines report `not_recorded`, and skipped/failed comparisons report
+`not_checked`. Older baselines can still report unchanged within their content-only
+scope; no mode history is invented. CLI review prints this coverage.
+
+It does not follow symlinks, inspect their referents, compare directory/symlink
+modes, ownership, ACLs or extended attributes, or inspect `.git`, dependency/cache
+directories, and `.env`/`.env.*` files. The
 response lists exclusions and explains the scope. Environment-file hashes and
 raw symlink targets are not saved in this record; the API returns comparison
 summaries rather than the fingerprint map. No settings credentials are recorded.
+
+Per-turn `workspace_changes` and bounded text diffs still describe content changes;
+this addition applies to saved final-workspace review. Modes do not supply a
+checkpoint, compatibility guarantee, or continuation permission.
 
 Capture/comparison remain non-atomic against editors, other processes, or detached
 commands. If harness storage is inside the tracked workspace, archive writes after
