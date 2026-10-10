@@ -29,13 +29,14 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import uuid
 from collections.abc import AsyncIterator, Callable
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, suppress
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi import FastAPI, HTTPException, Query, Request, Response
 from fastapi.responses import StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -44,6 +45,7 @@ from harness.grounding import Grounder
 from harness.policy import classify_task, is_out_of_scope_request
 from harness.providers import build_configured_provider, configured_model, configured_provider_names
 from harness.router import ProviderNotFoundError, ProviderRouter
+from harness.runs import RequestConflictError, RequestId, RunInput, RunRecord
 from harness.runtime import build_registry, out_of_scope_response, run_configured_turn
 from harness.session_store import SessionArchive, SessionStore, SessionSummary
 from harness.state import Session, TurnResponse
@@ -60,6 +62,7 @@ from .models import (
     ChatResponse,
     CreateSessionRequest,
     CreateSessionResponse,
+    SubmitRunRequest,
 )
 from .settings import Settings, get_settings
 
@@ -84,6 +87,7 @@ class Components:
     cancellations: dict[str, TurnCancellation] = field(default_factory=dict)
     tasks: set[asyncio.Task[Any]] = field(default_factory=set)
     closing: bool = False
+    run_tasks: dict[str, asyncio.Task[TurnResponse]] = field(default_factory=dict)
 
 
 ComponentsFactory = Callable[[Settings], Components]
@@ -169,6 +173,7 @@ def create_app(
                 raise RuntimeError("Support tools require a collection and embedder at startup")
             if components.session_store is None:
                 components.session_store = SessionStore(resolved_settings.session_db_path)
+            components.session_store.recover_runs()
             yield
         finally:
             await _close_components(components)
@@ -247,38 +252,50 @@ def _register_routes(app: FastAPI) -> None:
             raise HTTPException(status_code=409, detail="No cancellable turn; idle or finalizing.")
         return CancelSessionResponse()
 
+    @app.post("/runs", response_model=RunRecord)
+    async def submit_run(req: SubmitRunRequest, request: Request, response: Response) -> RunRecord:
+        """Submit once, then inspect by run ID without keeping a transport open."""
+        record, _ = _start_run(request.app.state.components, request.app.state.settings, req)
+        response.status_code = 202 if record.status == "running" else 200
+        return record
+
+    @app.get("/runs", response_model=list[RunRecord])
+    async def list_runs(
+        request: Request,
+        user_id: str = Query(min_length=1),
+        session_id: str | None = Query(default=None, min_length=1),
+        limit: int = Query(default=50, ge=1, le=100),
+        offset: int = Query(default=0, ge=0),
+    ) -> list[RunRecord]:
+        return _session_store(request.app.state.components).list_runs(
+            user_id,
+            session_id=session_id,
+            limit=limit,
+            offset=offset,
+        )
+
+    @app.get("/runs/{run_id}", response_model=RunRecord)
+    async def inspect_run(
+        run_id: str,
+        request: Request,
+        user_id: str = Query(min_length=1),
+    ) -> RunRecord:
+        return _lookup_run(request.app.state.components, run_id, user_id)
+
     @app.post("/chat", response_model=ChatResponse)
     async def chat(req: ChatRequest, request: Request) -> ChatResponse:
         components: Components = request.app.state.components
-        settings: Settings = request.app.state.settings
-
-        session = _lookup_session(components, req.session_id, req.user_id)
-        if is_out_of_scope_request(req.message):
-            return out_of_scope_response()
-
-        log.info(
-            "api=chat user_id=%s session_id=%s task_kind=%s",
-            req.user_id,
-            req.session_id,
-            classify_task(req.message),
-        )
-        provider = _resolve_provider_or_400(components, req.provider)
-        return await _run_configured_turn(
-            components=components,
-            settings=settings,
-            session=session,
-            user_id=req.user_id,
-            message=req.message,
-            provider=provider,
-        )
+        record, task = _start_run(components, request.app.state.settings, req)
+        return await _wait_run(record, task)
 
     @app.get("/chat/stream")
     async def chat_stream(
         request: Request,
-        user_id: str,
-        session_id: str,
-        message: str,
+        user_id: str = Query(min_length=1),
+        session_id: str = Query(min_length=1),
+        message: str = Query(min_length=1),
         provider: str | None = None,
+        request_id: RequestId | None = None,
     ) -> StreamingResponse:
         """SSE variant of /chat — emits tool_start/tool_end as the loop runs.
 
@@ -290,43 +307,34 @@ def _register_routes(app: FastAPI) -> None:
         components: Components = request.app.state.components
         settings: Settings = request.app.state.settings
 
-        session = _lookup_session(components, session_id, user_id)
-        provider_obj = _resolve_provider_or_400(components, provider)
+        queue: asyncio.Queue[StreamEvent | None] = asyncio.Queue()
+
+        async def on_event(event: StreamEvent) -> None:
+            await queue.put(event)
+
+        req = ChatRequest(
+            user_id=user_id,
+            session_id=session_id,
+            message=message,
+            provider=provider,
+            request_id=request_id,
+        )
+        record, task = _start_run(components, settings, req, on_event=on_event)
+
+        async def runner() -> None:
+            try:
+                result = await _wait_run(record, task)
+                await queue.put(TurnDoneEvent(response=result))
+            except Exception as exc:
+                log.error("api=chat_stream failed exception=%s", type(exc).__name__)
+                await queue.put(
+                    ErrorEvent(detail=f"Run {record.run_id} failed; inspect /runs/{record.run_id}")
+                )
+            finally:
+                await queue.put(None)
 
         async def event_gen() -> AsyncIterator[str]:
-            if is_out_of_scope_request(message):
-                yield _sse(TurnDoneEvent(response=out_of_scope_response()))
-                return
-
-            log.info(
-                "api=chat_stream user_id=%s session_id=%s task_kind=%s",
-                user_id,
-                session_id,
-                classify_task(message),
-            )
-            queue: asyncio.Queue[StreamEvent | None] = asyncio.Queue()
-
-            async def on_event(event: StreamEvent) -> None:
-                await queue.put(event)
-
-            async def runner() -> None:
-                try:
-                    response = await _run_configured_turn(
-                        components=components,
-                        settings=settings,
-                        session=session,
-                        user_id=user_id,
-                        message=message,
-                        provider=provider_obj,
-                        on_event=on_event,
-                    )
-                    await queue.put(TurnDoneEvent(response=response))
-                except Exception as exc:  # surfaced to the client as an SSE error
-                    log.exception("api=chat_stream turn failed")
-                    await queue.put(ErrorEvent(detail=str(exc)))
-                finally:
-                    await queue.put(None)
-
+            # A duplicate stream waits for final evidence; live events are not replayed.
             _own_task(components, asyncio.create_task(runner()))
             while True:
                 event = await queue.get()
@@ -368,6 +376,124 @@ def _lookup_archive(components: Components, session_id: str, user_id: str) -> Se
     return archive
 
 
+def _lookup_run(components: Components, run_id: str, user_id: str) -> RunRecord:
+    record = _session_store(components).get_run(run_id)
+    if record is None:
+        raise HTTPException(status_code=404, detail="Unknown run_id")
+    if record.request.user_id != user_id:
+        raise HTTPException(status_code=403, detail="Run does not belong to this user_id")
+    return record
+
+
+def _start_run(
+    components: Components,
+    settings: Settings,
+    req: ChatRequest,
+    *,
+    on_event: EventCallback | None = None,
+) -> tuple[RunRecord, asyncio.Task[TurnResponse] | None]:
+    """Bind request identity durably before scheduling any execution (no awaits)."""
+    store = _session_store(components)
+    run_input = RunInput(
+        user_id=req.user_id,
+        session_id=req.session_id,
+        message=req.message,
+        provider=req.provider,
+        request_id=req.request_id or uuid.uuid4().hex,
+    )
+    existing = store.find_run(req.user_id, run_input.request_id)
+    if existing is not None:
+        if existing.request != run_input:
+            raise HTTPException(
+                status_code=409, detail="request_id already belongs to different input"
+            )
+        return existing, components.run_tasks.get(existing.run_id)
+    if components.closing:
+        raise HTTPException(status_code=503, detail="Server is shutting down")
+    session = _lookup_session(components, req.session_id, req.user_id)
+    policy = is_out_of_scope_request(req.message)
+    provider = None if policy else _resolve_provider_or_400(components, req.provider)
+    model = None
+    if provider is not None:
+        with suppress(ValueError):
+            model = configured_model(provider.name, settings)
+    try:
+        record, created = store.create_run(
+            run_input,
+            provider=provider.name if provider else "policy",
+            configured_model=model,
+        )
+    except RequestConflictError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    except Exception as exc:
+        raise HTTPException(
+            status_code=503, detail="Run storage unavailable; execution not started"
+        ) from exc
+    if not created:
+        return record, components.run_tasks.get(record.run_id)
+
+    log.info(
+        "api=run run_id=%s user_id=%s session_id=%s task_kind=%s",
+        record.run_id,
+        req.user_id,
+        req.session_id,
+        classify_task(req.message),
+    )
+
+    async def execute() -> TurnResponse:
+        try:
+            if provider is None:
+                result = out_of_scope_response()
+            else:
+                result = await _run_configured_turn(
+                    components=components,
+                    settings=settings,
+                    session=session,
+                    user_id=req.user_id,
+                    message=req.message,
+                    provider=provider,
+                    on_event=on_event,
+                    run_id=record.run_id,
+                )
+            result.run_id = record.run_id
+            # Busy/scope rejections have no finalized Turn, but still have a run result.
+            saved = store.get_run(record.run_id)
+            if saved is not None and saved.status == "running":
+                store.finish_run(record.run_id, result)
+            return result
+        except BaseException:
+            try:
+                store.fail_run(record.run_id)
+            except Exception as exc:
+                log.error("api=run_failure_storage exception=%s", type(exc).__name__)
+            raise
+
+    task = asyncio.create_task(execute())
+    components.run_tasks[record.run_id] = task
+    task.add_done_callback(lambda _: components.run_tasks.pop(record.run_id, None))
+    _own_task(components, task)
+    return record, task
+
+
+async def _wait_run(
+    record: RunRecord,
+    task: asyncio.Task[TurnResponse] | None,
+) -> TurnResponse:
+    if task is not None:
+        return await asyncio.shield(task)
+    if record.response is not None:
+        return record.response
+    raise HTTPException(
+        status_code=409,
+        detail={
+            "run_id": record.run_id,
+            "status": record.status,
+            "message": record.error
+            or "Run has no active execution in this process; inspect before new work.",
+        },
+    )
+
+
 def _resolve_provider_or_400(components: Components, provider_name: str | None) -> ChatProvider:
     try:
         return components.router.resolve(provider_name)
@@ -400,6 +526,7 @@ async def _run_configured_turn(
     message: str,
     provider: ChatProvider,
     on_event: EventCallback | None = None,
+    run_id: str | None = None,
 ) -> TurnResponse:
     cancellation = TurnCancellation()
     if components.closing:
@@ -419,6 +546,7 @@ async def _run_configured_turn(
                 provider=provider,
                 on_event=on_event,
                 cancellation=cancellation,
+                run_id=run_id,
             )
             if response.completion_status == "cancelled":
                 components.sessions.pop(session.session_id, None)
@@ -443,6 +571,7 @@ async def _execute_turn(
     provider: ChatProvider,
     on_event: EventCallback | None = None,
     cancellation: TurnCancellation,
+    run_id: str | None = None,
 ) -> TurnResponse:
     """Refresh injected facts, build the per-request registry, and run the loop."""
     support_registry = ToolRegistry()
@@ -470,7 +599,11 @@ async def _execute_turn(
 
     def save_finalized(session: Session, response: TurnResponse) -> None:
         try:
-            _session_store(components).save(session, response, configured_model=model)
+            if run_id is None:
+                _session_store(components).save(session, response, configured_model=model)
+            else:
+                response.run_id = run_id
+                _session_store(components).finish_run(run_id, response, session=session)
         except Exception as exc:
             # The workspace may already have changed. Do not let a retry silently
             # continue from state whose final evidence failed to reach storage.

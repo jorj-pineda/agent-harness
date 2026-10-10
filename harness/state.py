@@ -121,6 +121,7 @@ class TurnResponse(BaseModel):
     """
 
     answer: str
+    run_id: str | None = Field(default=None, description="Durable API run identity, when assigned.")
     confidence: float | None = Field(
         default=None,
         description="Legacy tool-evidence heuristic; not answer or patch correctness.",
