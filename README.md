@@ -426,6 +426,44 @@ profile settings. Snapshot/review overhead remains outside turn wall deadlines
 and `latency_ms`. Explicit resume, broader workspace coverage, profile/transcript
 compatibility, checkpoints/revert, and panel comparison controls are separate work.
 
+### Inspect saved transcript structure
+
+```sh
+agent-harness transcript-review <session-id> --user-id cli-user
+```
+
+This calls owner-scoped `GET /sessions/<id>/transcript-review?user_id=...`
+against the last committed archive, including after restart. `max_issues`
+(`--max-issues`) accepts 1–1000, default 100. The response reports `valid` or
+`invalid`, message count, latest archived turn ID when present, total observed
+issue count, and capped diagnostics containing zero-based message indices and
+stable issue codes. `issues_truncated` identifies omitted diagnostics. It returns
+no message content, call arguments, tool results, or call IDs and changes no
+history. Mutable live messages and unsaved crash evidence are outside this review.
+
+The shared check detects missing/orphan/duplicate results, empty or duplicate
+batch call IDs, empty tool names, mismatched result names when supplied,
+misplaced system messages, and tool fields on the wrong message role. Call IDs
+may repeat across completed batches; results within a batch may arrive in any
+order. Recovery user messages and absent optional tool names remain valid.
+
+Both configured execution and the low-level loop now block invalid existing
+history before inference or transcript mutation. The configured guard precedes
+system-prompt refresh, snapshots, and finalization callbacks. A model response
+with invalid call IDs/names stops as `incomplete` before **any** tool in that
+batch executes. Malformed calls are not added to executable history, and no
+results are fabricated. The final envelope retains the failure reason; opt-in
+normalized tracing retains the original response. No automatic retry/repair is
+introduced. External cancellation with unmatched calls can therefore no longer
+continue that same transcript; review partial work and start a new session.
+
+**Valid means structural consistency only.** Empty history can be valid. This
+check does not establish task completion, truth of tool results, turn-record
+alignment, model/toolset/profile compatibility, or context fit. It neither checks
+the workspace nor grants permission to resume. Interrupted history repair,
+profile capture, broader workspace coverage, and explicit guarded continuation
+remain separate work; saved sessions remain read-only.
+
 ### Eval honesty
 
 The legacy scenario runner has two modes, neither of which executes real coding

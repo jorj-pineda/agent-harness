@@ -263,6 +263,14 @@ async def test_reservation_stays_held_until_sync_write_worker_finishes(
                 assert "timed out" in result.tool_errors[0]
                 assert result.workspace_changes.added == ["a.py"]
         assert (tmp_path / "a.py").read_text() == "a = 1\n"
+        if stop == "cancel":
+            # External cancellation can leave an unmatched call. Admission releases,
+            # but that transcript must not be sent to another provider request.
+            result = await turn(session, store, second)
+            assert result.completion_status == "blocked"
+            assert "missing_tool_result" in result.completion_reason
+            assert second.calls == []
+            session = Session(workspace_root=str(tmp_path))
         assert (await turn(session, store, second)).completion_status == "completed"
 
 

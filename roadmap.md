@@ -369,6 +369,26 @@ The harness does not need to make every model good at every task. It needs to id
   profile/transcript compatibility, partial crash recovery, explicit resume,
   checkpoints/revert, and panel comparison controls remain open. Milestone 5
   remains incomplete.
+- **2026-10-10 — Transcript structural integrity prepared:** a shared normalized
+  history check now blocks malformed existing tool-call/result history before
+  inference or transcript mutation; configured execution also checks before
+  prompt refresh, snapshots, and finalization callbacks. Invalid model batches
+  (empty/duplicate call IDs or empty tool names) stop as incomplete before any
+  batch tool dispatch, without fabricating results or repairing history.
+  An owner-scoped saved-transcript review endpoint and CLI command report capped
+  message-index/issue-code diagnostics plus counts and archived turn identity
+  after restart, without exposing transcript payloads or enabling continuation.
+  Validation passed 131 focused and 632 offline tests (five live deselected),
+  Ruff/mypy, and both 90/90 scripted matrices with evidence labels inspected.
+  Regressions cover preserved archives/user files, keyed replay, external
+  cancellation leaving unmatched calls, and reservation release for fresh
+  sessions after worker cleanup. These validate integrity mechanics, not model
+  coding quality; no inference or comparison ran. Structurally valid history
+  does not establish completion, tool-result truth, turn-record alignment,
+  provider/profile compatibility, context fit, or unchanged workspace state.
+  Profile capture, broader workspace coverage, transcript repair, partial crash
+  recovery, explicit guarded resume, checkpoints/revert, and panel review controls
+  remain open. Milestone 5 remains incomplete.
 - **Next:** item 6's listed mechanics are in place; see the known limitations
   below before relying on them unattended. Item 7 has a repeated baseline and
   nine completed comparisons. Argument feedback did not reliably break repeated
@@ -377,8 +397,8 @@ The harness does not need to make every model good at every task. It needs to id
   mixed outcomes. The personal-use workflow now has bounded turn-diff review,
   finalized-session archives, explicit cancellation, durable run identity and keyed
   submission, client run-history/recovery controls, durable scoped workspace review,
-  and process-local turn admission; failed-check recovery, model profiles, context
-  management, and the rest of the personal-use workflow remain open. Offline checks
+  transcript integrity guards/review, and process-local turn admission; failed-check
+  recovery, model profiles, context management, and the rest of the personal-use workflow remain open. Offline checks
   alone are not evidence of better model coding performance.
 
 ### Review baseline
