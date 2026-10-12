@@ -123,6 +123,7 @@ class Session(BaseModel):
 
     session_id: str = Field(default_factory=_uuid)
     user_id: str | None = None
+    checkpoint_turns: bool = False
     workspace_root: str | None = Field(
         default=None,
         description="Absolute sandbox root for code tools (Phase 2+); set at session creation.",

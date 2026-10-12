@@ -35,7 +35,7 @@ from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager, suppress
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal
 
 from fastapi import FastAPI, HTTPException, Query, Request, Response
 from fastapi.responses import StreamingResponse
@@ -219,7 +219,13 @@ def _register_routes(app: FastAPI) -> None:
         workspace_root = _resolve_workspace_root(
             req.workspace_root or _default_workspace_root(settings)
         )
-        session = Session(user_id=req.user_id, workspace_root=workspace_root)
+        if req.checkpoint_turns and workspace_root is None:
+            raise HTTPException(status_code=400, detail="Turn checkpoints require a workspace.")
+        session = Session(
+            user_id=req.user_id,
+            workspace_root=workspace_root,
+            checkpoint_turns=req.checkpoint_turns,
+        )
         _session_store(components).save(session)
         components.sessions[session.session_id] = session
         log.info(
@@ -832,6 +838,45 @@ async def _execute_turn(
         nonlocal workspace_baseline
         workspace_baseline = baseline
 
+    async def save_turn_checkpoint(phase: Literal["before", "after"]) -> None:
+        if run_id is None or session.workspace_root is None:
+            raise HTTPException(status_code=503, detail="Turn checkpoint identity unavailable.")
+        root = Path(session.workspace_root)
+
+        async def capture_and_bind() -> None:
+            store = _session_store(components)
+            try:
+                captured = await asyncio.to_thread(
+                    capture_checkpoint,
+                    root,
+                    session.session_id,
+                    protected_paths=(store.path, components.fact_store.path, settings.chroma_path),
+                )
+                store.bind_run_checkpoint(run_id, captured, phase)
+            except (OSError, ValueError, sqlite3.Error) as exc:
+                raise HTTPException(
+                    status_code=503,
+                    detail=f"Turn {phase} checkpoint failed; execution stopped. "
+                    "Workspace edits may exist; inspect saved run/checkpoint evidence.",
+                ) from exc
+
+        task = asyncio.create_task(capture_and_bind())
+        _own_task(components, task)
+        try:
+            await asyncio.shield(task)
+        except asyncio.CancelledError:
+            # Keep admission until owned checkpoint work has settled.
+            while not task.done():
+                try:
+                    await asyncio.shield(task)
+                except asyncio.CancelledError:
+                    continue
+                except Exception:
+                    break
+            if not task.cancelled():
+                task.exception()
+            raise
+
     def save_finalized(session: Session, response: TurnResponse) -> None:
         try:
             if run_id is None:
@@ -869,6 +914,7 @@ async def _execute_turn(
             on_finalized=save_finalized,
             on_workspace_review=capture_workspace_review,
             on_execution_profile=save_execution_profile if run_id is not None else None,
+            on_checkpoint=save_turn_checkpoint if session.checkpoint_turns else None,
             cancellation=cancellation,
         )
     except BaseException:

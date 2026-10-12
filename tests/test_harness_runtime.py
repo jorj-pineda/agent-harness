@@ -459,3 +459,22 @@ async def test_runtime_reports_command_changes_to_ignored_metadata(tmp_path: Pat
     assert response.workspace_changes.modified == []
     assert response.workspace_changes.diffs == []
     assert (workspace / ".git" / "index").read_text() == "preserved user index"
+
+
+async def test_enabled_checkpoints_require_capture_before_execution(tmp_path: Path) -> None:
+    session = Session(user_id="dev", workspace_root=str(tmp_path), checkpoint_turns=True)
+    provider = ScriptedProvider()
+    provider.script(make_response(content="Must not execute"))
+    with FactStore(tmp_path / "facts.db") as store:
+        response = await run_configured_turn(
+            settings=Settings(_env_file=None),
+            session=session,
+            user_id="dev",
+            message="Inspect code",
+            provider=provider,
+            fact_store=store,
+            registry=build_registry(fact_store=store, user_id="dev", workspace_root=str(tmp_path)),
+        )
+    assert response.completion_status == "blocked"
+    assert provider.calls == []
+    assert session.messages == [] and session.turns == []

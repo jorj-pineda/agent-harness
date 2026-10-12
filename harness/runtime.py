@@ -9,9 +9,10 @@ from __future__ import annotations
 
 import asyncio
 import json
-from collections.abc import Callable, Iterable, Mapping
+from collections.abc import Awaitable, Callable, Iterable, Mapping
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Literal
 
 from memory import FactStore
 from providers.base import ChatMessage, ChatProvider
@@ -125,6 +126,7 @@ async def run_configured_turn(
     cancellation: TurnCancellation | None = None,
     on_workspace_review: Callable[[WorkspaceReviewBaseline], None] | None = None,
     on_execution_profile: Callable[[ExecutionProfile], None] | None = None,
+    on_checkpoint: Callable[[Literal["before", "after"]], Awaitable[None]] | None = None,
 ) -> TurnResponse:
     """Execute a turn, optionally committing final evidence before releasing admission.
 
@@ -154,9 +156,20 @@ async def run_configured_turn(
                 provider="policy",
                 latency_ms=0.0,
             )
+        if session.checkpoint_turns and on_checkpoint is None:
+            reason = "Turn checkpoint capture is unavailable; no execution started."
+            return TurnResponse(
+                answer=reason,
+                completion_status="blocked",
+                completion_reason=reason,
+                provider="policy",
+                latency_ms=0.0,
+            )
         loop = asyncio.get_running_loop()
         wall_started_at = loop.time()
         workspace_review_ms = 0.0
+        if on_checkpoint is not None:
+            await on_checkpoint("before")
         if on_execution_profile is not None:
             on_execution_profile(
                 capture_execution_profile(
@@ -241,6 +254,8 @@ async def run_configured_turn(
                 )
             workspace_review_ms += (loop.time() - review_started_at) * 1000
         response.workspace_review_ms = workspace_review_ms
+        if on_checkpoint is not None:
+            await on_checkpoint("after")
         if on_workspace_review is not None and baseline is not None:
             on_workspace_review(baseline)
         if on_finalized is not None:
