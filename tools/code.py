@@ -17,7 +17,7 @@ import tempfile
 from collections.abc import Iterator, Mapping
 from fnmatch import fnmatch
 from pathlib import Path
-from typing import Any
+from typing import Any, BinaryIO
 from uuid import uuid4
 
 from pydantic import BaseModel, Field, field_validator
@@ -32,6 +32,7 @@ log = logging.getLogger(__name__)
 
 MAX_READ_BYTES = 256_000
 MAX_READ_LINES = 500
+MAX_READ_SCAN_BYTES = 16_000_000
 MAX_GREP_HITS = 100
 MAX_LIST_ENTRIES = 200
 MAX_TREE_ENTRIES = 300
@@ -145,6 +146,25 @@ def _workspace_error(exc: WorkspaceError) -> ToolError:
     return ToolError(str(exc))
 
 
+def _open_regular_file(target: Path) -> BinaryIO:
+    """Reject final-component swaps to links/devices; parent path races remain."""
+    descriptor = os.open(
+        target, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
+    )
+    try:
+        stream = os.fdopen(descriptor, "rb")
+    except BaseException:
+        os.close(descriptor)
+        raise
+    try:
+        if not stat.S_ISREG(os.fstat(stream.fileno()).st_mode):
+            raise ToolError("File is no longer a regular file; inspect the path again.")
+    except BaseException:
+        stream.close()
+        raise
+    return stream
+
+
 def _atomic_write_file(target: Path, content: bytes) -> None:
     """Publish complete content with a same-directory rename, leaving failures intact.
 
@@ -194,8 +214,16 @@ def build_code_tools(
         selected: list[str] = []
         selected_bytes = 0
         total_lines = 0
-        with target.open("rb") as stream:
-            for raw_line in stream:
+        scan_bytes = 0
+        with _open_regular_file(target) as stream:
+            while raw_line := stream.readline(MAX_READ_SCAN_BYTES - scan_bytes + 1):
+                scan_bytes += len(raw_line)
+                if scan_bytes > MAX_READ_SCAN_BYTES:
+                    raise ToolError(
+                        f"read_file whole-file scan exceeds {MAX_READ_SCAN_BYTES} bytes; "
+                        "no complete hash or line count is available. Choose a smaller file; "
+                        "narrowing the line range cannot reduce the whole-file scan."
+                    )
                 digest.update(raw_line)
                 total_lines += 1
                 if total_lines < start or (
@@ -427,7 +455,8 @@ def build_code_tools(
             name="read_file",
             description=(
                 "Read a UTF-8 text file under the workspace. Returns repo-relative path, "
-                "line range, and content. Use before editing or citing code."
+                "line range, and content. Use before editing or citing code. "
+                f"Whole-file hash/line scanning is limited to {MAX_READ_SCAN_BYTES} bytes."
             ),
             input_model=ReadFileInput,
             fn=read_file,
