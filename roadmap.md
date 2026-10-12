@@ -468,11 +468,33 @@ The harness does not need to make every model good at every task. It needs to id
   permission drift, context exhaustion, and preserved run/session evidence. Simulated
   rendering/error checks covered busy/unavailable/legacy, invalid/truncated history,
   drift/unknown/unbounded estimates, missing fields, 403/404/network errors,
-  client timeout recovery, safe text rendering, and selection races. The temporary server was stopped; no inference or model
-  quality comparison ran. Review inputs are transient; there is no automatic review,
+  client timeout recovery, safe text rendering, and selection races. The temporary
+  server was stopped; no inference or model quality comparison ran. Review inputs are transient; there is no automatic review,
   continuation, checkpoint/revert, partial crash repair or cross-process lock.
   Broader workspace coverage and guarded execution preconditions remain open;
   Milestone 5 is incomplete.
+- **2026-10-12 — Ignored top-level metadata reporting prepared:** shared snapshots
+  now retain hashes of lstat fields for the fixed default ignored root names,
+  without traversing contents, following links, or adding another sweep. Turn
+  envelopes and saved final-workspace review expose a separate metadata-only
+  added/modified/deleted summary through API, CLI and panel. New baselines save it
+  atomically with existing evidence; older baselines remain not-recorded and failed/
+  skipped comparisons not-checked. Overall workspace-review changed includes
+  metadata drift; tracked-file counts/diffs keep their scope and the path cap is
+  shared, preserving tracked-file priority. Regressions demonstrate command-created
+  ignored entries, removal/replacement, no content reads/referent inspection,
+  environment privacy, capped counts, restart review of complete/partial turns,
+  preserved user index/content/archives, legacy coverage and unavailable reads.
+  A regression also confirms the blind spot: rewriting an existing child can leave
+  directory metadata unchanged. Matching metadata never certifies a subtree,
+  dependencies, attribution or permission to resume. Validation passed 97 focused
+  and 699 offline tests (five live deselected), Ruff/mypy, JavaScript syntax, and
+  both 90/90 scripted matrices with labels/metric limits inspected. Browser checks
+  used a fresh scripted-provider API lifecycle with real edits and metadata drift;
+  missing/skipped coverage and truncated summaries were also rendered. The temporary
+  server was stopped; no inference or model-quality comparison ran. Non-atomic
+  external-writer races, deeper ignored contents, guarded continuation, checkpoints/
+  revert, crash repair and cross-process locks remain open; Milestone 5 incomplete.
 - **Next:** item 6's listed mechanics are in place; see the known limitations
   below before relying on them unattended. Item 7 has a repeated baseline and
   nine completed comparisons. Argument feedback did not reliably break repeated
@@ -713,7 +735,7 @@ enters the queue when a real task or evaluation shows the limitation matters.
 |---|---|
 | Process-local turn admission prevents overlapping configured-runtime turns, but changes from editors, other harness processes, or detached commands still cannot be attributed. | Add cross-process coordination before multiple API workers. Label changed paths using file-tool hash evidence where available; other changes still need explicit source uncertainty. |
 | Bounded per-turn text diffs are available, but capture/output limits omit content. There are no durable checkpoints and no revert. | Add durable working-tree checkpoints before a safe revert workflow. A temporary Git index (`git write-tree` without touching Jorge's index or stash) can capture Git trees; retain bounded copies outside Git. The current in-memory text capture is review evidence only. |
-| Ignored directories (`.git`, `.venv`, `node_modules`, caches) are not tracked, so dependency installs or Git metadata changes are invisible. | Record a cheap per-directory stat summary for ignored top-level directories and report "ignored directory changed" without listing its contents. |
+| Default ignored top-level entries now have metadata-only reporting, but child rewrites and deeper edits can leave that metadata unchanged. | Keep scope explicit; require selected dependency/Git checks or broader bounded capture before using ignored state as an execution precondition. Metadata equality cannot certify unchanged contents. |
 | Snapshot and diff-generation time count toward neither the wall-time budget nor `latency_ms`. | Measure review overhead, report it in the response, and start the wall deadline before the first snapshot. |
 | Each turn reads every tracked file twice, up to the limits. Large repositories hit `unavailable`. | Cache `(size, mtime_ns, inode)` beside each hash and rehash only files whose metadata changed. Reuse the previous turn's after-snapshot when metadata is unchanged. |
 | Five files on `main` fail `ruff format --check` (pre-existing). | Run a formatting-only PR with no behavior changes. |
