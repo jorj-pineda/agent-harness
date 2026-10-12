@@ -69,6 +69,27 @@
         <div id="envelope" class="envelope">
           <div class="empty-state small">No turn yet.</div>
         </div>
+        <section id="session-review" hidden aria-label="Saved session review">
+          <h2>Saved session review</h2>
+          <p id="review-target" class="review-note"></p>
+          <p class="review-note">Reviews inspect the latest saved session state, which may be newer than the selected run. They do not resume work or grant permission to edit.</p>
+          <div class="review-actions">
+            <button id="review-workspace">Compare workspace</button>
+            <button id="review-transcript">Inspect transcript</button>
+          </div>
+          <label for="review-provider">Provider for configuration estimate</label>
+          <select id="review-provider">
+            <option value="">server default</option>
+            <option value="ollama">ollama</option>
+            <option value="anthropic">anthropic</option>
+            <option value="openai">openai</option>
+            <option value="openai_compatible">openai_compatible</option>
+          </select>
+          <label for="review-message">Proposed input (estimate only, optional)</label>
+          <textarea id="review-message" rows="2" maxlength="100000"></textarea>
+          <button id="review-configuration">Estimate configuration/context</button>
+          <div id="session-review-results" aria-live="polite"></div>
+        </section>
       </aside>
     </main>
 

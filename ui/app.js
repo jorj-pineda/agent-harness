@@ -23,6 +23,14 @@ const els = {
   checkRun: document.getElementById("check-run"),
   retryRun: document.getElementById("retry-run"),
   forgetRun: document.getElementById("forget-run"),
+  sessionReview: document.getElementById("session-review"),
+  reviewTarget: document.getElementById("review-target"),
+  reviewWorkspace: document.getElementById("review-workspace"),
+  reviewTranscript: document.getElementById("review-transcript"),
+  reviewConfiguration: document.getElementById("review-configuration"),
+  reviewProvider: document.getElementById("review-provider"),
+  reviewMessage: document.getElementById("review-message"),
+  reviewResults: document.getElementById("session-review-results"),
 };
 
 // Persist a stable user_id across reloads so cross-session memory can be
@@ -43,6 +51,8 @@ let uncertain = false;
 let cancelRequested = false;
 let pendingRequest = null;
 let historyOffset = 0;
+let reviewTarget = null;
+let reviewInFlight = false;
 const pendingStorageKey = "panel_pending_request";
 
 // ---- helpers ----------------------------------------------------------
@@ -79,6 +89,9 @@ function setBusy(value) {
   els.retryRun.disabled = busy;
   els.forgetRun.disabled = busy;
   for (const button of els.history.querySelectorAll("button")) button.disabled = busy;
+  for (const button of [els.reviewWorkspace, els.reviewTranscript, els.reviewConfiguration]) {
+    button.disabled = busy || reviewInFlight || reviewTarget == null;
+  }
 }
 
 function pretty(value) {
@@ -307,6 +320,7 @@ async function createSession() {
       return;
     }
     const data = await resp.json();
+    selectReviewTarget(null);
     sessionId = data.session_id;
     sessionUsable = true;
     uncertain = false;
@@ -343,6 +357,7 @@ function sendMessage(message) {
 }
 
 function dispatchRequest(request, reviewOnly = false) {
+  selectReviewTarget(null);
   request = { ...request };
   const reviewAfter = reviewOnly || !sessionUsable;
   if (!reviewAfter) addUserMessage(request.message);
@@ -498,6 +513,100 @@ async function cancelTurn() {
   }
 }
 
+// ---- saved session reviews: observations, never continuation -----------
+
+function selectReviewTarget(record) {
+  // Object identity prevents a delayed response from rendering on another selection.
+  reviewTarget = record ? { sessionId: record.request.session_id, runId: record.run_id } : null;
+  els.sessionReview.hidden = reviewTarget == null;
+  els.reviewResults.replaceChildren();
+  els.reviewMessage.value = "";
+  els.reviewProvider.value = "";
+  if (reviewTarget) {
+    els.reviewTarget.textContent = `Session: ${reviewTarget.sessionId}; selected run: ${reviewTarget.runId}`;
+  }
+}
+
+function sessionReviewCard(kind, data, input = {}) {
+  const card = el("section", "session-review-card");
+  card.appendChild(el("h3", null, `${kind}: ${data.status || "unknown"}`));
+  card.appendChild(el("p", "review-note", `Latest archived turn: ${data.turn_id || "unrecorded"}`));
+  if (data.reason) card.appendChild(el("p", null, data.reason));
+  if (kind === "workspace") {
+    card.appendChild(el("p", null, `Regular-file mode coverage: ${data.mode_coverage || "not_recorded"}`));
+    card.appendChild(el("p", "review-note", `Baseline: ${data.baseline_captured_at || "unrecorded"}; checked: ${data.checked_at || "unknown"}`));
+    for (const name of ["added", "modified", "deleted"]) {
+      card.appendChild(el("p", null, `${name}: total ${data[name + "_count"] ?? "unknown"}`));
+      card.appendChild(listSection(name, data[name]));
+    }
+    if (data.paths_truncated) card.appendChild(el("p", null, "Path lists truncated; counts cover the full comparison."));
+    card.appendChild(listSection("Excluded patterns", data.excluded_patterns));
+  } else if (kind === "transcript") {
+    card.appendChild(el("p", null, `Messages: ${data.message_count ?? "unknown"}; issues: ${data.issue_count ?? "unknown"}`));
+    card.appendChild(listSection("Structural issues", (data.issues || []).map(issue => `message[${issue.message_index}]: ${issue.code}`)));
+    if (data.issues_truncated) card.appendChild(el("p", null, "Issue list truncated; count covers the full transcript."));
+  } else {
+    card.appendChild(el("p", null, `Provider: ${data.provider || input.provider || "server default"}`));
+    card.appendChild(el("p", "review-note", `Requested input: ${input.message ? "supplied for estimation only" : "omitted; history-only request"}. Estimates do not establish the model server's actual context fit.`));
+    if (input.message) {
+      const details = el("details");
+      details.appendChild(el("summary", null, "Proposed input sent for this review"));
+      details.appendChild(el("pre", null, input.message));
+      card.appendChild(details);
+    }
+    const config = data.configuration;
+    card.appendChild(el("p", null, `Configuration: ${config?.status || "not checked"}`));
+    if (config?.reason) card.appendChild(el("p", null, config.reason));
+    card.appendChild(listSection("Changed fields", config?.changed_fields));
+    card.appendChild(listSection("Unknown identities", config?.unknown_fields));
+    const context = data.context;
+    card.appendChild(el("p", null, `Context: ${context?.status || "not checked"}`));
+    if (context) {
+      card.appendChild(el("p", null, `Estimate includes proposed input: ${context.includes_proposed_message == null ? "unknown" : context.includes_proposed_message ? "yes" : "no"}`));
+      card.appendChild(el("p", null, `Estimated prompt tokens: ${context.estimated_prompt_tokens ?? "unknown"}; harness context limit: ${context.max_context_tokens === 0 ? "disabled" : context.max_context_tokens ?? "unknown"}; request output allowance: ${context.request_output_allowance ?? (["estimated_fit", "unbounded_context"].includes(context.status) ? "unbounded" : "unavailable")}`));
+      if (context.reason) card.appendChild(el("p", null, context.reason));
+      card.appendChild(el("p", null, `Saved transcript: ${data.transcript?.status || "not checked"}`));
+    }
+  }
+  card.appendChild(el("p", "review-note", data.scope_note || "Read-only observation; not permission to resume or revert."));
+  return card;
+}
+
+async function requestSessionReview(kind) {
+  if (busy || reviewInFlight || !reviewTarget) return;
+  const target = reviewTarget;
+  const input = { user_id: userId, message: els.reviewMessage.value };
+  if (els.reviewProvider.value) input.provider = els.reviewProvider.value;
+  const slot = el("div");
+  // Clear just this review's previous observation before requesting a fresh one.
+  const old = els.reviewResults.querySelector(`[data-review="${kind}"]`);
+  if (old) old.remove();
+  slot.dataset.review = kind;
+  slot.appendChild(el("p", "review-note", `Reading ${kind} review…`));
+  els.reviewResults.appendChild(slot);
+  reviewInFlight = true;
+  setBusy(busy);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 30000);
+  try {
+    const path = `/sessions/${encodeURIComponent(target.sessionId)}/${kind}-review`;
+    const response = kind === "configuration"
+      ? await fetch(path, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input), signal: controller.signal })
+      : await fetch(`${path}?${new URLSearchParams({ user_id: userId })}`, { signal: controller.signal });
+    if (!response.ok) throw new Error(`Review unavailable (HTTP ${response.status}).`);
+    const data = await response.json();
+    if (reviewTarget === target) slot.replaceChildren(sessionReviewCard(kind, data, input));
+  } catch (error) {
+    const reason = controller.signal.aborted
+      ? "Review wait timed out; server comparison may still be settling" : String(error);
+    if (reviewTarget === target) slot.replaceChildren(el("p", "review-note", `${kind}: ${reason}. No work was submitted; retry this review explicitly.`));
+  } finally {
+    clearTimeout(timeout);
+    reviewInFlight = false;
+    setBusy(busy);
+  }
+}
+
 // ---- read-only recovery/history ---------------------------------------
 
 function clearPending() {
@@ -514,6 +623,7 @@ async function getRuns(params = {}) {
 
 function showRun(record) {
   // Viewing history never makes a saved session executable.
+  selectReviewTarget(record);
   sessionId = record.request.session_id;
   sessionUsable = false;
   els.sessionPill.textContent = `review ${sessionId.slice(0, 8)}`;
@@ -606,6 +716,9 @@ function restorePending() {
 
 // ---- events -----------------------------------------------------------
 
+els.reviewWorkspace.addEventListener("click", () => requestSessionReview("workspace"));
+els.reviewTranscript.addEventListener("click", () => requestSessionReview("transcript"));
+els.reviewConfiguration.addEventListener("click", () => requestSessionReview("configuration"));
 els.refreshRuns.addEventListener("click", () => { historyOffset = 0; loadHistory(); });
 els.previousRuns.addEventListener("click", () => { historyOffset = Math.max(0, historyOffset - 20); loadHistory(); });
 els.nextRuns.addEventListener("click", () => { historyOffset += 20; loadHistory(); });
