@@ -109,7 +109,27 @@ path exclusions. Empty directories, ownership/ACLs/extended attributes and ignor
 contents are not restorable. External writers can make the overall capture
 non-atomic even with per-file consistency checks. Storage retention/quota/deletion
 and hard return deadlines remain open. `restore_supported=false`: these checkpoints
-are not turn-linked before/after pairs and no restore/revert endpoint exists yet.
+are not turn-linked before/after pairs. No restore/revert endpoint exists yet.
+
+**Opt-in turn checkpoints.** Create a session with `checkpoint_turns=true`, or
+use `agent-harness chat --workspace <repo> --checkpoints`. This explicitly enables
+bounded plaintext source copies for each admitted turn; the default remains off.
+The shared runtime invokes capture under admission before profile/prompt/snapshot/
+inference, and again after tools and final workspace review settle, before final
+archive delivery. Each capture and its run reference commit atomically. Run detail
+retains `before_checkpoint_id`/`after_checkpoint_id`; checkpoint `kind` distinguishes
+`manual`, `turn_before`, and `turn_after`, with run ID and paired-before ID.
+CLI saved-run review prints recorded IDs, including missing-after evidence.
+
+Before-capture failure prevents inference/edit dispatch. After-capture failure can
+leave edits, retains earlier committed captures, fails the run without inventing a
+final response and retires the session. Cancellation waits for capture workers;
+keyed replay never captures again, and restart never executes interrupted work.
+Initial capture consumes the dispatch deadline; final capture/storage can exceed
+it and are outside loop latency/workspace_review_ms. All checkpoint exclusions,
+plaintext storage, bounds and external-writer limitations above still apply.
+These pairs are scoped observed content, not independent acceptance, attribution,
+resume permission or a safe revert action. `restore_supported=false` remains.
 
 **Directory exploration limits.** `list_dir` returns at most 200 immediate
 non-ignored entries; `tree` returns at most 300 entries, including its root and
