@@ -126,6 +126,7 @@ def test_unavailable_state_is_not_reported_as_unchanged(tmp_path: Path, mode: st
             "not_tracked" if mode in ("disabled", "no_workspace") else "unavailable"
         )
         assert review["reason"]
+        assert review["ignored_entries"]["status"] == "not_checked"
 
 
 def test_ignored_content_and_environment_hashes_are_excluded_explicitly(tmp_path: Path):
@@ -277,6 +278,61 @@ def test_permission_only_drift_is_durable_capped_and_read_only(tmp_path: Path):
         assert (
             client.post(
                 "/chat", json={"user_id": "dev", "session_id": sid, "message": "Continue"}
+            ).status_code
+            == 409
+        )
+        assert restarted.calls == []
+
+
+@pytest.mark.parametrize("limited", [False, True])
+def test_ignored_metadata_survives_restart_without_reading_or_replaying_work(tmp_path, limited):
+    provider = ScriptedProvider()
+    repo = completed_session(tmp_path, provider)
+    (repo / ".git").mkdir()
+    (repo / ".git" / "index").write_text("preserved user index")
+    (repo / ".env").write_text("fixture private environment")
+    with TestClient(
+        make_app(tmp_path, provider, max_tool_iterations=1 if limited else 8)
+    ) as client:
+        sid = client.post("/sessions", json={"user_id": "dev", "workspace_root": str(repo)}).json()[
+            "session_id"
+        ]
+        result = client.post(
+            "/chat", json={"user_id": "dev", "session_id": sid, "message": "Update a.py"}
+        ).json()
+        assert result["completion_status"] == ("budget_exhausted" if limited else "completed")
+        assert result["workspace_changes"]["ignored_entries"]["status"] == "unchanged"
+        archive = client.get(f"/sessions/{sid}", params={"user_id": "dev"}).json()
+        runs = client.get("/runs", params={"user_id": "dev"}).json()
+    store = SessionStore(tmp_path / "sessions.db")
+    baseline = store.get_workspace_review(sid).baseline
+    assert set(baseline.ignored_entry_fingerprints) == {".git"}
+    assert ".git/index" not in baseline.model_dump_json()
+    assert "preserved user index" not in baseline.model_dump_json()
+    assert "fixture private environment" not in baseline.model_dump_json()
+    store.close()
+    (repo / ".git" / "new-entry").write_text("external change")
+    (repo / ".venv").mkdir()
+    restarted = ScriptedProvider()
+    with TestClient(make_app(tmp_path, restarted)) as client:
+        review = client.get(
+            f"/sessions/{sid}/workspace-review", params={"user_id": "dev", "max_paths": 1}
+        ).json()
+        assert review["status"] == "changed"
+        assert review["added_count"] == review["modified_count"] == review["deleted_count"] == 0
+        ignored = review["ignored_entries"]
+        assert ignored["status"] == "changed"
+        assert ignored["added"] == [".venv"]
+        assert ignored["modified"] == []
+        assert ignored["added_count"] == ignored["modified_count"] == 1
+        assert ignored["paths_truncated"] is True
+        assert (repo / ".git" / "index").read_text() == "preserved user index"
+        assert (repo / "a.py").read_text() == "user = 1\nagent = 2\n"
+        assert client.get(f"/sessions/{sid}", params={"user_id": "dev"}).json() == archive
+        assert client.get("/runs", params={"user_id": "dev"}).json() == runs
+        assert (
+            client.post(
+                "/chat", json={"user_id": "dev", "session_id": sid, "message": "Resume"}
             ).status_code
             == 409
         )

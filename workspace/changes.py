@@ -17,7 +17,7 @@ from dataclasses import dataclass, field
 from fnmatch import fnmatch
 from pathlib import Path
 
-from .core import WorkspaceError
+from .core import DEFAULT_IGNORE_GLOBS, WorkspaceError
 
 
 class SnapshotLimitError(WorkspaceError):
@@ -97,6 +97,7 @@ def snapshot(
     text_capture: TextCapture | None = None,
     strict: bool = False,
     file_modes: dict[str, int] | None = None,
+    ignored_entries: dict[str, str] | None = None,
 ) -> dict[str, str]:
     """Map repo-relative POSIX paths to content fingerprints.
 
@@ -108,6 +109,9 @@ def snapshot(
     An optional fresh `TextCapture` retains bounded UTF-8 content alongside hashes;
     omitted text does not prevent path tracking. Optional file_modes records regular-file
     permission bits from the same open descriptor as the content read (no symlink modes).
+    Optional ignored_entries records only lstat metadata hashes for the fixed default
+    ignored names at the root, when also excluded by ignore. It never reads contents
+    or follows symlinks; metadata equality cannot establish subtree equality.
     This is not an atomic snapshot.
     """
     if strict and not root.is_dir():
@@ -122,6 +126,25 @@ def snapshot(
     total_bytes = 0
     for directory, dirs, files in os.walk(root, followlinks=False, onerror=walk_error):
         parent = Path(directory)
+        if ignored_entries is not None and parent == root:
+            for name in sorted(set(dirs + files) & set(DEFAULT_IGNORE_GLOBS)):
+                if not _ignored(name, patterns):
+                    continue
+                # Fixed names keep this extra work bounded. lstat never follows links,
+                # and failure must not become a claim of unchanged metadata.
+                info = (parent / name).lstat()
+                metadata = (
+                    info.st_dev,
+                    info.st_ino,
+                    info.st_mode,
+                    info.st_size,
+                    info.st_mtime_ns,
+                    info.st_ctime_ns,
+                    info.st_nlink,
+                )
+                ignored_entries[name] = hashlib.sha256(
+                    json.dumps(metadata, separators=(",", ":")).encode()
+                ).hexdigest()
         dirs[:] = sorted(name for name in dirs if not _ignored(name, patterns))
         entries = [name for name in dirs if (parent / name).is_symlink()]
         entries += [name for name in files if not _ignored(name, patterns)]
