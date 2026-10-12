@@ -287,10 +287,13 @@ def build_code_tools(
             rel = workspace.relative_str(child)
             if workspace.is_ignored(Path(rel)):
                 continue
-            kind = "dir" if child.is_dir() else "file"
+            kind = _entry_kind(child)
             entries.append({"path": rel, "kind": kind})
-            if len(entries) >= MAX_LIST_ENTRIES:
-                break
+            if len(entries) > MAX_LIST_ENTRIES:
+                raise ToolError(
+                    f"list_dir exceeded {MAX_LIST_ENTRIES} entries; results are incomplete. "
+                    "Choose a narrower directory or use tree with a shallow depth."
+                )
         return entries
 
     def tree(args: TreeInput) -> list[dict[str, str]]:
@@ -305,8 +308,11 @@ def build_code_tools(
         rows: list[dict[str, str]] = []
         for path, kind, depth in _walk_tree(workspace, target, args.depth):
             rows.append({"path": path, "kind": kind, "depth": str(depth)})
-            if len(rows) >= MAX_TREE_ENTRIES:
-                break
+            if len(rows) > MAX_TREE_ENTRIES:
+                raise ToolError(
+                    f"tree exceeded {MAX_TREE_ENTRIES} entries; results are incomplete. "
+                    "Narrow the path or reduce the depth."
+                )
         return rows
 
     async def git_status(_args: GitStatusInput) -> dict[str, str | bool]:
@@ -474,13 +480,21 @@ def build_code_tools(
         ),
         Tool(
             name="list_dir",
-            description="List immediate children of a workspace directory (non-recursive).",
+            description=(
+                "List immediate children of a workspace directory (non-recursive). "
+                f"More than {MAX_LIST_ENTRIES} entries returns an explicit limit error. "
+                "Symlinks are labeled as leaves."
+            ),
             input_model=ListDirInput,
             fn=list_dir,
         ),
         Tool(
             name="tree",
-            description="List files and directories up to a bounded depth under a path.",
+            description=(
+                "List files and directories up to the requested depth under a path. "
+                f"More than {MAX_TREE_ENTRIES} entries returns an explicit limit error; "
+                "narrow the path or depth. Symlinks are leaves, never traversed."
+            ),
             input_model=TreeInput,
             fn=tree,
         ),
@@ -736,6 +750,12 @@ def _iter_files(workspace: Workspace, target: Path) -> Iterator[Path]:
                 yield path
 
 
+def _entry_kind(path: Path) -> str:
+    if path.is_symlink():
+        return "symlink"
+    return "dir" if path.is_dir() else "file"
+
+
 def _walk_tree(
     workspace: Workspace,
     target: Path,
@@ -748,9 +768,9 @@ def _walk_tree(
         if rel_depth > max_depth:
             return
         rel = workspace.relative_str(current)
-        kind = "dir" if current.is_dir() else "file"
+        kind = _entry_kind(current)
         yield rel, kind, rel_depth
-        if current.is_dir() and rel_depth < max_depth:
+        if kind == "dir" and rel_depth < max_depth:
             for child in sorted(current.iterdir(), key=lambda p: p.name):
                 child_rel = child.relative_to(workspace.root)
                 if workspace.is_ignored(child_rel):
