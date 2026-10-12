@@ -41,6 +41,8 @@ RUN_COMMAND_TIMEOUT_S = 120.0
 MAX_WRITE_BYTES = 512_000
 MAX_COMMAND_OUTPUT_CHARS = 32_000
 MAX_GREP_OUTPUT_BYTES = 2_000_000
+MAX_GREP_FILE_BYTES = 2_000_000
+MAX_GREP_SCAN_BYTES = 16_000_000
 
 ALLOWED_ROOT_COMMANDS = frozenset({"pytest", "ruff", "mypy", "git", "python", "python3"})
 ALLOWED_GIT_SUBCOMMANDS = frozenset({"diff", "status", "show"})
@@ -643,13 +645,26 @@ def _grep_python(
     glob: str | None,
 ) -> list[dict[str, Any]]:
     hits: list[dict[str, Any]] = []
+    bytes_read = 0
     for file_path in _iter_files(workspace, target):
         if glob and not fnmatch(file_path.name, glob):
             continue
         try:
-            text = file_path.read_text(encoding="utf-8", errors="replace")
-        except OSError:
-            continue
+            allowance = min(MAX_GREP_FILE_BYTES, MAX_GREP_SCAN_BYTES - bytes_read)
+            with file_path.open("rb") as stream:
+                raw = stream.read(allowance + 1)
+        except OSError as exc:
+            raise ToolError(
+                "grep_repo fallback could not read a file; results are incomplete. "
+                "Narrow the path or glob and retry."
+            ) from exc
+        if len(raw) > allowance:
+            raise ToolError(
+                "grep_repo fallback exceeded its file or total scan byte limit; "
+                "results are incomplete. Narrow the path or glob, or install ripgrep."
+            )
+        bytes_read += len(raw)
+        text = raw.decode("utf-8", errors="replace")
         for line_no, line in enumerate(text.splitlines(), start=1):
             if regex.search(line):
                 hits.append(

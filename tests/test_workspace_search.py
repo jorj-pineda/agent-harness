@@ -67,14 +67,14 @@ async def test_fallback_does_not_read_outside_symlink_or_walk_ignored_tree(
     (root / "ignored").mkdir()
     (root / "ignored" / "hidden.py").write_text("ignored needle\n")
     (root / "visible.py").write_text("needle\n")
-    original_read = Path.read_text
+    original_open = Path.open
 
-    def guarded_read(path: Path, *args: object, **kwargs: object) -> str:
+    def guarded_open(path: Path, *args: object, **kwargs: object) -> object:
         assert path != outside
         assert "ignored" not in path.parts
-        return original_read(path, *args, **kwargs)
+        return original_open(path, *args, **kwargs)
 
-    monkeypatch.setattr(Path, "read_text", guarded_read)
+    monkeypatch.setattr(Path, "open", guarded_open)
     assert await registry(root, ("ignored",)).invoke("grep_repo", {"pattern": "needle"}) == [
         {"path": "visible.py", "line": 1, "text": "needle"}
     ]
