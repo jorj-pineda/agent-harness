@@ -610,6 +610,19 @@ The harness does not need to make every model good at every task. It needs to id
   No inference or model-quality comparison ran. Traversal cost, regex CPU time,
   external path races and hard return deadlines remain outside these byte bounds;
   guarded continuation/checkpoints/revert and Milestone 5 remain incomplete.
+- **2026-10-12 — Bounded ranged-read scans prepared:** read_file now caps the
+  whole-file hash/line scan at 16,000,000 bytes plus one overflow-detection byte,
+  including long lines outside the selected range. In-budget slices retain complete
+  hashes/counts and existing response fields; overflow returns an explicit error
+  rather than partial evidence. Opened descriptors must be regular files, with
+  POSIX no-follow/nonblocking flags guarding final-component link/special-file swaps.
+  Validation passed 75 focused and 757 offline tests (five live deselected), Ruff/
+  mypy and both 90/90 scripted matrices with contract labels/limits inspected.
+  Regressions cover exact/overflow scans, long unselected lines, complete hashes,
+  and real symlink/FIFO swaps without reading external content. No inference or
+  quality comparison ran. Parent path races, concurrent content edits, filesystem
+  stalls and hard return deadlines remain; this is not process isolation, a
+  checkpoint or resume permission. Milestone 5 remains incomplete.
 - **Next:** item 6's listed mechanics are in place; see the known limitations
   below before relying on them unattended. Item 7 has a repeated baseline and
   nine completed comparisons. Argument feedback did not reliably break repeated
