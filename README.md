@@ -334,8 +334,27 @@ agent-harness tool-progress <run-id> --user-id dev1 --json
 This calls owner-scoped `GET /runs/<run-id>/tool-progress?user_id=dev1`. It reads
 committed metadata for running, finished, cancelled, failed or interrupted runs,
 without submitting work, restoring a session, replaying a tool or updating archives.
-Inspect the separate run record for its lifecycle/final result. The panel's saved-run
-view remains unchanged; this slice exposes the journal through API and CLI.
+Inspect the separate run record for its lifecycle/final result. In the panel,
+select a saved run and use **Inspect saved tool progress** beneath its turn evidence.
+This reads metadata for that selected run, separately from latest-session reviews.
+
+The panel shows coverage, full observed-event count, saved-prefix length, last
+observation time, sequence/tool name, end-event error presence and latency. Small
+prefixes open directly; larger prefixes stay collapsed in a scrollable list. It
+keeps legacy/not-recorded, recorded-empty, unknown/missing fields and truncation
+explicit. Error presence is never colored or labeled as successful verification.
+The lifecycle label is the run state **when selected**, not a live status guarantee.
+A missing end observation does not prove a tool is still running.
+
+Inspection is an explicit GET, with no polling, automatic retry, tool replay or
+stream reconnection. Errors replace the previous journal result; a 30-second
+client wait timeout releases review controls. Responses naming a different run are
+rejected. Changing selection, creating a new session or explicitly retrying a
+retained submission clears the journal view; delayed responses for an earlier
+selection are discarded. Saved history remains read-only after review, including
+interrupted runs. Returned fields render as text; raw argument/output fields are
+not rendered, even if unexpectedly present. No journal data is retained in browser
+storage. The server's 200-event prefix and other documented limits still apply.
 
 Admitted API runs initialize `coverage=recorded` atomically with their execution
 profile before inference. An empty journal means no tool event was observed yet;
