@@ -276,7 +276,8 @@ tool results, and source diffs; settings credentials and provider wire payloads
 are not included. There is no automatic retention/deletion policy. Sessions are
 rewritten as complete snapshots, so long histories increase storage and save cost.
 Failed or externally interrupted execution also retires the live session; only
-its last committed snapshot remains available. Partial interrupted/crashed-turn evidence, live
+its last committed snapshot remains available. Bounded tool-event metadata now
+survives separately (see below); partial transcript/output/diff recovery, full live
 events, checkpoints, safe resume,
 and cross-process coordination remain separate work. Client run history is available
 through the review controls described below.
@@ -318,9 +319,53 @@ its existing budgets. Inspect the archive or explicitly cancel it. The panel
 closes a failed stream without automatic POST retry or reconnection, and disables
 submission on that session while the outcome is unknown. A normal API shutdown
 requests cancellation and waits for detached work and archive writes before closing
-providers/stores. A forced process exit can still lose partial turn evidence; saved
-run identity records the interruption without rerunning it. Event replay, automatic
+providers/stores. A forced process exit can still lose partial transcript/output/diff
+evidence; saved run identity and committed tool metadata record progress without
+rerunning it. Event replay, automatic
 reconnection/polling, and safe resume remain open.
+
+### Inspect durable tool progress
+
+```sh
+agent-harness tool-progress <run-id> --user-id dev1
+agent-harness tool-progress <run-id> --user-id dev1 --json
+```
+
+This calls owner-scoped `GET /runs/<run-id>/tool-progress?user_id=dev1`. It reads
+committed metadata for running, finished, cancelled, failed or interrupted runs,
+without submitting work, restoring a session, replaying a tool or updating archives.
+Inspect the separate run record for its lifecycle/final result. The panel's saved-run
+view remains unchanged; this slice exposes the journal through API and CLI.
+
+Admitted API runs initialize `coverage=recorded` atomically with their execution
+profile before inference. An empty journal means no tool event was observed yet;
+it does not mean no inference or no workspace changes. Older/unadmitted records
+return `coverage=not_recorded`, never an invented event history. Startup marks
+abandoned runs interrupted while preserving their journal and previous final session
+snapshot. Duplicate request keys reuse the same run and do not append replay events.
+
+The journal retains the **first 200 tool-start/end observations**, with sequence,
+UTC observation time, allowlisted tool name (at most 128 characters), end-event error
+presence and elapsed tool latency. `observed_events` counts all successfully stored
+observations; `events_truncated=true` explicitly identifies an incomplete prefix.
+Each later observation still updates the count/time, without growing the event list.
+Unknown/oversized names become `unknown_tool`. Arguments, results, error text, tool-call
+IDs, model messages, credentials, endpoints and workspace paths are not stored in this
+journal. This does not redact existing request, transcript or final-response storage.
+
+**Tool start is not proof of dispatch or mutation.** The shared loop emits it before
+budget, cancellation, argument and edit preconditions. End/error presence is observed
+metadata, not patch correctness or successful verification. A missing end can reflect
+interruption or lost evidence; an edit may already exist. No output, partial diff,
+transcript reconstruction, tool-effect exactly-once guarantee or resume permission
+can be inferred from this journal. Inspect the actual workspace before new work.
+
+Observations commit before forwarding live events or continuing execution. A storage
+failure stops following work and retires the live session; an end-event failure can
+happen after an edit, which is preserved. The previous archive remains unchanged.
+SQLite writes use the lifecycle event-loop thread and consume the existing dispatch
+budget/loop latency. They can add latency; this is not cross-process coordination,
+a hard return bound, SSE event replay, automatic polling/reconnection or crash repair.
 
 ### Submit and inspect durable runs
 
