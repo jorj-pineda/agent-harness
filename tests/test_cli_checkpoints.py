@@ -76,3 +76,64 @@ def test_checkpoint_list_invalid_page_does_not_dispatch_http():
         result = runner.invoke(app, ["checkpoints", "s1", "--limit", "0"])
     assert result.exit_code != 0
     get.assert_not_called()
+
+
+def test_cli_opt_in_turn_capture_has_two_server_boundaries_and_no_extra_submissions(tmp_path):
+    from providers.base import ToolCall
+    from tests.api.conftest import make_response
+
+    root = tmp_path / "repo"
+    root.mkdir()
+    (root / "a.py").write_text("user = 1\n")
+    provider = ScriptedProvider()
+    provider.script(
+        make_response(
+            tool_calls=[
+                ToolCall(
+                    id="edit",
+                    name="write_file",
+                    arguments={"path": "a.py", "content": "user = 1\nagent = 2\n"},
+                )
+            ]
+        ),
+        make_response(content="Done"),
+    )
+    with TestClient(make_app(tmp_path, provider)) as api:
+        payloads = []
+
+        def post(url, **kwargs):
+            payloads.append(kwargs["json"])
+            return api.post(url.removeprefix("http://localhost:8000"), json=kwargs["json"])
+
+        with patch("httpx.post", side_effect=post):
+            result = runner.invoke(
+                app,
+                ["chat", "--user-id", "dev", "--workspace", str(root), "--checkpoints"],
+                input="Update a.py\n",
+            )
+        assert result.exit_code == 0, result.output
+        assert payloads[0]["checkpoint_turns"] is True
+        assert len(payloads) == 2
+        record = api.get("/runs", params={"user_id": "dev"}).json()[0]
+
+        def get(url, **kwargs):
+            return api.get(url.removeprefix("http://localhost:8000"), params=kwargs["params"])
+
+        with patch("httpx.get", side_effect=get), patch("httpx.post") as posted:
+            reviewed = runner.invoke(app, ["run", record["run_id"], "--user-id", "dev"])
+        assert reviewed.exit_code == 0
+        assert f"before_checkpoint={record['before_checkpoint_id']}" in reviewed.output
+        assert f"after_checkpoint={record['after_checkpoint_id']}" in reviewed.output
+        assert "restore/resume remain unsupported" in reviewed.output
+        posted.assert_not_called()
+        assert (
+            len(
+                api.get(
+                    f"/sessions/{record['request']['session_id']}/checkpoints",
+                    params={"user_id": "dev"},
+                ).json()
+            )
+            == 2
+        )
+    assert len(provider.calls) == 2
+    assert (root / "a.py").read_text() == "user = 1\nagent = 2\n"
