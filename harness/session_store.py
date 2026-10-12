@@ -17,6 +17,7 @@ from pydantic import BaseModel, Field
 
 from .checkpoints import CapturedCheckpoint, CheckpointRecord, CheckpointSummary
 from .execution_profile import ExecutionProfile
+from .reverts import FileRevertInput, FileRevertOutcome, FileRevertRecord
 from .runs import RequestConflictError, RunInput, RunRecord
 from .state import Session, TurnResponse
 from .tool_progress import MAX_SAVED_TOOL_EVENTS, SavedToolEvent, ToolProgress
@@ -81,6 +82,12 @@ class SessionStore:
         self._conn.execute(
             "CREATE TABLE IF NOT EXISTS tool_progress ("
             "run_id TEXT PRIMARY KEY, record TEXT NOT NULL)"
+        )
+        self._conn.commit()
+        self._conn.execute(
+            "CREATE TABLE IF NOT EXISTS file_reverts ("
+            "revert_id TEXT PRIMARY KEY, user_id TEXT NOT NULL, request_id TEXT NOT NULL, "
+            "record TEXT NOT NULL, UNIQUE(user_id, request_id))"
         )
         self._conn.commit()
         self._conn.execute(
@@ -167,6 +174,76 @@ class SessionStore:
             "SELECT record FROM checkpoints WHERE checkpoint_id = ?", (checkpoint_id,)
         ).fetchone()
         return CheckpointRecord.model_validate_json(row[0]) if row else None
+
+    def checkpoint_content(self, record: CheckpointRecord, path: str) -> bytes | None:
+        file = record.files.get(path)
+        if file is None:
+            return None
+        row = self._conn.execute(
+            "SELECT substr(content, 1, ?) FROM checkpoint_files WHERE checkpoint_id=? AND path=?",
+            (file.size + 1, record.checkpoint_id, path),
+        ).fetchone()
+        raw = row[0] if row else None
+        if (
+            not isinstance(raw, bytes)
+            or len(raw) != file.size
+            or hashlib.sha256(raw).hexdigest() != file.sha256
+        ):
+            raise ValueError("Checkpoint content unavailable or inconsistent.")
+        return raw
+
+    def find_file_revert(self, user_id: str, request_id: str) -> FileRevertRecord | None:
+        row = self._conn.execute(
+            "SELECT record FROM file_reverts WHERE user_id=? AND request_id=?",
+            (user_id, request_id),
+        ).fetchone()
+        return FileRevertRecord.model_validate_json(row[0]) if row else None
+
+    def get_file_revert(self, revert_id: str) -> FileRevertRecord | None:
+        row = self._conn.execute(
+            "SELECT record FROM file_reverts WHERE revert_id=?", (revert_id,)
+        ).fetchone()
+        return FileRevertRecord.model_validate_json(row[0]) if row else None
+
+    def create_file_revert(
+        self, request: FileRevertInput, before: str, after: str
+    ) -> FileRevertRecord:
+        record = FileRevertRecord(
+            request=request, before_checkpoint_id=before, after_checkpoint_id=after
+        )
+        with self._conn:
+            self._conn.execute(
+                "INSERT INTO file_reverts VALUES (?,?,?,?)",
+                (record.revert_id, request.user_id, request.request_id, record.model_dump_json()),
+            )
+        return record
+
+    def finish_file_revert(self, record: FileRevertRecord, outcome: FileRevertOutcome) -> None:
+        saved = self.get_file_revert(record.revert_id)
+        if saved is None or saved.status != "pending" or saved.request != record.request:
+            raise ValueError("Revert must be pending before recording its outcome.")
+        record.status = outcome.status
+        record.reason = outcome.reason
+        record.finished_at = datetime.now(UTC)
+        with self._conn:
+            self._conn.execute(
+                "UPDATE file_reverts SET record=? WHERE revert_id=?",
+                (record.model_dump_json(), record.revert_id),
+            )
+
+    def recover_file_reverts(self) -> None:
+        rows = self._conn.execute("SELECT record FROM file_reverts").fetchall()
+        for row in rows:
+            record = FileRevertRecord.model_validate_json(row[0])
+            if record.status == "pending":
+                record.status = "interrupted"
+                record.reason = "Outcome unknown after restart; inspect file. No automatic retry."
+                record.finished_at = datetime.now(UTC)
+                with self._conn:
+                    self._conn.execute(
+                        "UPDATE file_reverts SET record=? WHERE revert_id=?",
+                        (record.model_dump_json(), record.revert_id),
+                    )
 
     def list_checkpoints(
         self, session_id: str, *, limit: int, offset: int

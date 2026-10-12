@@ -9,8 +9,9 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
+from harness.reverts import FileRevertInput
 from harness.runs import RequestId
 from harness.state import TurnResponse
 
@@ -37,6 +38,17 @@ class CreateSessionResponse(BaseModel):
 
 class CreateCheckpointRequest(BaseModel):
     user_id: str = Field(min_length=1)
+
+
+class RevertFileRequest(BaseModel):
+    user_id: str = Field(min_length=1)
+    path: str = Field(min_length=1, max_length=4096)
+    request_id: RequestId
+
+    @field_validator("path")
+    @classmethod
+    def canonical_path(cls, value: str) -> str:
+        return FileRevertInput.canonical_relative_path(value)
 
 
 class ChatRequest(BaseModel):
@@ -91,5 +103,6 @@ __all__ = [
     "CreateCheckpointRequest",
     "CreateSessionRequest",
     "CreateSessionResponse",
+    "RevertFileRequest",
     "SubmitRunRequest",
 ]
