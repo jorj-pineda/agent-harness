@@ -575,7 +575,8 @@ Scope matches and estimates become stale after review. No token or permission is
 granted for a later chat call, and saved chat sessions remain read-only. Explicit
 continuation must enforce current preconditions again inside execution admission;
 broader workspace coverage, compatibility enforcement, crash repair, checkpoints/
-revert, and panel controls remain separate work. No model-quality improvement is
+revert remain separate work. The panel now exposes these read-only reviews (see
+[Saved session review in the panel](#saved-session-review-in-the-panel)). No model-quality improvement is
 claimed from these deterministic review checks.
 
 ### Eval honesty
@@ -683,6 +684,36 @@ uvicorn api.server:app --reload
 pytest -m "not live"
 python -m evals.run --providers ollama,anthropic,openai
 ```
+
+### Saved session review in the panel
+
+Refresh **Saved runs** and select a run. Beneath its turn evidence, **Saved session
+review** offers three explicit actions: **Compare workspace**, **Inspect transcript**,
+and **Estimate configuration/context**. Configuration review has a separate provider
+selector and optional proposed input; neither submits a coding task. An empty input
+requests a history-only estimate. The result retains the input used and reports
+whether the estimate actually included it, so editing the field does not relabel
+an earlier observation.
+
+The selected run's final response describes that run. These review endpoints inspect
+**the latest saved state of its session**, which can be newer; the panel names both
+the selected run and each returned archived turn. Workspace review shows mode
+coverage, exclusions, capped paths and full counts; transcript review shows bounded
+structural diagnostics; configuration review shows changed/unknown field names,
+context estimates, harness limits and reasons when estimation is blocked or skipped.
+Matching configuration, valid history and unchanged workspace are scoped observations,
+not correctness, compatibility, or permission to resume.
+
+Reviews require an explicit click, with no polling, automatic retry or inferred
+continuation. The client stops waiting after 30 seconds; server-owned workspace
+comparisons may still be settling and return busy on a subsequent review. Errors
+replace that action's previous result. Changing the selected
+run clears results and proposed input; late responses for a previous selection are
+discarded. Review input is not retained in browser storage. The composer stays
+disabled for saved history, even after successful reviews. Opening a new session
+starts separate work and clears review results; no archive is restored for editing.
+The panel uses the existing review endpoints and their process-local admission;
+workspace exclusions, estimates, non-atomic reads, and other server limitations apply.
 
 ### Local agent panel
 

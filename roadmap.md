@@ -1,6 +1,6 @@
 # Roadmap: a coding harness for lower-tier models
 
-Updated: 2026-10-10
+Updated: 2026-10-12
 
 ## Direction
 
@@ -452,6 +452,27 @@ The harness does not need to make every model good at every task. It needs to id
   Non-atomic external-writer races, explicit guarded continuation, checkpoints/
   revert, crash repair, and panel review controls remain open. Milestone 5 remains
   incomplete; permission evidence does not authorize resume.
+- **2026-10-12 — Panel saved-session review prepared:** selecting a saved run now
+  exposes explicit workspace, transcript, and configuration/context review actions
+  through the existing API endpoints. Turn evidence remains first; review labels
+  distinguish the selected run from the latest archived session turn. Results show
+  mode coverage/exclusions/path counts, structural diagnostics, changed/unknown
+  fields, and estimates with optional proposed input/current provider selection.
+  Input used for an estimate remains attached to that result; actual inclusion,
+  blocked/skipped/unbounded states, missing records and request failures stay
+  explicit. Selecting another run clears results/input and discards late responses.
+  Reviews never enable the composer, retry submissions, poll, or restore archives.
+  Validation passed 35 focused and 690 offline tests (five live deselected), Ruff,
+  mypy, and JavaScript syntax checks. Browser checks against a fresh scripted-
+  provider API lifecycle used real file edits, older-run/latest-turn comparisons,
+  permission drift, context exhaustion, and preserved run/session evidence. Simulated
+  rendering/error checks covered busy/unavailable/legacy, invalid/truncated history,
+  drift/unknown/unbounded estimates, missing fields, 403/404/network errors,
+  client timeout recovery, safe text rendering, and selection races. The temporary server was stopped; no inference or model
+  quality comparison ran. Review inputs are transient; there is no automatic review,
+  continuation, checkpoint/revert, partial crash repair or cross-process lock.
+  Broader workspace coverage and guarded execution preconditions remain open;
+  Milestone 5 is incomplete.
 - **Next:** item 6's listed mechanics are in place; see the known limitations
   below before relying on them unattended. Item 7 has a repeated baseline and
   nine completed comparisons. Argument feedback did not reliably break repeated
@@ -461,7 +482,8 @@ The harness does not need to make every model good at every task. It needs to id
   finalized-session archives, explicit cancellation, durable run identity and keyed
   submission, client run-history/recovery controls, durable scoped workspace review,
   transcript integrity guards/review, durable configured execution evidence,
-  read-only configuration/context review, and process-local turn admission; failed-check recovery, model profiles, context
+  read-only configuration/context review, panel session-review controls, and
+  process-local turn admission; failed-check recovery, model profiles, context
   management, and the rest of the personal-use workflow remain open. Offline checks
   alone are not evidence of better model coding performance.
 
