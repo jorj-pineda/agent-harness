@@ -73,6 +73,16 @@ an explicit incomplete-search error, without returning earlier partial matches.
 Narrow the path/glob or install ripgrep; these byte bounds do not bound traversal
 cost, regex CPU time, or guarantee a hard wall deadline.
 
+**Directory exploration limits.** `list_dir` returns at most 200 immediate
+non-ignored entries; `tree` returns at most 300 entries, including its root and
+only within the requested depth. Exactly the cap is valid. Observing another
+entry returns an explicit incomplete-results error instead of a silent prefix;
+choose a narrower directory or reduce tree depth. Successful result lists retain
+their shape, with `kind=symlink` identifying links (including broken links).
+Tree lists symlinks as leaves and never deliberately traverses their targets.
+These are output bounds: sorting/enumeration cost, external path races and hard
+wall deadlines remain unbounded. Pagination is not available yet.
+
 **Targeted edits.** `read_file` now returns a whole-file `sha256`, including when
 reading a small range of a large file. Whole-file hash/line scans are capped at
 16,000,000 bytes, with one extra byte to detect growth/overflow. Exceeding the
