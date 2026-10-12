@@ -338,6 +338,86 @@ def tool_progress(
     typer.echo(progress["scope_note"])
 
 
+def show_checkpoint(record: dict[str, Any]) -> None:
+    typer.echo(
+        f"checkpoint={record['checkpoint_id']} session={record['session_id']} "
+        f"files={record['file_count']} bytes={record['byte_count']} "
+        f"restore_supported={record.get('restore_supported', 'unknown')}"
+    )
+    typer.echo(f"root={record['root']} captured_at={record['captured_at']}")
+    typer.echo(
+        record.get("scope_note", "Checkpoint scope unavailable; do not infer restore support.")
+    )
+
+
+@app.command()
+def checkpoint_create(
+    session_id: str = typer.Argument(...),
+    base_url: str = typer.Option("http://localhost:8000", "--base-url"),
+    user_id: str = typer.Option("cli-user", "--user-id"),
+    raw: bool = typer.Option(False, "--json", help="Print saved checkpoint metadata only."),
+) -> None:
+    """Save current eligible source bytes in server-local SQLite; never restores files."""
+    try:
+        record = AgentClient(base_url).create_checkpoint(user_id, session_id)
+    except Exception as exc:
+        typer.echo(
+            f"Checkpoint capture request failed ({type(exc).__name__}). "
+            "Outcome may be unknown; inspect checkpoint history before explicitly retrying. "
+            "No automatic retry was made.",
+            err=True,
+        )
+        raise typer.Exit(code=1) from exc
+    if raw:
+        typer.echo(json.dumps(record, indent=2))
+    else:
+        show_checkpoint(record)
+
+
+@app.command()
+def checkpoints(
+    session_id: str = typer.Argument(...),
+    base_url: str = typer.Option("http://localhost:8000", "--base-url"),
+    user_id: str = typer.Option("cli-user", "--user-id"),
+    limit: int = typer.Option(50, "--limit", min=1, max=100),
+    offset: int = typer.Option(0, "--offset", min=0),
+    raw: bool = typer.Option(False, "--json"),
+) -> None:
+    """Read a page of checkpoint metadata; never submits a capture or coding turn."""
+    try:
+        records = AgentClient(base_url).checkpoints(user_id, session_id, limit=limit, offset=offset)
+    except Exception as exc:
+        typer.echo(f"Checkpoint lookup failed ({type(exc).__name__}).", err=True)
+        raise typer.Exit(code=1) from exc
+    if raw:
+        typer.echo(json.dumps(records, indent=2))
+    else:
+        for record in records:
+            show_checkpoint(record)
+        if not records:
+            typer.echo("No saved checkpoints in this page.")
+
+
+@app.command()
+def checkpoint(
+    session_id: str = typer.Argument(...),
+    checkpoint_id: str = typer.Argument(...),
+    base_url: str = typer.Option("http://localhost:8000", "--base-url"),
+    user_id: str = typer.Option("cli-user", "--user-id"),
+    raw: bool = typer.Option(False, "--json", help="Print the full metadata manifest, not source."),
+) -> None:
+    """Read saved checkpoint metadata after restart; no resume or restore permission."""
+    try:
+        record = AgentClient(base_url).checkpoint(user_id, session_id, checkpoint_id)
+    except Exception as exc:
+        typer.echo(f"Checkpoint lookup failed ({type(exc).__name__}).", err=True)
+        raise typer.Exit(code=1) from exc
+    if raw:
+        typer.echo(json.dumps(record, indent=2))
+    else:
+        show_checkpoint(record)
+
+
 @app.command()
 def workspace_review(
     session_id: str = typer.Argument(...),

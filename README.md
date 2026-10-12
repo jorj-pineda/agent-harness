@@ -91,6 +91,19 @@ shutdown waits for it before closing SQLite. Busy workspaces return 409, storage
 failure 503, successful captures 201. Repeating POST creates another checkpoint;
 inspect the list after an uncertain result rather than automatically retrying.
 
+CLI commands are thin HTTP clients:
+
+```sh
+uv run agent-harness checkpoint-create <session-id> --user-id dev
+uv run agent-harness checkpoints <session-id> --user-id dev --limit 10 --offset 0
+uv run agent-harness checkpoint <session-id> <checkpoint-id> --user-id dev --json
+```
+
+Creation submits one explicit capture POST. A timeout/error is not automatically
+retried; inspect checkpoint history before choosing another capture. List/detail
+perform GET only, and `--json` prints metadata rather than source contents.
+None of these commands submits a coding turn, restores files or enables resume.
+
 Saved contents are plaintext source copies, not automatically redacted beyond the
 path exclusions. Empty directories, ownership/ACLs/extended attributes and ignored
 contents are not restorable. External writers can make the overall capture

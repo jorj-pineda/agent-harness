@@ -111,6 +111,35 @@ class AgentClient:
         resp.raise_for_status()
         return dict(resp.json())
 
+    def create_checkpoint(self, user_id: str, session_id: str) -> dict[str, Any]:
+        resp = httpx.post(
+            f"{self._base}/sessions/{session_id}/checkpoints",
+            json={"user_id": user_id},
+            timeout=120,
+        )
+        resp.raise_for_status()
+        return dict(resp.json())
+
+    def checkpoints(
+        self, user_id: str, session_id: str, *, limit: int = 50, offset: int = 0
+    ) -> list[dict[str, Any]]:
+        resp = httpx.get(
+            f"{self._base}/sessions/{session_id}/checkpoints",
+            params={"user_id": user_id, "limit": limit, "offset": offset},
+            timeout=30,
+        )
+        resp.raise_for_status()
+        return list(resp.json())
+
+    def checkpoint(self, user_id: str, session_id: str, checkpoint_id: str) -> dict[str, Any]:
+        resp = httpx.get(
+            f"{self._base}/sessions/{session_id}/checkpoints/{checkpoint_id}",
+            params={"user_id": user_id},
+            timeout=30,
+        )
+        resp.raise_for_status()
+        return dict(resp.json())
+
     def configuration_review(
         self, user_id: str, session_id: str, *, provider: str | None = None, message: str = ""
     ) -> dict[str, Any]:

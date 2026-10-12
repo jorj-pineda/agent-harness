@@ -656,6 +656,18 @@ The harness does not need to make every model good at every task. It needs to id
   remain open. Capture is not atomic against external writers. Checkpoints are
   explicit current-state captures, not turn-linked before/after evidence; no restore,
   revert or resume endpoint is enabled. Milestone 5 remains incomplete.
+- **2026-10-12 — CLI checkpoint capture/inspection prepared:** thin commands now
+  explicitly POST one capture, list paged metadata or inspect a saved manifest
+  after restart. JSON output contains metadata only; human output retains scope
+  and restore_supported=false. Failed/uncertain capture requests report exception
+  class and advise history inspection without automatic retry, polling or coding
+  submissions. Validation passed 45 focused and 780 offline tests (five live
+  deselected), Ruff/mypy and changed-file formatting. A real-file API/CLI restart
+  regression preserves later user edits and run history; timeout tests confirm one
+  POST and no retry/GET. No inference or quality comparison ran. Evaluation behavior
+  is unchanged; scripted matrices were not rerun for this client-only slice.
+  Panel controls, turn-linked captures, restore/revert, retention/deletion/quota,
+  guarded continuation and the rest of Milestone 5 remain open.
 - **Next:** item 6's listed mechanics are in place; see the known limitations
   below before relying on them unattended. Item 7 has a repeated baseline and
   nine completed comparisons. Argument feedback did not reliably break repeated
