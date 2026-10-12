@@ -102,6 +102,15 @@ class AgentClient:
         resp.raise_for_status()
         return dict(resp.json())
 
+    def tool_progress(self, user_id: str, run_id: str) -> dict[str, Any]:
+        resp = httpx.get(
+            f"{self._base}/runs/{run_id}/tool-progress",
+            params={"user_id": user_id},
+            timeout=30,
+        )
+        resp.raise_for_status()
+        return dict(resp.json())
+
     def configuration_review(
         self, user_id: str, session_id: str, *, provider: str | None = None, message: str = ""
     ) -> dict[str, Any]:

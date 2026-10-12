@@ -1,7 +1,7 @@
 """SQLite review archives and durable submission identity.
 
 Archives are not executable checkpoints. Interrupted turns and live events are
-not persisted in archives; run records retain abandonment status, not partial tools.
+not persisted in archives; a separate journal retains bounded tool metadata.
 Readers see the last committed snapshot rather than mutable execution state.
 """
 
@@ -17,6 +17,7 @@ from pydantic import BaseModel, Field
 from .execution_profile import ExecutionProfile
 from .runs import RequestConflictError, RunInput, RunRecord
 from .state import Session, TurnResponse
+from .tool_progress import MAX_SAVED_TOOL_EVENTS, SavedToolEvent, ToolProgress
 from .workspace_review import WorkspaceReviewBaseline
 
 
@@ -73,6 +74,10 @@ class SessionStore:
         self._conn.execute(
             "CREATE TABLE IF NOT EXISTS workspace_reviews ("
             "session_id TEXT PRIMARY KEY, record TEXT NOT NULL)"
+        )
+        self._conn.execute(
+            "CREATE TABLE IF NOT EXISTS tool_progress ("
+            "run_id TEXT PRIMARY KEY, record TEXT NOT NULL)"
         )
         self._conn.commit()
 
@@ -190,6 +195,38 @@ class SessionStore:
         record.execution_profile = profile
         with self._conn:
             self._update_run(record)
+            progress = ToolProgress(
+                run_id=run_id, coverage="recorded", updated_at=datetime.now(UTC)
+            )
+            self._conn.execute(
+                "INSERT INTO tool_progress VALUES (?, ?)", (run_id, progress.model_dump_json())
+            )
+
+    def get_tool_progress(self, run_id: str) -> ToolProgress:
+        row = self._conn.execute(
+            "SELECT record FROM tool_progress WHERE run_id = ?", (run_id,)
+        ).fetchone()
+        return ToolProgress.model_validate_json(row[0]) if row else ToolProgress(run_id=run_id)
+
+    def record_tool_event(self, run_id: str, event: SavedToolEvent) -> None:
+        """Commit metadata before onward work; terminal/legacy runs cannot acquire history."""
+        record = self.get_run(run_id)
+        progress = self.get_tool_progress(run_id)
+        if record is None or record.status != "running" or progress.coverage != "recorded":
+            raise ValueError("Tool progress requires an admitted running run")
+        if event.sequence != progress.observed_events + 1:
+            raise ValueError("Tool progress sequence is not next")
+        progress.observed_events += 1
+        progress.updated_at = event.observed_at
+        if len(progress.events) < MAX_SAVED_TOOL_EVENTS:
+            progress.events.append(event)
+        else:
+            progress.events_truncated = True
+        with self._conn:
+            self._conn.execute(
+                "UPDATE tool_progress SET record = ? WHERE run_id = ?",
+                (progress.model_dump_json(), run_id),
+            )
 
     def finish_run(
         self,

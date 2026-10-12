@@ -648,3 +648,31 @@ def test_review_timing_is_separate_and_nullable(value, capsys):
         assert "workspace_review=unmeasured" in text
     else:
         assert f"workspace_review={value:.0f}ms (separate from loop latency)" in text
+
+
+def test_tool_progress_command_only_reads_bounded_metadata():
+    data = {
+        "run_id": "r1",
+        "coverage": "recorded",
+        "observed_events": 201,
+        "events_truncated": True,
+        "events": [
+            {
+                "sequence": 1,
+                "type": "tool_start",
+                "tool": "write_file",
+                "observed_at": "2026-10-12T00:00:00Z",
+            }
+        ],
+        "scope_note": "Observed metadata only; not permission to resume.",
+    }
+    with patch("httpx.get", return_value=_ok_response(data)) as get, patch("httpx.post") as post:
+        result = runner.invoke(app, ["tool-progress", "r1", "--user-id", "dev"])
+    assert result.exit_code == 0, result.output
+    assert "coverage=recorded observed_events=201" in result.output
+    assert "1: tool_start write_file" in result.output
+    assert "prefix truncated" in result.output
+    assert "not permission to resume" in result.output
+    assert get.call_args.args[0].endswith("/runs/r1/tool-progress")
+    assert get.call_args.kwargs["params"] == {"user_id": "dev"}
+    post.assert_not_called()
