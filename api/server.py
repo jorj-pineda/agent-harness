@@ -54,6 +54,7 @@ from harness.runtime import build_registry, out_of_scope_response, run_configure
 from harness.session_store import SessionArchive, SessionStore, SessionSummary
 from harness.state import Session, TurnResponse
 from harness.stream import ErrorEvent, EventCallback, StreamEvent, TurnDoneEvent
+from harness.tool_progress import SavedToolEvent, ToolProgress
 from harness.transcript import TranscriptReview, inspect_transcript
 from harness.workspace_review import WorkspaceReview, WorkspaceReviewBaseline, compare_workspace
 from memory import FactStore
@@ -371,6 +372,15 @@ def _register_routes(app: FastAPI) -> None:
             limit=limit,
             offset=offset,
         )
+
+    @app.get("/runs/{run_id}/tool-progress", response_model=ToolProgress)
+    async def inspect_tool_progress(
+        run_id: str, request: Request, user_id: str = Query(min_length=1)
+    ) -> ToolProgress:
+        """Read committed tool metadata only; never replays or repairs execution."""
+        components: Components = request.app.state.components
+        _lookup_run(components, run_id, user_id)
+        return _session_store(components).get_tool_progress(run_id)
 
     @app.get("/runs/{run_id}", response_model=RunRecord)
     async def inspect_run(
@@ -703,6 +713,35 @@ async def _execute_turn(
         model = None  # Custom test/factory providers may have no configured model.
 
     workspace_baseline: WorkspaceReviewBaseline | None = None
+    event_sequence = 0
+    known_tools = {spec.name for spec in registry.as_tool_specs()}
+
+    async def save_tool_progress(event: StreamEvent) -> None:
+        nonlocal event_sequence
+        if run_id is not None and event.type in ("tool_start", "tool_end"):
+            event_sequence += 1
+            metadata = SavedToolEvent(
+                sequence=event_sequence,
+                type=event.type,
+                tool=event.tool
+                if event.tool in known_tools and len(event.tool) <= 128
+                else "unknown_tool",
+                error_observed=event.error is not None if event.type == "tool_end" else None,
+                latency_ms=event.latency_ms if event.type == "tool_end" else None,
+            )
+            try:
+                _session_store(components).record_tool_event(run_id, metadata)
+            except Exception as exc:
+                log.error("api=tool_progress_failed exception=%s", type(exc).__name__)
+                raise HTTPException(
+                    status_code=503,
+                    detail=(
+                        "Tool progress storage failed; workspace edits may exist. "
+                        "Execution stopped; inspect saved metadata and workspace before new work."
+                    ),
+                ) from exc
+        if on_event is not None:
+            await on_event(event)
 
     def save_execution_profile(profile: ExecutionProfile) -> None:
         if run_id is None:
@@ -753,7 +792,7 @@ async def _execute_turn(
             fact_store=components.fact_store,
             registry=registry,
             grounder=components.grounder,
-            on_event=on_event,
+            on_event=save_tool_progress,
             on_finalized=save_finalized,
             on_workspace_review=capture_workspace_review,
             on_execution_profile=save_execution_profile if run_id is not None else None,

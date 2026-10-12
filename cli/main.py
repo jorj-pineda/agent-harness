@@ -308,6 +308,37 @@ def run(
 
 
 @app.command()
+def tool_progress(
+    run_id: str = typer.Argument(...),
+    base_url: str = typer.Option("http://localhost:8000", "--base-url"),
+    user_id: str = typer.Option("cli-user", "--user-id"),
+    raw: bool = typer.Option(False, "--json", help="Print the bounded metadata journal."),
+) -> None:
+    """Inspect saved tool progress; never replays tools or continues a session."""
+    try:
+        progress = AgentClient(base_url).tool_progress(user_id, run_id)
+    except Exception as exc:
+        typer.echo(f"Tool progress lookup failed: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+    if raw:
+        typer.echo(json.dumps(progress, indent=2))
+        return
+    typer.echo(
+        f"run={progress['run_id']} coverage={progress['coverage']} "
+        f"observed_events={progress['observed_events']}"
+    )
+    for event in progress["events"]:
+        typer.echo(
+            f"{event['sequence']}: {event['type']} {event['tool']} "
+            f"error_observed={event.get('error_observed')} "
+            f"latency_ms={event.get('latency_ms')} at={event['observed_at']}"
+        )
+    if progress["events_truncated"]:
+        typer.echo("Saved event prefix truncated; count includes later observed events.")
+    typer.echo(progress["scope_note"])
+
+
+@app.command()
 def workspace_review(
     session_id: str = typer.Argument(...),
     base_url: str = typer.Option("http://localhost:8000", "--base-url"),

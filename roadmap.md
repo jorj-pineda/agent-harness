@@ -518,6 +518,28 @@ The harness does not need to make every model good at every task. It needs to id
   Tool cleanup/final review/persistence may exceed deadlines, and synchronous
   workers remain uninterruptible. Guarded continuation, checkpoints/revert, crash
   repair and cross-process coordination remain open; Milestone 5 incomplete.
+- **2026-10-12 — Durable bounded tool-progress metadata prepared:** admitted API
+  runs now initialize a metadata journal atomically with execution-profile binding,
+  before inference. Existing shared tool-start/end callbacks commit ordered time,
+  allowlisted name, error presence and latency before onward execution/live delivery.
+  An owner-scoped endpoint and thin CLI command inspect the journal after restart;
+  run/history response contracts remain unchanged. The first 200 observations are
+  retained with explicit truncation and a full observed-event count. Arguments,
+  outputs, error text, tool-call IDs and messages are excluded; unknown names are
+  replaced. Legacy/unadmitted records remain not-recorded. Storage failure stops
+  following work and retires the session, without undoing a possible prior edit.
+  Validation passed 78 focused and 721 offline tests (five live deselected), Ruff/
+  mypy, and both 90/90 scripted matrices with labels/metric limits inspected. A forced
+  owned-process exit after a real write leaves durable start/end evidence and the
+  preserved user line, then restart marks interrupted without inventing a final
+  response or dispatching tools. Other regressions cover HTTP/SSE, keyed replay,
+  ownership, empty versus legacy journals, privacy, prefix bounds, profile/journal
+  atomicity, terminal/out-of-order writes, and pre/post-edit storage failure.
+  No inference or coding-quality comparison ran; the fixture process was stopped.
+  Start precedes dispatch gates and cannot prove a mutation; end metadata cannot
+  certify acceptance/check success. Full event/output replay, partial transcript/
+  diff recovery, crash repair, guarded continuation, checkpoints/revert, retention
+  and cross-process coordination remain open; Milestone 5 incomplete.
 - **Next:** item 6's listed mechanics are in place; see the known limitations
   below before relying on them unattended. Item 7 has a repeated baseline and
   nine completed comparisons. Argument feedback did not reliably break repeated
@@ -527,8 +549,8 @@ The harness does not need to make every model good at every task. It needs to id
   finalized-session archives, explicit cancellation, durable run identity and keyed
   submission, client run-history/recovery controls, durable scoped workspace review,
   transcript integrity guards/review, durable configured execution evidence,
-  read-only configuration/context review, panel session-review controls, and
-  process-local turn admission; failed-check recovery, model profiles, context
+  read-only configuration/context review, panel session-review controls, bounded
+  durable tool-progress metadata, and process-local turn admission; failed-check recovery, model profiles, context
   management, and the rest of the personal-use workflow remain open. Offline checks
   alone are not evidence of better model coding performance.
 
