@@ -623,6 +623,20 @@ The harness does not need to make every model good at every task. It needs to id
   quality comparison ran. Parent path races, concurrent content edits, filesystem
   stalls and hard return deadlines remain; this is not process isolation, a
   checkpoint or resume permission. Milestone 5 remains incomplete.
+- **2026-10-12 — Explicit directory exploration limits prepared:** list_dir and
+  tree now reject result overflow instead of returning a silent prefix. Exact caps
+  remain valid (200 immediate entries; 300 tree rows including the root), and
+  errors recommend narrower paths or shallower depth. Successful lists retain
+  their shape; kind=symlink explicitly labels links, which tree treats as leaves
+  without deliberately following directory targets or cycles. Validation passed
+  47 focused and 765 offline tests (five live deselected), Ruff/mypy, changed-file
+  formatting and both 90/90 scripted matrices with contract labels/limits inspected.
+  Real-file regressions cover empty/exact/overflow results, excluded entries,
+  root counting, external/cyclic/broken links and explicit narrowing with preserved
+  user content. No inference or model-quality comparison ran. These are output
+  bounds, not bounded sorting/enumeration work or hard return deadlines; pagination,
+  external path races, guarded continuation/checkpoints/revert remain open.
+  Milestone 5 remains incomplete.
 - **Next:** item 6's listed mechanics are in place; see the known limitations
   below before relying on them unattended. Item 7 has a repeated baseline and
   nine completed comparisons. Argument feedback did not reliably break repeated
