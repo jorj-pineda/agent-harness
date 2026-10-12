@@ -637,6 +637,25 @@ The harness does not need to make every model good at every task. It needs to id
   bounds, not bounded sorting/enumeration work or hard return deadlines; pagination,
   external path races, guarded continuation/checkpoints/revert remain open.
   Milestone 5 remains incomplete.
+- **2026-10-12 — Explicit durable workspace checkpoints prepared:** an owner-scoped
+  POST captures current eligible regular-file bytes/modes into SQLite independently
+  of saved turn envelopes. Metadata-only paged list/detail routes survive restart;
+  immutable checkpoint/blob inserts commit atomically, without exposing raw contents
+  or changing session/run evidence. Capture caps entries at 2,000 and bytes at
+  16,000,000, excludes environment/default ignored components, rejects symlinks,
+  special files, unreadable/changing files and harness storage within the workspace.
+  App-owned capture holds process-local admission through disconnect and storage;
+  shutdown settles owned work before closing resources. Validation passed 23 focused
+  and 777 offline tests (five live deselected), Ruff/mypy, changed-file formatting
+  and both 90/90 scripted matrices with contract labels/limits inspected. Regressions
+  cover exact binary/text bytes, modes, exclusions, restart/ownership, bounds,
+  immutable IDs, storage rollback, concurrent rejection, per-file changes and
+  transport cancellation without abandoning worker cleanup. No inference or model-
+  quality comparison ran. Contents are plaintext local source copies; retention/
+  deletion/quota, empty-directory/ownership/ACL restoration and cross-process races
+  remain open. Capture is not atomic against external writers. Checkpoints are
+  explicit current-state captures, not turn-linked before/after evidence; no restore,
+  revert or resume endpoint is enabled. Milestone 5 remains incomplete.
 - **Next:** item 6's listed mechanics are in place; see the known limitations
   below before relying on them unattended. Item 7 has a repeated baseline and
   nine completed comparisons. Argument feedback did not reliably break repeated
