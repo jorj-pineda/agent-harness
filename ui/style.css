@@ -474,3 +474,8 @@ button:disabled {
 .session-review-card { border-top: 1px solid var(--border); margin-top: 12px; font-size: 12px; overflow-wrap: anywhere; }
 .session-review-card h3 { font-size: 13px; }
 .session-review-card pre { white-space: pre-wrap; max-height: 180px; overflow: auto; }
+
+#run-progress { border: 1px solid var(--border); padding: 10px; margin: 16px 0; }
+.saved-tool-events summary { cursor: pointer; margin: 8px 0; }
+.saved-tool-events ol { list-style: none; padding-left: 0; max-height: 320px; overflow: auto; }
+.saved-tool-events li { margin: 10px 0; overflow-wrap: anywhere; }

@@ -31,6 +31,10 @@ const els = {
   reviewProvider: document.getElementById("review-provider"),
   reviewMessage: document.getElementById("review-message"),
   reviewResults: document.getElementById("session-review-results"),
+  runProgress: document.getElementById("run-progress"),
+  progressTarget: document.getElementById("progress-target"),
+  inspectToolProgress: document.getElementById("inspect-tool-progress"),
+  progressResults: document.getElementById("tool-progress-results"),
 };
 
 // Persist a stable user_id across reloads so cross-session memory can be
@@ -89,7 +93,7 @@ function setBusy(value) {
   els.retryRun.disabled = busy;
   els.forgetRun.disabled = busy;
   for (const button of els.history.querySelectorAll("button")) button.disabled = busy;
-  for (const button of [els.reviewWorkspace, els.reviewTranscript, els.reviewConfiguration]) {
+  for (const button of [els.reviewWorkspace, els.reviewTranscript, els.reviewConfiguration, els.inspectToolProgress]) {
     button.disabled = busy || reviewInFlight || reviewTarget == null;
   }
 }
@@ -538,12 +542,51 @@ function selectReviewTarget(record) {
   // Object identity prevents a delayed response from rendering on another selection.
   reviewTarget = record ? { sessionId: record.request.session_id, runId: record.run_id } : null;
   els.sessionReview.hidden = reviewTarget == null;
+  els.runProgress.hidden = reviewTarget == null;
+  els.progressResults.replaceChildren();
   els.reviewResults.replaceChildren();
   els.reviewMessage.value = "";
   els.reviewProvider.value = "";
   if (reviewTarget) {
+    els.progressTarget.textContent = `Run: ${reviewTarget.runId}; lifecycle when selected: ${record.status || "unknown"}`;
     els.reviewTarget.textContent = `Session: ${reviewTarget.sessionId}; selected run: ${reviewTarget.runId}`;
   }
+}
+
+function toolProgressCard(data) {
+  const card = el("section", "session-review-card");
+  card.appendChild(el("h3", null, `Metadata coverage: ${data.coverage || "unknown"}`));
+  card.appendChild(el("p", "review-note", `Run: ${data.run_id}; latest saved observation: ${data.updated_at || "unrecorded"}`));
+  const events = Array.isArray(data.events) ? data.events : null;
+  card.appendChild(el("p", null, `Observed events: ${data.observed_events ?? "unknown"}; saved prefix: ${events?.length ?? "unknown"}`));
+  if (data.coverage === "not_recorded") {
+    card.appendChild(el("p", null, "No journal was recorded for this run. Workspace edits may exist."));
+  } else if (data.coverage === "recorded" && events?.length === 0) {
+    card.appendChild(el("p", null, "No tool observations saved. This does not establish no inference or no workspace changes."));
+  }
+  if (data.events_truncated) {
+    card.appendChild(el("p", null, "Saved prefix truncated; later observations are counted but not listed. This is an incomplete event history."));
+  }
+  if (events?.length) {
+    const details = el("details", "saved-tool-events");
+    details.open = events.length <= 6;
+    details.appendChild(el("summary", null, `Saved event prefix (${events.length} records)`));
+    const list = el("ol");
+    for (const event of events) {
+      const row = el("li");
+      row.appendChild(el("div", null, `${event.sequence}: ${event.type} — ${event.tool}`));
+      row.appendChild(el("div", "review-note", `Observed: ${event.observed_at || "unknown"}`));
+      if (event.type === "tool_end") {
+        const error = event.error_observed == null ? "unknown" : event.error_observed ? "yes" : "no";
+        row.appendChild(el("div", null, `Error observed: ${error}; tool latency: ${event.latency_ms == null ? "unreported" : event.latency_ms.toFixed(1) + "ms"}`));
+      }
+      list.appendChild(row);
+    }
+    details.appendChild(list);
+    card.appendChild(details);
+  }
+  card.appendChild(el("p", "review-note", data.scope_note || "Metadata only. Start precedes tool gates; end/error presence is not successful verification or patch acceptance. A missing end does not prove a tool is still running. No replay or permission to resume."));
+  return card;
 }
 
 function sessionReviewCard(kind, data, input = {}) {
@@ -599,26 +642,36 @@ async function requestSessionReview(kind) {
   if (els.reviewProvider.value) input.provider = els.reviewProvider.value;
   const slot = el("div");
   // Clear just this review's previous observation before requesting a fresh one.
-  const old = els.reviewResults.querySelector(`[data-review="${kind}"]`);
+  const host = kind === "tool-progress" ? els.progressResults : els.reviewResults;
+  const old = host.querySelector(`[data-review="${kind}"]`);
   if (old) old.remove();
   slot.dataset.review = kind;
   slot.appendChild(el("p", "review-note", `Reading ${kind} review…`));
-  els.reviewResults.appendChild(slot);
+  host.appendChild(slot);
   reviewInFlight = true;
   setBusy(busy);
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 30000);
   try {
-    const path = `/sessions/${encodeURIComponent(target.sessionId)}/${kind}-review`;
+    const path = kind === "tool-progress"
+      ? `/runs/${encodeURIComponent(target.runId)}/tool-progress`
+      : `/sessions/${encodeURIComponent(target.sessionId)}/${kind}-review`;
     const response = kind === "configuration"
       ? await fetch(path, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input), signal: controller.signal })
       : await fetch(`${path}?${new URLSearchParams({ user_id: userId })}`, { signal: controller.signal });
     if (!response.ok) throw new Error(`Review unavailable (HTTP ${response.status}).`);
     const data = await response.json();
-    if (reviewTarget === target) slot.replaceChildren(sessionReviewCard(kind, data, input));
+    if (kind === "tool-progress" && data.run_id !== target.runId) {
+      throw new Error("Returned journal does not match the selected run");
+    }
+    if (reviewTarget === target) {
+      slot.replaceChildren(kind === "tool-progress"
+        ? toolProgressCard(data) : sessionReviewCard(kind, data, input));
+    }
   } catch (error) {
     const reason = controller.signal.aborted
-      ? "Review wait timed out; server comparison may still be settling" : String(error);
+      ? kind === "tool-progress" ? "Tool progress lookup timed out"
+        : "Review wait timed out; server comparison may still be settling" : String(error);
     if (reviewTarget === target) slot.replaceChildren(el("p", "review-note", `${kind}: ${reason}. No work was submitted; retry this review explicitly.`));
   } finally {
     clearTimeout(timeout);
@@ -736,6 +789,7 @@ function restorePending() {
 
 // ---- events -----------------------------------------------------------
 
+els.inspectToolProgress.addEventListener("click", () => requestSessionReview("tool-progress"));
 els.reviewWorkspace.addEventListener("click", () => requestSessionReview("workspace"));
 els.reviewTranscript.addEventListener("click", () => requestSessionReview("transcript"));
 els.reviewConfiguration.addEventListener("click", () => requestSessionReview("configuration"));

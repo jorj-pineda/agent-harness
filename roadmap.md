@@ -540,6 +540,27 @@ The harness does not need to make every model good at every task. It needs to id
   certify acceptance/check success. Full event/output replay, partial transcript/
   diff recovery, crash repair, guarded continuation, checkpoints/revert, retention
   and cross-process coordination remain open; Milestone 5 incomplete.
+- **2026-10-12 — Panel tool-progress inspection prepared:** saved-run selection now
+  exposes an explicit owner-scoped GET for that run's durable metadata journal,
+  separate from latest-session workspace/transcript/configuration review. It shows
+  coverage, full counts versus saved prefix, timestamps, ordered tool names and
+  error presence/latency without success claims, output/argument rendering or replay.
+  Large prefixes are collapsed and scrollable; legacy/empty/missing/truncated data
+  remains explicit. Lifecycle is labeled as state when selected, not live status.
+  Failed reads replace prior observations; mismatched run IDs are rejected, and
+  timeouts release controls. New selections/sessions and explicit submission retries
+  clear journal results; delayed responses cannot cross selections. The composer
+  stays read-only for saved history. Validation passed 13 focused and 721 offline
+  tests (five live deselected), Ruff/mypy and JavaScript syntax. Browser checks used
+  a forcibly stopped fixture API process after a real edit, then a fresh lifecycle
+  to inspect interrupted and completed journals without new runs or archive changes.
+  Simulations covered legacy/empty/missing fields, 200-entry truncation, safe text,
+  403/404/network/timeout errors, wrong-run identity, late responses and cleared
+  retry/new-session views. Owned fixture/server processes were stopped and the tab
+  closed; no inference or coding-quality comparison ran. Evaluation behavior is
+  unchanged; scripted matrices were not rerun for this client-only slice. Full
+  transcript/output/diff recovery, automatic reconnection, guarded continuation,
+  checkpoints/revert and cross-process coordination remain open; Milestone 5 incomplete.
 - **Next:** item 6's listed mechanics are in place; see the known limitations
   below before relying on them unattended. Item 7 has a repeated baseline and
   nine completed comparisons. Argument feedback did not reliably break repeated
