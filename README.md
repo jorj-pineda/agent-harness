@@ -109,8 +109,24 @@ Ignored contents such as `.git`, `.venv`, `node_modules`, and caches are not
 hashed or diffed. A separate metadata-only summary is described below. When the
 workspace exceeds `MAX_TRACKED_FILES` or `MAX_TRACKED_BYTES`,
 the report is `unavailable` with a reason instead of a partial list; set
-`TRACK_WORKSPACE_CHANGES=false` to skip snapshots. Snapshot and diff-generation
-time are outside the turn wall-time budget and reported model/tool latency.
+`TRACK_WORKSPACE_CHANGES=false` to skip snapshots. The configured dispatch deadline
+now starts after admission/transcript checks and before execution-profile capture,
+prompt refresh and the initial snapshot. Setup/snapshot time consumes the same
+`MAX_TURN_WALL_SECONDS` allowance as model/tool work; if it is already exhausted,
+no model request or tool runs. The low-level loop keeps its own start unless given
+the configured runtime's earlier monotonic start. Final snapshots/diffs still
+settle under admission even after the deadline, preserving partial-work evidence.
+
+`workspace_review_ms` separately records elapsed time awaiting initial/final
+snapshots and final change/diff/baseline construction, including worker wait.
+It is set before final persistence/delivery and retained in saved responses/keyed
+replays. Zero means tracking was skipped; null/absent means unmeasured (legacy,
+low-level or pre-execution blocked responses). CLI and panel show it separately
+from the compatible `latency_ms`, which retains its loop-only scope. Review timing
+excludes configuration/prompt setup, storage callbacks, HTTP delivery and standalone
+review requests. The two fields are not total request latency. The dispatch budget
+is not a hard return deadline: in-flight tools, final review and persistence can
+still exceed it; synchronous workers cannot be forcibly stopped.
 
 `workspace_changes.ignored_entries` separately reports added/modified/deleted
 **top-level entry metadata** for the fixed default ignored names: `.git`, `.venv`,
@@ -466,8 +482,9 @@ the capture can themselves appear as later changes; keep application storage
 outside the repository being reviewed when you want a stable comparison. Root device/inode identity conservatively rejects directory replacement
 or some filesystem moves. Saved hashes cannot restore deleted content, repair
 interrupted transcripts, prove patch acceptance, or establish compatible model/
-profile settings. Snapshot/review overhead remains outside turn wall deadlines
-and `latency_ms`. Explicit resume, broader workspace coverage, profile/transcript
+profile settings. Initial snapshot time consumes the configured dispatch deadline;
+final review still settles afterward. `workspace_review_ms` reports its scope
+separately from loop-only `latency_ms`. Explicit resume, broader workspace coverage, profile/transcript
 compatibility, checkpoints/revert, and panel comparison controls are separate work.
 
 ### Inspect saved transcript structure
@@ -551,7 +568,9 @@ values, without attesting what a custom adapter or remote server actually used.
 Tool implementations, provider defaults, environment routing, command environment,
 backend capabilities, current facts, and runtime revision are not captured here;
 a matching snapshot alone cannot establish compatibility or context fit.
-Capture overhead is outside current turn wall deadlines and latency reporting.
+Capture/prompt setup now consumes the configured dispatch deadline. Capture is
+excluded from both loop-only `latency_ms` and `workspace_review_ms`; neither is total
+request latency.
 Automatic restore, compatibility gates, explicit workspace-checked continuation,
 partial crash repair, checkpoints/revert, and panel profile controls remain
 separate work. Saved sessions stay read-only after restart.

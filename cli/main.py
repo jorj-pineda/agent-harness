@@ -185,6 +185,11 @@ def show_turn(result: TurnSummary) -> None:
         f"  provider={result.provider}"
         f"  latency={result.latency_ms:.0f}ms"
     )
+    typer.echo(
+        f"  workspace_review={result.workspace_review_ms:.0f}ms (separate from loop latency)"
+        if result.workspace_review_ms is not None
+        else "  workspace_review=unmeasured (legacy/low-level/blocked response)"
+    )
     typer.echo("  Completion records how the run ended; passed checks cover only the checks run.")
     if result.files_touched:
         typer.echo(f"  files_touched={result.files_touched}")

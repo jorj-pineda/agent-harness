@@ -32,6 +32,7 @@ class TurnSummary:
     token_usage: dict[str, int | None] = field(default_factory=dict)
     workspace_changes: dict[str, object] = field(default_factory=dict)
     run_id: str | None = None
+    workspace_review_ms: float | None = None
 
 
 class AgentClient:
@@ -144,6 +145,9 @@ def summarize(data: dict[str, Any]) -> TurnSummary:
         escalated=bool(data.get("escalated", False)),
         provider=str(data.get("provider", "")),
         latency_ms=float(data.get("latency_ms", 0.0)),
+        workspace_review_ms=float(data["workspace_review_ms"])
+        if data.get("workspace_review_ms") is not None
+        else None,
         files_touched=list(data.get("files_touched", [])),
         completion_status=str(data.get("completion_status", "completed")),
         completion_reason=data.get("completion_reason"),

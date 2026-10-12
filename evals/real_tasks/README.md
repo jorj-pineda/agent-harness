@@ -88,3 +88,19 @@ is in memory, adds copying/serialization overhead, and is bounded by configured
 turn limits rather than a separate trace byte cap. Persistence, crash recovery,
 and context compaction remain separate work. Historical reports omit this field
 and cannot be retroactively used to count every blank recovery or model reply.
+
+### Dispatch deadline and latency scope (2026-10-12)
+
+The shared configured runtime now starts `max_turn_wall_seconds` after admission
+and transcript guards, before configuration capture, prompt refresh and the first
+workspace snapshot. Those stages consume the same allowance as model/tool work;
+the clock is not restarted when entering the loop. Final review and owned work
+still settle even after the dispatch deadline. This is not a strict return bound.
+
+Historical evaluations before this slice used a deadline beginning inside the
+loop, excluding initial setup/snapshot time. Keep that distinction when comparing
+recorded budgets and revisions. This change was validated offline; no model-quality
+comparison or inference was run for it. The real runner's existing `latency_ms`
+measures the whole configured call, including snapshots/diffs, and remains unchanged.
+Application envelopes retain loop-only `latency_ms` and now expose separate nullable
+`workspace_review_ms`; neither application field represents end-to-end HTTP latency.

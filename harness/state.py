@@ -174,3 +174,15 @@ class TurnResponse(BaseModel):
     )
     provider: str
     latency_ms: float
+    workspace_review_ms: float | None = Field(
+        default=None,
+        ge=0,
+        description=(
+            "Observed elapsed milliseconds awaiting configured-runtime workspace snapshots and "
+            "final change/diff/baseline construction, including worker wait. "
+            "Zero means tracking was skipped; null means unmeasured "
+            "(legacy/low-level/blocked responses). Separate from "
+            "legacy loop latency_ms. Excludes configuration setup, archive persistence, HTTP "
+            "delivery and standalone review requests; not total request latency or a hard cap."
+        ),
+    )
