@@ -62,6 +62,15 @@ Every response ships one envelope — `{answer, confidence, citations, escalated
 reading a small range of a large file. `replace_text` takes that hash and one
 exact `old_text` span, refuses stale or ambiguous edits, and returns a diff.
 `write_file` remains available for new files or deliberate full replacements.
+It prepares complete content in a temporary file beside the destination, then
+publishes it with atomic replacement. Ordinary write/permission-copy/rename failures
+leave the destination intact and clean up the temporary file. Existing regular-file
+permission bits are preserved; new files use the normal creation permissions and
+process umask. Special-file destinations are rejected. Replacement changes inode
+identity, so hard-linked aliases retain their previous content; ownership, ACLs and
+extended attributes are not copied. Whole-file writes have no stale-content
+precondition or external-writer coordination. An abrupt process exit can leave a
+temporary file; there is no fsync/power-loss guarantee, checkpoint or revert.
 File-tool edit metadata includes either operation. These mechanics have offline
 regression coverage; model-level success still requires real coding evaluations.
 

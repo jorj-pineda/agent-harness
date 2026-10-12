@@ -561,6 +561,23 @@ The harness does not need to make every model good at every task. It needs to id
   unchanged; scripted matrices were not rerun for this client-only slice. Full
   transcript/output/diff recovery, automatic reconnection, guarded continuation,
   checkpoints/revert and cross-process coordination remain open; Milestone 5 incomplete.
+- **2026-10-12 — Atomic whole-file writes prepared:** `write_file` now prepares
+  content in a same-directory exclusive temporary file and replaces the destination
+  only after writing/flushing and copying existing permission bits. Partial-write,
+  permission-copy and rename failures preserve existing user content and clean up
+  temporary files. New files retain normal umask-based permissions, special files
+  are rejected, and the existing response/tool schema is unchanged. Real-file
+  regressions cover failure before publication, executable/private permissions,
+  new nested/empty files, size limits, hard-linked aliases and in-root symlink
+  resolution. Validation passed 55 focused and 733 offline tests (five live
+  deselected), Ruff/mypy, changed-file formatting, and both 90/90 scripted matrices
+  with contract labels and metric limits inspected. These validate file publication,
+  not model coding quality; no inference or comparison ran. Replacement changes
+  inode identity and does not copy ownership/ACLs/extended attributes. External-writer
+  races and whole-file stale-content guards remain open; abrupt exit can leave a
+  temporary file, and no fsync/power-loss durability, checkpoint, revert or resume
+  guarantee is added. This completes the bounded atomic-write item in Milestone 2;
+  the remaining personal-use workflow and Milestone 5 remain incomplete.
 - **Next:** item 6's listed mechanics are in place; see the known limitations
   below before relying on them unattended. Item 7 has a repeated baseline and
   nine completed comparisons. Argument feedback did not reliably break repeated
@@ -645,7 +662,7 @@ The first baseline can use one already-supported provider. Configurable endpoint
 - [ ] Fix single-file grep output, option-like search patterns, ignored paths, and explicit truncation reporting.
 - [ ] Make bounded reads work on large files; handle empty files and invalid ranges predictably.
 - [ ] Add exact text replacement with unique-match validation and a stale-content precondition. Return the applied diff or an actionable mismatch error.
-- [ ] Retain whole-file writes for new files and deliberate replacements; use atomic writes where possible.
+- [x] Retain whole-file writes for new files and deliberate replacements; use atomic writes where possible.
 - [ ] Record the initial working-tree state and derive actual agent changes from snapshots/diffs, including changes made by commands and new untracked files.
 - [x] Reject overlapping workspace and session turns within one configured-runtime process. Cross-process/external-writer coordination remains open.
 - [x] Replace code-tool worker-thread subprocess execution with managed processes: bounded output capture, explicit timeout, process-group termination on POSIX, and cancellation.
