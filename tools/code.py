@@ -434,7 +434,9 @@ def build_code_tools(
             name="grep_repo",
             description=(
                 "Search the workspace for a regex pattern. Returns matching lines with "
-                "repo-relative paths and line numbers."
+                "repo-relative paths and line numbers, excluding workspace-ignored paths. "
+                f"More than {MAX_GREP_HITS} matching lines returns an error; narrow the "
+                "path, glob, or pattern and retry."
             ),
             input_model=GrepRepoInput,
             fn=grep_repo,
@@ -579,10 +581,17 @@ async def _grep_ripgrep(
         "--no-heading",
         "--with-filename",
         "--null",
-        f"--max-count={MAX_GREP_HITS}",
+        # One extra matching line per file detects overflow without an unbounded
+        # result count. The process output cap remains a separate preventive bound.
+        f"--max-count={MAX_GREP_HITS + 1}",
     ]
     if glob:
         cmd.append(f"--glob={glob}")
+    # Negative globs come last so a caller's positive glob cannot expose ignored
+    # workspace components. Workspace ignores are literal names, not rg patterns.
+    for name in workspace.ignore_globs:
+        escaped = re.sub(r"([\\*?\[\]{}!])", r"\\\1", name)
+        cmd.append(f"--glob=!{escaped}")
     cmd.extend(["--", pattern, str(target)])
 
     try:
@@ -603,11 +612,11 @@ async def _grep_ripgrep(
 
     hits: list[dict[str, Any]] = []
     for line in proc.stdout.splitlines():
-        if len(hits) >= MAX_GREP_HITS:
-            break
         parsed = _parse_rg_line(workspace, line)
         if parsed is not None:
             hits.append(parsed)
+            if len(hits) > MAX_GREP_HITS:
+                raise _grep_match_limit_error()
     return hits
 
 
@@ -619,10 +628,10 @@ def _parse_rg_line(workspace: Workspace, line: str) -> dict[str, Any] | None:
     line_no, separator, text = rest.partition(":")
     if not separator or not line_no.isdigit():
         return None
-    abs_path = Path(file_path).resolve()
     try:
+        abs_path = workspace.resolve(file_path)
         rel = workspace.relative_str(abs_path)
-    except ValueError:
+    except (ValueError, WorkspaceError):
         return None
     return {"path": rel, "line": int(line_no), "text": text}
 
@@ -650,22 +659,37 @@ def _grep_python(
                         "text": line,
                     }
                 )
-                if len(hits) >= MAX_GREP_HITS:
-                    return hits
+                if len(hits) > MAX_GREP_HITS:
+                    raise _grep_match_limit_error()
     return hits
+
+
+def _grep_match_limit_error() -> ToolError:
+    return ToolError(
+        f"grep_repo exceeded {MAX_GREP_HITS} matching lines; results are incomplete. "
+        "Narrow the path, glob, or pattern and search again."
+    )
 
 
 def _iter_files(workspace: Workspace, target: Path) -> Iterator[Path]:
     if target.is_file():
         yield target
         return
-    for path in sorted(target.rglob("*")):
-        if not path.is_file():
-            continue
-        rel = path.relative_to(workspace.root)
-        if workspace.is_ignored(rel):
-            continue
-        yield path
+    for parent, directories, files in os.walk(target, followlinks=False):
+        current = Path(parent)
+        directories[:] = sorted(
+            name
+            for name in directories
+            if not workspace.is_ignored((current / name).relative_to(workspace.root))
+            and not (current / name).is_symlink()
+        )
+        for name in sorted(files):
+            try:
+                path = workspace.resolve(str(current / name))
+            except WorkspaceError:
+                continue
+            if path.is_file():
+                yield path
 
 
 def _walk_tree(

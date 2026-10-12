@@ -578,6 +578,27 @@ The harness does not need to make every model good at every task. It needs to id
   temporary file, and no fsync/power-loss durability, checkpoint, revert or resume
   guarantee is added. This completes the bounded atomic-write item in Milestone 2;
   the remaining personal-use workflow and Milestone 5 remain incomplete.
+- **2026-10-12 — Workspace-scoped search and explicit overflow prepared:** native
+  ripgrep searches now apply escaped literal workspace exclusions after caller
+  globs and validate returned paths through the workspace guard. Python fallback
+  traversal prunes ignored directories and checks resolved file paths before
+  reading, avoiding out-of-root symlink reads. Both backends retain the existing
+  successful match-list contract up to 100 matching lines; observing a 101st line
+  raises an explicit incomplete-search error with narrowing advice instead of
+  silently returning a prefix. Ripgrep's per-file match cap includes that extra
+  observation, while its process output/time limits remain separate. Validation
+  passed 81 focused and 747 offline tests (five live deselected), Ruff/mypy,
+  changed-file formatting and both 90/90 scripted matrices with contract labels
+  and metric limits inspected. Real-file regressions cover nested/custom ignores,
+  literal glob characters, positive caller globs, exact/global limits, overflow
+  and explicit narrowing; a configured-runtime test retains the tool error and
+  subsequent narrower result without changing user files. These validate search
+  mechanics, not model quality; no inference or comparison ran. Native hidden-file,
+  Git-ignore, binary and regex behavior still differs from fallback coverage;
+  fallback file-read cost is not bounded by file size. Path guards do not provide
+  process isolation or atomic protection against external path changes. This
+  completes the bounded search-fix item in Milestone 2; guarded continuation,
+  checkpoints/revert and the remaining personal-use workflow stay open.
 - **Next:** item 6's listed mechanics are in place; see the known limitations
   below before relying on them unattended. Item 7 has a repeated baseline and
   nine completed comparisons. Argument feedback did not reliably break repeated
@@ -659,7 +680,7 @@ The first baseline can use one already-supported provider. Configurable endpoint
 
 **Outcome:** the agent can explore, edit, and run checks without fighting the harness or losing control of running work.
 
-- [ ] Fix single-file grep output, option-like search patterns, ignored paths, and explicit truncation reporting.
+- [x] Fix single-file grep output, option-like search patterns, ignored paths, and explicit truncation reporting.
 - [ ] Make bounded reads work on large files; handle empty files and invalid ranges predictably.
 - [ ] Add exact text replacement with unique-match validation and a stale-content precondition. Return the applied diff or an actionable mismatch error.
 - [x] Retain whole-file writes for new files and deliberate replacements; use atomic writes where possible.

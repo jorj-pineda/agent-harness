@@ -58,6 +58,18 @@ Every response ships one envelope — `{answer, confidence, citations, escalated
 
 **Ripgrep-first search.** Default demo needs no embed model; deferred semantic path in [tools/semantic.py](tools/semantic.py).
 
+`grep_repo` enforces the workspace's literal ignored component names in both
+ripgrep and Python fallback searches. Caller globs cannot override those exclusions;
+the fallback prunes ignored directories and rejects paths resolving outside the
+workspace before reading. Ripgrep retains its own hidden-file, Git-ignore, binary,
+and regex behavior; the fallback does not promise identical search coverage.
+Successful calls retain the list of path/line/text matches, up to 100 matching
+lines. Finding an additional matching line returns an explicit incomplete-search
+error instead of a silent prefix; narrow the path, glob, or pattern and retry.
+Ripgrep output overflow/timeouts remain errors. This is bounded search evidence,
+not an exhaustive repository inventory or process isolation. Fallback file reads
+remain unbounded by file size; broader read-cost limits are separate work.
+
 **Targeted edits.** `read_file` now returns a whole-file `sha256`, including when
 reading a small range of a large file. `replace_text` takes that hash and one
 exact `old_text` span, refuses stale or ambiguous edits, and returns a diff.
