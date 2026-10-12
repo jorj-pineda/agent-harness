@@ -599,6 +599,17 @@ The harness does not need to make every model good at every task. It needs to id
   process isolation or atomic protection against external path changes. This
   completes the bounded search-fix item in Milestone 2; guarded continuation,
   checkpoints/revert and the remaining personal-use workflow stay open.
+- **2026-10-12 — Bounded fallback search reads prepared:** Python search now reads
+  at most 2,000,000 bytes per file and 16,000,000 bytes per call, with one extra
+  byte to detect overflow, including nonmatching files. Byte overflow or read
+  failure raises an explicit incomplete-search error instead of silently omitting
+  files or returning earlier matches. Narrowing recovers without changing files;
+  native ripgrep behavior and successful match-list contracts remain unchanged.
+  Validation passed 52 focused and 752 offline tests (five live deselected),
+  Ruff/mypy and both 90/90 scripted matrices with contract labels/limits inspected.
+  No inference or model-quality comparison ran. Traversal cost, regex CPU time,
+  external path races and hard return deadlines remain outside these byte bounds;
+  guarded continuation/checkpoints/revert and Milestone 5 remain incomplete.
 - **Next:** item 6's listed mechanics are in place; see the known limitations
   below before relying on them unattended. Item 7 has a repeated baseline and
   nine completed comparisons. Argument feedback did not reliably break repeated

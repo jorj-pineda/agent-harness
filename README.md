@@ -67,8 +67,11 @@ Successful calls retain the list of path/line/text matches, up to 100 matching
 lines. Finding an additional matching line returns an explicit incomplete-search
 error instead of a silent prefix; narrow the path, glob, or pattern and retry.
 Ripgrep output overflow/timeouts remain errors. This is bounded search evidence,
-not an exhaustive repository inventory or process isolation. Fallback file reads
-remain unbounded by file size; broader read-cost limits are separate work.
+not an exhaustive repository inventory or process isolation. Python fallback reads are capped at 2,000,000 bytes per file and 16,000,000 bytes
+per call, including nonmatching files. Byte overflow or unreadable files produce
+an explicit incomplete-search error, without returning earlier partial matches.
+Narrow the path/glob or install ripgrep; these byte bounds do not bound traversal
+cost, regex CPU time, or guarantee a hard wall deadline.
 
 **Targeted edits.** `read_file` now returns a whole-file `sha256`, including when
 reading a small range of a large file. `replace_text` takes that hash and one
