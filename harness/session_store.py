@@ -7,6 +7,7 @@ Readers see the last committed snapshot rather than mutable execution state.
 
 from __future__ import annotations
 
+import hashlib
 import sqlite3
 from datetime import UTC, datetime
 from pathlib import Path
@@ -14,6 +15,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
+from .checkpoints import CapturedCheckpoint, CheckpointRecord, CheckpointSummary
 from .execution_profile import ExecutionProfile
 from .runs import RequestConflictError, RunInput, RunRecord
 from .state import Session, TurnResponse
@@ -58,6 +60,7 @@ class SessionStore:
     """Single-thread, application-lifecycle-owned archive connection."""
 
     def __init__(self, path: Path) -> None:
+        self.path = path.resolve()
         path.parent.mkdir(parents=True, exist_ok=True)
         self._conn = sqlite3.connect(path)
         self._conn.execute(
@@ -80,6 +83,60 @@ class SessionStore:
             "run_id TEXT PRIMARY KEY, record TEXT NOT NULL)"
         )
         self._conn.commit()
+        self._conn.execute(
+            "CREATE TABLE IF NOT EXISTS checkpoints ("
+            "checkpoint_id TEXT PRIMARY KEY, session_id TEXT NOT NULL, record TEXT NOT NULL)"
+        )
+        self._conn.execute(
+            "CREATE TABLE IF NOT EXISTS checkpoint_files ("
+            "checkpoint_id TEXT NOT NULL, path TEXT NOT NULL, content BLOB NOT NULL, "
+            "PRIMARY KEY(checkpoint_id, path))"
+        )
+        self._conn.commit()
+
+    def save_checkpoint(self, captured: CapturedCheckpoint) -> None:
+        record = captured.record
+        if self.get(record.session_id) is None:
+            raise ValueError("Checkpoint requires an archived session.")
+        if set(captured.contents) != set(record.files):
+            raise ValueError("Checkpoint file manifest mismatch.")
+        if record.file_count != len(record.files) or record.byte_count != sum(
+            len(raw) for raw in captured.contents.values()
+        ):
+            raise ValueError("Checkpoint counts mismatch.")
+        for path, raw in captured.contents.items():
+            saved = record.files[path]
+            if saved.size != len(raw) or saved.sha256 != hashlib.sha256(raw).hexdigest():
+                raise ValueError("Checkpoint content mismatch.")
+        with self._conn:
+            self._conn.execute(
+                "INSERT INTO checkpoints VALUES (?, ?, ?)",
+                (
+                    record.checkpoint_id,
+                    record.session_id,
+                    record.model_dump_json(),
+                ),
+            )
+            self._conn.executemany(
+                "INSERT INTO checkpoint_files VALUES (?, ?, ?)",
+                [(record.checkpoint_id, path, raw) for path, raw in captured.contents.items()],
+            )
+
+    def get_checkpoint(self, checkpoint_id: str) -> CheckpointRecord | None:
+        row = self._conn.execute(
+            "SELECT record FROM checkpoints WHERE checkpoint_id = ?", (checkpoint_id,)
+        ).fetchone()
+        return CheckpointRecord.model_validate_json(row[0]) if row else None
+
+    def list_checkpoints(
+        self, session_id: str, *, limit: int, offset: int
+    ) -> list[CheckpointSummary]:
+        rows = self._conn.execute(
+            "SELECT record FROM checkpoints WHERE session_id = ? "
+            "ORDER BY rowid DESC LIMIT ? OFFSET ?",
+            (session_id, limit, offset),
+        ).fetchall()
+        return [CheckpointSummary.model_validate_json(row[0]) for row in rows]
 
     def save(
         self,

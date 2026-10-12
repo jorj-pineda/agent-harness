@@ -46,7 +46,6 @@ FACTS_HEADING = "Engineering memory for this developer (persists across sessions
 class Fact(BaseModel):
     """One persisted engineering note about a user/developer."""
 
-
     id: int
     user_id: str
     fact: str
@@ -60,6 +59,11 @@ class FactStore:
     Holds a single read-write connection for the lifetime of the store;
     callers should `close()` (or use as a context manager) on shutdown.
     """
+
+    @property
+    def path(self) -> Path:
+        """Actual local storage path, for excluding harness-owned data from captures."""
+        return self._path.resolve()
 
     def __init__(self, db_path: str | Path) -> None:
         self._path = Path(db_path)

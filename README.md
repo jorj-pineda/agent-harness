@@ -73,6 +73,31 @@ an explicit incomplete-search error, without returning earlier partial matches.
 Narrow the path/glob or install ripgrep; these byte bounds do not bound traversal
 cost, regex CPU time, or guarantee a hard wall deadline.
 
+**Explicit workspace checkpoints.** `POST /sessions/{session_id}/checkpoints`
+with `{"user_id":"dev"}` captures the workspace as observed now, independently
+of saved turn evidence. Owner-scoped GET on that path lists checkpoint summaries
+(`limit`/`offset`); GET with `/{checkpoint_id}` shows immutable hashes, byte counts,
+permission bits and scope after restart. These routes never return saved source
+contents, run inference/tools, mutate files, or enable saved-session continuation.
+
+Capture saves eligible regular-file bytes in local SQLite, with a 2,000-entry
+(directory plus file) and 16,000,000-byte bound. Environment files and default
+ignored components are excluded at every depth. Non-excluded symlinks/special files,
+unreadable/changing files, root replacement and over-limit capture fail without
+saving partial records. Actual memory/session storage and configured support
+storage must be outside the captured workspace. Capture and storage hold
+process-local admission; disconnect leaves the app-owned capture running, and
+shutdown waits for it before closing SQLite. Busy workspaces return 409, storage
+failure 503, successful captures 201. Repeating POST creates another checkpoint;
+inspect the list after an uncertain result rather than automatically retrying.
+
+Saved contents are plaintext source copies, not automatically redacted beyond the
+path exclusions. Empty directories, ownership/ACLs/extended attributes and ignored
+contents are not restorable. External writers can make the overall capture
+non-atomic even with per-file consistency checks. Storage retention/quota/deletion
+and hard return deadlines remain open. `restore_supported=false`: these checkpoints
+are not turn-linked before/after pairs and no restore/revert endpoint exists yet.
+
 **Directory exploration limits.** `list_dir` returns at most 200 immediate
 non-ignored entries; `tree` returns at most 300 entries, including its root and
 only within the requested depth. Exactly the cap is valid. Observing another

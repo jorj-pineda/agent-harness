@@ -31,6 +31,10 @@ class CreateSessionResponse(BaseModel):
     session_id: str
 
 
+class CreateCheckpointRequest(BaseModel):
+    user_id: str = Field(min_length=1)
+
+
 class ChatRequest(BaseModel):
     request_id: RequestId | None = Field(
         default=None,
@@ -80,6 +84,7 @@ __all__ = [
     "ChatRequest",
     "ChatResponse",
     "ConfigurationReviewRequest",
+    "CreateCheckpointRequest",
     "CreateSessionRequest",
     "CreateSessionResponse",
     "SubmitRunRequest",

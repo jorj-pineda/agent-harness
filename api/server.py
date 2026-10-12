@@ -43,6 +43,7 @@ from fastapi.staticfiles import StaticFiles
 
 from harness.admission import turn_admission
 from harness.cancellation import TurnCancellation
+from harness.checkpoints import CheckpointRecord, CheckpointSummary, capture_checkpoint
 from harness.configuration_review import ConfigurationReview, review_configuration
 from harness.execution_profile import ExecutionProfile
 from harness.grounding import Grounder
@@ -69,6 +70,7 @@ from .models import (
     ChatRequest,
     ChatResponse,
     ConfigurationReviewRequest,
+    CreateCheckpointRequest,
     CreateSessionRequest,
     CreateSessionResponse,
     SubmitRunRequest,
@@ -259,6 +261,77 @@ def _register_routes(app: FastAPI) -> None:
         review = inspect_transcript(archive.session.messages, max_issues=max_issues)
         review.turn_id = archive.session.turns[-1].turn_id if archive.session.turns else None
         return review
+
+    @app.post(
+        "/sessions/{session_id}/checkpoints", response_model=CheckpointRecord, status_code=201
+    )
+    async def create_checkpoint(
+        session_id: str, req: CreateCheckpointRequest, request: Request
+    ) -> CheckpointRecord:
+        """Explicit current file capture, independent of archived turns; never restores work."""
+        components: Components = request.app.state.components
+        archive = _lookup_archive(components, session_id, req.user_id)
+        root = archive.session.workspace_root
+        if root is None:
+            raise HTTPException(status_code=409, detail="No checkpoint workspace configured.")
+
+        async def capture_and_save() -> CheckpointRecord:
+            with turn_admission.claim(session_id, root) as busy:
+                if busy is not None:
+                    raise HTTPException(status_code=409, detail=busy)
+                settings: Settings = request.app.state.settings
+                store = _session_store(components)
+                try:
+                    captured = await asyncio.to_thread(
+                        capture_checkpoint,
+                        Path(root),
+                        session_id,
+                        protected_paths=(
+                            store.path,
+                            components.fact_store.path,
+                            settings.chroma_path,
+                        ),
+                    )
+                except (OSError, ValueError) as exc:
+                    raise HTTPException(
+                        status_code=409,
+                        detail=f"Checkpoint capture unavailable ({type(exc).__name__}); "
+                        "no checkpoint saved. Check capture limits, links and storage location.",
+                    ) from exc
+                try:
+                    store.save_checkpoint(captured)
+                except (sqlite3.Error, ValueError) as exc:
+                    raise HTTPException(
+                        status_code=503, detail="Checkpoint storage failed; no checkpoint saved."
+                    ) from exc
+                return captured.record
+
+        task = asyncio.create_task(capture_and_save())
+        _own_task(components, task)
+        return await asyncio.shield(task)
+
+    @app.get("/sessions/{session_id}/checkpoints", response_model=list[CheckpointSummary])
+    async def list_checkpoints(
+        session_id: str,
+        request: Request,
+        user_id: str = Query(min_length=1),
+        limit: int = Query(default=50, ge=1, le=100),
+        offset: int = Query(default=0, ge=0),
+    ) -> list[CheckpointSummary]:
+        components: Components = request.app.state.components
+        _lookup_archive(components, session_id, user_id)
+        return _session_store(components).list_checkpoints(session_id, limit=limit, offset=offset)
+
+    @app.get("/sessions/{session_id}/checkpoints/{checkpoint_id}", response_model=CheckpointRecord)
+    async def inspect_checkpoint(
+        session_id: str, checkpoint_id: str, request: Request, user_id: str = Query(min_length=1)
+    ) -> CheckpointRecord:
+        components: Components = request.app.state.components
+        _lookup_archive(components, session_id, user_id)
+        record = _session_store(components).get_checkpoint(checkpoint_id)
+        if record is None or record.session_id != session_id:
+            raise HTTPException(status_code=404, detail="Checkpoint not found for this session.")
+        return record
 
     @app.post("/sessions/{session_id}/configuration-review", response_model=ConfigurationReview)
     async def inspect_configuration(
