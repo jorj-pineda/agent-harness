@@ -74,7 +74,12 @@ Narrow the path/glob or install ripgrep; these byte bounds do not bound traversa
 cost, regex CPU time, or guarantee a hard wall deadline.
 
 **Targeted edits.** `read_file` now returns a whole-file `sha256`, including when
-reading a small range of a large file. `replace_text` takes that hash and one
+reading a small range of a large file. Whole-file hash/line scans are capped at
+16,000,000 bytes, with one extra byte to detect growth/overflow. Exceeding the
+cap returns an error with no partial hash/count; a narrower line range does not
+reduce that scan cost. Opened inputs must be regular files; on POSIX, final-path
+symlink swaps are rejected and special-file opens use nonblocking validation.
+Parent path races, concurrent content edits and hard wall deadlines remain open. `replace_text` takes that hash and one
 exact `old_text` span, refuses stale or ambiguous edits, and returns a diff.
 `write_file` remains available for new files or deliberate full replacements.
 It prepares complete content in a temporary file beside the destination, then
