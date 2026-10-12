@@ -69,6 +69,13 @@
         <div id="envelope" class="envelope">
           <div class="empty-state small">No turn yet.</div>
         </div>
+        <section id="run-progress" hidden aria-label="Saved tool progress">
+          <h2>Saved tool progress</h2>
+          <p id="progress-target" class="review-note"></p>
+          <p class="review-note">Metadata for the selected run, separate from the latest saved session reviews below. Start/end observations do not prove edits or successful checks.</p>
+          <button id="inspect-tool-progress">Inspect saved tool progress</button>
+          <div id="tool-progress-results" aria-live="polite"></div>
+        </section>
         <section id="session-review" hidden aria-label="Saved session review">
           <h2>Saved session review</h2>
           <p id="review-target" class="review-note"></p>
