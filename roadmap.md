@@ -495,6 +495,29 @@ The harness does not need to make every model good at every task. It needs to id
   server was stopped; no inference or model-quality comparison ran. Non-atomic
   external-writer races, deeper ignored contents, guarded continuation, checkpoints/
   revert, crash repair and cross-process locks remain open; Milestone 5 incomplete.
+- **2026-10-12 — Workspace review timing and earlier dispatch deadline prepared:**
+  configured turns now start the wall clock inside admission after transcript
+  guards, before execution-profile capture, prompt refresh and initial snapshot.
+  The loop uses that earlier start, so slow setup cannot grant a fresh model/tool
+  budget. Initial snapshot expiry prevents inference/edit dispatch. Final snapshots,
+  diffs and baseline construction still settle under admission after the deadline,
+  preserving evidence rather than reclassifying already completed work. A nullable
+  workspace_review_ms records those review phases before persistence/delivery;
+  skipped tracking is zero, legacy/low-level/blocked responses unmeasured. API
+  archives/replays, CLI and panel retain/display it separately from loop latency;
+  setup, storage, transport and standalone reviews are outside this timing field.
+  Regressions cover held initial/final reads, pre-action budget enforcement,
+  preserved edits/diffs, callback timing, disabled/unavailable tracking, slow profile
+  capture, HTTP/SSE restart replay and nullable client presentation. Validation
+  passed 127 focused and 711 offline tests (five live deselected), Ruff/mypy,
+  JavaScript syntax, and both 90/90 scripted matrices with labels/limits inspected.
+  Browser checks used real-file saved results from a fresh scripted-provider API
+  lifecycle and covered missing/null/zero/large durations. The temporary server was
+  stopped; no inference or quality comparison ran. Historical real-eval deadlines
+  excluded initial setup; their latency/budget scope is preserved and documented.
+  Tool cleanup/final review/persistence may exceed deadlines, and synchronous
+  workers remain uninterruptible. Guarded continuation, checkpoints/revert, crash
+  repair and cross-process coordination remain open; Milestone 5 incomplete.
 - **Next:** item 6's listed mechanics are in place; see the known limitations
   below before relying on them unattended. Item 7 has a repeated baseline and
   nine completed comparisons. Argument feedback did not reliably break repeated
@@ -736,7 +759,7 @@ enters the queue when a real task or evaluation shows the limitation matters.
 | Process-local turn admission prevents overlapping configured-runtime turns, but changes from editors, other harness processes, or detached commands still cannot be attributed. | Add cross-process coordination before multiple API workers. Label changed paths using file-tool hash evidence where available; other changes still need explicit source uncertainty. |
 | Bounded per-turn text diffs are available, but capture/output limits omit content. There are no durable checkpoints and no revert. | Add durable working-tree checkpoints before a safe revert workflow. A temporary Git index (`git write-tree` without touching Jorge's index or stash) can capture Git trees; retain bounded copies outside Git. The current in-memory text capture is review evidence only. |
 | Default ignored top-level entries now have metadata-only reporting, but child rewrites and deeper edits can leave that metadata unchanged. | Keep scope explicit; require selected dependency/Git checks or broader bounded capture before using ignored state as an execution precondition. Metadata equality cannot certify unchanged contents. |
-| Snapshot and diff-generation time count toward neither the wall-time budget nor `latency_ms`. | Measure review overhead, report it in the response, and start the wall deadline before the first snapshot. |
+| Initial setup/snapshot now consumes the dispatch budget; final review and storage can still exceed it. Application loop latency and workspace review duration omit setup/storage/transport. | Keep timing scopes explicit. A hard end-to-end bound requires safely interruptible work and a deliberate policy for preserving final evidence; do not abandon workers or imply a hard return deadline. |
 | Each turn reads every tracked file twice, up to the limits. Large repositories hit `unavailable`. | Cache `(size, mtime_ns, inode)` beside each hash and rehash only files whose metadata changed. Reuse the previous turn's after-snapshot when metadata is unchanged. |
 | Five files on `main` fail `ruff format --check` (pre-existing). | Run a formatting-only PR with no behavior changes. |
 
