@@ -35,6 +35,8 @@ class RunRecord(BaseModel):
     request: RunInput
     provider: str
     configured_model: str | None = None
+    before_checkpoint_id: str | None = None
+    after_checkpoint_id: str | None = None
     execution_profile: ExecutionProfile | None = Field(
         default=None,
         description=(

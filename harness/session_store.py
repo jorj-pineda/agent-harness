@@ -95,6 +95,12 @@ class SessionStore:
         self._conn.commit()
 
     def save_checkpoint(self, captured: CapturedCheckpoint) -> None:
+        if captured.record.kind != "manual" or captured.record.run_id is not None:
+            raise ValueError("Run checkpoints require atomic run binding.")
+        with self._conn:
+            self._write_checkpoint(captured)
+
+    def _write_checkpoint(self, captured: CapturedCheckpoint) -> None:
         record = captured.record
         if self.get(record.session_id) is None:
             raise ValueError("Checkpoint requires an archived session.")
@@ -108,19 +114,53 @@ class SessionStore:
             saved = record.files[path]
             if saved.size != len(raw) or saved.sha256 != hashlib.sha256(raw).hexdigest():
                 raise ValueError("Checkpoint content mismatch.")
+        self._conn.execute(
+            "INSERT INTO checkpoints VALUES (?, ?, ?)",
+            (
+                record.checkpoint_id,
+                record.session_id,
+                record.model_dump_json(),
+            ),
+        )
+        self._conn.executemany(
+            "INSERT INTO checkpoint_files VALUES (?, ?, ?)",
+            [(record.checkpoint_id, path, raw) for path, raw in captured.contents.items()],
+        )
+
+    def bind_run_checkpoint(
+        self, run_id: str, captured: CapturedCheckpoint, phase: Literal["before", "after"]
+    ) -> None:
+        run = self.get_run(run_id)
+        if (
+            run is None
+            or run.status != "running"
+            or run.request.session_id != captured.record.session_id
+        ):
+            raise ValueError("Checkpoint requires a matching running run.")
+        field = "before_checkpoint_id" if phase == "before" else "after_checkpoint_id"
+        if getattr(run, field) is not None or (
+            phase == "after" and run.before_checkpoint_id is None
+        ):
+            raise ValueError("Checkpoint phase already bound or out of order.")
+        record = CheckpointRecord.model_validate(
+            {
+                **captured.record.model_dump(),
+                "kind": f"turn_{phase}",
+                "run_id": run_id,
+                "paired_before_id": run.before_checkpoint_id if phase == "after" else None,
+            }
+        )
+        if phase == "after":
+            before = self.get_checkpoint(run.before_checkpoint_id or "")
+            if before is None or (before.root, before.root_identity) != (
+                record.root,
+                record.root_identity,
+            ):
+                raise ValueError("Workspace root changed between checkpoints.")
+        setattr(run, field, record.checkpoint_id)
         with self._conn:
-            self._conn.execute(
-                "INSERT INTO checkpoints VALUES (?, ?, ?)",
-                (
-                    record.checkpoint_id,
-                    record.session_id,
-                    record.model_dump_json(),
-                ),
-            )
-            self._conn.executemany(
-                "INSERT INTO checkpoint_files VALUES (?, ?, ?)",
-                [(record.checkpoint_id, path, raw) for path, raw in captured.contents.items()],
-            )
+            self._write_checkpoint(CapturedCheckpoint(record, captured.contents))
+            self._update_run(run)
 
     def get_checkpoint(self, checkpoint_id: str) -> CheckpointRecord | None:
         row = self._conn.execute(

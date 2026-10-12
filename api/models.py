@@ -17,6 +17,10 @@ from harness.state import TurnResponse
 
 class CreateSessionRequest(BaseModel):
     user_id: str = Field(..., min_length=1, description="Stable per-user identifier.")
+    checkpoint_turns: bool = Field(
+        default=False,
+        description="Opt in to bounded plaintext workspace captures before/after admitted turns.",
+    )
     workspace_root: str | None = Field(
         default=None,
         min_length=1,

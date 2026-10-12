@@ -55,6 +55,9 @@ def cancel(
 def chat(
     base_url: str = typer.Option("http://localhost:8000", "--base-url", help="API base URL."),
     user_id: str = typer.Option("cli-user", "--user-id", help="Stable user identifier."),
+    checkpoints: bool = typer.Option(
+        False, "--checkpoints", help="Save bounded plaintext workspace captures before/after turns."
+    ),
     workspace: str | None = typer.Option(
         None, "--workspace", help="Absolute path to repo root (sets workspace_root on session)."
     ),
@@ -67,7 +70,11 @@ def chat(
     """Interactive REPL — connect to a running agent-harness server and chat."""
     client = AgentClient(base_url)
     try:
-        session_id = client.create_session(user_id, workspace)
+        session_id = (
+            client.create_session(user_id, workspace, checkpoint_turns=True)
+            if checkpoints
+            else client.create_session(user_id, workspace)
+        )
     except Exception as exc:
         typer.echo(f"Error: could not create session — {exc}", err=True)
         raise typer.Exit(code=1) from exc
@@ -227,6 +234,12 @@ def show_turn(result: TurnSummary) -> None:
 
 def show_run(record: dict) -> None:
     typer.echo(f"run_id={record['run_id']} status={record['status']}")
+    if record.get("before_checkpoint_id") or record.get("after_checkpoint_id"):
+        typer.echo(
+            f"before_checkpoint={record.get('before_checkpoint_id') or 'unavailable'} "
+            f"after_checkpoint={record.get('after_checkpoint_id') or 'unavailable'} "
+            "(scoped content captures; restore/resume remain unsupported)"
+        )
     typer.echo(f"task={record['request'].get('message', '')}")
     typer.echo(
         f"session={record['request']['session_id']} request_id={record['request']['request_id']}"

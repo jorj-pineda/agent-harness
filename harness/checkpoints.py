@@ -29,6 +29,9 @@ class CheckpointFile(BaseModel):
 class CheckpointSummary(BaseModel):
     checkpoint_id: str
     session_id: str
+    kind: Literal["manual", "turn_before", "turn_after"] = "manual"
+    run_id: str | None = None
+    paired_before_id: str | None = None
     captured_at: datetime
     root: str
     root_identity: tuple[int, int]
@@ -37,7 +40,7 @@ class CheckpointSummary(BaseModel):
     excluded_patterns: tuple[str, ...] = REVIEW_IGNORE
     restore_supported: Literal[False] = False
     scope_note: str = (
-        "Explicit current-workspace capture, not an archived turn's start/end state. "
+        "Content capture; kind identifies manual capture or an admitted turn boundary. "
         "Saves eligible regular-file bytes and permission bits, excluding environment files "
         "and default ignored components. Empty directories, ownership, ACLs and extended "
         "attributes are not restorable; non-excluded symlinks/special files reject capture. "

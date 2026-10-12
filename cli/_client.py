@@ -41,10 +41,14 @@ class AgentClient:
     def __init__(self, base_url: str = "http://localhost:8000") -> None:
         self._base = base_url.rstrip("/")
 
-    def create_session(self, user_id: str, workspace_root: str | None = None) -> str:
-        payload: dict[str, str] = {"user_id": user_id}
+    def create_session(
+        self, user_id: str, workspace_root: str | None = None, *, checkpoint_turns: bool = False
+    ) -> str:
+        payload: dict[str, str | bool] = {"user_id": user_id}
         if workspace_root is not None:
             payload["workspace_root"] = workspace_root
+        if checkpoint_turns:
+            payload["checkpoint_turns"] = True
         resp = httpx.post(f"{self._base}/sessions", json=payload, timeout=30)
         resp.raise_for_status()
         return str(resp.json()["session_id"])

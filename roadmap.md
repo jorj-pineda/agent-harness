@@ -668,6 +668,26 @@ The harness does not need to make every model good at every task. It needs to id
   is unchanged; scripted matrices were not rerun for this client-only slice.
   Panel controls, turn-linked captures, restore/revert, retention/deletion/quota,
   guarded continuation and the rest of Milestone 5 remain open.
+- **2026-10-12 — Opt-in turn-linked content checkpoints prepared:** sessions may
+  explicitly enable bounded plaintext captures before/after admitted configured
+  turns. Shared runtime callbacks run inside admission before inference and after
+  tools/final workspace review, before archive delivery; missing capture support
+  blocks enabled execution. Capture/blob/run-reference binding is atomic, ordered,
+  immutable and running-run gated. After records identify the paired before point;
+  root replacement rejects pairing. Run history preserves both IDs across restart
+  and keyed replay, with no repeated capture. CLI opt-in and saved-run review expose
+  the behavior through HTTP. Validation passed 73 focused and 791 offline tests
+  (five live deselected), Ruff/mypy, changed-file formatting and both 90/90 scripted
+  matrices with labels/limits inspected. Real-file HTTP/SSE/CLI regressions cover
+  preserved user edits, restart/keyed replay, before failure preventing inference,
+  after failure retaining edits/earlier capture with no invented final response,
+  transactional rollback, ordered/terminal binding, missing callback and cancel
+  during capture without abandoning workers. No inference or quality comparison ran.
+  Default capture remains off; initial capture consumes dispatch budget while final
+  capture/storage can exceed deadlines and sit outside existing timing fields.
+  Exclusions/plaintext/retention and non-atomic external-writer limitations remain;
+  these pairs do not prove attribution or acceptance. Restore/revert, guarded
+  continuation, panel opt-in and Milestone 5 remain incomplete.
 - **Next:** item 6's listed mechanics are in place; see the known limitations
   below before relying on them unattended. Item 7 has a repeated baseline and
   nine completed comparisons. Argument feedback did not reliably break repeated
@@ -907,7 +927,7 @@ enters the queue when a real task or evaluation shows the limitation matters.
 | Limitation | Proposed fix |
 |---|---|
 | Process-local turn admission prevents overlapping configured-runtime turns, but changes from editors, other harness processes, or detached commands still cannot be attributed. | Add cross-process coordination before multiple API workers. Label changed paths using file-tool hash evidence where available; other changes still need explicit source uncertainty. |
-| Bounded per-turn text diffs are available, but capture/output limits omit content. There are no durable checkpoints and no revert. | Add durable working-tree checkpoints before a safe revert workflow. A temporary Git index (`git write-tree` without touching Jorge's index or stash) can capture Git trees; retain bounded copies outside Git. The current in-memory text capture is review evidence only. |
+| Bounded per-turn text diffs are available, but capture/output limits omit content. Explicit bounded checkpoints and opt-in turn-linked captures now exist; there is no revert. | Add conflict checks and an explicit bounded revert workflow from durable before/after content pairs, preserving later user edits and Git state. Excluded contents and non-atomic external writers remain outside capture; in-memory diff text is review evidence only. |
 | Default ignored top-level entries now have metadata-only reporting, but child rewrites and deeper edits can leave that metadata unchanged. | Keep scope explicit; require selected dependency/Git checks or broader bounded capture before using ignored state as an execution precondition. Metadata equality cannot certify unchanged contents. |
 | Initial setup/snapshot now consumes the dispatch budget; final review and storage can still exceed it. Application loop latency and workspace review duration omit setup/storage/transport. | Keep timing scopes explicit. A hard end-to-end bound requires safely interruptible work and a deliberate policy for preserving final evidence; do not abandon workers or imply a hard return deadline. |
 | Each turn reads every tracked file twice, up to the limits. Large repositories hit `unavailable`. | Cache `(size, mtime_ns, inode)` beside each hash and rehash only files whose metadata changed. Reuse the previous turn's after-snapshot when metadata is unchanged. |
