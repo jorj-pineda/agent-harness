@@ -35,7 +35,11 @@ from .state import Session, TurnResponse, WorkspaceChangeReport, WorkspaceFileDi
 from .stream import EventCallback
 from .trace import TurnTraceRecord
 from .transcript import transcript_block_reason
-from .workspace_review import WorkspaceReviewBaseline, review_fingerprints
+from .workspace_review import (
+    WorkspaceReviewBaseline,
+    compare_ignored_entries,
+    review_fingerprints,
+)
 
 
 def build_registry(
@@ -222,6 +226,9 @@ async def run_configured_turn(
                         for path, mode in after.file_modes.items()
                         if path in saved_fingerprints
                     },
+                    ignored_entry_fingerprints=None
+                    if isinstance(after, str)
+                    else after.ignored_entries,
                     reason=after if isinstance(after, str) else None,
                 )
         if on_workspace_review is not None and baseline is not None:
@@ -237,6 +244,7 @@ class _TurnSnapshot:
     text: TextCapture | None
     root_identity: tuple[int, int]
     file_modes: dict[str, int]
+    ignored_entries: dict[str, str]
 
 
 async def _snapshot_or_reason(root: Path, settings: Settings) -> _TurnSnapshot | str:
@@ -246,6 +254,7 @@ async def _snapshot_or_reason(root: Path, settings: Settings) -> _TurnSnapshot |
         else None
     )
     file_modes: dict[str, int] = {}
+    ignored_entries: dict[str, str] = {}
     try:
         initial_stat = await asyncio.to_thread(root.stat)
         fingerprints = await asyncio.to_thread(
@@ -256,13 +265,14 @@ async def _snapshot_or_reason(root: Path, settings: Settings) -> _TurnSnapshot |
             max_bytes=settings.max_tracked_bytes,
             text_capture=text,
             file_modes=file_modes,
+            ignored_entries=ignored_entries,
             strict=True,
         )
         final_stat = await asyncio.to_thread(root.stat)
         identity = (initial_stat.st_dev, initial_stat.st_ino)
         if (final_stat.st_dev, final_stat.st_ino) != identity:
             raise OSError("Workspace root changed during snapshot")
-        return _TurnSnapshot(fingerprints, text, identity, file_modes)
+        return _TurnSnapshot(fingerprints, text, identity, file_modes, ignored_entries)
     except SnapshotLimitError as exc:
         return f"{exc}; change tracking skipped."
     except OSError as exc:
@@ -289,6 +299,7 @@ async def _change_report(
     )
     return WorkspaceChangeReport(
         status="tracked",
+        ignored_entries=compare_ignored_entries(before.ignored_entries, after.ignored_entries),
         added=list(changes.added),
         modified=list(changes.modified),
         deleted=list(changes.deleted),

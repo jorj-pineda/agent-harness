@@ -235,6 +235,20 @@ function workspaceChangeItems(changes) {
   ];
 }
 
+function ignoredEntrySection(data) {
+  const section = el("section", "env-section");
+  section.appendChild(el("div", "label", `Ignored top-level metadata: ${data?.status || "not_recorded"}`));
+  for (const kind of ["added", "modified", "deleted"]) {
+    if (data?.[kind]?.length || data?.[kind + "_count"]) {
+      section.appendChild(el("p", null, `${kind}: total ${data[kind + "_count"] ?? "unknown"}`));
+      section.appendChild(listSection(kind, data[kind]));
+    }
+  }
+  if (data?.paths_truncated) section.appendChild(el("p", null, "Ignored-entry list truncated; counts cover the full metadata comparison."));
+  section.appendChild(el("p", "review-note", data?.scope_note || "Metadata only; ignored contents are not compared."));
+  return section;
+}
+
 function workspaceDiffSection(changes) {
   const section = el("div", "env-section");
   const diffs = changes?.diffs || [];
@@ -272,6 +286,9 @@ function renderEnvelope(data, includeRunId = true) {
   els.envelope.appendChild(listSection("source locations from tools", data.citations));
   els.envelope.appendChild(listSection("files touched", data.files_touched));
   els.envelope.appendChild(listSection("workspace changes", workspaceChangeItems(data.workspace_changes)));
+  if (data.workspace_changes?.status !== "not_tracked") {
+    els.envelope.appendChild(ignoredEntrySection(data.workspace_changes?.ignored_entries));
+  }
   els.envelope.appendChild(workspaceDiffSection(data.workspace_changes));
   els.envelope.appendChild(listSection("patch summary", data.patch_summary));
   els.envelope.appendChild(listSection("completion", [
@@ -541,6 +558,7 @@ function sessionReviewCard(kind, data, input = {}) {
     }
     if (data.paths_truncated) card.appendChild(el("p", null, "Path lists truncated; counts cover the full comparison."));
     card.appendChild(listSection("Excluded patterns", data.excluded_patterns));
+    card.appendChild(ignoredEntrySection(data.ignored_entries));
   } else if (kind === "transcript") {
     card.appendChild(el("p", null, `Messages: ${data.message_count ?? "unknown"}; issues: ${data.issue_count ?? "unknown"}`));
     card.appendChild(listSection("Structural issues", (data.issues || []).map(issue => `message[${issue.message_index}]: ${issue.code}`)));

@@ -105,18 +105,38 @@ workspace before and after each turn, so edits already present when the turn
 starts are excluded unless their content changes again, and files created or
 removed by commands are included. It cannot attribute a change to its author: a
 concurrent edit by Jorge or another process during the turn is reported too.
-Ignored directories such as `.git`, `.venv`, `node_modules`, and caches are not
-tracked. When the workspace exceeds `MAX_TRACKED_FILES` or `MAX_TRACKED_BYTES`,
+Ignored contents such as `.git`, `.venv`, `node_modules`, and caches are not
+hashed or diffed. A separate metadata-only summary is described below. When the
+workspace exceeds `MAX_TRACKED_FILES` or `MAX_TRACKED_BYTES`,
 the report is `unavailable` with a reason instead of a partial list; set
 `TRACK_WORKSPACE_CHANGES=false` to skip snapshots. Snapshot and diff-generation
 time are outside the turn wall-time budget and reported model/tool latency.
+
+`workspace_changes.ignored_entries` separately reports added/modified/deleted
+**top-level entry metadata** for the fixed default ignored names: `.git`, `.venv`,
+`node_modules`, `__pycache__`, `.mypy_cache`, and `.pytest_cache`. During the existing
+root traversal, the runtime hashes each present excluded entry's `lstat` fields
+(device/inode, type/permission bits, size, nanosecond modification/change times,
+and link count). This adds at most six metadata reads per snapshot and no extra
+filesystem sweep, child enumeration, content read or symlink following. The field
+reports `changed`/`unchanged`; skipped snapshots return `not_checked`. Older
+payloads without this evidence are presented as not recorded by clients. File
+counts, diffs and edit budgets retain their existing tracked-file scope.
+
+**Matching ignored metadata does not establish unchanged ignored contents.** Adding
+or removing direct children often changes directory metadata; rewriting an existing
+child or modifying deeper descendants may not. Symlink referent changes are not
+compared. Metadata can also change without any content change. This is an observation
+from any writer, not a dependency check, Git-state checkpoint, author attribution,
+revert mechanism or permission to resume. CLI and panel display the scope beside it.
 
 `workspace_changes.diffs` adds reviewable unified text diffs to the API response,
 CLI, and expandable panel entries, including turns that exhaust a budget. Each
 entry has `path`, `diff`, and an optional `reason` when content is omitted. The
 baseline is the working tree at turn start, including staged and unstaged user
 edits, rather than Git HEAD. Git's index and stash are never used or changed.
-This also works outside Git. File modes, renames, and authorship are not inferred.
+This also works outside Git. Tracked-file lists/diffs do not infer file modes,
+renames, or authorship.
 
 Text is retained in memory from the same read as its fingerprint, with limits of
 `MAX_DIFF_FILE_BYTES` (128,000 UTF-8 source bytes per file) and
@@ -396,7 +416,16 @@ The command calls `GET /sessions/<id>/workspace-review?user_id=...`. Both accept
 reports added/modified/deleted paths since the **saved final state**, not since
 the initial user workspace. Counts cover the full comparison; a capped path list
 sets `paths_truncated=true`. The response names its archived turn and baseline
-time. It does not update the archive or baseline, submit inference, run commands,
+time. New baselines also retain `ignored_entry_fingerprints` as metadata hashes,
+separately from file hashes/modes. Review returns an `ignored_entries` summary using
+the same metadata-only comparison described above. Overall `changed` includes
+observed ignored-entry metadata drift, even when tracked-file counts are zero.
+Older baselines report `ignored_entries.status=not_recorded`; skipped/failed reviews
+report `not_checked`. No historical metadata is invented. `max_paths` is shared
+across tracked and ignored-entry lists, giving tracked files priority; each summary
+keeps full counts and its own truncation flag.
+
+It does not update the archive or baseline, submit inference, run commands,
 change files, or enable session continuation.
 
 Statuses distinguish `unchanged`, `changed`, `unavailable`, `busy`, `not_recorded`
@@ -418,15 +447,17 @@ baselines report `not_recorded`, and skipped/failed comparisons report
 `not_checked`. Older baselines can still report unchanged within their content-only
 scope; no mode history is invented. CLI review prints this coverage.
 
-It does not follow symlinks, inspect their referents, compare directory/symlink
-modes, ownership, ACLs or extended attributes, or inspect `.git`, dependency/cache
-directories, and `.env`/`.env.*` files. The
+Except for the separate top-level ignored-entry metadata described above, it does
+not follow symlinks, inspect their referents, compare directory/symlink modes,
+ownership, ACLs or extended attributes, or inspect `.git` and dependency/cache
+contents. `.env`/`.env.*` content and metadata remain excluded from saved review. The
 response lists exclusions and explains the scope. Environment-file hashes and
 raw symlink targets are not saved in this record; the API returns comparison
 summaries rather than the fingerprint map. No settings credentials are recorded.
 
-Per-turn `workspace_changes` and bounded text diffs still describe content changes;
-this addition applies to saved final-workspace review. Modes do not supply a
+Per-turn tracked-file lists and bounded text diffs still describe content changes;
+regular-file permission comparison applies to saved final-workspace review. Both
+turn reports and restart reviews show ignored-entry metadata separately. Neither supplies a
 checkpoint, compatibility guarantee, or continuation permission.
 
 Capture/comparison remain non-atomic against editors, other processes, or detached

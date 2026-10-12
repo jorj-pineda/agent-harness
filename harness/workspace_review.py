@@ -13,7 +13,10 @@ from pydantic import BaseModel, Field
 from workspace import SnapshotLimitError, compare, snapshot
 from workspace.core import DEFAULT_IGNORE_GLOBS
 
+from .state import IgnoredEntryChanges
+
 ENV_IGNORE = (".env", ".env.*")
+
 REVIEW_IGNORE = (*DEFAULT_IGNORE_GLOBS, *ENV_IGNORE)
 
 
@@ -25,6 +28,7 @@ class WorkspaceReviewBaseline(BaseModel):
     root_identity: tuple[int, int] | None = None
     fingerprints: dict[str, str] = Field(default_factory=dict)
     file_modes: dict[str, int] | None = None
+    ignored_entry_fingerprints: dict[str, str] | None = None
     excluded_patterns: tuple[str, ...] = REVIEW_IGNORE
     reason: str | None = None
 
@@ -44,11 +48,13 @@ class WorkspaceReview(BaseModel):
     excluded_patterns: tuple[str, ...] = REVIEW_IGNORE
     reason: str | None = None
     mode_coverage: Literal["compared", "not_recorded", "not_checked"] = "not_checked"
+    ignored_entries: IgnoredEntryChanges = Field(default_factory=IgnoredEntryChanges)
     read_only: Literal[True] = True
     scope_note: str = (
         "Compares observed non-excluded file contents and symlink targets, plus regular-file "
-        "permission bits when mode_coverage is compared. Ignores directory modes, ignored "
-        "contents, ACLs, ownership, extended attributes, and symlink referents. "
+        "permission bits when mode_coverage is compared. Ignored top-level entries have separate "
+        "metadata-only evidence. Other directory modes, ignored "
+        "contents, ACLs, ownership, extended attributes, and symlink referents are not compared. "
         "This non-atomic review is not permission to resume or revert."
     )
 
@@ -60,6 +66,27 @@ def review_fingerprints(fingerprints: dict[str, str]) -> dict[str, str]:
         for path, value in fingerprints.items()
         if not any(fnmatch(part, pattern) for part in Path(path).parts for pattern in ENV_IGNORE)
     }
+
+
+def compare_ignored_entries(
+    before: dict[str, str] | None, after: dict[str, str], *, max_paths: int = 100
+) -> IgnoredEntryChanges:
+    if before is None:
+        return IgnoredEntryChanges(status="not_recorded")
+    changes = compare(before, after)
+    result = IgnoredEntryChanges(
+        status="changed" if any((changes.added, changes.modified, changes.deleted)) else "unchanged"
+    )
+    remaining = max_paths
+    for kind in ("added", "modified", "deleted"):
+        paths = getattr(changes, kind)
+        setattr(result, kind + "_count", len(paths))
+        setattr(result, kind, list(paths[:remaining]))
+        remaining = max(0, remaining - len(paths))
+    result.paths_truncated = (
+        result.added_count + result.modified_count + result.deleted_count > max_paths
+    )
+    return result
 
 
 def compare_workspace(
@@ -89,6 +116,7 @@ def compare_workspace(
             result.reason = "Workspace root was replaced or redirected."
             return result
         file_modes: dict[str, int] = {}
+        ignored_entries: dict[str, str] = {}
         fingerprints = snapshot(
             root,
             ignore=baseline.excluded_patterns,
@@ -96,6 +124,7 @@ def compare_workspace(
             max_bytes=max_bytes,
             strict=True,
             file_modes=file_modes,
+            ignored_entries=ignored_entries,
         )
         final_stat = root.stat()
         if (
@@ -117,9 +146,6 @@ def compare_workspace(
             if baseline.file_modes.get(path) != file_modes.get(path)
         )
     changes = type(changes)(changes.added, tuple(sorted(modified)), changes.deleted)
-    result.status = (
-        "changed" if any((changes.added, changes.modified, changes.deleted)) else "unchanged"
-    )
     result.added_count = len(changes.added)
     result.modified_count = len(changes.modified)
     result.deleted_count = len(changes.deleted)
@@ -130,5 +156,14 @@ def compare_workspace(
         remaining = max(0, remaining - len(paths))
     result.paths_truncated = (
         sum((result.added_count, result.modified_count, result.deleted_count)) > max_paths
+    )
+    result.ignored_entries = compare_ignored_entries(
+        baseline.ignored_entry_fingerprints, ignored_entries, max_paths=remaining
+    )
+    result.status = (
+        "changed"
+        if any((changes.added, changes.modified, changes.deleted))
+        or result.ignored_entries.status == "changed"
+        else "unchanged"
     )
     return result

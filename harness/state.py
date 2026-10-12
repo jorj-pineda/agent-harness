@@ -71,8 +71,27 @@ class WorkspaceFileDiff(BaseModel):
     reason: str | None = None
 
 
+class IgnoredEntryChanges(BaseModel):
+    """Scoped lstat evidence, never an ignored-subtree content comparison."""
+
+    status: Literal["changed", "unchanged", "not_recorded", "not_checked"] = "not_checked"
+    added: list[str] = Field(default_factory=list)
+    modified: list[str] = Field(default_factory=list)
+    deleted: list[str] = Field(default_factory=list)
+    added_count: int = 0
+    modified_count: int = 0
+    deleted_count: int = 0
+    paths_truncated: bool = False
+    scope_note: str = (
+        "Compares only lstat metadata for default ignored top-level entries; no contents "
+        "are read and symlinks are not followed. Nested edits and rewriting existing children "
+        "may leave this metadata unchanged. Matching metadata does not establish unchanged "
+        "contents, dependency compatibility, source attribution, or permission to resume."
+    )
+
+
 class WorkspaceChangeReport(BaseModel):
-    """Workspace content changes observed between the start and end of a turn.
+    """Tracked content changes and separate ignored-entry metadata observed during a turn.
 
     Changes made by any process during the turn are included; files that were
     already modified before it are reported only if their content changed again.
@@ -84,6 +103,7 @@ class WorkspaceChangeReport(BaseModel):
     deleted: list[str] = Field(default_factory=list)
     reason: str | None = None
     diffs: list[WorkspaceFileDiff] = Field(default_factory=list)
+    ignored_entries: IgnoredEntryChanges = Field(default_factory=IgnoredEntryChanges)
 
 
 class Turn(BaseModel):

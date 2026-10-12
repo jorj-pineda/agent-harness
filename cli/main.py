@@ -11,6 +11,7 @@ from __future__ import annotations
 import json
 import sys
 import uuid
+from typing import Any
 
 import typer
 
@@ -158,6 +159,20 @@ def chat(
             break
 
 
+def show_ignored_entries(data: dict[str, Any] | None) -> None:
+    summary = data or {}
+    typer.echo(f"  ignored top-level metadata: {summary.get('status', 'not_recorded')}")
+    for kind in ("added", "modified", "deleted"):
+        if summary.get(kind) or summary.get(kind + "_count"):
+            typer.echo(
+                f"    {kind}: {summary.get(kind, [])} "
+                f"(total {summary.get(kind + '_count', 'unknown')})"
+            )
+    if summary.get("paths_truncated"):
+        typer.echo("    Ignored-entry list truncated; counts cover the full metadata comparison.")
+    typer.echo(summary.get("scope_note", "Metadata only; ignored contents are not compared."))
+
+
 def show_turn(result: TurnSummary) -> None:
     if result.run_id:
         typer.echo(f"  run_id={result.run_id}")
@@ -180,6 +195,8 @@ def show_turn(result: TurnSummary) -> None:
                 typer.echo(f"  workspace_{kind}={changes[kind]}")
     elif changes.get("status") == "unavailable":
         typer.echo(f"  workspace_changes=unavailable ({changes.get('reason')})")
+    if changes.get("status") != "not_tracked":
+        show_ignored_entries(changes.get("ignored_entries"))
     for entry in changes.get("diffs", []):
         typer.echo(f"  turn diff: {entry['path']}")
         if entry.get("reason"):
@@ -305,6 +322,7 @@ def workspace_review(
         typer.echo("Path list truncated; counts cover the full comparison.")
     if review.get("reason"):
         typer.echo(review["reason"])
+    show_ignored_entries(review.get("ignored_entries"))
     typer.echo(f"Regular-file mode coverage: {review.get('mode_coverage', 'not_recorded')}")
     typer.echo(f"Excluded patterns: {review.get('excluded_patterns', [])}")
     typer.echo(review.get("scope_note", "Read-only review, not permission to resume or revert."))

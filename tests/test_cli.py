@@ -513,6 +513,13 @@ def test_workspace_review_command_only_reads_and_explains_scope():
         "modified": ["a.py"],
         "modified_count": 2,
         "paths_truncated": True,
+        "ignored_entries": {
+            "status": "changed",
+            "modified": [".git"],
+            "modified_count": 2,
+            "paths_truncated": True,
+            "scope_note": "Metadata only; rewriting existing children may be missed.",
+        },
         "excluded_patterns": [".git", ".env"],
         "scope_note": "Read-only review, not permission to resume or revert.",
     }
@@ -522,6 +529,9 @@ def test_workspace_review_command_only_reads_and_explains_scope():
         )
     assert result.exit_code == 0, result.output
     assert "workspace=changed baseline_turn=t1" in result.output
+    assert "ignored top-level metadata: changed" in result.output
+    assert "modified: ['.git'] (total 2)" in result.output
+    assert "rewriting existing children" in result.output
     assert "Regular-file mode coverage: not_recorded" in result.output
     assert "modified: ['a.py'] (total 2)" in result.output
     assert "Path list truncated" in result.output

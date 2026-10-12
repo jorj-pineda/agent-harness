@@ -176,6 +176,12 @@ def test_chat_returns_patch_summary_after_write(harness: Harness, tmp_path: Path
     body = resp.json()
     assert body["files_touched"] == ["calc.py"]
     assert body["patch_summary"] == ["calc.py (6 bytes written)"]
+    ignored = body["workspace_changes"].pop("ignored_entries")
+    assert ignored["status"] == "unchanged"
+    assert ignored["added"] == ignored["modified"] == ignored["deleted"] == []
+    assert ignored["added_count"] == ignored["modified_count"] == ignored["deleted_count"] == 0
+    assert ignored["paths_truncated"] is False
+    assert "Matching metadata does not establish unchanged contents" in ignored["scope_note"]
     assert body["workspace_changes"] == {
         "status": "tracked",
         "added": [],

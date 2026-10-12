@@ -430,3 +430,32 @@ async def test_string_command_recovery_uses_shared_feedback_and_existing_budgets
             "blocked" if mode == "repeated" else "budget_exhausted"
         )
         assert all(call.result is None for call in response.tool_calls)
+
+
+async def test_runtime_reports_command_changes_to_ignored_metadata(tmp_path: Path) -> None:
+    workspace = tmp_path / "repo"
+    workspace.mkdir()
+    (workspace / ".git").mkdir()
+    (workspace / ".git" / "index").write_text("preserved user index")
+    (workspace / ".venv").mkdir()
+    (workspace / "test_metadata.py").write_text(
+        "from pathlib import Path\n"
+        "def test_metadata():\n"
+        "    Path('.git/new-entry').write_text('command side effect')\n"
+        "    Path('.venv').rmdir()\n"
+    )
+    response = await _run_edit_turn(
+        workspace,
+        tmp_path,
+        Settings(_env_file=None),
+        ToolCall(id="check", name="run_command", arguments={"argv": ["pytest", "-q"]}),
+    )
+    ignored = response.workspace_changes.ignored_entries
+    assert ignored.status == "changed"
+    assert ignored.modified == [".git"]
+    assert ignored.deleted == [".venv"]
+    assert ignored.added == [".pytest_cache"]
+    assert response.workspace_changes.added == []
+    assert response.workspace_changes.modified == []
+    assert response.workspace_changes.diffs == []
+    assert (workspace / ".git" / "index").read_text() == "preserved user index"

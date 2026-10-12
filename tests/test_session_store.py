@@ -98,6 +98,7 @@ def test_run_identity_and_final_archive_commit_are_atomic(tmp_path: Path, monkey
             root="/fixture",
             root_identity=(1, 2),
             fingerprints={"a.py": "fixture"},
+            ignored_entry_fingerprints={".git": "fixture-metadata-hash"},
         )
         profile = capture_execution_profile(
             Settings(_env_file=None, ollama_model="gemma4:12b"), "ollama", ToolRegistry()
