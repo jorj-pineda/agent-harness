@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 from tools import ToolError, ToolRegistry
-from tools.code import register_code_tools
+from tools.code import MAX_GREP_HITS, register_code_tools
 from workspace import Workspace
 
 
@@ -78,3 +78,41 @@ async def test_fallback_does_not_read_outside_symlink_or_walk_ignored_tree(
     assert await registry(root, ("ignored",)).invoke("grep_repo", {"pattern": "needle"}) == [
         {"path": "visible.py", "line": 1, "text": "needle"}
     ]
+
+
+@pytest.mark.parametrize("backend", ["rg", "python"])
+@pytest.mark.parametrize("count", [0, MAX_GREP_HITS, MAX_GREP_HITS + 1])
+async def test_exact_limit_returns_hits_but_overflow_is_explicit(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, backend: str, count: int
+) -> None:
+    select_backend(backend, monkeypatch)
+    (tmp_path / "module.py").write_text("needle\n" * count)
+    reg = registry(tmp_path, ())
+    if count > MAX_GREP_HITS:
+        with pytest.raises(ToolError, match=r"results are incomplete.*Narrow"):
+            await reg.invoke("grep_repo", {"pattern": "needle", "path": "module.py"})
+    else:
+        hits = await reg.invoke("grep_repo", {"pattern": "needle", "path": "module.py"})
+        assert hits == [
+            {"path": "module.py", "line": line, "text": "needle"} for line in range(1, count + 1)
+        ]
+
+
+@pytest.mark.parametrize("backend", ["rg", "python"])
+async def test_limit_is_global_and_ignored_matches_do_not_consume_it(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, backend: str
+) -> None:
+    select_backend(backend, monkeypatch)
+    (tmp_path / "ignored").mkdir()
+    (tmp_path / "ignored" / "noise.py").write_text("needle\n" * (MAX_GREP_HITS + 1))
+    for name in ["first.py", "second.py"]:
+        (tmp_path / name).write_text("needle\n" * (MAX_GREP_HITS // 2))
+    reg = registry(tmp_path, ("ignored",))
+    hits = await reg.invoke("grep_repo", {"pattern": "needle"})
+    assert len(hits) == MAX_GREP_HITS
+    assert {hit["path"] for hit in hits} == {"first.py", "second.py"}
+    (tmp_path / "third.py").write_text("needle\n")
+    with pytest.raises(ToolError, match=r"results are incomplete.*Narrow"):
+        await reg.invoke("grep_repo", {"pattern": "needle"})
+    narrowed = await reg.invoke("grep_repo", {"pattern": "needle", "path": "third.py"})
+    assert narrowed == [{"path": "third.py", "line": 1, "text": "needle"}]

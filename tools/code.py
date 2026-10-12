@@ -434,7 +434,9 @@ def build_code_tools(
             name="grep_repo",
             description=(
                 "Search the workspace for a regex pattern. Returns matching lines with "
-                "repo-relative paths and line numbers."
+                "repo-relative paths and line numbers, excluding workspace-ignored paths. "
+                f"More than {MAX_GREP_HITS} matching lines returns an error; narrow the "
+                "path, glob, or pattern and retry."
             ),
             input_model=GrepRepoInput,
             fn=grep_repo,
@@ -579,7 +581,9 @@ async def _grep_ripgrep(
         "--no-heading",
         "--with-filename",
         "--null",
-        f"--max-count={MAX_GREP_HITS}",
+        # One extra matching line per file detects overflow without an unbounded
+        # result count. The process output cap remains a separate preventive bound.
+        f"--max-count={MAX_GREP_HITS + 1}",
     ]
     if glob:
         cmd.append(f"--glob={glob}")
@@ -608,11 +612,11 @@ async def _grep_ripgrep(
 
     hits: list[dict[str, Any]] = []
     for line in proc.stdout.splitlines():
-        if len(hits) >= MAX_GREP_HITS:
-            break
         parsed = _parse_rg_line(workspace, line)
         if parsed is not None:
             hits.append(parsed)
+            if len(hits) > MAX_GREP_HITS:
+                raise _grep_match_limit_error()
     return hits
 
 
@@ -655,9 +659,16 @@ def _grep_python(
                         "text": line,
                     }
                 )
-                if len(hits) >= MAX_GREP_HITS:
-                    return hits
+                if len(hits) > MAX_GREP_HITS:
+                    raise _grep_match_limit_error()
     return hits
+
+
+def _grep_match_limit_error() -> ToolError:
+    return ToolError(
+        f"grep_repo exceeded {MAX_GREP_HITS} matching lines; results are incomplete. "
+        "Narrow the path, glob, or pattern and search again."
+    )
 
 
 def _iter_files(workspace: Workspace, target: Path) -> Iterator[Path]:
