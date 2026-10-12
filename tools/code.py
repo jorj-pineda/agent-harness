@@ -12,11 +12,13 @@ import logging
 import os
 import re
 import shutil
+import stat
 import tempfile
 from collections.abc import Iterator, Mapping
 from fnmatch import fnmatch
 from pathlib import Path
 from typing import Any
+from uuid import uuid4
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -139,6 +141,29 @@ class EmitPlanInput(BaseModel):
 
 def _workspace_error(exc: WorkspaceError) -> ToolError:
     return ToolError(str(exc))
+
+
+def _atomic_write_file(target: Path, content: bytes) -> None:
+    """Publish complete content with a same-directory rename, leaving failures intact.
+
+    New files retain the normal 0666/umask creation policy. Existing permission
+    bits are copied; inode identity, hard links and other metadata are not preserved.
+    This is neither a stale-content guard nor a power-loss durability guarantee.
+    """
+    mode = stat.S_IMODE(target.stat().st_mode) if target.exists() else None
+    temporary = target.parent / f".agent-harness-write-{uuid4().hex}"
+    descriptor = os.open(
+        temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o666 if mode is None else mode & 0o777
+    )
+    try:
+        with os.fdopen(descriptor, "wb") as stream:
+            stream.write(content)
+            stream.flush()
+            if mode is not None:
+                os.fchmod(stream.fileno(), mode)
+        os.replace(temporary, target)
+    finally:
+        temporary.unlink(missing_ok=True)
 
 
 def build_code_tools(
@@ -283,8 +308,10 @@ def build_code_tools(
         if len(encoded) > MAX_WRITE_BYTES:
             raise ToolError(f"Content exceeds {MAX_WRITE_BYTES} bytes.")
 
+        if target.exists() and not target.is_file():
+            raise ToolError(f"Refusing to replace a non-regular file: {args.path}")
         target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_bytes(encoded)
+        _atomic_write_file(target, encoded)
         rel = workspace.relative_str(target)
         return {"path": rel, "bytes_written": len(encoded)}
 
