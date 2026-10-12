@@ -154,6 +154,9 @@ async def run_configured_turn(
                 provider="policy",
                 latency_ms=0.0,
             )
+        loop = asyncio.get_running_loop()
+        wall_started_at = loop.time()
+        workspace_review_ms = 0.0
         if on_execution_profile is not None:
             on_execution_profile(
                 capture_execution_profile(
@@ -174,7 +177,10 @@ async def run_configured_turn(
             if settings.track_workspace_changes and session.workspace_root
             else None
         )
+        review_started_at = loop.time()
         before = await _snapshot_or_reason(tracked_root, settings) if tracked_root else None
+        if tracked_root is not None:
+            workspace_review_ms += (loop.time() - review_started_at) * 1000
         response = await run_turn(
             session=session,
             user_input=message,
@@ -188,6 +194,7 @@ async def run_configured_turn(
             max_files_touched_per_turn=settings.max_files_touched_per_turn,
             max_tool_calls_per_turn=settings.max_tool_calls_per_turn,
             max_turn_wall_seconds=settings.max_turn_wall_seconds,
+            wall_started_at=wall_started_at,
             max_completion_tokens_per_turn=settings.max_completion_tokens_per_turn,
             max_total_tokens_per_turn=settings.max_total_tokens_per_turn,
             max_context_tokens=settings.max_context_tokens,
@@ -209,6 +216,7 @@ async def run_configured_turn(
                 reason="No workspace configured or workspace tracking disabled.",
             )
         if tracked_root is not None and before is not None:
+            review_started_at = loop.time()
             response.workspace_changes, after = await _change_report(tracked_root, settings, before)
             if on_workspace_review is not None:
                 saved_fingerprints = (
@@ -231,6 +239,8 @@ async def run_configured_turn(
                     else after.ignored_entries,
                     reason=after if isinstance(after, str) else None,
                 )
+            workspace_review_ms += (loop.time() - review_started_at) * 1000
+        response.workspace_review_ms = workspace_review_ms
         if on_workspace_review is not None and baseline is not None:
             on_workspace_review(baseline)
         if on_finalized is not None:

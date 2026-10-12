@@ -84,6 +84,7 @@ async def run_turn(
     max_files_touched_per_turn: int = 0,
     max_tool_calls_per_turn: int = 0,
     max_turn_wall_seconds: float = 0,
+    wall_started_at: float | None = None,
     max_completion_tokens_per_turn: int = 0,
     max_total_tokens_per_turn: int = 0,
     max_context_tokens: int = 0,
@@ -101,6 +102,10 @@ async def run_turn(
     returns the rule-#5 payload. When `grounder` is provided, fills in
     `confidence` / `citations` / `escalated` from the turn's tool-call
     history; otherwise those fields stay at their defaults.
+
+    `wall_started_at` optionally supplies the configured runtime start on the event
+    loop's monotonic clock, so setup/snapshot time cannot reset the dispatch budget.
+    Without it, the low-level loop retains its own start time.
 
     `on_event`, when supplied, observes each tool call (start/end) for live
     streaming — it never alters control flow.
@@ -135,7 +140,8 @@ async def run_turn(
         min_request_output=min_request_output_tokens,
     )
     deadline = (
-        asyncio.get_running_loop().time() + max_turn_wall_seconds
+        (wall_started_at if wall_started_at is not None else asyncio.get_running_loop().time())
+        + max_turn_wall_seconds
         if max_turn_wall_seconds > 0
         else None
     )

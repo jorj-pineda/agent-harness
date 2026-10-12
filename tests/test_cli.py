@@ -58,6 +58,7 @@ def _make_turn(**kwargs: Any) -> MagicMock:
     turn.escalated = kwargs.get("escalated", False)
     turn.provider = kwargs.get("provider", "fake")
     turn.latency_ms = kwargs.get("latency_ms", 10.0)
+    turn.workspace_review_ms = kwargs.get("workspace_review_ms")
     turn.files_touched = kwargs.get("files_touched", [])
     turn.completion_status = kwargs.get("completion_status", "completed")
     turn.completion_reason = kwargs.get("completion_reason")
@@ -629,3 +630,21 @@ def test_configuration_review_calls_only_read_only_computation_endpoint():
         "message": "next task",
     }
     get.assert_not_called()
+
+
+@pytest.mark.parametrize("value", [None, 0, 12.5])
+def test_review_timing_is_separate_and_nullable(value, capsys):
+    from cli._client import summarize
+    from cli.main import show_turn
+
+    data = {"answer": "Done", "provider": "scripted", "latency_ms": 20}
+    if value is not None:
+        data["workspace_review_ms"] = value
+    result = summarize(data)
+    show_turn(result)
+    text = capsys.readouterr().out
+    assert "latency=20ms" in text
+    if value is None:
+        assert "workspace_review=unmeasured" in text
+    else:
+        assert f"workspace_review={value:.0f}ms (separate from loop latency)" in text

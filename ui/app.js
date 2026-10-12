@@ -276,8 +276,10 @@ function renderEnvelope(data, includeRunId = true) {
   badges.appendChild(el("span", `badge ${data.escalated ? "escalated" : "ok"}`,
     data.escalated ? "review requested" : "no escalation flag"));
   badges.appendChild(el("span", "badge ok", data.provider || "—"));
-  badges.appendChild(el("span", "badge ok", `${(data.latency_ms || 0).toFixed(0)}ms`));
+  badges.appendChild(el("span", "badge ok", `loop: ${(data.latency_ms || 0).toFixed(0)}ms`));
   els.envelope.appendChild(badges);
+  els.envelope.appendChild(el("p", "review-note",
+    `Workspace review: ${data.workspace_review_ms == null ? "unmeasured" : data.workspace_review_ms.toFixed(1) + "ms"}; separate from loop latency. These are not total request latency or a hard return deadline.`));
   els.envelope.appendChild(el("p", "review-note",
     "Completion records how the run ended. Passed checks cover only the checks run; review the diff and remaining failures."));
   if (includeRunId && data.run_id) els.envelope.appendChild(listSection("run ID", [data.run_id]));
