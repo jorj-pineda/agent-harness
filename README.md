@@ -1094,3 +1094,12 @@ docker compose up --build -d            # optional smoke; see demo.md
 - **LLM-judge confidence.** Deterministic heuristic is inspectable; validate before swapping.
 - **Per-sentence citation attribution.** Turn-level file:line citations today.
 - **Router fallback across providers.** Plain dispatch table until error patterns justify failover.
+
+
+Programmatic OpenAI-compatible clients can supply `default_headers` to the adapter
+for a service-specific User-Agent and stable conversation ID. Create one provider
+per conversation when using a fixed session header. This constructor seam does not
+add automatic per-session routing to the API settings. A bounded OpenCode Go free
+preview comparison is documented in `evals/BASELINES.md`; one accepted artifact
+ended budget-exhausted before a check, and the other remained unchanged. Preview
+pricing is temporary; verify it before replay and stop at account/provider limits.
