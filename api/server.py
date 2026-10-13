@@ -1086,7 +1086,11 @@ async def _execute_turn(
                     }
                     if any(
                         store.has_newer_unfinished_work(
-                            user_id, identity, previous_run.created_at, excluding_run_id=run_id
+                            user_id,
+                            identity,
+                            previous_run.created_at,
+                            excluding_run_id=run_id,
+                            workspace_root=session.workspace_root,
                         )
                         for identity in relevant_sessions
                     ):

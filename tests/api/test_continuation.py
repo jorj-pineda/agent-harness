@@ -327,3 +327,29 @@ def test_damaged_saved_evidence_cannot_grant_continuation(tmp_path, corruption):
         assert run["before_checkpoint_id"] is None
         assert run["execution_profile"] is None
     assert provider.calls == []
+
+
+def test_failed_related_fork_blocks_another_fork_from_original_source(tmp_path):
+    from harness.runs import RunInput
+
+    _root, sid, archived = source(tmp_path)
+    provider = known_provider()
+    provider.script(make_response(content="Reviewed"))
+    with TestClient(make_app(tmp_path, provider, **SETTINGS)) as client:
+        first = submit_and_finish(client, sid, body(archived))
+        fork = first["request"]["session_id"]
+
+        def unfinished_fork():
+            store = client.app.state.components.session_store
+            record, _ = store.create_run(
+                RunInput(user_id="dev", session_id=fork, message="Unsaved", request_id="lost-fork"),
+                provider="ollama",
+                configured_model="gemma4:12b",
+            )
+            store.fail_run(record.run_id)
+
+        client.portal.call(unfinished_fork)
+        second = submit_and_finish(client, sid, {**body(archived), "request_id": "another-fork"})
+        assert second["response"]["completion_status"] == "blocked", second
+        assert second["before_checkpoint_id"] is None
+        assert len(provider.calls) == 1

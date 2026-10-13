@@ -335,13 +335,22 @@ class SessionStore:
         return RunRecord.model_validate_json(row[0]) if row else None
 
     def has_newer_unfinished_work(
-        self, user_id: str, session_id: str, after: datetime, *, excluding_run_id: str
+        self,
+        user_id: str,
+        session_id: str,
+        after: datetime,
+        *,
+        excluding_run_id: str,
+        workspace_root: str | None = None,
     ) -> bool:
         return (
             self._conn.execute(
-                "SELECT 1 FROM runs WHERE user_id=? AND session_id=? AND created_at>? "
-                "AND run_id!=? AND status IN ('running','failed','interrupted') LIMIT 1",
-                (user_id, session_id, after.isoformat(), excluding_run_id),
+                "SELECT 1 FROM runs r WHERE created_at>? AND run_id!=? "
+                "AND status IN ('running','failed','interrupted') "
+                "AND ((user_id=? AND session_id=?) OR EXISTS ("
+                "SELECT 1 FROM sessions s WHERE s.session_id=r.session_id "
+                "AND json_extract(s.archive, '$.session.workspace_root')=?)) LIMIT 1",
+                (after.isoformat(), excluding_run_id, user_id, session_id, workspace_root),
             ).fetchone()
             is not None
         )
