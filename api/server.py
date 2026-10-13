@@ -49,6 +49,7 @@ from harness.execution_profile import ExecutionProfile
 from harness.grounding import Grounder
 from harness.policy import classify_task, is_out_of_scope_request
 from harness.providers import build_configured_provider, configured_model, configured_provider_names
+from harness.reverts import FileRevertInput, FileRevertOutcome, FileRevertRecord, revert_file
 from harness.router import ProviderNotFoundError, ProviderRouter
 from harness.runs import RequestConflictError, RequestId, RunInput, RunRecord
 from harness.runtime import build_registry, out_of_scope_response, run_configured_turn
@@ -73,6 +74,7 @@ from .models import (
     CreateCheckpointRequest,
     CreateSessionRequest,
     CreateSessionResponse,
+    RevertFileRequest,
     SubmitRunRequest,
 )
 from .settings import Settings, get_settings
@@ -185,6 +187,7 @@ def create_app(
             if components.session_store is None:
                 components.session_store = SessionStore(resolved_settings.session_db_path)
             components.session_store.recover_runs()
+            components.session_store.recover_file_reverts()
             yield
         finally:
             await _close_components(components)
@@ -212,6 +215,118 @@ def _mount_ui(app: FastAPI) -> None:
 
 
 def _register_routes(app: FastAPI) -> None:
+    @app.get("/file-reverts", response_model=FileRevertRecord | None)
+    async def find_revert(
+        request: Request, user_id: str = Query(min_length=1), request_id: RequestId = Query()
+    ) -> FileRevertRecord | None:
+        return _session_store(request.app.state.components).find_file_revert(user_id, request_id)
+
+    @app.get("/file-reverts/{revert_id}", response_model=FileRevertRecord)
+    async def inspect_revert(
+        revert_id: str, request: Request, user_id: str = Query(min_length=1)
+    ) -> FileRevertRecord:
+        record = _session_store(request.app.state.components).get_file_revert(revert_id)
+        if record is None:
+            raise HTTPException(status_code=404, detail="Revert not found.")
+        if record.request.user_id != user_id:
+            raise HTTPException(status_code=403, detail="Revert belongs to another user.")
+        return record
+
+    @app.post("/runs/{run_id}/revert-file", response_model=FileRevertRecord)
+    async def apply_file_revert(
+        run_id: str, req: RevertFileRequest, request: Request, response: Response
+    ) -> FileRevertRecord:
+        components: Components = request.app.state.components
+        run = _lookup_run(components, run_id, req.user_id)
+        submission = FileRevertInput(
+            run_id=run_id, user_id=req.user_id, path=req.path, request_id=req.request_id
+        )
+        store = _session_store(components)
+
+        def replay() -> FileRevertRecord | None:
+            existing = store.find_file_revert(req.user_id, req.request_id)
+            if existing is not None and existing.request != submission:
+                raise HTTPException(
+                    status_code=409, detail="Revert key belongs to different input."
+                )
+            return existing
+
+        def deliver(record: FileRevertRecord) -> FileRevertRecord:
+            response.status_code = {
+                "pending": 202,
+                "applied": 200,
+                "rejected": 409,
+                "interrupted": 409,
+                "uncertain": 503,
+            }[record.status]
+            return record
+
+        existing = replay()
+        if existing is not None:
+            return deliver(existing)
+        if components.closing or run.status == "running":
+            raise HTTPException(status_code=409, detail="Run/server is not ready for file revert.")
+        before = store.get_checkpoint(run.before_checkpoint_id or "")
+        after = store.get_checkpoint(run.after_checkpoint_id or "")
+        if (
+            before is None
+            or after is None
+            or before.kind != "turn_before"
+            or after.kind != "turn_after"
+            or after.paired_before_id != before.checkpoint_id
+            or before.run_id != run_id
+            or after.run_id != run_id
+            or before.session_id != run.request.session_id
+            or after.session_id != run.request.session_id
+        ):
+            raise HTTPException(
+                status_code=409, detail="No valid turn checkpoint pair for this run."
+            )
+        if before.files.get(req.path) == after.files.get(req.path):
+            raise HTTPException(
+                status_code=409, detail="No eligible checkpoint difference for this path."
+            )
+
+        async def apply_and_save() -> FileRevertRecord:
+            with turn_admission.claim(run.request.session_id, before.root) as busy:
+                if busy is not None:
+                    raise HTTPException(status_code=409, detail=busy)
+                existing = replay()
+                if existing is not None:
+                    return existing
+                try:
+                    content = store.checkpoint_content(before, req.path)
+                    store.checkpoint_content(after, req.path)  # Validate saved after evidence too.
+                    record = store.create_file_revert(
+                        submission, before.checkpoint_id, after.checkpoint_id
+                    )
+                except (ValueError, sqlite3.Error) as exc:
+                    raise HTTPException(
+                        status_code=503,
+                        detail="Revert preparation/storage failed; no file operation started.",
+                    ) from exc
+                try:
+                    outcome = await asyncio.to_thread(revert_file, before, after, req.path, content)
+                except Exception:
+                    outcome = FileRevertOutcome(
+                        "uncertain", "File operation failed unexpectedly; inspect file and journal."
+                    )
+                if outcome.status in ("applied", "uncertain"):
+                    components.sessions.pop(run.request.session_id, None)
+                try:
+                    store.finish_file_revert(record, outcome)
+                except (ValueError, sqlite3.Error) as exc:
+                    raise HTTPException(
+                        status_code=503,
+                        detail="Revert outcome storage failed; inspect journal and file. "
+                        "Do not automatically retry.",
+                    ) from exc
+                return record
+
+        task = asyncio.create_task(apply_and_save())
+        _own_task(components, task)
+        return deliver(await asyncio.shield(task))
+
     @app.post("/sessions", response_model=CreateSessionResponse)
     async def create_session(req: CreateSessionRequest, request: Request) -> CreateSessionResponse:
         components: Components = request.app.state.components
@@ -540,7 +655,7 @@ def _lookup_session(components: Components, session_id: str, user_id: str) -> Se
         raise HTTPException(
             status_code=409,
             detail=(
-                "Saved session is read-only after restart or interrupted execution. "
+                "Saved session is read-only after restart, interrupted execution, or file reversal. "
                 "Create a new session; resume is not supported."
             ),
         )

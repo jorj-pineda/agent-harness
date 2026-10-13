@@ -109,7 +109,7 @@ path exclusions. Empty directories, ownership/ACLs/extended attributes and ignor
 contents are not restorable. External writers can make the overall capture
 non-atomic even with per-file consistency checks. Storage retention/quota/deletion
 and hard return deadlines remain open. `restore_supported=false`: these checkpoints
-are not turn-linked before/after pairs. No restore/revert endpoint exists yet.
+are not turn-linked before/after pairs. No whole-checkpoint restore endpoint exists. Eligible run files have a separate guarded action.
 
 **Opt-in turn checkpoints.** Create a session with `checkpoint_turns=true`, or
 use `agent-harness chat --workspace <repo> --checkpoints`. This explicitly enables
@@ -130,6 +130,44 @@ it and are outside loop latency/workspace_review_ms. All checkpoint exclusions,
 plaintext storage, bounds and external-writer limitations above still apply.
 These pairs are scoped observed content, not independent acceptance, attribution,
 resume permission or a safe revert action. `restore_supported=false` remains.
+
+**Explicit single-file reversal.** `POST /runs/{run_id}/revert-file` accepts
+`user_id`, one canonical relative `path`, and a stable `request_id`. It requires
+valid turn-linked captures and a terminal run. Current root identity, eligible
+file bytes/mode (or expected absence), parent directories and final named-file
+state are checked under process-local admission before a single replacement or
+unlink. Other paths and Git's index are untouched. Deleted-file restoration
+requires existing non-symlink parents; directories themselves are not restored.
+
+A pending request is committed before the file operation. Matching retries return
+its journal without performing another action; conflicting input returns 409.
+Outcomes are `applied`, `rejected`, or `uncertain`; pending reads/replays return
+202. Startup marks unfinished actions `interrupted` and never retries them.
+GET `/file-reverts?user_id=...&request_id=...` finds a key (null if absent), and
+GET `/file-reverts/{revert_id}?user_id=...` inspects owner-scoped metadata.
+Disconnect leaves the app-owned action running; shutdown waits for it. Applied
+or uncertain operations retire the source live session, while archived turns,
+checks and run evidence remain historical and unchanged. Recheck restored files
+through a fresh session rather than treating saved checks as current acceptance.
+
+```sh
+agent-harness revert-file <run-id> <path> --request-id <stable-key> --user-id dev
+agent-harness revert-status --request-id <stable-key> --user-id dev --json
+```
+
+The CLI sends one explicit action POST; status lookup is GET only. Errors/timeouts
+advise keyed inspection without automatic retry. Later target edits/mode changes
+are rejected and unrelated later work is preserved. These are reversals of
+observed checkpoint differences, not proof of agent attribution. POSIX directory
+descriptors prevent deliberate symlink traversal; concurrent external writers can
+still race the final check/mutation. Use one writer for this action. Replacement
+changes inode identity and does not restore ownership/ACLs/extended attributes or
+timestamps, and there is no fsync/power-loss guarantee. File operations and SQLite
+outcome storage are not one atomic transaction: a lost outcome remains pending/
+interrupted, requiring inspection. Whole-workspace restore, safe multi-file atomic
+revert, journal reconciliation, cross-process locks and guarded resume remain open.
+`restore_supported=false` describes whole-checkpoint restoration, not this separate
+explicit run-file action.
 
 **Directory exploration limits.** `list_dir` returns at most 200 immediate
 non-ignored entries; `tree` returns at most 300 entries, including its root and

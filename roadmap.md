@@ -688,6 +688,29 @@ The harness does not need to make every model good at every task. It needs to id
   Exclusions/plaintext/retention and non-atomic external-writer limitations remain;
   these pairs do not prove attribution or acceptance. Restore/revert, guarded
   continuation, panel opt-in and Milestone 5 remain incomplete.
+- **2026-10-12 — Journaled guarded single-file reversal prepared:** an explicit
+  owner-scoped run action reverses one eligible before/after checkpoint difference
+  only when current root identity, target bytes/mode or absence, and named-file
+  state match preconditions. POSIX directory descriptors avoid deliberate parent
+  link traversal; only the selected file is replaced/unlinked, preserving other
+  paths and Git index. A stable keyed journal commits pending state before work;
+  matching retries never repeat it, and startup marks unknown unfinished outcomes
+  interrupted without mutation. App-owned actions hold admission through disconnect
+  and storage; applied/uncertain actions retire the source session while historical
+  archives/run/check evidence remain unchanged. Thin CLI action/status commands
+  expose explicit submission and read-only inspection without automatic retry.
+  Validation passed 67 focused and 815 offline tests (five live deselected), Ruff/
+  mypy, changed-file formatting and both 90/90 scripted matrices with labels/limits
+  inspected. Real-file tests cover text/binary/empty/added/deleted content, modes,
+  preserved pre-existing/later/unrelated user edits and index, root replacement,
+  parent links, preparation races, ownership, corrupt saved data, storage failures,
+  keyed restart replay, interruption, disconnect/busy coordination and CLI recovery.
+  No inference or model-quality comparison ran. This is observed-change reversal,
+  not attribution or acceptance; saved checks must be rerun. External writers can
+  race final checks, replacement metadata/inode relationships are not restored,
+  parents must exist and SQLite/filesystem outcome commits are not atomic together.
+  Whole-checkpoint/multi-file atomic restore, reconciliation, cross-process locks,
+  panel controls and guarded continuation remain open; Milestone 5 incomplete.
 - **Next:** item 6's listed mechanics are in place; see the known limitations
   below before relying on them unattended. Item 7 has a repeated baseline and
   nine completed comparisons. Argument feedback did not reliably break repeated
@@ -927,7 +950,7 @@ enters the queue when a real task or evaluation shows the limitation matters.
 | Limitation | Proposed fix |
 |---|---|
 | Process-local turn admission prevents overlapping configured-runtime turns, but changes from editors, other harness processes, or detached commands still cannot be attributed. | Add cross-process coordination before multiple API workers. Label changed paths using file-tool hash evidence where available; other changes still need explicit source uncertainty. |
-| Bounded per-turn text diffs are available, but capture/output limits omit content. Explicit bounded checkpoints and opt-in turn-linked captures now exist; there is no revert. | Add conflict checks and an explicit bounded revert workflow from durable before/after content pairs, preserving later user edits and Git state. Excluded contents and non-atomic external writers remain outside capture; in-memory diff text is review evidence only. |
+| Bounded per-turn text diffs are available, but capture/output limits omit content. Explicit bounded checkpoints and opt-in turn-linked captures now exist; only explicit single-file reversal is supported; whole-workspace/atomic multi-file revert remains open. | Add conflict checks and an explicit bounded revert workflow from durable before/after content pairs, preserving later user edits and Git state. Excluded contents and non-atomic external writers remain outside capture; in-memory diff text is review evidence only. |
 | Default ignored top-level entries now have metadata-only reporting, but child rewrites and deeper edits can leave that metadata unchanged. | Keep scope explicit; require selected dependency/Git checks or broader bounded capture before using ignored state as an execution precondition. Metadata equality cannot certify unchanged contents. |
 | Initial setup/snapshot now consumes the dispatch budget; final review and storage can still exceed it. Application loop latency and workspace review duration omit setup/storage/transport. | Keep timing scopes explicit. A hard end-to-end bound requires safely interruptible work and a deliberate policy for preserving final evidence; do not abandon workers or imply a hard return deadline. |
 | Each turn reads every tracked file twice, up to the limits. Large repositories hit `unavailable`. | Cache `(size, mtime_ns, inode)` beside each hash and rehash only files whose metadata changed. Reuse the previous turn's after-snapshot when metadata is unchanged. |

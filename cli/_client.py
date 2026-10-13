@@ -144,6 +144,43 @@ class AgentClient:
         resp.raise_for_status()
         return dict(resp.json())
 
+    def revert_file(self, user_id: str, run_id: str, path: str, request_id: str) -> dict[str, Any]:
+        resp = httpx.post(
+            f"{self._base}/runs/{run_id}/revert-file",
+            json={"user_id": user_id, "path": path, "request_id": request_id},
+            timeout=120,
+        )
+        data = resp.json()
+        if isinstance(data, dict) and data.get("revert_id") is not None:
+            expected = {
+                "user_id": user_id,
+                "run_id": run_id,
+                "path": path,
+                "request_id": request_id,
+            }
+            codes = {
+                "applied": 200,
+                "pending": 202,
+                "rejected": 409,
+                "uncertain": 503,
+                "interrupted": 409,
+            }
+            if data.get("request") != expected or codes.get(data.get("status")) != resp.status_code:
+                raise ValueError("Mismatched revert response; inspect the keyed journal.")
+            return data
+        resp.raise_for_status()
+        raise ValueError("No revert record returned")
+
+    def revert_status(self, user_id: str, request_id: str) -> dict[str, Any] | None:
+        resp = httpx.get(
+            f"{self._base}/file-reverts",
+            params={"user_id": user_id, "request_id": request_id},
+            timeout=30,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        return dict(data) if data is not None else None
+
     def configuration_review(
         self, user_id: str, session_id: str, *, provider: str | None = None, message: str = ""
     ) -> dict[str, Any]:

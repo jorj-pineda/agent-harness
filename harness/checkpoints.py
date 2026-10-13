@@ -38,7 +38,10 @@ class CheckpointSummary(BaseModel):
     file_count: int = Field(ge=0, le=MAX_CHECKPOINT_ENTRIES)
     byte_count: int = Field(ge=0, le=MAX_CHECKPOINT_BYTES)
     excluded_patterns: tuple[str, ...] = REVIEW_IGNORE
-    restore_supported: Literal[False] = False
+    restore_supported: Literal[False] = Field(
+        default=False,
+        description="Whole-checkpoint restore unsupported; run file reversal is a separate action.",
+    )
     scope_note: str = (
         "Content capture; kind identifies manual capture or an admitted turn boundary. "
         "Saves eligible regular-file bytes and permission bits, excluding environment files "
