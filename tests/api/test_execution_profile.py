@@ -189,7 +189,7 @@ def test_bounded_requests_archive_full_reads_after_restart(tmp_path):
 
     repo = tmp_path / "repo"
     repo.mkdir()
-    content = "preserved user content\n" * 1000
+    content = "preserved user content\n" * 400
     (repo / "large.py").write_text(content)
     provider = ScriptedProvider()
     provider.script(
