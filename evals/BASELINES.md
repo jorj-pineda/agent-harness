@@ -1388,3 +1388,37 @@ Use the shared `run_task`, close each provider, stop on `error:` termination, re
 unchanged criterion hashes, and reject added/deleted or out-of-scope changed files.
 Retain all results via `write_report` at a unique external path. Do not print/persist
 the key or reuse one header session across separate conversations.
+
+
+## 2026-10-12 — Duodoro timer normalization, OpenCode Go free preview
+
+Raw report: `results/2026-10-12-duodoro-timer-longcat-free-64k.json`.
+Two `longcat-2.5-preview-free` attempts used the same transport, declared-free
+pricing, bounded settings and minimal-then-harness order as the duration Go trial.
+Harness revision `dec1009bf5bc9d50a125f21c481806096e7f98b3`, clean. The second frozen
+Duodoro task/criterion passed initial-fail/reference-pass validation before inference.
+The user's source checkout stayed unchanged and external criterion hashes matched
+before/after each attempt. No manual rescue, paid fallback, SDK retry or provider error.
+Each conversation had its own stable session header and its provider was closed.
+
+| Mode | Accepted | Status / checks | Prompt/output tokens | Loop seconds | Dispatched tools |
+|---|---|---|---|---|---|
+| minimal | 0/1 | budget_exhausted / not_run | 31,951 / 1,559 | 35.3 | 7 |
+| harness | 0/1 | incomplete (truncated) / not_run | 30,534 / 2,807 | 56.7 | 5 |
+
+Both artifacts remained unchanged and failed behavioral acceptance, while exact
+scope preservation passed. Minimal read instructions, source/tests and companion
+names, received an explicitly incomplete broad-search error, narrowed its inspection,
+then stopped before a model request estimated at 16,690 tokens in a 16,384 context.
+Harness inspected directories/instructions/tests/source, then received finish-reason
+`length` with empty visible final content and no edit. The raw normalized response
+records the output allowance and usage; this does not establish hidden reasoning,
+served-model limits, or a backend bug. No check ran and neither turn claimed completion.
+
+Across these two Duodoro tasks, free Go yielded one independently accepted artifact
+in four attempts (minimal 1/2, harness 0/2), with no completed/checked turns. These
+are small observations, not repeated comparisons, a held-out score, a ranking, or a
+quality improvement. Timer has not been run with Gemma. Context pressure/truncation,
+inspection choices and check completion remain concrete obstacles; preserving limits
+and failure evidence is preferable to silently increasing budgets. Native Node library
+criteria still omit full project integration; account billing remains unobserved.

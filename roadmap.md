@@ -904,6 +904,16 @@ Relevant implementation: `harness/loop.py`, `harness/outcome.py`, `harness/groun
   coverage. Two tasks frozen, not ten tasks completed; calendar and repeated model
   comparisons remain open, along with profile/context work and Milestone 5.
 
+- **2026-10-12 — Timer free-model observations recorded:** two bounded Go LongCat
+  attempts on the second frozen task yielded 0/2 accepted, unchanged artifacts, no
+  checks or manual rescue. Minimal exhausted estimated context after inspection;
+  harness received a length-truncated empty final reply. Both retained honest
+  budget-exhausted/incomplete and not-run status. Criteria/source preserved, provider
+  clients closed, no SDK retry, paid fallback or provider error. Raw report and
+  limits are in `evals/BASELINES.md`. Across two project tasks Go has one accepted
+  artifact in four attempts; none completed/checked. Timer Gemma trials, repeats,
+  held-out/ten-task criteria, profile/context work and Milestone 5 remain open.
+
 ## Milestone 1 — Establish a real task-success baseline
 
 **Outcome:** a model attempts real repository tasks through the same runtime used by Jorge, and independent checks determine whether it succeeded.
