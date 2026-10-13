@@ -263,3 +263,113 @@ def test_cli_repeats_both_modes_and_alternates_order(
         [r["kind"] for r in row["turn_trace"]] == ["request", "response"] for row in data["results"]
     )
     assert set(data["harness_revision"]) == {"commit", "dirty"}
+
+
+async def test_go_binding_preserves_observation_and_real_tool_acceptance():
+    import httpx
+
+    from providers import compatible_transport_options, create_chat_provider
+
+    captured = []
+    task = load_tasks()[0]
+    replies = [
+        {
+            "role": "assistant",
+            "content": None,
+            "tool_calls": [
+                {
+                    "id": "read",
+                    "type": "function",
+                    "function": {"name": "read_file", "arguments": json.dumps({"path": "calc.py"})},
+                }
+            ],
+        },
+        {
+            "role": "assistant",
+            "content": None,
+            "tool_calls": [
+                {
+                    "id": "write",
+                    "type": "function",
+                    "function": {
+                        "name": "write_file",
+                        "arguments": json.dumps(
+                            {
+                                "path": "calc.py",
+                                "content": "def divide(a: float, b: float) -> float:\n    return a / b\n",
+                            }
+                        ),
+                    },
+                }
+            ],
+        },
+        {
+            "role": "assistant",
+            "content": None,
+            "tool_calls": [
+                {
+                    "id": "check",
+                    "type": "function",
+                    "function": {
+                        "name": "run_command",
+                        "arguments": json.dumps(
+                            {"argv": ["python", "-m", "pytest", "-q", "test_visible.py"]}
+                        ),
+                    },
+                }
+            ],
+        },
+        {"role": "assistant", "content": "Fixed and checked."},
+    ]
+
+    def handler(request):
+        captured.append(request)
+        message = replies[len(captured) - 1]
+        return httpx.Response(
+            200,
+            json={
+                "id": "fixture",
+                "object": "chat.completion",
+                "created": 1,
+                "model": "fixture",
+                "choices": [
+                    {
+                        "index": 0,
+                        "message": message,
+                        "finish_reason": "tool_calls" if message.get("tool_calls") else "stop",
+                    }
+                ],
+                "usage": {"prompt_tokens": 10, "completion_tokens": 1, "total_tokens": 11},
+            },
+        )
+
+    settings = Settings(
+        _env_file=None,
+        openai_compatible_base_url="https://fixture.example/v1",
+        openai_compatible_model="fixture",
+        openai_compatible_api_key="fixture-private-key",
+        openai_compatible_transport="opencode_go",
+        require_verification_before_finish=True,
+        project_check_argv=["python", "-m", "pytest", "-q", "test_visible.py"],
+    )
+    provider = create_chat_provider(
+        "openai",
+        api_key="fixture-private-key",
+        model="fixture",
+        provider_name="openai_compatible",
+        base_url=settings.openai_compatible_base_url,
+        http_client=httpx.AsyncClient(transport=httpx.MockTransport(handler)),
+        **compatible_transport_options(settings.openai_compatible_transport),
+    )
+    original = (task.fixture / "calc.py").read_bytes()
+    try:
+        result = await run_task(task, provider=provider, settings=settings, mode="harness")
+    finally:
+        await provider.aclose()
+    assert result.passed and result.completion_status == "completed"
+    assert result.verification_status == "passed"
+    assert result.prompt_tokens == 40 and result.completion_tokens == 4
+    assert len(captured) == 4
+    assert len({request.headers["x-opencode-session"] for request in captured}) == 1
+    assert result.runtime_config["openai_compatible_transport"] == "opencode_go"
+    assert (task.fixture / "calc.py").read_bytes() == original

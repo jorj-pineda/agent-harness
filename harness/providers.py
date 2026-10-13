@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from providers import create_chat_provider
+from providers import compatible_transport_options, create_chat_provider
 from providers.base import ChatProvider
 
 from .config import Settings
@@ -59,6 +59,7 @@ def build_configured_provider(name: str, settings: Settings) -> ChatProvider:
         base_url=settings.openai_compatible_base_url,
         provider_name="openai_compatible",
         timeout_seconds=timeout,
+        **compatible_transport_options(settings.openai_compatible_transport),
     )
 
 

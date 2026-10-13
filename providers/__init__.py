@@ -23,7 +23,7 @@ from .base import (
     ToolSpec,
 )
 from .ollama import OllamaProvider
-from .openai import OpenAIProvider
+from .openai import OpenAIProvider, compatible_transport_options
 
 __all__ = [
     "AnthropicProvider",
@@ -39,6 +39,7 @@ __all__ = [
     "TokenUsage",
     "ToolCall",
     "ToolSpec",
+    "compatible_transport_options",
     "create_chat_provider",
     "create_embedder",
 ]

@@ -397,6 +397,7 @@ async def _run_one(
         runtime_config={
             "coding_toolset": settings.coding_toolset,
             "coding_prompt_profile": settings.coding_prompt_profile,
+            "openai_compatible_transport": settings.openai_compatible_transport,
             "max_tool_iterations": settings.max_tool_iterations,
             "max_tool_calls_per_turn": settings.max_tool_calls_per_turn,
             "max_turn_wall_seconds": settings.max_turn_wall_seconds,

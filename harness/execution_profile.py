@@ -9,6 +9,7 @@ from urllib.parse import urlsplit
 
 from pydantic import BaseModel, ConfigDict
 
+from providers import compatible_transport_options
 from tools import ToolRegistry
 
 from .config import CodingToolset, Settings
@@ -56,6 +57,7 @@ class ExecutionProfile(BaseModel):
     tool_specs_sha256: str
     tool_names: list[str]
     project_check_sha256: str | None
+    provider_options_sha256: str | None = None
     settings: CapturedRuntimeSettings
     ollama_num_ctx: int | None = None
     ollama_think: bool | None = None
@@ -63,6 +65,8 @@ class ExecutionProfile(BaseModel):
         "Configured execution evidence, not backend attestation or resume permission. "
         "Excludes credentials, raw endpoints, check argv, injected facts, workspace contents, "
         "tool implementations, and provider/server defaults. Null identities are unknown."
+        " A special compatible transport recipe hash records public configured options only; "
+        "null has no recorded recipe. Conversation IDs and constructor overrides are excluded."
     )
 
 
@@ -129,6 +133,11 @@ def capture_execution_profile(
         project_check_sha256=None
         if settings.project_check_argv is None
         else _json_digest(settings.project_check_argv),
+        provider_options_sha256=_json_digest(
+            compatible_transport_options(settings.openai_compatible_transport)
+        )
+        if provider == "openai_compatible" and settings.openai_compatible_transport != "generic"
+        else None,
         settings=CapturedRuntimeSettings.model_validate(
             {name: getattr(settings, name) for name in CapturedRuntimeSettings.model_fields}
         ),

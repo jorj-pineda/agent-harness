@@ -964,6 +964,25 @@ Relevant implementation: `harness/loop.py`, `harness/outcome.py`, `harness/groun
   All preparation writes stayed in disposable artifacts or agent-harness definitions;
   Duodoro working-tree changes require branches and PRs, with existing commits left intact.
 
+- **2026-10-13 — Configured Go conversation transport:** explicit generic/Go settings
+  share one provider factory across application and evaluator. Go requires configured
+  endpoint/model/key, identifies the harness, binds stable session headers per request
+  and uses zero SDK retries. An optional pure provider capability returns views over
+  one owned client without mutating global headers; other providers keep their protocol.
+  Evaluator observation survives binding, and the panel can select the compatible
+  provider. Durable nullable recipe hashes exclude credentials/conversation IDs; old
+  generic absence stays absent and selecting Go causes guarded configuration drift.
+  Validation passed 93 focused and 880 offline tests (five live deselected), Ruff/mypy,
+  formatting, JS syntax and both 90/90 scripted matrices with limits inspected. Tests
+  intercept HTTP, cover concurrent distinct/stable headers, missing/unsafe context,
+  early configuration rejection, lifecycle closure, API restart/keyed replay, unchanged
+  user work, metadata privacy/drift and real file edit/check/independent acceptance
+  without losing token observations. Two initial test-fixture mistakes were corrected
+  before the full gate; no product test was skipped. No live inference in this slice.
+  No account import, cost enforcement, paid fallback, backend attestation or new model
+  selection. Context management, broader model/held-out/project validation and the rest
+  of Milestones 4–6 remain incomplete. Duodoro edits still require branches and PRs.
+
 ## Milestone 1 — Establish a real task-success baseline
 
 **Outcome:** a model attempts real repository tasks through the same runtime used by Jorge, and independent checks determine whether it succeeded.

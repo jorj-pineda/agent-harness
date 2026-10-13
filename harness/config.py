@@ -79,6 +79,18 @@ class Settings(BaseSettings):
             raise ValueError("OpenAI-compatible base URL and model must be configured together")
         return value
 
+    openai_compatible_transport: Literal["generic", "opencode_go"] = "generic"
+
+    @field_validator("openai_compatible_transport")
+    @classmethod
+    def validate_compatible_transport(cls, value: str, info: ValidationInfo) -> str:
+        if value == "opencode_go" and (
+            not info.data.get("openai_compatible_base_url")
+            or not info.data.get("openai_compatible_api_key")
+        ):
+            raise ValueError("Go transport requires a configured compatible endpoint/model and key")
+        return value
+
     # Data paths
     sqlite_db_path: Path = Path("data/support.db")
     chroma_path: Path = Path("data/chroma")

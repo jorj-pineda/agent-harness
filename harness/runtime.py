@@ -15,7 +15,7 @@ from pathlib import Path
 from typing import Literal
 
 from memory import FactStore
-from providers.base import ChatMessage, ChatProvider
+from providers.base import ChatMessage, ChatProvider, ConversationProvider
 from tools import Tool, ToolRegistry
 from tools.code import build_code_tools
 from tools.memory import register_memory_tools
@@ -199,7 +199,9 @@ async def run_configured_turn(
         response = await run_turn(
             session=session,
             user_input=message,
-            provider=provider,
+            provider=provider.for_conversation(session.session_id)
+            if isinstance(provider, ConversationProvider)
+            else provider,
             registry=registry,
             max_iterations=settings.max_tool_iterations,
             grounder=grounder
