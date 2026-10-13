@@ -51,8 +51,9 @@ and tool/token/time budgets. Use `run_task` with the same prepared task/settings
 both modes. Require unchanged criterion hashes and reject added/deleted files or
 modified paths other than the permitted target, even if executable assertions pass.
 Include every attempt and distinguish environment/setup failures from patch failures.
-Retain raw traces/diffs and record manual rescues. Only the configured local
-`gemma4:12b` is authorized here; additional models and paid calls require approval.
+Retain raw traces/diffs and record manual rescues. Jorge authorized local `gemma4:12b` and a cheaper model through his existing
+OpenCode account within account limits. Use a currently free Go model for the next
+bounded comparison; do not silently switch to paid usage or another repository.
 Stop any evaluation-owned Ollama processes afterward, preserving user-owned services.
 
 Next candidate tasks (not frozen, validated or run yet):

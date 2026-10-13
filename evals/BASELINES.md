@@ -1,7 +1,8 @@
 # Real-task baselines
 
 Real coding evaluations: a live model uses the application runtime and real
-tools on disposable copies of the five trusted fixtures in `evals/real_tasks/`.
+tools on disposable copies of trusted fixtures in `evals/real_tasks/` and explicitly
+authorized pinned tasks in `evals/projects/`.
 Acceptance tests that the model cannot edit grade the final files. These results
 say nothing about other models, tasks, or languages. Scripted-contract and
 simulated-tool results live elsewhere and are not comparable.
@@ -1268,3 +1269,56 @@ retirement, the final runtime passed 516 offline tests (five live deselected),
 Ruff, mypy, and both 90/90 scripted matrices, with their evidence labels inspected.
 These validate mechanics, not model quality. No trial tests or behavior
 are shipped in the final diff.
+
+
+## 2026-10-12 — Duodoro duration formatting, `gemma4:12b`
+
+One authorized real-project library bugfix pinned at Duodoro
+`5324cabba4ad3c8ad2e1cd1480218cf087d9b741` was attempted four times using shared
+runtime/real tools in disposable workspaces. Preparation and external acceptance
+are documented in `projects/duodoro/README.md`. The initial artifact fails and the
+reference passes visible and independent checks. Criterion hashes stayed unchanged;
+source checkout and synthetic pre-existing work were preserved. No manual patch rescue.
+
+| Field | Value |
+|---|---|
+| Harness revision | `e7181b9111a437b2471ca24759dfb31f2e36178f`, clean |
+| Model | `gemma4:12b`, Ollama 0.33.2; digest `4eb23ef187e2c5462566d6a1d3bbbc2f1346d0b4327cbb66d58fffbcc9b2b05c` |
+| Hardware | Apple M1 Pro, 16 GB unified memory |
+| Generation | temperature 0, thinking off, configured server context 16,384 |
+| Budgets | 8 iterations, 24 tool calls, 600 s dispatch deadline, 180 s request timeout, 8,192 output tokens, 16,384 estimated context, one completion retry |
+| Policies | Full toolset; required verification, no required plan; exact check `python -m pytest -q test_visible.py` |
+| Prompts | harness `coding-v2`, minimal `minimal-v1`; harness still contains legacy support instructions |
+| Environment | Node 26.0.0 native TypeScript adapter; no npm install, Next/Vitest or application integration suites |
+
+| Total-token budget | Order | Mode | Accepted | Terminal status | Prompt/output tokens | Loop seconds |
+|---|---|---|---|---|---|---|
+| 32,000 | first | harness | 0/1 | incomplete, empty final answer | 4,308 / 18 | 31.0 |
+| 32,000 | second | minimal | 0/1 | budget exhausted | 24,775 / 95 | 95.5 |
+| 64,000 | first | minimal | 0/1 | incomplete, empty final answer | 3,878 / 18 | 29.3 |
+| 64,000 | second | harness | 0/1 | incomplete, empty final answer | 4,310 / 18 | 22.1 |
+
+Raw reports: `results/2026-10-12-duodoro-duration-gemma4-12b-32k.json` and
+`results/2026-10-12-duodoro-duration-gemma4-12b-64k.json`. All artifacts stayed
+unchanged and failed behavioral acceptance; scope preservation passed. No check ran.
+The 32K minimal trace has four tool records: three executed reads/tree calls, then
+one proposed read blocked before execution because the conservative next-request
+estimate could not fit the remaining total budget. Other attempts exhausted blank
+recovery before tools. None were reported completed or check-passed.
+
+The exploratory 64K variant changed only total-token budget and reversed mode order.
+One repeat per cell on one task, with unmeasured load/cache conditions, establishes
+no prompt, budget or model-quality gain. Loop latency excludes final review/storage/
+transport; setup consumes the dispatch budget. Full application regression coverage,
+Node 22 compatibility, held-out tasks and the ten-task release target remain open.
+
+The temporary 32K wrapper initially mislabeled no-edit failures as out-of-scope
+changes. Postprocessing restored original runtime termination labels and summary;
+the report notes the correction. No artifacts were repaired or calls repeated.
+
+Separately, `results/2026-10-12-duodoro-duration-response-probe.json` is one
+response-only live-model simulated-tool smoke probe: no tools executed, 256-token
+output cap. Its upstream Ollama payload had empty content, no thinking field or tool
+calls, and stop (2,135 prompt / 11 output tokens). Cause remains unresolved; this
+is not coding-quality evidence. The provider did not discard populated content in
+that probe. Evaluation-owned Ollama processes were stopped; user services preserved.

@@ -1,0 +1,1579 @@
+{
+  "mode": "real-tools-trusted-fixtures",
+  "trace_format": "normalized-turn-v1",
+  "started_at": "2026-10-13T03:49:08.361461+00:00",
+  "harness_revision": {
+    "commit": "e7181b9111a437b2471ca24759dfb31f2e36178f",
+    "dirty": false
+  },
+  "sampling": {
+    "temperature": 0.0
+  },
+  "summary": {
+    "harness": {
+      "accepted": 0,
+      "attempts": 1,
+      "per_task": {
+        "duodoro_duration_format": {
+          "accepted": 0,
+          "attempts": 1
+        }
+      },
+      "terminations": {
+        "incomplete": 1
+      },
+      "false_completion": 0,
+      "median_latency_s": 31.0,
+      "median_tool_calls": 0,
+      "median_total_tokens": 4326,
+      "unreported_token_attempts": 0
+    },
+    "minimal": {
+      "accepted": 0,
+      "attempts": 1,
+      "per_task": {
+        "duodoro_duration_format": {
+          "accepted": 0,
+          "attempts": 1
+        }
+      },
+      "terminations": {
+        "budget_exhausted": 1
+      },
+      "false_completion": 0,
+      "median_latency_s": 95.5,
+      "median_tool_calls": 4,
+      "median_total_tokens": 24870,
+      "unreported_token_attempts": 0
+    }
+  },
+  "results": [
+    {
+      "task_id": "duodoro_duration_format",
+      "mode": "harness",
+      "attempt": 1,
+      "provider": "ollama",
+      "model": "gemma4:12b",
+      "endpoint": "http://127.0.0.1:11435",
+      "prompt_version": "coding-v2",
+      "source_revision": "c38fb0313f457e3e4730ccab45593ee3ca8477830a02917d83e7788d7dd80a09",
+      "passed": false,
+      "termination": "incomplete",
+      "completion_status": "incomplete",
+      "completion_reason": "The model returned an empty final answer.",
+      "verification_status": "not_run",
+      "answer": "(model returned an empty final answer before task completion)",
+      "added": [],
+      "modified": [],
+      "deleted": [],
+      "diff": "",
+      "acceptance_exit_code": 1,
+      "acceptance_output": ".F                                                                       [100%]\n=================================== FAILURES ===================================\n_____________ test_duration_semantics_and_existing_format_contract _____________\n\n    def test_duration_semantics_and_existing_format_contract() -> None:\n        result = subprocess.run(\n            [\n                \"node\",\n                \"--input-type=module\",\n                \"-e\",\n                \"\"\"\n    import assert from 'node:assert/strict';\n    import {formatDuration, formatTime, formatTag} from './client/src/lib/format.ts';\n    for (const seconds of [-0.01, -1, -60, -3600, -1e9, NaN, Infinity, -Infinity]) {\n      assert.equal(formatDuration(seconds), '0m');\n      assert.equal(formatTime(seconds), '0:00');\n    }\n    for (const seconds of [0, 0.1, 1, 5, 59.9, 60, 90, 119, 300, 1500, 3599.9,\n                           3600, 3600.9, 3660, 5400, 7200, 86400, 123456.78]) {\n      const whole = Math.floor(seconds);\n      const minutes = Math.floor(whole / 60);\n      const hours = Math.floor(minutes / 60);\n      assert.equal(formatDuration(seconds), hours > 0 ? `${hours}h ${minutes % 60}m` : `${minutes}m`);\n      assert.equal(formatTime(seconds), `${minutes}:${String(whole % 60).padStart(2, '0')}`);\n    }\n    assert.equal(formatTag('Jorge', '0001'), 'Jorge#0001');\n    assert.equal(formatTag('', ''), '#');\n    \"\"\",\n            ],\n            capture_output=True,\n            text=True,\n            timeout=10,\n            check=False,\n        )\n>       assert result.returncode == 0, result.stderr[-4000:]\nE       AssertionError: (node:35538) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///private/var/folders/kv/bnv02fls1vxdkg1ddc8s77qr0000gn/T/agent_harness_eval_t03_34te/repo/client/src/lib/format.ts is not specified and it doesn't parse as CommonJS.\nE         Reparsing as ES module because module syntax was detected. This incurs a performance overhead.\nE         To eliminate this warning, add \"type\": \"module\" to /private/var/folders/kv/bnv02fls1vxdkg1ddc8s77qr0000gn/T/agent_harness_eval_t03_34te/repo/client/package.json.\nE         (Use `node --trace-warnings ...` to show where the warning was created)\nE         node:internal/modules/run_main:107\nE             triggerUncaughtException(\nE             ^\nE         \nE         AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\nE         \nE         '-1m' !== '0m'\nE         \nE             at file:///private/var/folders/kv/bnv02fls1vxdkg1ddc8s77qr0000gn/T/agent_harness_eval_t03_34te/repo/[eval1]:5:10\nE             at ModuleJob.run (node:internal/modules/esm/module_job:561:25)\nE             at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\nE             at async node:internal/modules/esm/loader:223:26\nE             at async ModuleLoader.executeModuleJob (node:internal/modules/esm/loader:220:20)\nE             at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {\nE           generatedMessage: true,\nE           code: 'ERR_ASSERTION',\nE           actual: '-1m',\nE           expected: '0m',\nE           operator: 'strictEqual',\nE           diff: 'simple'\nE         }\nE         \nE         Node.js v24.21.0\nE         \nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['node', '--input-type=module', '-e', \"\\nimport assert from 'node:assert/strict';\\nimport {forma...,\\n  actual: \\'-1m\\',\\n  expected: \\'0m\\',\\n  operator: \\'strictEqual\\',\\n  diff: \\'simple\\'\\n}\\n\\nNode.js v24.21.0\\n').returncode\n\n/var/folders/kv/bnv02fls1vxdkg1ddc8s77qr0000gn/T/agent-harness-duodoro-validation-_gl1w_z9/prepared/acceptance/test_acceptance.py:74: AssertionError\n=========================== short test summary info ============================\nFAILED ../../../../../../../../var/folders/kv/bnv02fls1vxdkg1ddc8s77qr0000gn/T/agent-harness-duodoro-validation-_gl1w_z9/prepared/acceptance/test_acceptance.py::test_duration_semantics_and_existing_format_contract\n1 failed, 1 passed in 0.33s\n",
+      "prompt_tokens": 4308,
+      "completion_tokens": 18,
+      "latency_ms": 31029.58645799663,
+      "tool_trace": [],
+      "runtime_config": {
+        "coding_toolset": "full",
+        "tool_specs": [
+          {
+            "name": "remember_fact",
+            "description": "Persist a durable engineering note for this developer across sessions (stack choices, repo conventions, review preferences). Returns {stored: true} on first insert, {stored: false} if the exact note was already known.",
+            "parameters_schema": {
+              "properties": {
+                "fact": {
+                  "description": "A concise engineering note to persist (e.g. 'prefer async handlers', 'use ruff format', 'never force-push main').",
+                  "minLength": 1,
+                  "title": "Fact",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "fact"
+              ],
+              "title": "RememberFactInput",
+              "type": "object"
+            }
+          },
+          {
+            "name": "remember",
+            "description": "Alias for remember_fact. Persist a durable engineering note for this developer across sessions (stack choices, repo conventions, review preferences). Returns {stored: true} on first insert, {stored: false} if the exact note was already known.",
+            "parameters_schema": {
+              "properties": {
+                "note": {
+                  "description": "Alias for remember_fact \u2014 a durable engineering note.",
+                  "minLength": 1,
+                  "title": "Note",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "note"
+              ],
+              "title": "RememberInput",
+              "type": "object"
+            }
+          },
+          {
+            "name": "recall_facts",
+            "description": "Return engineering notes previously remembered for this developer, most recently added first. Notes are also injected into the system prompt at the start of each turn.",
+            "parameters_schema": {
+              "properties": {
+                "max_results": {
+                  "default": 20,
+                  "maximum": 50,
+                  "minimum": 1,
+                  "title": "Max Results",
+                  "type": "integer"
+                }
+              },
+              "title": "RecallFactsInput",
+              "type": "object"
+            }
+          },
+          {
+            "name": "recall",
+            "description": "Alias for recall_facts. Return engineering notes previously remembered for this developer, most recently added first. Notes are also injected into the system prompt at the start of each turn.",
+            "parameters_schema": {
+              "properties": {
+                "max_results": {
+                  "default": 20,
+                  "maximum": 50,
+                  "minimum": 1,
+                  "title": "Max Results",
+                  "type": "integer"
+                }
+              },
+              "title": "RecallInput",
+              "type": "object"
+            }
+          },
+          {
+            "name": "read_file",
+            "description": "Read a UTF-8 text file under the workspace. Returns repo-relative path, line range, and content. Use before editing or citing code. Whole-file hash/line scanning is limited to 16000000 bytes.",
+            "parameters_schema": {
+              "properties": {
+                "path": {
+                  "description": "Repo-relative file path.",
+                  "minLength": 1,
+                  "title": "Path",
+                  "type": "string"
+                },
+                "start_line": {
+                  "anyOf": [
+                    {
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "default": null,
+                  "description": "1-indexed start line (inclusive). Defaults to 1.",
+                  "title": "Start Line"
+                },
+                "end_line": {
+                  "anyOf": [
+                    {
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "default": null,
+                  "description": "1-indexed end line (inclusive). Defaults to file end.",
+                  "title": "End Line"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "title": "ReadFileInput",
+              "type": "object"
+            }
+          },
+          {
+            "name": "grep_repo",
+            "description": "Search the workspace for a regex pattern. Returns matching lines with repo-relative paths and line numbers, excluding workspace-ignored paths. More than 100 matching lines returns an error; narrow the path, glob, or pattern and retry.",
+            "parameters_schema": {
+              "properties": {
+                "pattern": {
+                  "description": "Regex pattern to search for.",
+                  "minLength": 1,
+                  "title": "Pattern",
+                  "type": "string"
+                },
+                "path": {
+                  "default": ".",
+                  "description": "Repo-relative file or directory to search.",
+                  "title": "Path",
+                  "type": "string"
+                },
+                "glob": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "default": null,
+                  "description": "Optional glob filter (e.g. '*.py') applied to file names.",
+                  "title": "Glob"
+                }
+              },
+              "required": [
+                "pattern"
+              ],
+              "title": "GrepRepoInput",
+              "type": "object"
+            }
+          },
+          {
+            "name": "list_dir",
+            "description": "List immediate children of a workspace directory (non-recursive). More than 200 entries returns an explicit limit error. Symlinks are labeled as leaves.",
+            "parameters_schema": {
+              "properties": {
+                "path": {
+                  "default": ".",
+                  "description": "Repo-relative directory path.",
+                  "title": "Path",
+                  "type": "string"
+                }
+              },
+              "title": "ListDirInput",
+              "type": "object"
+            }
+          },
+          {
+            "name": "tree",
+            "description": "List files and directories up to the requested depth under a path. More than 300 entries returns an explicit limit error; narrow the path or depth. Symlinks are leaves, never traversed.",
+            "parameters_schema": {
+              "properties": {
+                "path": {
+                  "default": ".",
+                  "description": "Repo-relative directory path.",
+                  "title": "Path",
+                  "type": "string"
+                },
+                "depth": {
+                  "default": 2,
+                  "description": "Maximum directory depth.",
+                  "maximum": 6,
+                  "minimum": 1,
+                  "title": "Depth",
+                  "type": "integer"
+                }
+              },
+              "title": "TreeInput",
+              "type": "object"
+            }
+          },
+          {
+            "name": "git_status",
+            "description": "Run `git status --porcelain` in the workspace (read-only).",
+            "parameters_schema": {
+              "properties": {},
+              "title": "GitStatusInput",
+              "type": "object"
+            }
+          },
+          {
+            "name": "git_diff",
+            "description": "Run `git diff` in the workspace (read-only). Optionally limit to one path.",
+            "parameters_schema": {
+              "properties": {
+                "path": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "default": null,
+                  "description": "Optional repo-relative path to limit the diff.",
+                  "title": "Path"
+                }
+              },
+              "title": "GitDiffInput",
+              "type": "object"
+            }
+          },
+          {
+            "name": "emit_plan",
+            "description": "Record a structured plan (ordered steps) in the tool trace before editing files. No filesystem changes.",
+            "parameters_schema": {
+              "properties": {
+                "steps": {
+                  "description": "Ordered plan steps before making filesystem edits.",
+                  "items": {
+                    "type": "string"
+                  },
+                  "minItems": 1,
+                  "title": "Steps",
+                  "type": "array"
+                },
+                "summary": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "default": null,
+                  "description": "Optional one-line goal for the turn.",
+                  "title": "Summary"
+                }
+              },
+              "required": [
+                "steps"
+              ],
+              "title": "EmitPlanInput",
+              "type": "object"
+            }
+          },
+          {
+            "name": "write_file",
+            "description": "Replace a UTF-8 text file under the workspace with new content. Creates parent directories as needed. Returns bytes written.",
+            "parameters_schema": {
+              "properties": {
+                "path": {
+                  "description": "Repo-relative file path to write.",
+                  "minLength": 1,
+                  "title": "Path",
+                  "type": "string"
+                },
+                "content": {
+                  "description": "Full file contents (UTF-8).",
+                  "title": "Content",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path",
+                "content"
+              ],
+              "title": "WriteFileInput",
+              "type": "object"
+            }
+          },
+          {
+            "name": "replace_text",
+            "description": "Replace one exact text span in an existing UTF-8 file. Read the file first; pass its sha256 as expected_sha256. Refuses stale or ambiguous matches and returns the applied diff. Prefer this for small edits.",
+            "parameters_schema": {
+              "properties": {
+                "path": {
+                  "description": "Repo-relative existing file path.",
+                  "minLength": 1,
+                  "title": "Path",
+                  "type": "string"
+                },
+                "old_text": {
+                  "description": "Exact text to replace once.",
+                  "minLength": 1,
+                  "title": "Old Text",
+                  "type": "string"
+                },
+                "new_text": {
+                  "description": "Replacement text; empty string deletes the match.",
+                  "title": "New Text",
+                  "type": "string"
+                },
+                "expected_sha256": {
+                  "description": "Whole-file SHA-256 from read_file. Refuses edits after the file changes.",
+                  "pattern": "^[0-9a-f]{64}$",
+                  "title": "Expected Sha256",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path",
+                "old_text",
+                "new_text",
+                "expected_sha256"
+              ],
+              "title": "ReplaceTextInput",
+              "type": "object"
+            }
+          },
+          {
+            "name": "run_command",
+            "description": "Run an allowlisted verification command in the workspace root (pytest, ruff, mypy, git diff/status/show, python -m pytest, python3 -m pytest, npm [--prefix <repo-relative-dir>] run test:run [-- <test args>]). Returns exit_code, stdout, stderr, and success flag.",
+            "parameters_schema": {
+              "properties": {
+                "argv": {
+                  "description": "Command argv list, e.g. ['pytest', 'test_calc.py']. First token must be allowlisted (pytest, ruff, mypy, git, python -m pytest, python3 -m pytest, npm [--prefix <repo-relative-dir>] run test:run [-- <test args>]).",
+                  "items": {
+                    "type": "string"
+                  },
+                  "minItems": 1,
+                  "title": "Argv",
+                  "type": "array"
+                }
+              },
+              "required": [
+                "argv"
+              ],
+              "title": "RunCommandInput",
+              "type": "object"
+            }
+          },
+          {
+            "name": "semantic_search",
+            "description": "Deferred: semantic codebase search via embeddings. Not enabled in v1; use grep_repo instead.",
+            "parameters_schema": {
+              "properties": {
+                "query": {
+                  "description": "Natural-language search query.",
+                  "minLength": 1,
+                  "title": "Query",
+                  "type": "string"
+                },
+                "k": {
+                  "default": 5,
+                  "maximum": 20,
+                  "minimum": 1,
+                  "title": "K",
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "query"
+              ],
+              "title": "SemanticSearchInput",
+              "type": "object"
+            }
+          }
+        ],
+        "max_tool_iterations": 8,
+        "max_tool_calls_per_turn": 24,
+        "max_turn_wall_seconds": 600.0,
+        "max_completion_tokens_per_turn": 8192,
+        "max_total_tokens_per_turn": 32000,
+        "max_context_tokens": 16384,
+        "min_request_output_tokens": 256,
+        "max_identical_tool_calls": 2,
+        "max_completion_retries": 1,
+        "project_check_argv": [
+          "python",
+          "-m",
+          "pytest",
+          "-q",
+          "test_visible.py"
+        ],
+        "request_timeout_seconds": 180,
+        "require_verification_before_finish": true,
+        "require_plan_before_edit": false,
+        "max_files_touched_per_turn": 5,
+        "track_workspace_changes": true,
+        "max_tracked_files": 20000,
+        "max_tracked_bytes": 256000000,
+        "max_workspace_diff_bytes": 64000,
+        "max_diff_file_bytes": 128000,
+        "max_diff_snapshot_bytes": 2000000,
+        "ollama_num_ctx": 16384,
+        "ollama_think": false
+      },
+      "turn_trace": [
+        {
+          "kind": "request",
+          "iteration": 0,
+          "message_count": 2,
+          "estimated_prompt_tokens": 3433,
+          "max_tokens": 8192,
+          "initial_messages": [
+            {
+              "role": "system",
+              "content": "You are a senior software engineering agent. Work in the configured workspace when one is set; otherwise use the tools available to you.\n\nContract:\n- Read before you edit \u2014 inspect relevant files and cite paths (and line ranges when known) for claims about the codebase.\n- Prefer minimal, focused diffs over broad rewrites; match existing conventions.\n- For small edits to existing files, use `replace_text` with the file hash from `read_file`.\n- Run verification (tests, lint, type-check) before claiming a task is done.\n- Use `remember_fact` / `remember` for durable engineering notes (stack choices, repo conventions, review preferences). They are injected into every future turn's system prompt for this user \u2014 call `recall_facts` / `recall` only when you need an explicit list in the tool trace.\n- Decline unsafe or out-of-scope requests (destructive shell, secrets exfiltration, unbounded refactors).\n\nSupport lookup tools (SQL, doc search) are disabled by default \u2014 set ENABLE_SUPPORT_TOOLS=true to restore the legacy support demo.\n\nAfter editing, run this project check with run_command argv: [\"python\", \"-m\", \"pytest\", \"-q\", \"test_visible.py\"]\n\nWorkspace root: /private/var/folders/kv/bnv02fls1vxdkg1ddc8s77qr0000gn/T/agent_harness_eval_t03_34te/repo",
+              "tool_calls": [],
+              "tool_call_id": null,
+              "tool_name": null
+            },
+            {
+              "role": "user",
+              "content": "In Duodoro, harden formatDuration and formatTime in client/src/lib/format.ts against negative and non-finite numeric durations. Negative numbers, NaN, Infinity and -Infinity must render as zero (0m and 0:00). Preserve existing finite-positive formatting, fractional truncation and formatTag behavior. Inspect AGENTS.md and the existing format tests first. Only modify client/src/lib/format.ts; preserve all other files, including pre-existing work and tests. For this disposable library-level evaluation, test_visible.py is an additional visible task check using the installed Node runtime's native TypeScript support; run [\"python\",\"-m\",\"pytest\",\"-q\",\"test_visible.py\"] after the edit. This adapter does not run the full Next/Vitest suite. Do not install dependencies, start services or touch Docker. Report the observed checks and any limits honestly.",
+              "tool_calls": [],
+              "tool_call_id": null,
+              "tool_name": null
+            }
+          ]
+        },
+        {
+          "kind": "response",
+          "iteration": 0,
+          "content": "",
+          "tool_calls": [],
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 2135,
+            "completion_tokens": 11
+          },
+          "model": "gemma4:12b",
+          "latency_ms": 29039.69562498969
+        },
+        {
+          "kind": "recovery",
+          "iteration": 0,
+          "message": {
+            "role": "user",
+            "content": "Your final reply was empty. Continue the task if needed, then provide a non-empty answer with the observed result and any unresolved problems.",
+            "tool_calls": [],
+            "tool_call_id": null,
+            "tool_name": null
+          }
+        },
+        {
+          "kind": "request",
+          "iteration": 1,
+          "message_count": 4,
+          "estimated_prompt_tokens": 3489,
+          "max_tokens": 8181,
+          "initial_messages": []
+        },
+        {
+          "kind": "response",
+          "iteration": 1,
+          "content": "",
+          "tool_calls": [],
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 2173,
+            "completion_tokens": 7
+          },
+          "model": "gemma4:12b",
+          "latency_ms": 1599.9637500208337
+        }
+      ]
+    },
+    {
+      "task_id": "duodoro_duration_format",
+      "mode": "minimal",
+      "attempt": 1,
+      "provider": "ollama",
+      "model": "gemma4:12b",
+      "endpoint": "http://127.0.0.1:11435",
+      "prompt_version": "minimal-v1",
+      "source_revision": "c38fb0313f457e3e4730ccab45593ee3ca8477830a02917d83e7788d7dd80a09",
+      "passed": false,
+      "termination": "budget_exhausted",
+      "completion_status": "budget_exhausted",
+      "completion_reason": "Total token budget cannot fit another model request after these tools.",
+      "verification_status": "not_run",
+      "answer": "(tool execution stopped before task completion)",
+      "added": [],
+      "modified": [],
+      "deleted": [],
+      "diff": "",
+      "acceptance_exit_code": 1,
+      "acceptance_output": ".F                                                                       [100%]\n=================================== FAILURES ===================================\n_____________ test_duration_semantics_and_existing_format_contract _____________\n\n    def test_duration_semantics_and_existing_format_contract() -> None:\n        result = subprocess.run(\n            [\n                \"node\",\n                \"--input-type=module\",\n                \"-e\",\n                \"\"\"\n    import assert from 'node:assert/strict';\n    import {formatDuration, formatTime, formatTag} from './client/src/lib/format.ts';\n    for (const seconds of [-0.01, -1, -60, -3600, -1e9, NaN, Infinity, -Infinity]) {\n      assert.equal(formatDuration(seconds), '0m');\n      assert.equal(formatTime(seconds), '0:00');\n    }\n    for (const seconds of [0, 0.1, 1, 5, 59.9, 60, 90, 119, 300, 1500, 3599.9,\n                           3600, 3600.9, 3660, 5400, 7200, 86400, 123456.78]) {\n      const whole = Math.floor(seconds);\n      const minutes = Math.floor(whole / 60);\n      const hours = Math.floor(minutes / 60);\n      assert.equal(formatDuration(seconds), hours > 0 ? `${hours}h ${minutes % 60}m` : `${minutes}m`);\n      assert.equal(formatTime(seconds), `${minutes}:${String(whole % 60).padStart(2, '0')}`);\n    }\n    assert.equal(formatTag('Jorge', '0001'), 'Jorge#0001');\n    assert.equal(formatTag('', ''), '#');\n    \"\"\",\n            ],\n            capture_output=True,\n            text=True,\n            timeout=10,\n            check=False,\n        )\n>       assert result.returncode == 0, result.stderr[-4000:]\nE       AssertionError: (node:37474) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///private/var/folders/kv/bnv02fls1vxdkg1ddc8s77qr0000gn/T/agent_harness_eval_n1srbjre/repo/client/src/lib/format.ts is not specified and it doesn't parse as CommonJS.\nE         Reparsing as ES module because module syntax was detected. This incurs a performance overhead.\nE         To eliminate this warning, add \"type\": \"module\" to /private/var/folders/kv/bnv02fls1vxdkg1ddc8s77qr0000gn/T/agent_harness_eval_n1srbjre/repo/client/package.json.\nE         (Use `node --trace-warnings ...` to show where the warning was created)\nE         node:internal/modules/run_main:107\nE             triggerUncaughtException(\nE             ^\nE         \nE         AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\nE         \nE         '-1m' !== '0m'\nE         \nE             at file:///private/var/folders/kv/bnv02fls1vxdkg1ddc8s77qr0000gn/T/agent_harness_eval_n1srbjre/repo/[eval1]:5:10\nE             at ModuleJob.run (node:internal/modules/esm/module_job:561:25)\nE             at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\nE             at async node:internal/modules/esm/loader:223:26\nE             at async ModuleLoader.executeModuleJob (node:internal/modules/esm/loader:220:20)\nE             at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {\nE           generatedMessage: true,\nE           code: 'ERR_ASSERTION',\nE           actual: '-1m',\nE           expected: '0m',\nE           operator: 'strictEqual',\nE           diff: 'simple'\nE         }\nE         \nE         Node.js v24.21.0\nE         \nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['node', '--input-type=module', '-e', \"\\nimport assert from 'node:assert/strict';\\nimport {forma...,\\n  actual: \\'-1m\\',\\n  expected: \\'0m\\',\\n  operator: \\'strictEqual\\',\\n  diff: \\'simple\\'\\n}\\n\\nNode.js v24.21.0\\n').returncode\n\n/var/folders/kv/bnv02fls1vxdkg1ddc8s77qr0000gn/T/agent-harness-duodoro-validation-_gl1w_z9/prepared/acceptance/test_acceptance.py:74: AssertionError\n=========================== short test summary info ============================\nFAILED ../../../../../../../../var/folders/kv/bnv02fls1vxdkg1ddc8s77qr0000gn/T/agent-harness-duodoro-validation-_gl1w_z9/prepared/acceptance/test_acceptance.py::test_duration_semantics_and_existing_format_contract\n1 failed, 1 passed in 0.31s\n",
+      "prompt_tokens": 24775,
+      "completion_tokens": 95,
+      "latency_ms": 95505.11562501197,
+      "tool_trace": [
+        {
+          "name": "read_file",
+          "arguments": {
+            "path": "AGENTS.md"
+          },
+          "result": {
+            "path": "AGENTS.md",
+            "start_line": 1,
+            "end_line": 265,
+            "content": "# AGENTS.md\n\nGuidance for coding agents working in Duodoro. Updated against the repository on\n2026-09-29, after PRs #91\u2013#93. Explicit user instructions take precedence.\n\n## Project and layout\n\nDuodoro is a collaborative focus timer for couples and friends. Supabase provides\nGoogle/Discord OAuth and persisted data; a Socket.IO server synchronizes two-person\nrooms. Pixel-art worlds rotate globally; users can also focus solo.\n\nThere are two independent npm packages. Install dependencies in the relevant\npackage; the root `package.json` and lockfile are legacy, not a workspace manager.\n\n| Path | Responsibility |\n| --- | --- |\n| `client/` | Next.js 16.3 App Router, React 19, TypeScript, Tailwind 4, Framer Motion |\n| `client/src/app/` | Main page, root metadata/layout, OAuth callback, invite route, Terms/Privacy, manifest and social images |\n| `client/src/components/` | `DuoTimer` orchestration, Home, room HUD/world, panels, avatars and companions |\n| `client/src/hooks/` | Auth, room state, socket transport/recovery, tasks, friends, preferences and accessibility |\n| `client/src/lib/` | Shared client types, Supabase singleton/generated DB types, stats, sound manager, timer preferences, site metadata and pixel-art helpers |\n| `client/src/test/`, `client/e2e/` | Vitest setup/accessibility helpers and Playwright public release smoke tests |\n| `client/public/` | Icons, offline fallback/service worker and actual sound assets |\n| `client/scripts/` | Dependency-free break-finished sound generator |\n| `server/` | CommonJS Node.js, Express, Socket.IO and Redis focus recovery |\n| `shared/socketContract.d.ts`, `shared/socketContract.js` | Canonical event types and runtime event-name lists for both packages |\n| `supabase/migrations/`, `supabase/tests/` | Timestamped SQL source of truth and pgTAP schema contract |\n| `docs/` | Database/deployment verification, observability and release checklists; some local documents are gitignored |\n| `.github/workflows/ci.yml` | Database, server, client and browser smoke jobs |\n| `docker-compose.yml`, package Dockerfiles | Local/self-hosted setup; current production uses Vercel and Render |\n| `ROADMAP.md` | Tracked backlog and historical findings/corrections; verify old claims against source |\n\n## Commands and verification\n\nUse Node 22 to match CI. Each package has its own lockfile; use `npm ci` there.\n\nFrom `client/`:\n\n```sh\nnpm run dev                         # default port 3000\nnpx tsc --noEmit\nnpm run lint\nnpm run test:run\nnpx vitest run src/lib/format.test.ts # targeted test example\nnpm run build\nnpm run test:e2e                    # production browser smoke; see playwright.config.ts\n```\n\nFrom `server/`:\n\n```sh\nnpm start                           # default port 3001\nnpm run test:run\nnpm run test:integration             # real local Supabase; separate from the default suite\n```\n\n`npm test` runs Vitest in watch mode in either package. Some server tests bind\nreal ephemeral ports. Integration tests create/delete real local Auth users and\nsession data; read their setup before running them.\n\nOn this workstation, Node 26's experimental web storage conflicts with jsdom.\nIf using that version, run client tests with\n`NODE_OPTIONS=--no-experimental-webstorage npm run test:run`; prefer Node 22.\nNext's generated `.next/dev/types` can retain removed temporary preview routes.\nIf that causes a missing-route type error, move aside the obsolete generated\ncache and regenerate; do not change application types to conceal it.\n\nClient builds need syntactically valid `NEXT_PUBLIC_SUPABASE_URL`,\n`NEXT_PUBLIC_SUPABASE_ANON_KEY` and `NEXT_PUBLIC_SOCKET_URL`. Never print or\ncommit real environment values. Server configuration is documented in\n`server/.env.example`.\n\nNext 16.3 can generate `client/AGENTS.md`/`client/CLAUDE.md` when `next dev` starts.\nRead applicable generated guidance and the installed version's relevant docs in\n`client/node_modules/next/dist/docs/` when touching framework APIs. Inspect the\ngit diff afterwards so temporary previews and generated instruction files do not\naccidentally enter a feature PR.\n\n## Client architecture\n\n- `app/page.tsx` renders `components/DuoTimer.tsx`, the screen orchestrator.\n  `useAuth` controls `appStep` (`loading`, `landing`, `avatar`, `home`, `game`).\n- `hooks/useGameSession.ts` owns room membership, phase/player state, derived timer\n  values and actions. `hooks/useSessionConnection.ts` owns the single transport,\n  JWT refresh, connection state, retries, online/visibility recovery and rejoin\n  snapshots. Keep these responsibilities separate; use refs for current reconnect\n  snapshots rather than stale captured state.\n- `SessionHUD.tsx` renders Start, Go again, Stop timer and Leave room. Stopping a\n  timer keeps the room; leaving exits it. `completedRounds` is a server-synced room\n  count, not a history total. It survives repeat rounds/stops while the room exists;\n  interrupted focus does not increment it, and server restarts do not restore rooms.\n- The client derives countdowns/Flow elapsed time from server timestamps and\n  durations. Re-read the clock on ticks; do not decrement a second local timer.\n  `timerPrefs.ts` persists local settings, while Go again repeats the room's actual\n  server settings, which may have been chosen by the other participant.\n- `HomeDashboard` uses `DailyFocusGoal` and `useDailyFocusGoal`. Targets are saved\n  per account in this browser, with a memory fallback. Progress uses completed focus\n  from the timezone-aware `get_daily_focus` RPC. Refresh on Home mount, local-day\n  rollover and visibility/focus return. There is no separate goal database table.\n- `lib/useStats.ts` shares a short cache/in-flight requests for stats consumers.\n  Check reads and writes for errors. Empty results/zero progress are valid only\n  after successful loading; preserve explicit loading/error/retry states. For RLS\n  mutations, request returned rows and reconcile actual IDs, including partial\n  success; a zero-row mutation can have no API error.\n- `lib/supabase.ts` is the typed browser singleton with PKCE/localStorage auth.\n  `lib/database.types.ts` is generated; normalize UI nulls in `lib/types.ts`.\n- `lib/sounds.ts` owns playback, cache, persisted mute and mute subscriptions.\n  `useSound`/`SoundToggle` subscribe to it. All sounds must respect that manager.\n  Break completion rings on live `break \u2192 returning` events in both modes; room\n  snapshots and duplicate events must not replay it. Sound assets live in\n  `public/sounds/`; the original WAV can be regenerated with\n  `python3 client/scripts/generate-break-finished-sound.py` from the root.\n- Keep browser-only effects out of server rendering. A client component still\n  has a server-rendered first frame: use a neutral server snapshot or mount state\n  for clock/storage-derived UI and verify hydration behavior where relevant.\n- `lib/site.ts` is the source of branding/site metadata. Keep runtime document\n  title changes separate from canonical metadata and restore the normal title\n  when a room is no longer displayed.\n- `public/sw.js` caches only the standalone offline navigation fallback, never\n  app bundles, sockets or Supabase responses. Its offline theme tokens mirror\n  `app/globals.css`.\n- Companion access is currently free. Internal premium names/fields are legacy;\n  user-facing copy calls it companion access. `lib/billing.ts` is an inactive\n  payment seam; never treat mock checkout as a successful purchase. Marketing\n  consent is independent of access.\n\n## Server architecture and invariants\n\n- `index.js` loads deployment configuration, constructs Supabase/Redis clients,\n  starts the app and handles signals with a bounded 25-second shutdown deadline.\n  Production requires Supabase credentials and `FOCUS_QUEUE_URL`. Without\n  Supabase configuration, development skips verified auth/persistence; that is\n  not evidence that production authorization works.\n- `app.js` exports `createRealtimeApp()` with `start()`/`stop()`. Importing it must\n  not start listeners, install signal handlers, read deployment secrets or start\n  background work. Inject dependencies for tests.\n- `session.js` holds pure room/player state and helpers. `phaseSequence.js` defines\n  transitions; `phasePetHandlers.js` registers start/stop/Flow/companion actions.\n  Pomodoro: `waiting \u2192 focus \u2192 celebration (4s) \u2192 break \u2192 returning (3.5s) \u2192 ready`.\n  Go again starts focus from `ready`. Flow returns directly to open-ended focus\n  after the break, and Take break derives break duration from elapsed focus.\n- Live rooms/timers remain in memory. `beginFocusRound()` creates one private\n  recording UUID per actual focus round. Preserve that key across retries;\n  snapshot elapsed time and participants before removing/changing room state.\n  Completion counts are separate from asynchronous database-save success.\n- `focusRecorder.js` calls the atomic, service-role-only `record_focus_session`\n  RPC. `focusRecovery.js` manages persistence/retry and pending/unconfirmed status;\n  `focusQueue.js` persists queued payloads in Redis so pending saves can recover\n  across process restarts. This queue restores writes, not live room state.\n  Never replace the atomic RPC with separate session/participant inserts, generate\n  a new key on retries, or report pending/unconfirmed saves as saved.\n- Graceful shutdown cancels reconnect timers before snapshotting interrupted\n  focus, drains persistence/recovery and cleans presence. Preserve the shutdown\n  ordering and duplicate-recording guards.\n- `roomMembershipHandlers.js` handles creation, bearer share links, admission and\n  reconnect re-keying. Rooms have two seats. Authorize before leaving the old room;\n  reserve seats/consume new-join tokens synchronously before awaited reads; release\n  reservations in `finally`; verify the room still exists after awaits.\n- Authenticated disconnects retain a slot for `RECONNECT_GRACE_MS` (default 60s).\n  Rejoin matches the verified user and re-keys socket/player/host mappings together.\n  Client resume IDs are mirrored in sessionStorage/localStorage. A dead room after\n  server restart must give an honest message and direct users to History.\n- `accountHandlers.js` and `socialHandlers.js` handle accounts, presence/friends\n  and invites; `presence.js` tracks sets of sockets per user so another tab cannot\n  evict them. Refresh the trusted profile presence mirror after room changes, and\n  clear stale presence on startup/shutdown.\n- Companion stage comes from server completed-focus totals (`focusTotal.js`,\n  `petLevel.js`), not client claims. Failed total reads must not shrink a veteran's\n  companion. Growth uses more map cells at the same art pixel size.\n\n## Socket, privacy and database boundaries\n\n- Update shared event types/runtime name lists, emitters and handlers together.\n  Use typed `DuodoroSocket`; compile-time types do not validate network payloads.\n- Payload events go through `onPayload()` and `safeSocketHandler()`; parsers in\n  `payloadParsers.js` validate/normalize fields without I/O or authorization.\n  Preserve rate limits and membership checks. Identity comes from the verified\n  JWT (`socket.userId`), never a payload user ID. A room UUID alone grants no access.\n- Server logs use `observability.js` structured events, opaque `correlationRef()`\n  and `safeErrorFields()`. Never log raw identifiers, names, emails, tokens,\n  authorization headers, request payloads or arbitrary upstream error messages.\n  `/health` is liveness; `/ready` checks bounded/cached database readiness.\n  Consult `docs/OBSERVABILITY.md` before changing logging or alerts.\n- RLS and column grants both matter. Never re-grant broad client UPDATE privileges\n  on privileged profile fields. Avoid policies querying their own protected table;\n  use narrowly scoped definer helpers for membership checks. Pin function search\n  paths and revoke default PUBLIC execution for privileged functions.\n- Shared task toggles use their scoped RPC; edits/deletes remain owner-only.\n  Account deletion is a verified server/Auth operation with dependent cleanup,\n  including durable pending records, not a client-side table sweep.\n- Keep personal consent/email data out of friend-readable profiles. Derive verified\n  email from Auth on the server/in SQL; marketing opt-out must not revoke access.\n\nDatabase work uses Docker, PostgreSQL 17 and Supabase CLI **2.116.0** from the root:\n\n```sh\nsupabase migration new short_snake_case_name\nsupabase start\nsupabase db reset --local --no-seed\nsupabase db lint --local --level warning --fail-on error\nsupabase test db\nsupabase gen types typescript --local --schema public > client/src/lib/database.types.ts\n```\n\nValidate the entire committed migration chain, update schema tests/generated\nTypescript types, and follow `docs/DATABASE_WORKFLOW.md` for remote dry-run,\npush and verification. Apply required migrations before deploying dependent code.\nNever run `db reset --linked`, bypass mismatches with `db push --include-all`, or\nedit production schema manually in the Dashboard.\n\n## Worlds, pixel art and mobile UI\n\n- New rooms get `worldAt()` from the server; there is no world picker. Rotation\n  changes hourly at :30 UTC; existing rooms keep their original world. Keep\n  `server/rotation.js` and `client/src/lib/rotation.ts` plus their pinned tests in\n  agreement. Deterministic cross-package schedules use integer arithmetic.\n- Adding a world also updates both rotation lists, `avatarData.ts` world types/data\n  and the database world constraint through a migration.\n- `PixelSprite` renders string maps. Composite layers with `lib/pixelMap.ts` before\n  rendering; avoid stacked SVG rounding/seams and validate map dimensions/palettes.\n- Art colors and shading come from `lib/palette.ts` (`shade`, `flush`); preserve\n  palette guards and per-world color snapshots. Never scale RGB channels ad hoc.\n- A scene uses one responsive integer art pixel via `ScenePixel`/`useArtPx()` and\n  `lib/scene.ts`. Redraw maps to resolve density differences; do not upscale a\n  low-resolution map as a substitute. Anchor standing art to `GROUND` with feet\n  at the wrapper bottom; name tags must not shift that anchor. Use `ContactShadow`.\n- Sprite animation uses whole-pixel translations/poses, with reduced-motion\n  support. No rotation, fractional scaling, eased fractional positions or\n  squash/stretch. Round animated values, not just their destinations.\n- Avatar keylines were intentionally removed; do not restore them casually.\n  Outlines change rendered proportions, so measure rendered SVG bounds. Real\n  screenshots are needed for visual judgments; geometry tests do not prove taste.\n- Game uses an `h-dvh` shell with reachable internal scrolling. Use dynamic viewport\n  units and include safe-area insets in existing padding. Landscape compact styles\n  need height queries, not width breakpoints alone. Preserve phone touch targets\n  and narrow-screen overlay sizing.\n\n## Delivery workflow\n\n- Keep features free unless the user explicitly changes that preference.\n- Inspect existing work and user edits before modifying files. Branch from current\n  main for feature work; never commit directly to auto-deployed `main`.\n- Use focused, coherent commits. The repository's default merge policy is rebase\n  (`gh pr merge --rebase`), not squash; explicit session instructions take priority.\n  Merge only when authorized and required CI is complete and successful.\n- Preserve uncommitted user changes. In particular, this AGENTS.md replacement and\n  the deletion of CLAUDE.md are intentionally uncommitted until the user requests\n  otherwise; exclude them from unrelated feature commits.\n- Verify bug claims against source. Regression tests should fail before a bug fix\n  and pass after; distinguish regression evidence from general guard tests.\n  Run checks appropriate to the change and report what they actually prove.\n- Update `ROADMAP.md` in the feature PR that ships the item. Historical audit prose\n  and old line numbers may be stale; maintain concrete current references.\n- Current CI gates: database reset/types/lint/pgTAP, server audit/tests, client\n  audit/types/lint/tests/build, and production browser smoke/accessibility. Node 22\n  is pinned. Database images use GHCR to avoid ECR anonymous pull quotas; the pinned\n  postgres-meta staging tag must stay consistent with the Supabase CLI version.\n- Main automatically deploys client to Vercel and server to Render independently.\n  `NEXT_PUBLIC_*` values are baked into Vercel builds. Render needs allowed origins,\n  Supabase service credentials and the durable queue URL. Keep the current free\n  hosting setup; a CI success is not proof that a production deployment succeeded.\n- Public smoke tests do not verify authenticated two-account behavior, live data,\n  sleeping mobile tabs or subjective visuals. Use `docs/RELEASE_CHECKLIST.md` and\n  report those limits honestly. Never claim a deployment or manual check you did\n  not observe.",
+            "total_lines": 265,
+            "sha256": "efc573cca6a89993e35535aea0cd077a9d7177596741518b54ebece3bb405d10"
+          },
+          "error": null,
+          "latency_ms": 16.84925001859665,
+          "interrupted": false
+        },
+        {
+          "name": "tree",
+          "arguments": {
+            "path": "client/src/lib"
+          },
+          "result": [
+            {
+              "path": "client/src/lib",
+              "kind": "dir",
+              "depth": "0"
+            },
+            {
+              "path": "client/src/lib/avatarData.test.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/avatarData.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/billing.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/characterMaps.test.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/characterMaps.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/companionNames.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/database.types.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/focusCalendar.test.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/focusCalendar.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/focusInsights.test.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/focusInsights.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/focusNotificationWorker.test.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/focusNotifications.test.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/focusNotifications.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/focusTags.test.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/focusTags.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/format.test.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/format.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/intentionGoal.test.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/intentionGoal.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/interior.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/keyboardShortcuts.test.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/keyboardShortcuts.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/palette.test.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/palette.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/paletteGuard.test.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/petIdle.test.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/petIdle.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/petLevel.test.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/petLevel.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/petMaps.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/pixelMap.test.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/pixelMap.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/rotation.test.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/rotation.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/scene.test.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/scene.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/sessionReflections.test.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/sessionReflections.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/sessionTypes.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/sessionWrapUp.test.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/sessionWrapUp.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/shareInvite.test.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/shareInvite.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/sharedMilestones.test.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/sharedMilestones.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/site.test.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/site.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/skyline.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/socketContract.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/sounds.test.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/sounds.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/storedData.test.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/storedData.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/supabase.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/tabKeyboard.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/terrain.test.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/terrain.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/timerPrefs.test.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/timerPrefs.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/types.test.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/types.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/uiSprites.test.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/uiSprites.ts",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/useStats.test.tsx",
+              "kind": "file",
+              "depth": "1"
+            },
+            {
+              "path": "client/src/lib/useStats.ts",
+              "kind": "file",
+              "depth": "1"
+            }
+          ],
+          "error": null,
+          "latency_ms": 7.843250006437302,
+          "interrupted": false
+        },
+        {
+          "name": "read_file",
+          "arguments": {
+            "path": "client/src/lib/format.ts"
+          },
+          "result": {
+            "path": "client/src/lib/format.ts",
+            "start_line": 1,
+            "end_line": 15,
+            "content": "export function formatDuration(seconds: number): string {\n  const h = Math.floor(seconds / 3600);\n  const m = Math.floor((seconds % 3600) / 60);\n  if (h > 0) return `${h}h ${m}m`;\n  return `${m}m`;\n}\n\nexport function formatTag(username: string, discriminator: string): string {\n  return `${username}#${discriminator}`;\n}\n\nexport function formatTime(seconds: number): string {\n  const s = Math.max(0, Math.floor(seconds));\n  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, \"0\")}`;\n}",
+            "total_lines": 15,
+            "sha256": "22d1c3647d9be8e6b1ad9c188a483dbf3a97070213ffc6565c0dd51d89bab90b"
+          },
+          "error": null,
+          "latency_ms": 3.916000008583069,
+          "interrupted": false
+        },
+        {
+          "name": "read_file",
+          "arguments": {
+            "path": "client/src/lib/format.test.ts"
+          },
+          "result": null,
+          "error": "Tool not executed: this turn has already stopped.",
+          "latency_ms": 0.48374998569488525,
+          "interrupted": false
+        }
+      ],
+      "runtime_config": {
+        "coding_toolset": "full",
+        "tool_specs": [
+          {
+            "name": "remember_fact",
+            "description": "Persist a durable engineering note for this developer across sessions (stack choices, repo conventions, review preferences). Returns {stored: true} on first insert, {stored: false} if the exact note was already known.",
+            "parameters_schema": {
+              "properties": {
+                "fact": {
+                  "description": "A concise engineering note to persist (e.g. 'prefer async handlers', 'use ruff format', 'never force-push main').",
+                  "minLength": 1,
+                  "title": "Fact",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "fact"
+              ],
+              "title": "RememberFactInput",
+              "type": "object"
+            }
+          },
+          {
+            "name": "remember",
+            "description": "Alias for remember_fact. Persist a durable engineering note for this developer across sessions (stack choices, repo conventions, review preferences). Returns {stored: true} on first insert, {stored: false} if the exact note was already known.",
+            "parameters_schema": {
+              "properties": {
+                "note": {
+                  "description": "Alias for remember_fact \u2014 a durable engineering note.",
+                  "minLength": 1,
+                  "title": "Note",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "note"
+              ],
+              "title": "RememberInput",
+              "type": "object"
+            }
+          },
+          {
+            "name": "recall_facts",
+            "description": "Return engineering notes previously remembered for this developer, most recently added first. Notes are also injected into the system prompt at the start of each turn.",
+            "parameters_schema": {
+              "properties": {
+                "max_results": {
+                  "default": 20,
+                  "maximum": 50,
+                  "minimum": 1,
+                  "title": "Max Results",
+                  "type": "integer"
+                }
+              },
+              "title": "RecallFactsInput",
+              "type": "object"
+            }
+          },
+          {
+            "name": "recall",
+            "description": "Alias for recall_facts. Return engineering notes previously remembered for this developer, most recently added first. Notes are also injected into the system prompt at the start of each turn.",
+            "parameters_schema": {
+              "properties": {
+                "max_results": {
+                  "default": 20,
+                  "maximum": 50,
+                  "minimum": 1,
+                  "title": "Max Results",
+                  "type": "integer"
+                }
+              },
+              "title": "RecallInput",
+              "type": "object"
+            }
+          },
+          {
+            "name": "read_file",
+            "description": "Read a UTF-8 text file under the workspace. Returns repo-relative path, line range, and content. Use before editing or citing code. Whole-file hash/line scanning is limited to 16000000 bytes.",
+            "parameters_schema": {
+              "properties": {
+                "path": {
+                  "description": "Repo-relative file path.",
+                  "minLength": 1,
+                  "title": "Path",
+                  "type": "string"
+                },
+                "start_line": {
+                  "anyOf": [
+                    {
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "default": null,
+                  "description": "1-indexed start line (inclusive). Defaults to 1.",
+                  "title": "Start Line"
+                },
+                "end_line": {
+                  "anyOf": [
+                    {
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "default": null,
+                  "description": "1-indexed end line (inclusive). Defaults to file end.",
+                  "title": "End Line"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "title": "ReadFileInput",
+              "type": "object"
+            }
+          },
+          {
+            "name": "grep_repo",
+            "description": "Search the workspace for a regex pattern. Returns matching lines with repo-relative paths and line numbers, excluding workspace-ignored paths. More than 100 matching lines returns an error; narrow the path, glob, or pattern and retry.",
+            "parameters_schema": {
+              "properties": {
+                "pattern": {
+                  "description": "Regex pattern to search for.",
+                  "minLength": 1,
+                  "title": "Pattern",
+                  "type": "string"
+                },
+                "path": {
+                  "default": ".",
+                  "description": "Repo-relative file or directory to search.",
+                  "title": "Path",
+                  "type": "string"
+                },
+                "glob": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "default": null,
+                  "description": "Optional glob filter (e.g. '*.py') applied to file names.",
+                  "title": "Glob"
+                }
+              },
+              "required": [
+                "pattern"
+              ],
+              "title": "GrepRepoInput",
+              "type": "object"
+            }
+          },
+          {
+            "name": "list_dir",
+            "description": "List immediate children of a workspace directory (non-recursive). More than 200 entries returns an explicit limit error. Symlinks are labeled as leaves.",
+            "parameters_schema": {
+              "properties": {
+                "path": {
+                  "default": ".",
+                  "description": "Repo-relative directory path.",
+                  "title": "Path",
+                  "type": "string"
+                }
+              },
+              "title": "ListDirInput",
+              "type": "object"
+            }
+          },
+          {
+            "name": "tree",
+            "description": "List files and directories up to the requested depth under a path. More than 300 entries returns an explicit limit error; narrow the path or depth. Symlinks are leaves, never traversed.",
+            "parameters_schema": {
+              "properties": {
+                "path": {
+                  "default": ".",
+                  "description": "Repo-relative directory path.",
+                  "title": "Path",
+                  "type": "string"
+                },
+                "depth": {
+                  "default": 2,
+                  "description": "Maximum directory depth.",
+                  "maximum": 6,
+                  "minimum": 1,
+                  "title": "Depth",
+                  "type": "integer"
+                }
+              },
+              "title": "TreeInput",
+              "type": "object"
+            }
+          },
+          {
+            "name": "git_status",
+            "description": "Run `git status --porcelain` in the workspace (read-only).",
+            "parameters_schema": {
+              "properties": {},
+              "title": "GitStatusInput",
+              "type": "object"
+            }
+          },
+          {
+            "name": "git_diff",
+            "description": "Run `git diff` in the workspace (read-only). Optionally limit to one path.",
+            "parameters_schema": {
+              "properties": {
+                "path": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "default": null,
+                  "description": "Optional repo-relative path to limit the diff.",
+                  "title": "Path"
+                }
+              },
+              "title": "GitDiffInput",
+              "type": "object"
+            }
+          },
+          {
+            "name": "emit_plan",
+            "description": "Record a structured plan (ordered steps) in the tool trace before editing files. No filesystem changes.",
+            "parameters_schema": {
+              "properties": {
+                "steps": {
+                  "description": "Ordered plan steps before making filesystem edits.",
+                  "items": {
+                    "type": "string"
+                  },
+                  "minItems": 1,
+                  "title": "Steps",
+                  "type": "array"
+                },
+                "summary": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "default": null,
+                  "description": "Optional one-line goal for the turn.",
+                  "title": "Summary"
+                }
+              },
+              "required": [
+                "steps"
+              ],
+              "title": "EmitPlanInput",
+              "type": "object"
+            }
+          },
+          {
+            "name": "write_file",
+            "description": "Replace a UTF-8 text file under the workspace with new content. Creates parent directories as needed. Returns bytes written.",
+            "parameters_schema": {
+              "properties": {
+                "path": {
+                  "description": "Repo-relative file path to write.",
+                  "minLength": 1,
+                  "title": "Path",
+                  "type": "string"
+                },
+                "content": {
+                  "description": "Full file contents (UTF-8).",
+                  "title": "Content",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path",
+                "content"
+              ],
+              "title": "WriteFileInput",
+              "type": "object"
+            }
+          },
+          {
+            "name": "replace_text",
+            "description": "Replace one exact text span in an existing UTF-8 file. Read the file first; pass its sha256 as expected_sha256. Refuses stale or ambiguous matches and returns the applied diff. Prefer this for small edits.",
+            "parameters_schema": {
+              "properties": {
+                "path": {
+                  "description": "Repo-relative existing file path.",
+                  "minLength": 1,
+                  "title": "Path",
+                  "type": "string"
+                },
+                "old_text": {
+                  "description": "Exact text to replace once.",
+                  "minLength": 1,
+                  "title": "Old Text",
+                  "type": "string"
+                },
+                "new_text": {
+                  "description": "Replacement text; empty string deletes the match.",
+                  "title": "New Text",
+                  "type": "string"
+                },
+                "expected_sha256": {
+                  "description": "Whole-file SHA-256 from read_file. Refuses edits after the file changes.",
+                  "pattern": "^[0-9a-f]{64}$",
+                  "title": "Expected Sha256",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path",
+                "old_text",
+                "new_text",
+                "expected_sha256"
+              ],
+              "title": "ReplaceTextInput",
+              "type": "object"
+            }
+          },
+          {
+            "name": "run_command",
+            "description": "Run an allowlisted verification command in the workspace root (pytest, ruff, mypy, git diff/status/show, python -m pytest, python3 -m pytest, npm [--prefix <repo-relative-dir>] run test:run [-- <test args>]). Returns exit_code, stdout, stderr, and success flag.",
+            "parameters_schema": {
+              "properties": {
+                "argv": {
+                  "description": "Command argv list, e.g. ['pytest', 'test_calc.py']. First token must be allowlisted (pytest, ruff, mypy, git, python -m pytest, python3 -m pytest, npm [--prefix <repo-relative-dir>] run test:run [-- <test args>]).",
+                  "items": {
+                    "type": "string"
+                  },
+                  "minItems": 1,
+                  "title": "Argv",
+                  "type": "array"
+                }
+              },
+              "required": [
+                "argv"
+              ],
+              "title": "RunCommandInput",
+              "type": "object"
+            }
+          },
+          {
+            "name": "semantic_search",
+            "description": "Deferred: semantic codebase search via embeddings. Not enabled in v1; use grep_repo instead.",
+            "parameters_schema": {
+              "properties": {
+                "query": {
+                  "description": "Natural-language search query.",
+                  "minLength": 1,
+                  "title": "Query",
+                  "type": "string"
+                },
+                "k": {
+                  "default": 5,
+                  "maximum": 20,
+                  "minimum": 1,
+                  "title": "K",
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "query"
+              ],
+              "title": "SemanticSearchInput",
+              "type": "object"
+            }
+          }
+        ],
+        "max_tool_iterations": 8,
+        "max_tool_calls_per_turn": 24,
+        "max_turn_wall_seconds": 600.0,
+        "max_completion_tokens_per_turn": 8192,
+        "max_total_tokens_per_turn": 32000,
+        "max_context_tokens": 16384,
+        "min_request_output_tokens": 256,
+        "max_identical_tool_calls": 2,
+        "max_completion_retries": 1,
+        "project_check_argv": [
+          "python",
+          "-m",
+          "pytest",
+          "-q",
+          "test_visible.py"
+        ],
+        "request_timeout_seconds": 180,
+        "require_verification_before_finish": true,
+        "require_plan_before_edit": false,
+        "max_files_touched_per_turn": 5,
+        "track_workspace_changes": true,
+        "max_tracked_files": 20000,
+        "max_tracked_bytes": 256000000,
+        "max_workspace_diff_bytes": 64000,
+        "max_diff_file_bytes": 128000,
+        "max_diff_snapshot_bytes": 2000000,
+        "ollama_num_ctx": 16384,
+        "ollama_think": false
+      },
+      "turn_trace": [
+        {
+          "kind": "request",
+          "iteration": 0,
+          "message_count": 2,
+          "estimated_prompt_tokens": 3113,
+          "max_tokens": 8192,
+          "initial_messages": [
+            {
+              "role": "system",
+              "content": "You are a coding assistant. Complete the user's request using the available tools.\n\nAfter editing, run this project check with run_command argv: [\"python\", \"-m\", \"pytest\", \"-q\", \"test_visible.py\"]\n\nWorkspace root: /private/var/folders/kv/bnv02fls1vxdkg1ddc8s77qr0000gn/T/agent_harness_eval_n1srbjre/repo",
+              "tool_calls": [],
+              "tool_call_id": null,
+              "tool_name": null
+            },
+            {
+              "role": "user",
+              "content": "In Duodoro, harden formatDuration and formatTime in client/src/lib/format.ts against negative and non-finite numeric durations. Negative numbers, NaN, Infinity and -Infinity must render as zero (0m and 0:00). Preserve existing finite-positive formatting, fractional truncation and formatTag behavior. Inspect AGENTS.md and the existing format tests first. Only modify client/src/lib/format.ts; preserve all other files, including pre-existing work and tests. For this disposable library-level evaluation, test_visible.py is an additional visible task check using the installed Node runtime's native TypeScript support; run [\"python\",\"-m\",\"pytest\",\"-q\",\"test_visible.py\"] after the edit. This adapter does not run the full Next/Vitest suite. Do not install dependencies, start services or touch Docker. Report the observed checks and any limits honestly.",
+              "tool_calls": [],
+              "tool_call_id": null,
+              "tool_name": null
+            }
+          ]
+        },
+        {
+          "kind": "response",
+          "iteration": 0,
+          "content": "",
+          "tool_calls": [
+            {
+              "id": "call_54aad4eeb34e",
+              "name": "read_file",
+              "arguments": {
+                "path": "AGENTS.md"
+              }
+            }
+          ],
+          "finish_reason": "tool_use",
+          "usage": {
+            "prompt_tokens": 1917,
+            "completion_tokens": 18
+          },
+          "model": "gemma4:12b",
+          "latency_ms": 19504.765582998516
+        },
+        {
+          "kind": "tool_result",
+          "iteration": 0,
+          "message": {
+            "role": "tool",
+            "content": "{\"path\": \"AGENTS.md\", \"start_line\": 1, \"end_line\": 265, \"content\": \"# AGENTS.md\\n\\nGuidance for coding agents working in Duodoro. Updated against the repository on\\n2026-09-29, after PRs #91\\u2013#93. Explicit user instructions take precedence.\\n\\n## Project and layout\\n\\nDuodoro is a collaborative focus timer for couples and friends. Supabase provides\\nGoogle/Discord OAuth and persisted data; a Socket.IO server synchronizes two-person\\nrooms. Pixel-art worlds rotate globally; users can also focus solo.\\n\\nThere are two independent npm packages. Install dependencies in the relevant\\npackage; the root `package.json` and lockfile are legacy, not a workspace manager.\\n\\n| Path | Responsibility |\\n| --- | --- |\\n| `client/` | Next.js 16.3 App Router, React 19, TypeScript, Tailwind 4, Framer Motion |\\n| `client/src/app/` | Main page, root metadata/layout, OAuth callback, invite route, Terms/Privacy, manifest and social images |\\n| `client/src/components/` | `DuoTimer` orchestration, Home, room HUD/world, panels, avatars and companions |\\n| `client/src/hooks/` | Auth, room state, socket transport/recovery, tasks, friends, preferences and accessibility |\\n| `client/src/lib/` | Shared client types, Supabase singleton/generated DB types, stats, sound manager, timer preferences, site metadata and pixel-art helpers |\\n| `client/src/test/`, `client/e2e/` | Vitest setup/accessibility helpers and Playwright public release smoke tests |\\n| `client/public/` | Icons, offline fallback/service worker and actual sound assets |\\n| `client/scripts/` | Dependency-free break-finished sound generator |\\n| `server/` | CommonJS Node.js, Express, Socket.IO and Redis focus recovery |\\n| `shared/socketContract.d.ts`, `shared/socketContract.js` | Canonical event types and runtime event-name lists for both packages |\\n| `supabase/migrations/`, `supabase/tests/` | Timestamped SQL source of truth and pgTAP schema contract |\\n| `docs/` | Database/deployment verification, observability and release checklists; some local documents are gitignored |\\n| `.github/workflows/ci.yml` | Database, server, client and browser smoke jobs |\\n| `docker-compose.yml`, package Dockerfiles | Local/self-hosted setup; current production uses Vercel and Render |\\n| `ROADMAP.md` | Tracked backlog and historical findings/corrections; verify old claims against source |\\n\\n## Commands and verification\\n\\nUse Node 22 to match CI. Each package has its own lockfile; use `npm ci` there.\\n\\nFrom `client/`:\\n\\n```sh\\nnpm run dev                         # default port 3000\\nnpx tsc --noEmit\\nnpm run lint\\nnpm run test:run\\nnpx vitest run src/lib/format.test.ts # targeted test example\\nnpm run build\\nnpm run test:e2e                    # production browser smoke; see playwright.config.ts\\n```\\n\\nFrom `server/`:\\n\\n```sh\\nnpm start                           # default port 3001\\nnpm run test:run\\nnpm run test:integration             # real local Supabase; separate from the default suite\\n```\\n\\n`npm test` runs Vitest in watch mode in either package. Some server tests bind\\nreal ephemeral ports. Integration tests create/delete real local Auth users and\\nsession data; read their setup before running them.\\n\\nOn this workstation, Node 26's experimental web storage conflicts with jsdom.\\nIf using that version, run client tests with\\n`NODE_OPTIONS=--no-experimental-webstorage npm run test:run`; prefer Node 22.\\nNext's generated `.next/dev/types` can retain removed temporary preview routes.\\nIf that causes a missing-route type error, move aside the obsolete generated\\ncache and regenerate; do not change application types to conceal it.\\n\\nClient builds need syntactically valid `NEXT_PUBLIC_SUPABASE_URL`,\\n`NEXT_PUBLIC_SUPABASE_ANON_KEY` and `NEXT_PUBLIC_SOCKET_URL`. Never print or\\ncommit real environment values. Server configuration is documented in\\n`server/.env.example`.\\n\\nNext 16.3 can generate `client/AGENTS.md`/`client/CLAUDE.md` when `next dev` starts.\\nRead applicable generated guidance and the installed version's relevant docs in\\n`client/node_modules/next/dist/docs/` when touching framework APIs. Inspect the\\ngit diff afterwards so temporary previews and generated instruction files do not\\naccidentally enter a feature PR.\\n\\n## Client architecture\\n\\n- `app/page.tsx` renders `components/DuoTimer.tsx`, the screen orchestrator.\\n  `useAuth` controls `appStep` (`loading`, `landing`, `avatar`, `home`, `game`).\\n- `hooks/useGameSession.ts` owns room membership, phase/player state, derived timer\\n  values and actions. `hooks/useSessionConnection.ts` owns the single transport,\\n  JWT refresh, connection state, retries, online/visibility recovery and rejoin\\n  snapshots. Keep these responsibilities separate; use refs for current reconnect\\n  snapshots rather than stale captured state.\\n- `SessionHUD.tsx` renders Start, Go again, Stop timer and Leave room. Stopping a\\n  timer keeps the room; leaving exits it. `completedRounds` is a server-synced room\\n  count, not a history total. It survives repeat rounds/stops while the room exists;\\n  interrupted focus does not increment it, and server restarts do not restore rooms.\\n- The client derives countdowns/Flow elapsed time from server timestamps and\\n  durations. Re-read the clock on ticks; do not decrement a second local timer.\\n  `timerPrefs.ts` persists local settings, while Go again repeats the room's actual\\n  server settings, which may have been chosen by the other participant.\\n- `HomeDashboard` uses `DailyFocusGoal` and `useDailyFocusGoal`. Targets are saved\\n  per account in this browser, with a memory fallback. Progress uses completed focus\\n  from the timezone-aware `get_daily_focus` RPC. Refresh on Home mount, local-day\\n  rollover and visibility/focus return. There is no separate goal database table.\\n- `lib/useStats.ts` shares a short cache/in-flight requests for stats consumers.\\n  Check reads and writes for errors. Empty results/zero progress are valid only\\n  after successful loading; preserve explicit loading/error/retry states. For RLS\\n  mutations, request returned rows and reconcile actual IDs, including partial\\n  success; a zero-row mutation can have no API error.\\n- `lib/supabase.ts` is the typed browser singleton with PKCE/localStorage auth.\\n  `lib/database.types.ts` is generated; normalize UI nulls in `lib/types.ts`.\\n- `lib/sounds.ts` owns playback, cache, persisted mute and mute subscriptions.\\n  `useSound`/`SoundToggle` subscribe to it. All sounds must respect that manager.\\n  Break completion rings on live `break \\u2192 returning` events in both modes; room\\n  snapshots and duplicate events must not replay it. Sound assets live in\\n  `public/sounds/`; the original WAV can be regenerated with\\n  `python3 client/scripts/generate-break-finished-sound.py` from the root.\\n- Keep browser-only effects out of server rendering. A client component still\\n  has a server-rendered first frame: use a neutral server snapshot or mount state\\n  for clock/storage-derived UI and verify hydration behavior where relevant.\\n- `lib/site.ts` is the source of branding/site metadata. Keep runtime document\\n  title changes separate from canonical metadata and restore the normal title\\n  when a room is no longer displayed.\\n- `public/sw.js` caches only the standalone offline navigation fallback, never\\n  app bundles, sockets or Supabase responses. Its offline theme tokens mirror\\n  `app/globals.css`.\\n- Companion access is currently free. Internal premium names/fields are legacy;\\n  user-facing copy calls it companion access. `lib/billing.ts` is an inactive\\n  payment seam; never treat mock checkout as a successful purchase. Marketing\\n  consent is independent of access.\\n\\n## Server architecture and invariants\\n\\n- `index.js` loads deployment configuration, constructs Supabase/Redis clients,\\n  starts the app and handles signals with a bounded 25-second shutdown deadline.\\n  Production requires Supabase credentials and `FOCUS_QUEUE_URL`. Without\\n  Supabase configuration, development skips verified auth/persistence; that is\\n  not evidence that production authorization works.\\n- `app.js` exports `createRealtimeApp()` with `start()`/`stop()`. Importing it must\\n  not start listeners, install signal handlers, read deployment secrets or start\\n  background work. Inject dependencies for tests.\\n- `session.js` holds pure room/player state and helpers. `phaseSequence.js` defines\\n  transitions; `phasePetHandlers.js` registers start/stop/Flow/companion actions.\\n  Pomodoro: `waiting \\u2192 focus \\u2192 celebration (4s) \\u2192 break \\u2192 returning (3.5s) \\u2192 ready`.\\n  Go again starts focus from `ready`. Flow returns directly to open-ended focus\\n  after the break, and Take break derives break duration from elapsed focus.\\n- Live rooms/timers remain in memory. `beginFocusRound()` creates one private\\n  recording UUID per actual focus round. Preserve that key across retries;\\n  snapshot elapsed time and participants before removing/changing room state.\\n  Completion counts are separate from asynchronous database-save success.\\n- `focusRecorder.js` calls the atomic, service-role-only `record_focus_session`\\n  RPC. `focusRecovery.js` manages persistence/retry and pending/unconfirmed status;\\n  `focusQueue.js` persists queued payloads in Redis so pending saves can recover\\n  across process restarts. This queue restores writes, not live room state.\\n  Never replace the atomic RPC with separate session/participant inserts, generate\\n  a new key on retries, or report pending/unconfirmed saves as saved.\\n- Graceful shutdown cancels reconnect timers before snapshotting interrupted\\n  focus, drains persistence/recovery and cleans presence. Preserve the shutdown\\n  ordering and duplicate-recording guards.\\n- `roomMembershipHandlers.js` handles creation, bearer share links, admission and\\n  reconnect re-keying. Rooms have two seats. Authorize before leaving the old room;\\n  reserve seats/consume new-join tokens synchronously before awaited reads; release\\n  reservations in `finally`; verify the room still exists after awaits.\\n- Authenticated disconnects retain a slot for `RECONNECT_GRACE_MS` (default 60s).\\n  Rejoin matches the verified user and re-keys socket/player/host mappings together.\\n  Client resume IDs are mirrored in sessionStorage/localStorage. A dead room after\\n  server restart must give an honest message and direct users to History.\\n- `accountHandlers.js` and `socialHandlers.js` handle accounts, presence/friends\\n  and invites; `presence.js` tracks sets of sockets per user so another tab cannot\\n  evict them. Refresh the trusted profile presence mirror after room changes, and\\n  clear stale presence on startup/shutdown.\\n- Companion stage comes from server completed-focus totals (`focusTotal.js`,\\n  `petLevel.js`), not client claims. Failed total reads must not shrink a veteran's\\n  companion. Growth uses more map cells at the same art pixel size.\\n\\n## Socket, privacy and database boundaries\\n\\n- Update shared event types/runtime name lists, emitters and handlers together.\\n  Use typed `DuodoroSocket`; compile-time types do not validate network payloads.\\n- Payload events go through `onPayload()` and `safeSocketHandler()`; parsers in\\n  `payloadParsers.js` validate/normalize fields without I/O or authorization.\\n  Preserve rate limits and membership checks. Identity comes from the verified\\n  JWT (`socket.userId`), never a payload user ID. A room UUID alone grants no access.\\n- Server logs use `observability.js` structured events, opaque `correlationRef()`\\n  and `safeErrorFields()`. Never log raw identifiers, names, emails, tokens,\\n  authorization headers, request payloads or arbitrary upstream error messages.\\n  `/health` is liveness; `/ready` checks bounded/cached database readiness.\\n  Consult `docs/OBSERVABILITY.md` before changing logging or alerts.\\n- RLS and column grants both matter. Never re-grant broad client UPDATE privileges\\n  on privileged profile fields. Avoid policies querying their own protected table;\\n  use narrowly scoped definer helpers for membership checks. Pin function search\\n  paths and revoke default PUBLIC execution for privileged functions.\\n- Shared task toggles use their scoped RPC; edits/deletes remain owner-only.\\n  Account deletion is a verified server/Auth operation with dependent cleanup,\\n  including durable pending records, not a client-side table sweep.\\n- Keep personal consent/email data out of friend-readable profiles. Derive verified\\n  email from Auth on the server/in SQL; marketing opt-out must not revoke access.\\n\\nDatabase work uses Docker, PostgreSQL 17 and Supabase CLI **2.116.0** from the root:\\n\\n```sh\\nsupabase migration new short_snake_case_name\\nsupabase start\\nsupabase db reset --local --no-seed\\nsupabase db lint --local --level warning --fail-on error\\nsupabase test db\\nsupabase gen types typescript --local --schema public > client/src/lib/database.types.ts\\n```\\n\\nValidate the entire committed migration chain, update schema tests/generated\\nTypescript types, and follow `docs/DATABASE_WORKFLOW.md` for remote dry-run,\\npush and verification. Apply required migrations before deploying dependent code.\\nNever run `db reset --linked`, bypass mismatches with `db push --include-all`, or\\nedit production schema manually in the Dashboard.\\n\\n## Worlds, pixel art and mobile UI\\n\\n- New rooms get `worldAt()` from the server; there is no world picker. Rotation\\n  changes hourly at :30 UTC; existing rooms keep their original world. Keep\\n  `server/rotation.js` and `client/src/lib/rotation.ts` plus their pinned tests in\\n  agreement. Deterministic cross-package schedules use integer arithmetic.\\n- Adding a world also updates both rotation lists, `avatarData.ts` world types/data\\n  and the database world constraint through a migration.\\n- `PixelSprite` renders string maps. Composite layers with `lib/pixelMap.ts` before\\n  rendering; avoid stacked SVG rounding/seams and validate map dimensions/palettes.\\n- Art colors and shading come from `lib/palette.ts` (`shade`, `flush`); preserve\\n  palette guards and per-world color snapshots. Never scale RGB channels ad hoc.\\n- A scene uses one responsive integer art pixel via `ScenePixel`/`useArtPx()` and\\n  `lib/scene.ts`. Redraw maps to resolve density differences; do not upscale a\\n  low-resolution map as a substitute. Anchor standing art to `GROUND` with feet\\n  at the wrapper bottom; name tags must not shift that anchor. Use `ContactShadow`.\\n- Sprite animation uses whole-pixel translations/poses, with reduced-motion\\n  support. No rotation, fractional scaling, eased fractional positions or\\n  squash/stretch. Round animated values, not just their destinations.\\n- Avatar keylines were intentionally removed; do not restore them casually.\\n  Outlines change rendered proportions, so measure rendered SVG bounds. Real\\n  screenshots are needed for visual judgments; geometry tests do not prove taste.\\n- Game uses an `h-dvh` shell with reachable internal scrolling. Use dynamic viewport\\n  units and include safe-area insets in existing padding. Landscape compact styles\\n  need height queries, not width breakpoints alone. Preserve phone touch targets\\n  and narrow-screen overlay sizing.\\n\\n## Delivery workflow\\n\\n- Keep features free unless the user explicitly changes that preference.\\n- Inspect existing work and user edits before modifying files. Branch from current\\n  main for feature work; never commit directly to auto-deployed `main`.\\n- Use focused, coherent commits. The repository's default merge policy is rebase\\n  (`gh pr merge --rebase`), not squash; explicit session instructions take priority.\\n  Merge only when authorized and required CI is complete and successful.\\n- Preserve uncommitted user changes. In particular, this AGENTS.md replacement and\\n  the deletion of CLAUDE.md are intentionally uncommitted until the user requests\\n  otherwise; exclude them from unrelated feature commits.\\n- Verify bug claims against source. Regression tests should fail before a bug fix\\n  and pass after; distinguish regression evidence from general guard tests.\\n  Run checks appropriate to the change and report what they actually prove.\\n- Update `ROADMAP.md` in the feature PR that ships the item. Historical audit prose\\n  and old line numbers may be stale; maintain concrete current references.\\n- Current CI gates: database reset/types/lint/pgTAP, server audit/tests, client\\n  audit/types/lint/tests/build, and production browser smoke/accessibility. Node 22\\n  is pinned. Database images use GHCR to avoid ECR anonymous pull quotas; the pinned\\n  postgres-meta staging tag must stay consistent with the Supabase CLI version.\\n- Main automatically deploys client to Vercel and server to Render independently.\\n  `NEXT_PUBLIC_*` values are baked into Vercel builds. Render needs allowed origins,\\n  Supabase service credentials and the durable queue URL. Keep the current free\\n  hosting setup; a CI success is not proof that a production deployment succeeded.\\n- Public smoke tests do not verify authenticated two-account behavior, live data,\\n  sleeping mobile tabs or subjective visuals. Use `docs/RELEASE_CHECKLIST.md` and\\n  report those limits honestly. Never claim a deployment or manual check you did\\n  not observe.\", \"total_lines\": 265, \"sha256\": \"efc573cca6a89993e35535aea0cd077a9d7177596741518b54ebece3bb405d10\"}",
+            "tool_calls": [],
+            "tool_call_id": "call_54aad4eeb34e",
+            "tool_name": "read_file"
+          }
+        },
+        {
+          "kind": "request",
+          "iteration": 1,
+          "message_count": 4,
+          "estimated_prompt_tokens": 8929,
+          "max_tokens": 7455,
+          "initial_messages": []
+        },
+        {
+          "kind": "response",
+          "iteration": 1,
+          "content": "",
+          "tool_calls": [
+            {
+              "id": "call_c80ff8f8aca0",
+              "name": "tree",
+              "arguments": {
+                "path": "client/src/lib"
+              }
+            }
+          ],
+          "finish_reason": "tool_use",
+          "usage": {
+            "prompt_tokens": 6257,
+            "completion_tokens": 21
+          },
+          "model": "gemma4:12b",
+          "latency_ms": 44944.969791016774
+        },
+        {
+          "kind": "tool_result",
+          "iteration": 1,
+          "message": {
+            "role": "tool",
+            "content": "[{\"path\": \"client/src/lib\", \"kind\": \"dir\", \"depth\": \"0\"}, {\"path\": \"client/src/lib/avatarData.test.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/avatarData.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/billing.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/characterMaps.test.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/characterMaps.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/companionNames.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/database.types.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/focusCalendar.test.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/focusCalendar.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/focusInsights.test.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/focusInsights.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/focusNotificationWorker.test.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/focusNotifications.test.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/focusNotifications.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/focusTags.test.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/focusTags.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/format.test.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/format.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/intentionGoal.test.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/intentionGoal.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/interior.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/keyboardShortcuts.test.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/keyboardShortcuts.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/palette.test.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/palette.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/paletteGuard.test.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/petIdle.test.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/petIdle.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/petLevel.test.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/petLevel.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/petMaps.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/pixelMap.test.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/pixelMap.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/rotation.test.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/rotation.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/scene.test.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/scene.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/sessionReflections.test.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/sessionReflections.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/sessionTypes.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/sessionWrapUp.test.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/sessionWrapUp.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/shareInvite.test.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/shareInvite.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/sharedMilestones.test.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/sharedMilestones.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/site.test.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/site.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/skyline.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/socketContract.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/sounds.test.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/sounds.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/storedData.test.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/storedData.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/supabase.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/tabKeyboard.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/terrain.test.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/terrain.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/timerPrefs.test.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/timerPrefs.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/types.test.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/types.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/uiSprites.test.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/uiSprites.ts\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/useStats.test.tsx\", \"kind\": \"file\", \"depth\": \"1\"}, {\"path\": \"client/src/lib/useStats.ts\", \"kind\": \"file\", \"depth\": \"1\"}]",
+            "tool_calls": [],
+            "tool_call_id": "call_c80ff8f8aca0",
+            "tool_name": "tree"
+          }
+        },
+        {
+          "kind": "request",
+          "iteration": 2,
+          "message_count": 6,
+          "estimated_prompt_tokens": 10607,
+          "max_tokens": 5777,
+          "initial_messages": []
+        },
+        {
+          "kind": "response",
+          "iteration": 2,
+          "content": "",
+          "tool_calls": [
+            {
+              "id": "call_47bcb91b9b8b",
+              "name": "read_file",
+              "arguments": {
+                "path": "client/src/lib/format.ts"
+              }
+            }
+          ],
+          "finish_reason": "tool_use",
+          "usage": {
+            "prompt_tokens": 8139,
+            "completion_tokens": 27
+          },
+          "model": "gemma4:12b",
+          "latency_ms": 24229.51891599223
+        },
+        {
+          "kind": "tool_result",
+          "iteration": 2,
+          "message": {
+            "role": "tool",
+            "content": "{\"path\": \"client/src/lib/format.ts\", \"start_line\": 1, \"end_line\": 15, \"content\": \"export function formatDuration(seconds: number): string {\\n  const h = Math.floor(seconds / 3600);\\n  const m = Math.floor((seconds % 3600) / 60);\\n  if (h > 0) return `${h}h ${m}m`;\\n  return `${m}m`;\\n}\\n\\nexport function formatTag(username: string, discriminator: string): string {\\n  return `${username}#${discriminator}`;\\n}\\n\\nexport function formatTime(seconds: number): string {\\n  const s = Math.max(0, Math.floor(seconds));\\n  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, \\\"0\\\")}`;\\n}\", \"total_lines\": 15, \"sha256\": \"22d1c3647d9be8e6b1ad9c188a483dbf3a97070213ffc6565c0dd51d89bab90b\"}",
+            "tool_calls": [],
+            "tool_call_id": "call_47bcb91b9b8b",
+            "tool_name": "read_file"
+          }
+        },
+        {
+          "kind": "request",
+          "iteration": 3,
+          "message_count": 8,
+          "estimated_prompt_tokens": 10863,
+          "max_tokens": 4758,
+          "initial_messages": []
+        },
+        {
+          "kind": "response",
+          "iteration": 3,
+          "content": "",
+          "tool_calls": [
+            {
+              "id": "call_1248a0b447cb",
+              "name": "read_file",
+              "arguments": {
+                "path": "client/src/lib/format.test.ts"
+              }
+            }
+          ],
+          "finish_reason": "tool_use",
+          "usage": {
+            "prompt_tokens": 8462,
+            "completion_tokens": 29
+          },
+          "model": "gemma4:12b",
+          "latency_ms": 6557.240958005423
+        },
+        {
+          "kind": "tool_result",
+          "iteration": 3,
+          "message": {
+            "role": "tool",
+            "content": "\"Tool not executed: this turn has already stopped.\"",
+            "tool_calls": [],
+            "tool_call_id": "call_1248a0b447cb",
+            "tool_name": "read_file"
+          }
+        }
+      ]
+    }
+  ],
+  "repository_metadata": {
+    "id": "duodoro_duration_format",
+    "repository": "duodoro",
+    "source_revision": "5324cabba4ad3c8ad2e1cd1480218cf087d9b741",
+    "allowed_modified_path": "client/src/lib/format.ts",
+    "request": "In Duodoro, harden formatDuration and formatTime in client/src/lib/format.ts against negative and non-finite numeric durations. Negative numbers, NaN, Infinity and -Infinity must render as zero (0m and 0:00). Preserve existing finite-positive formatting, fractional truncation and formatTag behavior. Inspect AGENTS.md and the existing format tests first. Only modify client/src/lib/format.ts; preserve all other files, including pre-existing work and tests. For this disposable library-level evaluation, test_visible.py is an additional visible task check using the installed Node runtime's native TypeScript support; run [\"python\",\"-m\",\"pytest\",\"-q\",\"test_visible.py\"] after the edit. This adapter does not run the full Next/Vitest suite. Do not install dependencies, start services or touch Docker. Report the observed checks and any limits honestly."
+  },
+  "node_runtime": "26.0.0; native TypeScript library adapter, not full Vitest/Next suite",
+  "criterion_hashes": {
+    "baseline.json": "b9b094a6d2d7350e8f28ae6fa90efe2b6517c3da40adc3f9a8945527827debd0",
+    "test_acceptance.py": "eb658229d6ee00a8b870357c68458cb0dbd4ee05cc9e87caf8142c73bb763e2f"
+  },
+  "acceptance_criterion_integrity": true,
+  "allowed_change_policy": "Only client/src/lib/format.ts may change; no added/deleted files",
+  "manual_patch_rescues": 0,
+  "order_limitation": "One repeat, harness then minimal; first inference on a fresh owned server. No causal quality/latency gain claim.",
+  "postprocessing_notes": "The temporary wrapper initially labeled no edits as out_of_scope_change. Restored original runtime termination for these unchanged failed artifacts; no new calls or patch repairs.",
+  "model_digest": "4eb23ef187e2c5462566d6a1d3bbbc2f1346d0b4327cbb66d58fffbcc9b2b05c",
+  "ollama_version": "0.33.2"
+}

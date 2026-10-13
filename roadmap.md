@@ -835,6 +835,25 @@ Relevant implementation: `harness/loop.py`, `harness/outcome.py`, `harness/groun
 - **Keep the model replaceable.** Neither normal operation nor evaluation should require a premium model as a hidden supervisor.
 - **Keep complexity earned.** Semantic search, extra agents, and elaborate planning enter only after simpler approaches have measurable limits.
 
+- **2026-10-12 — First frozen Duodoro task and local observations:** pinned duration
+  formatting at `5324cabba4ad3c8ad2e1cd1480218cf087d9b741`. Preparation preserves dirty
+  source, rejects artifact overlap/setup collisions, excludes environment files and
+  freezes external criterion hashes. Initial/reference artifacts fail/pass visible and
+  independent checks. Four shared-runtime local `gemma4:12b` attempts (both modes,
+  exploratory 32K/64K total budgets) yielded 0/4 accepted: three exhausted blank-answer
+  recovery, one hit the preventive token gate before editing. No edits, checks or
+  manual repairs; no false completed/check-passed status. A separate response-only
+  simulated-tool probe had an empty upstream payload; cause unresolved. See
+  `evals/BASELINES.md` for raw reports, order/configuration limits and corrected wrapper
+  labels. Node 26 library checks do not cover full application or Node 22 regressions.
+  Validation: 15 focused and 860 offline tests (five live deselected), Ruff/mypy,
+  changed-file formatting and both 90/90 scripted matrices with contract labels and
+  metric limits inspected. Owned Ollama stopped, user services preserved. This is
+  one task, not the ten-task
+  target or a quality gain. Other candidates, repeated second-model/held-out evaluations
+  and Milestone 5 remain incomplete. Jorge authorized a cheaper model through existing
+  OpenCode within account limits; hosted inference has not yet run.
+
 ## Milestone 1 — Establish a real task-success baseline
 
 **Outcome:** a model attempts real repository tasks through the same runtime used by Jorge, and independent checks determine whether it succeeded.
