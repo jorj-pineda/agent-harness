@@ -41,6 +41,17 @@ const els = {
   progressTarget: document.getElementById("progress-target"),
   inspectToolProgress: document.getElementById("inspect-tool-progress"),
   progressResults: document.getElementById("tool-progress-results"),
+  reversal: document.getElementById("file-reversal"),
+  reversalTarget: document.getElementById("reversal-target"),
+  reversalPath: document.getElementById("reversal-path"),
+  reversalAck: document.getElementById("reversal-ack"),
+  submitReversal: document.getElementById("submit-reversal"),
+  reversalPending: document.getElementById("reversal-pending"),
+  reversalRequest: document.getElementById("reversal-request"),
+  checkReversal: document.getElementById("check-reversal"),
+  retryReversal: document.getElementById("retry-reversal"),
+  forgetReversal: document.getElementById("forget-reversal"),
+  reversalResults: document.getElementById("reversal-results"),
 };
 
 // Persist a stable user_id across reloads so cross-session memory can be
@@ -65,6 +76,11 @@ let reviewTarget = null;
 let reviewInFlight = false;
 let continuationTurnId = null;
 const pendingStorageKey = "panel_pending_request";
+const reversalStorageKey = "panel_pending_reversal";
+let pendingReversal = null;
+let reversalStatus = null;
+let reversalPairAvailable = false;
+let reversalRecoveryBlocked = false;
 
 // ---- helpers ----------------------------------------------------------
 
@@ -86,29 +102,38 @@ function scrollToBottom() {
 
 function setBusy(value) {
   busy = value;
-  const canSend = !busy && sessionId != null && sessionUsable;
+  const canSend = !busy && !pendingReversal && !reversalRecoveryBlocked && sessionId != null && sessionUsable;
   els.send.disabled = !canSend;
   els.input.disabled = sessionId == null || !sessionUsable;
   const cancellationTarget = pendingRequest?.kind === "continuation"
     ? pendingRequest.fork_session_id : pendingRequest?.session_id || sessionId;
-  els.cancelTurn.disabled = !cancellationTarget || !(busy || uncertain) || cancelRequested;
+  els.cancelTurn.disabled = !!pendingReversal || !cancellationTarget || !(busy || uncertain) || cancelRequested;
   els.cancelTurn.textContent = cancelRequested ? "Cancelling…" : "Cancel turn";
-  els.newSession.disabled = busy || pendingRequest != null;
+  els.newSession.disabled = busy || pendingRequest != null || pendingReversal != null || reversalRecoveryBlocked;
   els.refreshRuns.disabled = busy;
   els.previousRuns.disabled = busy || historyOffset === 0;
   els.nextRuns.disabled = busy || !els.nextRuns.dataset.more;
   els.pendingControls.hidden = pendingRequest == null;
   els.checkRun.disabled = busy;
-  els.retryRun.disabled = busy;
+  els.retryRun.disabled = busy || !!pendingReversal || reversalRecoveryBlocked;
   els.forgetRun.disabled = busy;
   for (const button of els.history.querySelectorAll("button")) button.disabled = busy;
-  els.submitContinuation.disabled = busy || reviewInFlight || pendingRequest != null ||
+  els.submitContinuation.disabled = busy || reviewInFlight || pendingRequest != null || pendingReversal != null || reversalRecoveryBlocked ||
     reviewTarget == null || !continuationTurnId || !els.continuationAck.checked ||
     !els.continuationMessage.value.trim();
   els.prepareContinuation.disabled = busy || reviewInFlight || reviewTarget == null;
   for (const button of [els.reviewWorkspace, els.reviewTranscript, els.reviewConfiguration, els.inspectToolProgress]) {
     button.disabled = busy || reviewInFlight || reviewTarget == null;
   }
+  els.reversal.hidden = reviewTarget == null && pendingReversal == null && !reversalRecoveryBlocked;
+  els.reversalPending.hidden = pendingReversal == null && !reversalRecoveryBlocked;
+  els.submitReversal.disabled = busy || reviewInFlight || !!pendingRequest || !!pendingReversal || reversalRecoveryBlocked ||
+    !reviewTarget || !reversalPairAvailable || !els.reversalAck.checked ||
+    !canonicalReversalPath(els.reversalPath.value);
+  els.checkReversal.disabled = busy || reviewInFlight || !pendingReversal;
+  els.retryReversal.disabled = busy || reviewInFlight || !!pendingRequest || !pendingReversal || reversalStatus != null;
+  els.forgetReversal.disabled = busy || reviewInFlight;
+  if (pendingReversal) els.reversalRequest.textContent = `Retained request: ${pendingReversal.request_id}; run: ${pendingReversal.run_id}; file: ${pendingReversal.path}. Reload submits nothing. Inspect first; retry preserves this exact input. Forgetting does not cancel or reconcile file work.`;
 }
 
 function pretty(value) {
@@ -338,7 +363,7 @@ function renderEnvelope(data, includeRunId = true) {
 // ---- API --------------------------------------------------------------
 
 async function createSession() {
-  if (busy || pendingRequest != null) return;
+  if (busy || pendingRequest != null || pendingReversal != null || reversalRecoveryBlocked) return;
   const body = { user_id: userId };
   const workspace = els.workspace.value.trim();
   if (workspace) body.workspace_root = workspace;
@@ -376,6 +401,7 @@ async function createSession() {
 
 // Entry point for a turn. Prefer SSE (live tool cards); fall back to POST.
 function sendMessage(message) {
+  if (pendingReversal || reversalRecoveryBlocked) return false;
   let request;
   try {
     request = {
@@ -394,6 +420,7 @@ function sendMessage(message) {
 }
 
 function dispatchRequest(request, reviewOnly = false) {
+  if (pendingReversal || reversalRecoveryBlocked) return;
   if (request.kind === "continuation") { postContinuation({ ...request }); return; }
   selectReviewTarget(null);
   request = { ...request };
@@ -569,6 +596,12 @@ function selectReviewTarget(record) {
   els.continuationMessage.value = "";
   els.continuationAck.checked = false;
   els.continuationTarget.textContent = "Load the latest saved turn to pin this request.";
+  reversalPairAvailable = !!record?.before_checkpoint_id && !!record?.after_checkpoint_id && record.status !== "running";
+  els.reversalPath.value = "";
+  els.reversalAck.checked = false;
+  els.reversalTarget.textContent = record
+    ? `Selected run: ${record.run_id}; ${reversalPairAvailable ? "capture IDs recorded; file eligibility is checked on submission" : "no available finalized capture pair"}.`
+    : "No run selected. Retained reversal inspection is separate from run selection.";
   if (reviewTarget) {
     els.progressTarget.textContent = `Run: ${reviewTarget.runId}; lifecycle when selected: ${record.status || "unknown"}`;
     els.reviewTarget.textContent = `Session: ${reviewTarget.sessionId}; selected run: ${reviewTarget.runId}`;
@@ -736,7 +769,7 @@ async function prepareContinuation() {
 }
 
 function submitContinuation() {
-  if (busy || reviewInFlight || pendingRequest || !reviewTarget || !continuationTurnId ||
+  if (busy || reviewInFlight || pendingRequest || pendingReversal || reversalRecoveryBlocked || !reviewTarget || !continuationTurnId ||
       !els.continuationAck.checked || !els.continuationMessage.value.trim()) return;
   let request;
   try {
@@ -785,6 +818,123 @@ async function postContinuation(request) {
   } finally {
     clearTimeout(timeout);
     setBusy(false);
+  }
+}
+
+// ---- explicit one-file reversal: isolated retained route, never auto-run ----
+
+function canonicalReversalPath(path) {
+  return typeof path === "string" && path.length > 0 && path.length <= 4096 &&
+    !path.startsWith("/") && !path.includes("\0") &&
+    path.split("/").every(part => part && part !== "." && part !== "..");
+}
+
+function matchingReversal(record, request) {
+  const actual = record?.request;
+  return !!record?.revert_id && ["pending", "applied", "rejected", "uncertain", "interrupted"].includes(record.status) &&
+    actual?.user_id === request.user_id && actual?.run_id === request.run_id &&
+    actual?.path === request.path && actual?.request_id === request.request_id;
+}
+
+function showReversal(record, request) {
+  if (!matchingReversal(record, request)) throw new Error("Reversal response identity mismatch");
+  reversalStatus = record.status;
+  const card = el("section", "session-review-card");
+  card.appendChild(el("h3", null, `Saved reversal: ${record.status}`));
+  card.appendChild(el("p", null, `Run: ${request.run_id}; file: ${request.path}; request: ${request.request_id}`));
+  card.appendChild(el("p", "review-note", `Journal: ${record.revert_id}; finished: ${record.finished_at || "unrecorded"}`));
+  if (record.reason) card.appendChild(el("p", null, record.reason));
+  card.appendChild(el("p", "review-note", record.scope_note || "Observed single-file reversal only; inspect the workspace and rerun checks. No automatic reconciliation, restore or continuation."));
+  card.appendChild(el("p", null, record.status === "applied"
+    ? "Source session retired. Saved checks/diffs remain historical; inspect current files before new work."
+    : record.status === "rejected" ? "Saved request rejected; no reversal was applied by this request."
+    : "File outcome needs inspection. No automatic execution, retry or reconciliation will occur."));
+  els.reversalResults.replaceChildren(card);
+}
+
+function submitReversal() {
+  if (busy || reviewInFlight || pendingRequest || pendingReversal || reversalRecoveryBlocked || !reviewTarget ||
+      !reversalPairAvailable || !els.reversalAck.checked || !canonicalReversalPath(els.reversalPath.value)) return;
+  let request;
+  try {
+    request = { user_id: userId, run_id: reviewTarget.runId,
+      path: els.reversalPath.value, request_id: crypto.randomUUID() };
+    localStorage.setItem(reversalStorageKey, JSON.stringify(request));
+  } catch (_) {
+    addErrorMessage("Could not retain exact reversal input. No file action was submitted.");
+    return;
+  }
+  pendingReversal = request;
+  reversalStatus = null;
+  els.reversalAck.checked = false;
+  postReversal(request);
+}
+
+async function postReversal(request) {
+  if (busy || reviewInFlight || pendingRequest) return;
+  setBusy(true);
+  sessionUsable = false;
+  reversalStatus = null;
+  els.reversalResults.replaceChildren(el("p", "review-note", "Submitting the retained single-file request…"));
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 30000);
+  try {
+    const { run_id, ...body } = request;
+    const response = await fetch(`/runs/${encodeURIComponent(run_id)}/revert-file`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body), signal: controller.signal,
+    });
+    // 409/503 can contain a saved rejected/uncertain record; validate identity first.
+    showReversal(await response.json(), request);
+  } catch (_) {
+    els.reversalResults.replaceChildren(el("p", "review-note", "Reversal delivery not confirmed. Inspect the retained key and current file before explicitly retrying this exact request. Server work may still be settling; no automatic retry was made."));
+  } finally {
+    clearTimeout(timeout);
+    setBusy(false);
+  }
+}
+
+async function inspectReversal() {
+  if (busy || reviewInFlight || !pendingReversal) return;
+  const request = pendingReversal;
+  reviewInFlight = true;
+  reversalStatus = null;
+  els.reversalResults.replaceChildren(el("p", "review-note", "Reading saved reversal outcome…"));
+  setBusy(busy);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 30000);
+  try {
+    const query = new URLSearchParams({ user_id: request.user_id, request_id: request.request_id });
+    const response = await fetch(`/file-reverts?${query}`, { signal: controller.signal });
+    if (!response.ok) throw new Error("Outcome lookup unavailable");
+    const record = await response.json();
+    if (record == null) {
+      els.reversalResults.replaceChildren(el("p", "review-note", "No saved journal found for this key. This lookup submitted no file action; a delayed request may still arrive. Inspect current files before any explicit retry."));
+    } else showReversal(record, request);
+  } catch (_) {
+    els.reversalResults.replaceChildren(el("p", "review-note", "Saved reversal outcome unavailable or mismatched. Nothing was submitted by this lookup; retry inspection explicitly."));
+  } finally {
+    clearTimeout(timeout);
+    reviewInFlight = false;
+    setBusy(busy);
+  }
+}
+
+function restoreReversal() {
+  try {
+    const request = JSON.parse(localStorage.getItem(reversalStorageKey));
+    if (!request) return;
+    if (request.user_id !== userId || typeof request.run_id !== "string" || !request.run_id ||
+        typeof request.request_id !== "string" || !/^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/.test(request.request_id) || !canonicalReversalPath(request.path)) {
+      throw new Error("Invalid retained reversal");
+    }
+    pendingReversal = request;
+    sessionUsable = false;
+    addErrorMessage("Retained reversal restored for inspection. Reload submitted no file action. Forgetting a key does not reconcile its outcome.");
+  } catch (_) {
+    reversalRecoveryBlocked = true;
+    els.reversalRequest.textContent = "Retained reversal could not be read safely. Inspect saved requests/current files before explicitly forgetting this browser record; new work is blocked.";
+    addErrorMessage("Could not restore retained reversal. No file action submitted; inspect saved requests before new work.");
   }
 }
 
@@ -911,6 +1061,27 @@ function restorePending() {
 // ---- events -----------------------------------------------------------
 
 els.prepareContinuation.addEventListener("click", prepareContinuation);
+els.submitReversal.addEventListener("click", submitReversal);
+els.reversalPath.addEventListener("input", () => setBusy(busy));
+els.reversalAck.addEventListener("change", () => setBusy(busy));
+els.checkReversal.addEventListener("click", inspectReversal);
+els.retryReversal.addEventListener("click", () => {
+  if (!pendingReversal || reversalStatus != null) return;
+  postReversal({ ...pendingReversal });
+});
+els.forgetReversal.addEventListener("click", () => {
+  if (busy || reviewInFlight) return;
+  try { localStorage.removeItem(reversalStorageKey); }
+  catch (_) { addErrorMessage("Could not forget retained reversal; inspect its outcome before new work."); return; }
+  pendingReversal = null;
+  reversalRecoveryBlocked = false;
+  reversalStatus = null;
+  els.reversalResults.replaceChildren();
+  els.reversalAck.checked = false;
+  sessionUsable = false;
+  addErrorMessage("Local reversal key forgotten. No server work was cancelled or reconciled; inspect files and saved checks before new work.");
+  setBusy(busy);
+});
 els.submitContinuation.addEventListener("click", submitContinuation);
 els.continuationMessage.addEventListener("input", () => setBusy(busy));
 els.continuationAck.addEventListener("change", () => setBusy(busy));
@@ -941,7 +1112,7 @@ els.newSession.addEventListener("click", createSession);
 
 els.composer.addEventListener("submit", (event) => {
   event.preventDefault();
-  if (busy || sessionId == null || !sessionUsable) return;
+  if (busy || pendingReversal || reversalRecoveryBlocked || sessionId == null || !sessionUsable) return;
   const message = els.input.value.trim();
   if (!message) return;
   if (sendMessage(message)) els.input.value = "";
@@ -955,4 +1126,5 @@ els.input.addEventListener("keydown", (event) => {
 });
 
 restorePending();
+restoreReversal();
 setBusy(false);

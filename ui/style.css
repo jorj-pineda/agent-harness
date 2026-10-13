@@ -487,3 +487,9 @@ button:disabled {
 #continuation-controls label { display: block; margin: 0.75rem 0 0.35rem; }
 #continuation-message { width: 100%; }
 #continuation-target { overflow-wrap: anywhere; }
+
+#file-reversal { border: 1px solid var(--border); padding: 10px; margin: 16px 0; }
+#file-reversal label { display: block; font-size: 12px; margin: 10px 0 4px; }
+#reversal-path { width: 100%; }
+#file-reversal button { margin-top: 8px; }
+#reversal-target, #reversal-request { overflow-wrap: anywhere; }
