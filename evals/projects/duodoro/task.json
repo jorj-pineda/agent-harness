@@ -1,0 +1,7 @@
+{
+  "id": "duodoro_duration_format",
+  "repository": "duodoro",
+  "source_revision": "5324cabba4ad3c8ad2e1cd1480218cf087d9b741",
+  "allowed_modified_path": "client/src/lib/format.ts",
+  "request": "In Duodoro, harden formatDuration and formatTime in client/src/lib/format.ts against negative and non-finite numeric durations. Negative numbers, NaN, Infinity and -Infinity must render as zero (0m and 0:00). Preserve existing finite-positive formatting, fractional truncation and formatTag behavior. Inspect AGENTS.md and the existing format tests first. Only modify client/src/lib/format.ts; preserve all other files, including pre-existing work and tests. For this disposable library-level evaluation, test_visible.py is an additional visible task check using the installed Node runtime's native TypeScript support; run [\"python\",\"-m\",\"pytest\",\"-q\",\"test_visible.py\"] after the edit. This adapter does not run the full Next/Vitest suite. Do not install dependencies, start services or touch Docker. Report the observed checks and any limits honestly."
+}
