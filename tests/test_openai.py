@@ -197,6 +197,43 @@ def test_openai_satisfies_chat_protocol_only() -> None:
     assert not isinstance(provider, Embedder)
 
 
+async def test_custom_client_headers_persist_without_retrying_quota_errors() -> None:
+    requests: list[httpx.Request] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        requests.append(request)
+        return httpx.Response(
+            429, json={"error": {"message": "account limit", "type": "rate_limit"}}
+        )
+
+    provider = OpenAIProvider(
+        api_key="fixture-key",
+        model="fixture-model",
+        base_url="https://fixture.example/v1",
+        provider_name="openai_compatible",
+        max_retries=0,
+        default_headers={
+            "User-Agent": "agent-harness-fixture/1.0",
+            "x-opencode-session": "fixture-conversation",
+        },
+        http_client=httpx.AsyncClient(transport=httpx.MockTransport(handler)),
+    )
+    try:
+        for _ in range(2):
+            with pytest.raises(ProviderError):
+                await provider.chat([ChatMessage(role="user", content="bounded task")])
+        assert len(requests) == 2  # One HTTP request per explicit call; no SDK retry.
+        assert provider.name == "openai_compatible"
+        for request in requests:
+            assert str(request.url) == "https://fixture.example/v1/chat/completions"
+            assert request.headers["user-agent"] == "agent-harness-fixture/1.0"
+            assert request.headers["x-opencode-session"] == "fixture-conversation"
+            assert request.headers["authorization"] == "Bearer fixture-key"
+            assert json.loads(request.content)["model"] == "fixture-model"
+    finally:
+        await provider.aclose()
+
+
 # ---------------------------------------------------------------------------
 # Live tests — require a real OpenAI API key (pytest -m live)
 # ---------------------------------------------------------------------------

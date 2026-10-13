@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import json
 import time
+from collections.abc import Mapping
 from typing import Any
 
 import httpx
@@ -49,6 +50,7 @@ class OpenAIProvider:
         provider_name: str = "openai",
         timeout_seconds: float = 60.0,
         max_retries: int = 2,
+        default_headers: Mapping[str, str] | None = None,
         http_client: httpx.AsyncClient | None = None,
     ) -> None:
         self.name = provider_name
@@ -58,6 +60,7 @@ class OpenAIProvider:
             base_url=base_url,
             timeout=timeout_seconds,
             max_retries=max_retries,
+            default_headers=default_headers,
             http_client=http_client,
         )
 
