@@ -1,0 +1,7 @@
+{
+  "id": "duodoro_sunday_calendar",
+  "repository": "duodoro",
+  "source_revision": "5324cabba4ad3c8ad2e1cd1480218cf087d9b741",
+  "allowed_modified_path": "client/src/lib/focusCalendar.ts",
+  "request": "Add an optional boolean sundayFirst argument (default false) to monthDays in client/src/lib/focusCalendar.ts. Sunday-first true lays out full Sunday-through-Saturday weeks; existing one-argument and explicit false calls remain Monday-first. Preserve every date exactly once in order, leap and non-leap months, null padding and all other calendar exports. Inspect AGENTS.md and client/src/lib/focusCalendar.test.ts first. Only modify client/src/lib/focusCalendar.ts; preserve every other file, including tests and pre-existing work. This is a library-only feature without UI wiring. test_visible.py is an additional visible Node-native TypeScript check with a scoped focusTags resolution hook; run [\"python\",\"-m\",\"pytest\",\"-q\",\"test_visible.py\"] after the edit. This does not run Next/Vitest, typechecking or full application integration. Do not install dependencies, start services or touch Docker. Report actual checks and limits honestly."
+}
