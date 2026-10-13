@@ -1,0 +1,69 @@
+# Duodoro real-project validation
+
+Jorge authorized the local Duodoro repository. Pin the inspected source at
+`5324cabba4ad3c8ad2e1cd1480218cf087d9b741`; do not edit its working checkout,
+reset user changes, deploy, start account/database services, or touch Docker.
+
+The first frozen task is **duration formatting**: negative/non-finite numeric
+values render as zero, while finite-positive duration/countdown formatting and
+`formatTag` stay compatible. Only `client/src/lib/format.ts` may change. The full
+pinned source is copied, with shared disposable-workspace exclusions; a visible
+Python/Node check and representative pre-existing-work file are added before the
+baseline. Existing source/tests/scripts and those setup files must remain unchanged.
+
+Independent acceptance stays outside the model's workspace. It checks invalid
+inputs, 18 positive/fractional/boundary values, tag compatibility, exact file scope
+and preservation of baseline contents/modes. Criterion hashes are frozen before
+inference and must be checked afterward. A reference patch is also outside the
+workspace. Baseline and reference must respectively fail/pass both visible and
+independent checks before any inference. These are trusted host processes, not
+process isolation; hashes/file-tool boundaries do not make arbitrary repository
+code unable to access the host.
+
+The adapter uses installed Node's native TypeScript support (validated locally on
+Node 26.0.0). It runs library checks without installing dependencies or running
+Next/Vitest, authentication, browser, database or server integration suites. Duodoro
+normally uses Node 22 in CI. This task does not establish full application regression
+coverage or runtime compatibility on other Node versions.
+
+Preparation reuses `evals.real_run.Task`, `validate_task` and the existing shared
+runtime/real-task runner. No provider calls occur during preparation:
+
+```sh
+uv run python - <<'PY'
+import asyncio
+import tempfile
+from pathlib import Path
+from evals.projects.duodoro.prepare import prepare_task, acceptance_unchanged
+from evals.real_run import validate_task
+parent = Path(tempfile.mkdtemp(prefix="duodoro-task-"))
+task = prepare_task(Path("/Users/jorge/Projects/duodoro"), parent / "prepared")
+asyncio.run(validate_task(task))
+assert acceptance_unchanged(parent / "prepared")
+print(parent / "prepared")
+PY
+```
+
+The caller owns cleanup of the prepared directory. Keep prepared artifacts and
+reports at unique paths outside the source checkout. Before a model run, record the
+harness revision, pinned task/criterion hashes, exact provider/model/sampling/context
+and tool/token/time budgets. Use `run_task` with the same prepared task/settings in
+both modes. Require unchanged criterion hashes and reject added/deleted files or
+modified paths other than the permitted target, even if executable assertions pass.
+Include every attempt and distinguish environment/setup failures from patch failures.
+Retain raw traces/diffs and record manual rescues. Only the configured local
+`gemma4:12b` is authorized here; additional models and paid calls require approval.
+Stop any evaluation-owned Ollama processes afterward, preserving user-owned services.
+
+Next candidate tasks (not frozen, validated or run yet):
+
+- Normalize fractional timer settings to integer seconds in `server/payloadParsers.js`,
+  preserving existing defaults, min/max clamps, Infinity behavior and mode parsing.
+- Add an optional Sunday-first argument to `monthDays` in
+  `client/src/lib/focusCalendar.ts`, keeping Monday-first behavior the default and
+  preserving leap-month coverage, date order and complete weeks. This is a library
+  feature; UI wiring is outside the bounded task.
+
+This is one prepared real-project task, not completion of the ten-task release target,
+held-out evaluation or repeated comparisons on multiple lower-tier models. Offline
+baseline/reference validation is criterion validation, not model-quality evidence.
