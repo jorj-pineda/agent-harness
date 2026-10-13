@@ -655,7 +655,7 @@ def _lookup_session(components: Components, session_id: str, user_id: str) -> Se
         raise HTTPException(
             status_code=409,
             detail=(
-                "Saved session is read-only after restart or interrupted execution. "
+                "Saved session is read-only after restart, interrupted execution, or file reversal. "
                 "Create a new session; resume is not supported."
             ),
         )
