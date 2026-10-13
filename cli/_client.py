@@ -53,6 +53,46 @@ class AgentClient:
         resp.raise_for_status()
         return str(resp.json()["session_id"])
 
+    def continue_session(
+        self,
+        user_id: str,
+        session_id: str,
+        expected_turn_id: str,
+        message: str,
+        request_id: str,
+        *,
+        provider: str | None = None,
+    ) -> dict[str, Any]:
+        payload = {
+            "user_id": user_id,
+            "expected_turn_id": expected_turn_id,
+            "message": message,
+            "request_id": request_id,
+            "provider": provider,
+            "acknowledge_uncaptured_state": True,
+        }
+        resp = httpx.post(f"{self._base}/sessions/{session_id}/continue", json=payload, timeout=30)
+        resp.raise_for_status()
+        record = dict(resp.json())
+        request = record.get("request", {})
+        expected_source = {
+            "session_id": session_id,
+            "turn_id": expected_turn_id,
+            "acknowledge_uncaptured_state": True,
+        }
+        if (
+            request.get("user_id") != user_id
+            or request.get("request_id") != request_id
+            or request.get("message") != message
+            or request.get("provider") != provider
+            or request.get("continuation_source") != expected_source
+            or not request.get("session_id")
+            or request.get("session_id") == session_id
+            or not record.get("run_id")
+        ):
+            raise ValueError("Mismatched continuation response; inspect the keyed run.")
+        return record
+
     def cancel(self, user_id: str, session_id: str) -> str:
         resp = httpx.post(
             f"{self._base}/sessions/{session_id}/cancel",

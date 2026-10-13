@@ -238,7 +238,7 @@ def show_run(record: dict) -> None:
         typer.echo(
             f"before_checkpoint={record.get('before_checkpoint_id') or 'unavailable'} "
             f"after_checkpoint={record.get('after_checkpoint_id') or 'unavailable'} "
-            "(scoped content captures; whole-checkpoint restore and resume unsupported)"
+            "(scoped content captures; whole-checkpoint restore unsupported)"
         )
     typer.echo(f"task={record['request'].get('message', '')}")
     typer.echo(
@@ -361,6 +361,52 @@ def show_checkpoint(record: dict[str, Any]) -> None:
     typer.echo(
         record.get("scope_note", "Checkpoint scope unavailable; do not infer restore support.")
     )
+
+
+@app.command()
+def continue_session(
+    session_id: str = typer.Argument(..., help="Source saved session; it stays read-only."),
+    message: str = typer.Argument(..., help="New bounded coding request."),
+    expected_turn_id: str = typer.Option(..., "--expected-turn-id"),
+    request_id: str = typer.Option(..., "--request-id", help="Stable key for this exact request."),
+    acknowledge_uncaptured_state: bool = typer.Option(
+        False,
+        "--acknowledge-uncaptured-state",
+        help="Accept excluded files, external writers and unrecorded backend/tool state risks.",
+    ),
+    provider: str | None = typer.Option(None, "--provider"),
+    base_url: str = typer.Option("http://localhost:8000", "--base-url"),
+    user_id: str = typer.Option("cli-user", "--user-id"),
+    raw: bool = typer.Option(False, "--json"),
+) -> None:
+    """Explicitly fork saved history and submit one guarded turn; never polls or retries."""
+    if not acknowledge_uncaptured_state:
+        typer.echo(
+            "Explicit --acknowledge-uncaptured-state is required. Captures exclude .env, "
+            "ignored paths, directory/ownership metadata and backend/tool state. "
+            "Checks do not isolate external writers or prove model context fit.",
+            err=True,
+        )
+        raise typer.Exit(code=2)
+    try:
+        record = AgentClient(base_url).continue_session(
+            user_id, session_id, expected_turn_id, message, request_id, provider=provider
+        )
+    except Exception as exc:
+        typer.echo(
+            f"Continuation request failed ({type(exc).__name__}); request_id={request_id}. "
+            "Submission outcome may be unknown. Inspect runs with this key before an explicit "
+            "retry of the same continuation input. No automatic retry was made.",
+            err=True,
+        )
+        raise typer.Exit(code=1) from exc
+    if raw:
+        typer.echo(json.dumps(record, indent=2))
+    else:
+        show_run(record)
+        typer.echo(
+            "Submitted fork; inspect run status before further work. Source remains read-only."
+        )
 
 
 @app.command()
