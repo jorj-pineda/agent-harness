@@ -1116,8 +1116,8 @@ docker compose up --build -d            # optional smoke; see demo.md
 
 Programmatic OpenAI-compatible clients can supply `default_headers` to the adapter
 for a service-specific User-Agent and stable conversation ID. Create one provider
-per conversation when using a fixed session header. This constructor seam does not
-add automatic per-session routing to the API settings. A bounded OpenCode Go free
+per conversation when using a fixed session header. Generic compatible settings keep their existing behavior. The opt-in Go transport
+below adds session routing through the shared runtime. A bounded OpenCode Go free
 preview comparison is documented in `evals/BASELINES.md`; one accepted artifact
 ended budget-exhausted before a check, and the other remained unchanged. Preview
 pricing is temporary; verify it before replay and stop at account/provider limits.
@@ -1147,3 +1147,37 @@ This limited result does not establish a general quality gain or suitability for
 Gemma. See `evals/BASELINES.md` for traces, costs/limits and Node runtime-label
 corrections. Context management, held-out tasks and broader model comparisons remain
 open.
+
+
+For OpenCode Go, configure the compatible endpoint/model and your key privately,
+then set `OPENAI_COMPATIBLE_TRANSPORT=opencode_go`. The transport requires a key
+and configured URL/model before provider creation. For the currently free preview:
+
+```sh
+DEFAULT_PROVIDER=openai_compatible
+OPENAI_COMPATIBLE_BASE_URL=https://opencode.ai/inference/go/v1
+OPENAI_COMPATIBLE_MODEL=longcat-2.5-preview-free
+OPENAI_COMPATIBLE_TRANSPORT=opencode_go
+```
+
+Supply `OPENAI_COMPATIBLE_API_KEY` through private settings; account credentials are
+not imported automatically or shown here. Verify current pricing and account limits
+before live use. The transport identifies itself as `agent-harness/0.1`, sends a
+stable `x-opencode-session` derived from the current harness session and disables
+SDK retries. It does not add paid fallback, billing inspection or cost enforcement.
+The panel's provider selector and CLI can choose `openai_compatible` when configured.
+
+Application and evaluator share conversation binding. A fork gets its own session
+header; a reused live session keeps its header. Views use request-local headers on
+one owned SDK client, without altering headers for other sessions. Direct adapter
+users must bind with `provider.for_conversation(id)` and close the original owner;
+unbound special-transport calls fail before HTTP. Generic settings and providers
+without the optional binding capability retain their existing behavior.
+
+Durable profiles add nullable `provider_options_sha256` for the public configured
+recipe (header names/User-Agent/retry choice), excluding keys and conversation IDs.
+Older/generic records have no recorded special recipe; stored archives are not
+rewritten. Changing to the Go recipe reports configuration drift and blocks mismatched
+continuation. This is configured evidence, not backend/routing/billing attestation;
+SDK defaults and constructor overrides remain outside capture. Wire/API/restart and
+real-tool evaluation tests use intercepted HTTP replies, not live model-quality proof.
