@@ -49,7 +49,7 @@ from harness.execution_profile import ExecutionProfile
 from harness.grounding import Grounder
 from harness.policy import classify_task, is_out_of_scope_request
 from harness.providers import build_configured_provider, configured_model, configured_provider_names
-from harness.reverts import FileRevertInput, FileRevertRecord, revert_file
+from harness.reverts import FileRevertInput, FileRevertOutcome, FileRevertRecord, revert_file
 from harness.router import ProviderNotFoundError, ProviderRouter
 from harness.runs import RequestConflictError, RequestId, RunInput, RunRecord
 from harness.runtime import build_registry, out_of_scope_response, run_configured_turn
@@ -305,7 +305,12 @@ def _register_routes(app: FastAPI) -> None:
                         status_code=503,
                         detail="Revert preparation/storage failed; no file operation started.",
                     ) from exc
-                outcome = await asyncio.to_thread(revert_file, before, after, req.path, content)
+                try:
+                    outcome = await asyncio.to_thread(revert_file, before, after, req.path, content)
+                except Exception:
+                    outcome = FileRevertOutcome(
+                        "uncertain", "File operation failed unexpectedly; inspect file and journal."
+                    )
                 if outcome.status in ("applied", "uncertain"):
                     components.sessions.pop(run.request.session_id, None)
                 try:

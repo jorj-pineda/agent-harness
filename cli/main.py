@@ -238,7 +238,7 @@ def show_run(record: dict) -> None:
         typer.echo(
             f"before_checkpoint={record.get('before_checkpoint_id') or 'unavailable'} "
             f"after_checkpoint={record.get('after_checkpoint_id') or 'unavailable'} "
-            "(scoped content captures; restore/resume remain unsupported)"
+            "(scoped content captures; whole-checkpoint restore and resume unsupported)"
         )
     typer.echo(f"task={record['request'].get('message', '')}")
     typer.echo(
@@ -524,3 +524,65 @@ def configuration_review(
         if context.get("reason"):
             typer.echo(context["reason"])
     typer.echo(review["scope_note"])
+
+
+def show_revert(record: dict[str, Any]) -> None:
+    typer.echo(
+        f"revert={record['revert_id']} status={record['status']} "
+        f"run={record['request']['run_id']} path={record['request']['path']} "
+        f"request_id={record['request']['request_id']}"
+    )
+    if record.get("reason"):
+        typer.echo(record["reason"])
+    typer.echo(record["scope_note"])
+
+
+@app.command()
+def revert_file(
+    run_id: str = typer.Argument(...),
+    path: str = typer.Argument(...),
+    request_id: str = typer.Option(
+        ..., "--request-id", help="Stable key for this exact file action."
+    ),
+    user_id: str = typer.Option("cli-user", "--user-id"),
+    base_url: str = typer.Option("http://localhost:8000", "--base-url"),
+    raw: bool = typer.Option(False, "--json"),
+) -> None:
+    """Explicitly reverse one recorded file change if its after state still matches."""
+    try:
+        record = AgentClient(base_url).revert_file(user_id, run_id, path, request_id)
+    except Exception as exc:
+        typer.echo(
+            f"Revert request failed ({type(exc).__name__}); outcome may be unknown. "
+            f"Inspect revert-status --request-id {request_id} before choosing any further action. "
+            "No automatic retry was made.",
+            err=True,
+        )
+        raise typer.Exit(code=1) from exc
+    if raw:
+        typer.echo(json.dumps(record, indent=2))
+    else:
+        show_revert(record)
+    if record["status"] != "applied":
+        raise typer.Exit(code=2 if record["status"] == "pending" else 1)
+
+
+@app.command()
+def revert_status(
+    request_id: str = typer.Option(..., "--request-id"),
+    user_id: str = typer.Option("cli-user", "--user-id"),
+    base_url: str = typer.Option("http://localhost:8000", "--base-url"),
+    raw: bool = typer.Option(False, "--json"),
+) -> None:
+    """Read one keyed file-action journal record; never performs or retries a file operation."""
+    try:
+        record = AgentClient(base_url).revert_status(user_id, request_id)
+    except Exception as exc:
+        typer.echo(f"Revert lookup failed ({type(exc).__name__}).", err=True)
+        raise typer.Exit(code=1) from exc
+    if raw:
+        typer.echo(json.dumps(record, indent=2))
+    elif record is None:
+        typer.echo("No saved revert request found; no file action was submitted by this lookup.")
+    else:
+        show_revert(record)
