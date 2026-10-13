@@ -4,7 +4,7 @@ Jorge authorized the local Duodoro repository. Pin the inspected source at
 `5324cabba4ad3c8ad2e1cd1480218cf087d9b741`; do not edit its working checkout,
 reset user changes, deploy, start account/database services, or touch Docker.
 
-The first frozen task is **duration formatting**: negative/non-finite numeric
+The first frozen task is **duration formatting** (the default): negative/non-finite numeric
 values render as zero, while finite-positive duration/countdown formatting and
 `formatTag` stay compatible. Only `client/src/lib/format.ts` may change. The full
 pinned source is copied, with shared disposable-workspace exclusions; a visible
@@ -56,15 +56,23 @@ OpenCode account within account limits. Use a currently free Go model for the ne
 bounded comparison; do not silently switch to paid usage or another repository.
 Stop any evaluation-owned Ollama processes afterward, preserving user-owned services.
 
-Next candidate tasks (not frozen, validated or run yet):
+The second frozen task is **timer normalization**. Select it with
+`prepare_task(repository, destination, task_name="timer_normalization")`.
+Only `server/payloadParsers.js` may change: floor final defaulted/clamped durations,
+preserving coercion, falsy/NaN defaults, Infinity clamps, mode/session-ID handling
+and other exported parsers. External acceptance checks 26 duration inputs across
+six mode values, invalid session IDs, Symbol error behavior, representative other
+parser contracts and exact file/content/mode preservation. The visible adapter
+covers fractional normalization and positive Infinity; it is intentionally narrower.
+Initial/reference fail/pass both checks. This uses dependency-free CommonJS/Node
+library checks, not Vitest, Socket.IO, database or full server integration.
 
-- Normalize fractional timer settings to integer seconds in `server/payloadParsers.js`,
-  preserving existing defaults, min/max clamps, Infinity behavior and mode parsing.
+Next candidate task (not frozen, validated or run yet):
 - Add an optional Sunday-first argument to `monthDays` in
   `client/src/lib/focusCalendar.ts`, keeping Monday-first behavior the default and
   preserving leap-month coverage, date order and complete weeks. This is a library
   feature; UI wiring is outside the bounded task.
 
-This is one prepared real-project task, not completion of the ten-task release target,
+These are two prepared real-project tasks, not completion of the ten-task release target,
 held-out evaluation or repeated comparisons on multiple lower-tier models. Offline
 baseline/reference validation is criterion validation, not model-quality evidence.

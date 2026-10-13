@@ -10,6 +10,7 @@ import subprocess
 import tarfile
 import tempfile
 from pathlib import Path
+from typing import Literal
 
 from evals.real_run import Task
 from workspace import disposable_workspace
@@ -17,14 +18,26 @@ from workspace import disposable_workspace
 ROOT = Path(__file__).parent
 
 
-def prepare_task(repository: Path, destination: Path) -> Task:
+def prepare_task(
+    repository: Path,
+    destination: Path,
+    *,
+    task_name: Literal["duration_format", "timer_normalization"] = "duration_format",
+) -> Task:
     """Caller owns destination cleanup; never edit or reset the source checkout.
 
     Use only the user-authorized local Duodoro repository. No cloning, dependency
     installation, provider calls or services happen here. Grading still executes
     trusted repository code on the host; this is not process isolation.
     """
-    metadata = json.loads((ROOT / "task.json").read_text())
+    if task_name not in ("duration_format", "timer_normalization"):
+        raise ValueError("Unknown frozen Duodoro task")
+    metadata_file, visible_file = (
+        ("task.json", "visible_duration.py")
+        if task_name == "duration_format"
+        else ("task_timer.json", "visible_timer.py")
+    )
+    metadata = json.loads((ROOT / metadata_file).read_text())
     source = repository.resolve(strict=True)
     destination = destination.resolve()
     if destination.is_relative_to(source) or source.is_relative_to(destination):
@@ -53,10 +66,10 @@ def prepare_task(repository: Path, destination: Path) -> Task:
     for name in ("test_visible.py", "preexisting-user-work.txt"):
         if (fixture / name).exists():
             raise ValueError("Task setup would overwrite a pinned source file")
-    shutil.copyfile(ROOT / "visible_duration.py", fixture / "test_visible.py")
+    shutil.copyfile(ROOT / visible_file, fixture / "test_visible.py")
     (fixture / "preexisting-user-work.txt").write_text("Preserve this setup-owned work.\n")
     acceptance = destination / "acceptance"
-    shutil.copytree(ROOT / "acceptance" / "duration_format", acceptance)
+    shutil.copytree(ROOT / "acceptance" / task_name, acceptance)
     spec = importlib.util.spec_from_file_location(
         "duodoro_acceptance", acceptance / "test_acceptance.py"
     )
@@ -79,7 +92,7 @@ def prepare_task(repository: Path, destination: Path) -> Task:
         metadata["request"],
         fixture,
         acceptance,
-        ROOT / "reference" / "duration_format",
+        ROOT / "reference" / task_name,
     )
 
 

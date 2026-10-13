@@ -890,6 +890,20 @@ Relevant implementation: `harness/loop.py`, `harness/outcome.py`, `harness/groun
   were not rerun. No automatic reconciliation, cancellation of file actions, multi-file
   restore, retention controls or cross-process isolation; Milestone 5 stays incomplete.
 
+- **2026-10-12 — Second frozen Duodoro task:** added integer timer normalization
+  at the same pinned revision. Only `server/payloadParsers.js` may change; the task
+  preserves coercion/defaults/clamps/Infinity/session-ID/mode and other parser behavior.
+  External acceptance covers 26 duration values across six modes, invalid IDs, existing
+  Symbol errors, representative exported-parser contracts and exact file/content/mode
+  scope. Both initial checks fail and reference checks pass. Preparation explicitly
+  selects either frozen task and rejects unknown selections before artifacts are created.
+  Validation passed 17 focused and 863 offline tests (five live deselected), Ruff/mypy,
+  changed-file formatting and both 90/90 scripted matrices with contract limits inspected.
+  Source and criterion hashes preserved. No inference for this task yet; no coding-
+  quality claim. Dependency-free Node parser checks omit Vitest/Socket.IO/full server
+  coverage. Two tasks frozen, not ten tasks completed; calendar and repeated model
+  comparisons remain open, along with profile/context work and Milestone 5.
+
 ## Milestone 1 — Establish a real task-success baseline
 
 **Outcome:** a model attempts real repository tasks through the same runtime used by Jorge, and independent checks determine whether it succeeded.

@@ -34,20 +34,22 @@ def repository(tmp_path, monkeypatch, *, collision=False):
     ).stdout.strip()
     definitions = tmp_path / "definitions"
     shutil.copytree(prepare.ROOT, definitions, ignore=shutil.ignore_patterns("__pycache__"))
-    metadata = json.loads((definitions / "task.json").read_text())
-    metadata["source_revision"] = revision
-    (definitions / "task.json").write_text(json.dumps(metadata))
+    for name in ("task.json", "task_timer.json"):
+        metadata = json.loads((definitions / name).read_text())
+        metadata["source_revision"] = revision
+        (definitions / name).write_text(json.dumps(metadata))
     monkeypatch.setattr(prepare, "ROOT", definitions)
     return source
 
 
+@pytest.mark.parametrize("task_name", ["duration_format", "timer_normalization"])
 def test_preparation_uses_pinned_commit_preserves_dirty_source_and_excludes_env(
-    tmp_path, monkeypatch
+    tmp_path, monkeypatch, task_name
 ):
     source = repository(tmp_path, monkeypatch)
     (source / "value.txt").write_text("later user edit\n")
     destination = tmp_path / "prepared"
-    task = prepare.prepare_task(source, destination)
+    task = prepare.prepare_task(source, destination, task_name=task_name)
     assert (source / "value.txt").read_text() == "later user edit\n"
     assert (task.fixture / "value.txt").read_text() == "pinned\n"
     assert not (task.fixture / ".env").exists()
@@ -76,3 +78,11 @@ def test_preparation_does_not_overwrite_existing_pinned_setup_names(tmp_path, mo
     with pytest.raises(ValueError, match="overwrite"):
         prepare.prepare_task(source, tmp_path / "prepared")
     assert (source / "test_visible.py").read_text() == "existing test\n"
+
+
+def test_unknown_task_rejected_before_artifact_creation(tmp_path, monkeypatch):
+    source = repository(tmp_path, monkeypatch)
+    destination = tmp_path / "prepared"
+    with pytest.raises(ValueError, match="Unknown frozen"):
+        prepare.prepare_task(source, destination, task_name="../other")
+    assert not destination.exists()

@@ -1,0 +1,7 @@
+{
+  "id": "duodoro_timer_normalization",
+  "repository": "duodoro",
+  "source_revision": "5324cabba4ad3c8ad2e1cd1480218cf087d9b741",
+  "allowed_modified_path": "server/payloadParsers.js",
+  "request": "In Duodoro, normalize parseStartSession focusDuration and breakDuration in server/payloadParsers.js to whole seconds by flooring the final defaulted/clamped numeric values. Preserve Number coercion, falsy/NaN defaults (1500 focus, 300 break), min/max clamps (60..7200 focus, 30..3600 break), Infinity clamping, string session-id validation, mode parsing and all other exported parser behavior. Inspect AGENTS.md and server/payloadParsers.test.js first. Only modify server/payloadParsers.js; preserve all other files and tests. This disposable pure-parser evaluation adds test_visible.py as a visible Node adapter: run [\"python\",\"-m\",\"pytest\",\"-q\",\"test_visible.py\"] after editing. It does not run the full Vitest/Socket.IO/server suite. Do not install dependencies, start services or touch Docker. Report actual checks and limits honestly."
+}
