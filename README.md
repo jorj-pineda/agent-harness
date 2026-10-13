@@ -188,8 +188,8 @@ its own session ID. Viewing even a completed fork keeps the composer read-only;
 further work requires another explicit fork action or a new session. No polling or
 retry is automatic. **Save turn captures** opts new sessions into plaintext scoped
 captures; it is off by default. Captures and continued history increase local
-storage; whole-checkpoint restoration and panel single-file reversal controls remain
-separate work.
+storage; whole-checkpoint restoration remains separate work. Panel single-file
+reversal is described below.
 
 **Explicit single-file reversal.** `POST /runs/{run_id}/revert-file` accepts
 `user_id`, one canonical relative `path`, and a stable `request_id`. It requires
@@ -214,6 +214,24 @@ through a fresh session rather than treating saved checks as current acceptance.
 agent-harness revert-file <run-id> <path> --request-id <stable-key> --user-id dev
 agent-harness revert-status --request-id <stable-key> --user-id dev --json
 ```
+
+The panel exposes **Single-file reversal** under a selected saved run. Review the
+archived diff, enter one exact relative file path, acknowledge the scope, then choose
+**Reverse selected file**. Recorded capture IDs are a prerequisite, not proof of
+eligibility; the API freshly checks saved/current file state. The panel retains the
+exact run/path/key before its one POST. Failed storage prevents dispatch. An
+unconfirmed response retains the request; **Inspect saved outcome** is GET only and
+**Retry exact reversal request** preserves the original route/input even if another
+run is selected. A returned saved status disables retry; inspect again explicitly
+if pending. Reload submits nothing and can inspect the journal after server restart.
+
+Reversal records are separate from pending coding submissions. Retained or unreadable
+reversal input blocks new coding submissions/actions until explicitly forgotten;
+forgetting changes browser storage only, without cancelling or reconciling server/file
+work. Saved outcome cards name their own run/file/key, independently of selection.
+Pending/interrupted/uncertain states require file/journal inspection; none certify
+checks, permit continuation, or trigger automatic retries. Saved history stays
+read-only, and historical check/diff evidence remains unchanged after reversal.
 
 The CLI sends one explicit action POST; status lookup is GET only. Errors/timeouts
 advise keyed inspection without automatic retry. Later target edits/mode changes
