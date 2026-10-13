@@ -761,6 +761,24 @@ The harness does not need to make every model good at every task. It needs to id
   real-project coding ran. Static preview server/tab were cleaned up. Panel file
   reversal controls, general crash repair/reconciliation, cross-process coordination
   and Milestone 5 remain incomplete. Duodoro acceptance setup is next.
+- **2026-10-12 — Scoped npm project verification:** Duodoro inspection showed a
+  concrete test-tool prerequisite: its Node/Vitest packages could not use the
+  Python-only command allowlist. Tools, configured project checks and observed-check
+  harvesting now share one npm form: `npm [--prefix DIR] run test:run [-- ARGS]`.
+  Prefixes must be lexical canonical relative paths and resolve to existing eligible
+  workspace directories before dispatch. Installation, npx, arbitrary scripts,
+  global option variants, help/version/watch/enumeration/no-test-success forms are
+  excluded. Existing command budgets, sanitized environment, bounded output and
+  managed timeout/cancellation apply; npm scripts/lifecycle hooks are repository
+  code, so the allowlist is not isolation or independent acceptance.
+  Validation passed 86 focused and 857 offline tests (five live deselected), Ruff,
+  mypy, formatting and both 90/90 scripted matrices with labels/metric limits
+  inspected. Regression coverage rejects escaped/ignored/missing/non-directory
+  prefixes before subprocess dispatch and checks configuration/outcome recognition.
+  A real local npm fixture failed before an edit and passed afterward through the
+  shared configured runtime, preserving user work and recording both observed
+  checks. No inference or model-quality comparison ran. Operator dependency/runtime
+  setup, automatic command suggestions and real Duodoro acceptance remain separate.
 - **Next:** item 6's listed mechanics are in place; see the known limitations
   below before relying on them unattended. Item 7 has a repeated baseline and
   nine completed comparisons. Argument feedback did not reliably break repeated

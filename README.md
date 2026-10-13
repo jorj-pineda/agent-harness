@@ -281,12 +281,32 @@ run a fresh check. The API response adds `verification_status`,
 remains for compatibility. File count limits reject additional file-tool edits
 before mutation. A passing check becomes stale after a later edit, and
 version/help commands do not count as checks. Recognized checks are currently
-pytest, Ruff check, and mypy. Set `PROJECT_CHECK_ARGV='["pytest","-q"]'`
+pytest, Ruff check, mypy, and the one-shot npm form below. Set `PROJECT_CHECK_ARGV='["pytest","-q"]'`
 and `REQUIRE_VERIFICATION_BEFORE_FINISH=true` to require that exact command
 after the latest edit. The runtime includes it in the system message, and the
 same setting applies to the API and real-task evaluator. Without an explicit
 project check, the previous recognized-command heuristic remains in use; a
-passing unrelated command may therefore appear verified.
+a passing unrelated command can be reported as a passed observed check.
+
+For trusted npm projects, the command tool accepts only
+`npm [--prefix <repo-relative-directory>] run test:run [-- <test arguments>]`.
+For example, Duodoro's client command from its repository root is:
+
+```sh
+PROJECT_CHECK_ARGV='["npm","--prefix","client","run","test:run","--","src/lib/format.test.ts"]'
+```
+
+Configure that exact argv to require this check after the latest edit. The optional
+prefix must be a canonical relative path and resolve to an existing directory inside
+the workspace; escaped, missing, ignored and non-directory targets stop before
+process dispatch. npm install, npx, arbitrary script names and alternate global
+options are not supported. Help/version, watch, test enumeration and no-test-success
+forms are excluded. Dependencies and a compatible Node/npm runtime must already be
+installed by the operator; the harness does not install them. Scripts still execute
+repository code, including npm lifecycle hooks, with the existing sanitized command
+environment, process timeout/cancellation and bounded output. This is an invocation
+allowlist, not process isolation or proof that the script tested the patch. Protect
+independent acceptance and pre-existing checks outside the model's editable workspace.
 
 Responses also include ordered `check_attempts` (command, outcome, exit code,
 whether it matches the configured check, and whether a later edit superseded it)
