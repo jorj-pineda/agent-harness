@@ -23,6 +23,7 @@ from uuid import uuid4
 from pydantic import BaseModel, Field, field_validator
 
 from workspace import Workspace, WorkspaceError
+from workspace.npm import npm_test_prefix
 
 from .base import Tool, ToolError
 from .process import ProcessTimeoutError, command_environment, run_process
@@ -45,7 +46,7 @@ MAX_GREP_OUTPUT_BYTES = 2_000_000
 MAX_GREP_FILE_BYTES = 2_000_000
 MAX_GREP_SCAN_BYTES = 16_000_000
 
-ALLOWED_ROOT_COMMANDS = frozenset({"pytest", "ruff", "mypy", "git", "python", "python3"})
+ALLOWED_ROOT_COMMANDS = frozenset({"pytest", "ruff", "mypy", "git", "python", "python3", "npm"})
 ALLOWED_GIT_SUBCOMMANDS = frozenset({"diff", "status", "show"})
 
 
@@ -114,7 +115,8 @@ class RunCommandInput(BaseModel):
         min_length=1,
         description=(
             "Command argv list, e.g. ['pytest', 'test_calc.py']. First token must be "
-            "allowlisted (pytest, ruff, mypy, git, python -m pytest, python3 -m pytest)."
+            "allowlisted (pytest, ruff, mypy, git, python -m pytest, python3 -m pytest, "
+            "npm [--prefix <repo-relative-dir>] run test:run [-- <test args>])."
         ),
     )
 
@@ -417,6 +419,13 @@ def build_code_tools(
         log.info("code_tool=run_command argv=%s", args.argv)
         argv = [str(token) for token in args.argv]
         _validate_command_argv(argv)
+        if argv[0] == "npm":
+            prefix = npm_test_prefix(argv)
+            if prefix is None:
+                raise ToolError("npm is only allowed as npm [--prefix DIR] run test:run [-- ARGS]")
+            directory = workspace.resolve(prefix)
+            if not directory.is_dir():
+                raise ToolError("npm prefix must be a directory inside the workspace")
         # Use the existing Python execution path, even if PATH has a different python3.
         if argv[0] == "python3":
             argv[0] = "python"
@@ -544,7 +553,8 @@ def build_code_tools(
             name="run_command",
             description=(
                 "Run an allowlisted verification command in the workspace root "
-                "(pytest, ruff, mypy, git diff/status/show, python -m pytest, python3 -m pytest). "
+                "(pytest, ruff, mypy, git diff/status/show, python -m pytest, python3 -m pytest, "
+                "npm [--prefix <repo-relative-dir>] run test:run [-- <test args>]). "
                 "Returns exit_code, stdout, stderr, and success flag."
             ),
             input_model=RunCommandInput,
@@ -595,9 +605,12 @@ def _validate_command_argv(argv: list[str]) -> None:
     if root not in ALLOWED_ROOT_COMMANDS:
         raise ToolError(
             f"Command not allowlisted: {root!r}. Allowed: pytest, ruff, mypy, "
-            "git diff/status/show, python -m pytest, python3 -m pytest."
+            "git diff/status/show, python -m pytest, python3 -m pytest, "
+            "npm [--prefix DIR] run test:run [-- ARGS]."
         )
 
+    if root == "npm" and npm_test_prefix(argv) is None:
+        raise ToolError("npm is only allowed as npm [--prefix DIR] run test:run [-- ARGS]")
     if root == "git":
         if len(argv) < 2 or argv[1] not in ALLOWED_GIT_SUBCOMMANDS:
             raise ToolError("git subcommand not allowlisted (diff, status, show)")

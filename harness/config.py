@@ -123,7 +123,9 @@ class Settings(BaseSettings):
         if not value or any(not token or "\n" in token or "\x00" in token for token in value):
             raise ValueError("Project check must be a non-empty single-line argv list")
         if not is_verification_command(value):
-            raise ValueError("Project check must be a pytest, ruff check, or mypy invocation")
+            raise ValueError(
+                "Project check must be pytest, ruff check, mypy, or npm [--prefix DIR] run test:run"
+            )
         return value
 
     # Grounding
