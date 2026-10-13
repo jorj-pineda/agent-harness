@@ -145,6 +145,9 @@ class Settings(BaseSettings):
     confidence_escalation_threshold: float = Field(default=0.55, ge=0.0, le=1.0)
 
     # Coding agent (Phase 4+)
+    context_management: Literal["full", "bounded_reads_v1"] = Field(
+        default="full", description="Opt-in request-only elision of older read_file contents."
+    )
     coding_prompt_profile: CodingPromptProfile = Field(
         default="legacy", description="Opt-in compact coding contract; tools and budgets unchanged."
     )

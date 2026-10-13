@@ -182,3 +182,62 @@ def test_api_and_sqlite_configuration_payloads_exclude_credentials(tmp_path: Pat
         )
         assert "fixture-private-anthropic" not in store.get(sid).model_dump_json()
         assert "fixture-private-openai" not in store.get(sid).model_dump_json()
+
+
+def test_bounded_requests_archive_full_reads_after_restart(tmp_path):
+    import json
+
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    content = "preserved user content\n" * 1000
+    (repo / "large.py").write_text(content)
+    provider = ScriptedProvider()
+    provider.script(
+        make_response(
+            tool_calls=[ToolCall(id="read", name="read_file", arguments={"path": "large.py"})]
+        ),
+        *[
+            make_response(
+                tool_calls=[ToolCall(id=str(i), name="list_dir", arguments={"path": "."})]
+            )
+            for i in range(4)
+        ],
+        make_response(content="Reviewed"),
+    )
+    with TestClient(
+        make_app(
+            tmp_path, provider, context_management="bounded_reads_v1", max_identical_tool_calls=0
+        )
+    ) as client:
+        sid = client.post("/sessions", json={"user_id": "dev", "workspace_root": str(repo)}).json()[
+            "session_id"
+        ]
+        payload = {
+            "user_id": "dev",
+            "session_id": sid,
+            "message": "Inspect",
+            "request_id": "bounded",
+        }
+        response = client.post("/chat", json=payload).json()
+        assert response["completion_status"] == "completed"
+        actual_reads = [
+            m for m in provider.calls[-1][0] if m.role == "tool" and m.tool_name == "read_file"
+        ]
+        assert "request_content_omitted_chars" in json.loads(actual_reads[0].content)
+        archive = client.get(f"/sessions/{sid}", params={"user_id": "dev"}).json()
+        reads = [
+            m
+            for m in archive["session"]["messages"]
+            if m["role"] == "tool" and m["tool_name"] == "read_file"
+        ]
+        assert json.loads(reads[0]["content"])["content"] == content.rstrip("\n")
+        assert (
+            archive["responses"][0]["execution_profile"]["settings"]["context_management"]
+            == "bounded_reads_v1"
+        )
+    restarted = ScriptedProvider()
+    with TestClient(make_app(tmp_path, restarted)) as client:
+        assert client.get(f"/sessions/{sid}", params={"user_id": "dev"}).json() == archive
+        assert client.post("/chat", json=payload).json() == response
+        assert restarted.calls == []
+    assert (repo / "large.py").read_text() == content

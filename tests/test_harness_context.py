@@ -82,3 +82,60 @@ def test_after_response_fails_closed_and_blocks_tools_that_cannot_be_followed_up
     context.record(TokenUsage(prompt_tokens=100, completion_tokens=10), 1)
     stop = context.after_response(wants_tools=True)
     assert stop is not None and "Context limit" in stop.reason
+
+
+def test_request_view_preserves_raw_history_and_non_read_evidence() -> None:
+    import json
+
+    from harness.context import request_context
+
+    def read(path: str) -> ChatMessage:
+        return ChatMessage(
+            role="tool",
+            tool_name="read_file",
+            tool_call_id=path,
+            content=json.dumps(
+                {
+                    "path": path,
+                    "content": "é" * 6000,
+                    "sha256": "a" * 64,
+                    "start_line": 1,
+                    "end_line": 100,
+                    "total_lines": 100,
+                }
+            ),
+        )
+
+    messages = [
+        ChatMessage(role="system", content="instructions"),
+        ChatMessage(role="user", content="objective"),
+        read("src/code.py"),
+        read("nested/AGENTS.md"),
+        ChatMessage(role="tool", tool_name="run_command", content="failed check " * 2000),
+        ChatMessage(role="tool", tool_name="replace_text", content="diff " * 2000),
+        ChatMessage(role="tool", tool_name="read_file", content='"read error"'),
+        *[ChatMessage(role="assistant", content="recent action") for _ in range(7)],
+        read("latest.py"),
+    ]
+    before = [message.model_dump() for message in messages]
+    view, reduced = request_context(messages, "bounded_reads_v1")
+    assert reduced == [2]
+    assert [message.model_dump() for message in messages] == before
+    assert all(view[i] == messages[i] for i in range(len(messages)) if i != 2)
+    payload = json.loads(view[2].content)
+    assert payload["sha256"] == "a" * 64
+    assert payload["request_content_omitted_chars"] == 4976
+    assert "read_file again" in payload["content"]
+    assert estimate_message_tokens(view) < estimate_message_tokens(messages)
+    assert request_context(messages)[0] == messages
+    view[0].content = "provider mutation"
+    assert messages[0].content == "instructions"
+
+
+def test_changed_prefix_resets_anchor_but_not_usage() -> None:
+    budget = TokenBudget(max_total=10000)
+    budget.record(TokenUsage(prompt_tokens=5000, completion_tokens=17), 3)
+    budget.reset_prompt_anchor()
+    messages = [ChatMessage(role="user", content="small projected request")]
+    assert budget.estimate_prompt(messages, []) == estimate_message_tokens(messages)
+    assert budget.prompt_used == 5000 and budget.completion_used == 17

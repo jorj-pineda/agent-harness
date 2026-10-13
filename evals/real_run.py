@@ -329,6 +329,7 @@ async def run_task(
             runtime_config={
                 "coding_toolset": settings.coding_toolset,
                 "coding_prompt_profile": settings.coding_prompt_profile,
+                "context_management": settings.context_management,
                 "openai_compatible_transport": settings.openai_compatible_transport,
                 "tool_specs": [spec.model_dump(mode="json") for spec in registry.as_tool_specs()],
                 "max_tool_iterations": settings.max_tool_iterations,

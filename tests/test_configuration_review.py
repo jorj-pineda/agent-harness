@@ -215,3 +215,57 @@ def test_context_limits_and_archive_problems(tmp_path: Path, kind):
     if kind == "legacy":
         assert result.configuration.status == "not_recorded"
     assert archive.model_dump_json() == before
+
+
+def test_review_estimates_reduced_request_and_preserves_archive(tmp_path):
+    import json
+
+    from harness.context import request_context
+
+    settings = Settings(
+        _env_file=None, context_management="bounded_reads_v1", max_context_tokens=2000
+    )
+    registry = ToolRegistry()
+    archive = archive_with_profile(settings, registry)
+    archive.session.messages = [
+        ChatMessage(role="user", content="objective"),
+        ChatMessage(role="assistant", tool_calls=[ToolCall(id="read", name="read_file")]),
+        ChatMessage(
+            role="tool",
+            tool_name="read_file",
+            tool_call_id="read",
+            content=json.dumps(
+                {
+                    "path": "large.py",
+                    "content": "x" * 12000,
+                    "sha256": "a" * 64,
+                    "start_line": 1,
+                    "end_line": 100,
+                    "total_lines": 100,
+                }
+            ),
+        ),
+        *[ChatMessage(role="assistant", content="recent") for _ in range(8)],
+    ]
+    before = archive.model_dump_json()
+    with FactStore(tmp_path / "facts.db") as store:
+        review = review_configuration(
+            archive,
+            settings=settings,
+            provider="ollama",
+            registry=registry,
+            fact_store=store,
+            user_id="dev",
+            message="finish",
+        )
+        detached = archive.session.model_copy(deep=True)
+        refresh_system_message(detached, store, "dev", system_prompt=coding_prompt("full"))
+        detached.messages.append(ChatMessage(role="user", content="finish"))
+        projected, reduced = request_context(detached.messages, settings.context_management)
+        assert reduced
+        assert review.context.estimated_prompt_tokens == TokenBudget().estimate_prompt(
+            projected, []
+        )
+    assert review.context.status == "estimated_fit"
+    assert review.read_only and not review.resume_supported
+    assert archive.model_dump_json() == before
