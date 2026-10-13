@@ -870,6 +870,26 @@ Relevant implementation: `harness/loop.py`, `harness/outcome.py`, `harness/groun
   targets and Milestone 5 are not complete. Context pressure is observed; no general
   model ranking or prompt-quality gain is established.
 
+- **2026-10-12 — Panel explicit single-file reversal:** selected saved runs expose
+  one relative-file action with required scope acknowledgment and capture-ID presence.
+  Eligibility/current bytes/modes remain freshly enforced by the existing API. The
+  panel retains exact run/path/key before one POST; storage failure prevents dispatch.
+  Reload submits nothing, owner-scoped keyed GET inspects saved outcomes after restart,
+  and an explicit retry preserves input despite changed run selection. Saved statuses
+  disable retry; malformed/unreadable retained input blocks new work until explicitly
+  forgotten. Pending coding and reversal routes remain separate. Applied/uncertain
+  source retirement and historical checks/diffs are explained; history stays read-only.
+  Validation passed eight focused API/UI tests, 861 offline tests (five live deselected),
+  Ruff/mypy, JavaScript syntax and diff checks. Native-browser checks used a real-file
+  scripted-provider edit/reversal and a fresh server lifecycle for journal inspection;
+  other files and archived evidence stayed unchanged. Simulations covered scope/path
+  gates, legacy/running captures, storage failures, exact retry, pending/terminal/null/
+  mismatched records, safe text, POST/GET timeouts, malformed reload and explicit forget.
+  Desktop rendering inspected. Owned fixture server stopped and tab closed; no inference
+  or model-quality comparison in this slice. Evaluation behavior unchanged, so matrices
+  were not rerun. No automatic reconciliation, cancellation of file actions, multi-file
+  restore, retention controls or cross-process isolation; Milestone 5 stays incomplete.
+
 ## Milestone 1 — Establish a real task-success baseline
 
 **Outcome:** a model attempts real repository tasks through the same runtime used by Jorge, and independent checks determine whether it succeeded.

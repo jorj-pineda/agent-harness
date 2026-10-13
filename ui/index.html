@@ -110,6 +110,26 @@
             <button id="submit-continuation" disabled>Fork and submit task</button>
           </details>
         </section>
+        <section id="file-reversal" hidden aria-label="Explicit single-file reversal">
+          <h2>Single-file reversal</h2>
+          <p id="reversal-target" class="review-note"></p>
+          <details>
+            <summary>Reverse one checkpoint difference</summary>
+            <p class="review-note">Review the selected run's diff first. The server requires an eligible turn-capture pair and current file bytes/mode matching its after point. This reverses an observed difference; it does not prove who made it.</p>
+            <label for="reversal-path">Exact relative file path</label>
+            <input id="reversal-path" type="text" maxlength="4096" autocomplete="off" />
+            <label class="scope-ack"><input id="reversal-ack" type="checkbox" />
+              Reverse only this file. Applied or uncertain outcomes retire the source session. I will inspect the workspace and rerun checks; external writers can race checks and ownership/ACLs are not restored.</label>
+            <button id="submit-reversal" disabled>Reverse selected file</button>
+          </details>
+          <div id="reversal-pending" hidden>
+            <p id="reversal-request" class="review-note"></p>
+            <button id="check-reversal">Inspect saved outcome</button>
+            <button id="retry-reversal">Retry exact reversal request</button>
+            <button id="forget-reversal">Forget retained reversal</button>
+          </div>
+          <div id="reversal-results" aria-live="polite"></div>
+        </section>
       </aside>
     </main>
 
