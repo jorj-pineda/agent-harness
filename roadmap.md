@@ -854,6 +854,22 @@ Relevant implementation: `harness/loop.py`, `harness/outcome.py`, `harness/groun
   and Milestone 5 remain incomplete. Jorge authorized a cheaper model through existing
   OpenCode within account limits; hosted inference has not yet run.
 
+- **2026-10-12 — Bounded second-model project observation:** the compatible adapter
+  accepts explicit client/session headers, required by OpenCode Go; no automatic API
+  conversation routing is claimed. Jorge's existing Go credential ran two free
+  `longcat-2.5-preview-free` attempts through shared runtime/real tools, with zero SDK
+  retries, no paid fallback and the same frozen Duodoro task/64K budgets. Minimal
+  produced one independently accepted patch, but exhausted total tokens before a
+  configured check; harness made no edit and exhausted estimated context. Both remain
+  budget-exhausted/not-run, with no false completion or manual repair. Criteria/source
+  preserved; clients closed. See `evals/BASELINES.md` and raw traces for errors,
+  declared zero pricing versus unobserved billing, backend defaults and order limits.
+  Eight provider regressions and 861 offline tests (five live deselected), Ruff/mypy
+  and changed-file formatting passed. Both scripted matrices passed 90/90 with
+  contract labels and metric limits inspected. Repeated two-model/held-out/ten-project-task
+  targets and Milestone 5 are not complete. Context pressure is observed; no general
+  model ranking or prompt-quality gain is established.
+
 ## Milestone 1 — Establish a real task-success baseline
 
 **Outcome:** a model attempts real repository tasks through the same runtime used by Jorge, and independent checks determine whether it succeeded.

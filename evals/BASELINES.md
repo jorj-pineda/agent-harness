@@ -1322,3 +1322,69 @@ output cap. Its upstream Ollama payload had empty content, no thinking field or 
 calls, and stop (2,135 prompt / 11 output tokens). Cause remains unresolved; this
 is not coding-quality evidence. The provider did not discard populated content in
 that probe. Evaluation-owned Ollama processes were stopped; user services preserved.
+
+
+## 2026-10-12 — Duodoro duration formatting, OpenCode Go free preview
+
+Jorge authorized a cheaper model through his existing OpenCode account within limits.
+The current official [Go documentation](https://opencode.ai/v2/docs/console/go/) and
+installed CLI metadata listed `longcat-2.5-preview-free` at zero input/output/cache
+price on 2026-10-12. Two attempts used the existing credential privately, without
+OpenCode's agent, a premium supervisor, SDK retries, paid fallback or billing changes.
+Actual account billing was not independently observed. Preview availability/pricing
+can change; verify it again before replay, and stop on provider/limit errors.
+
+Raw report: `results/2026-10-12-duodoro-duration-longcat-free-64k.json`.
+Harness revision `007c53a84becd0fac390caf3d6c8ef9397f5b3ff`, clean. Endpoint
+`https://opencode.ai/inference/go/v1` came from current installed CLI public metadata.
+The OpenAI-compatible adapter sent its own `agent-harness-real-eval/0.1` User-Agent
+and a fresh UUID in `x-opencode-session` per attempt, stable for that conversation.
+The adapter's explicit header seam is not automatic session routing for the API.
+SDK retries were zero and request timeout 180 seconds; comparison stops at the first
+provider error. None occurred. Credentials/header session values are absent from reports.
+
+The pinned task, external acceptance, full tools, prompt modes, temperature 0,
+16,384 estimated context, 64,000 total-token estimate gate, 8,192 output-token cap,
+8 iterations, 24 calls, 600-second dispatch deadline and verification policy match
+the preceding Gemma 64K variant. No backend-specific thinking option was sent;
+hosted reasoning/context defaults and the provider's served model revision are unknown.
+Node 26 native library coverage and source-preservation limits remain the same.
+
+| Mode (execution order) | Acceptance | Runtime status / checks | Prompt/output tokens | Loop seconds |
+|---|---|---|---|---|
+| minimal (first) | 1/1 | budget_exhausted / not_run | 53,548 / 2,050 | 54.4 |
+| harness (second) | 0/1 | budget_exhausted / not_run | 47,638 / 883 | 34.8 |
+
+Minimal inspected the instructions, target, tests and adapter, received one rejected
+`node --version` command, then made two exact edits only to `format.ts`. External
+acceptance passed behavior and scope preservation. The total-token gate blocked the
+next proposed read before execution, so no configured check or final success claim
+occurred. Its ten records include nine dispatched tools (including the rejected
+command) and one budget-blocked call. This is an independently accepted artifact,
+not a harness-verified or completed turn; no manual repair was applied.
+
+Harness performed 13 dispatched inspection/error calls and no edits. An estimated
+16,935-token next prompt could not fit its 16,384 context with the required output
+reserve. Errors included absent Git metadata in the exported fixture, rejected
+`node --version`, and excluded `client/node_modules`. External behavior failed;
+scope preservation passed. Criterion hashes and the user's Duodoro checkout stayed
+unchanged in both attempts. Provider clients were closed afterward.
+
+One accepted minimal artifact versus zero harness artifacts is a useful observation
+about this task, not a ranking or measured improvement. One repeat per model/mode,
+one task, different backends/defaults and sequential unmeasured cache/load conditions
+cannot satisfy the roadmap's repeated two-model, held-out or ten-real-task criteria.
+Observed context pressure supports investigating bounded context/prompt profiles;
+it does not justify silently enlarging limits or adding a supervisor.
+
+To reproduce the transport, prepare/validate the pinned task as described in its
+README, reconstruct `Settings(_env_file=None, **runtime_config)` after removing
+`tool_specs`, set the report's compatible URL/model, and create a separate provider
+per mode with `create_chat_provider("openai", provider_name="openai_compatible",
+api_key=<privately loaded Go key>, model="longcat-2.5-preview-free", base_url=<URL>,
+timeout_seconds=180, max_retries=0, default_headers={"User-Agent":
+"agent-harness-real-eval/0.1", "x-opencode-session": str(uuid4())})`.
+Use the shared `run_task`, close each provider, stop on `error:` termination, require
+unchanged criterion hashes, and reject added/deleted or out-of-scope changed files.
+Retain all results via `write_report` at a unique external path. Do not print/persist
+the key or reuse one header session across separate conversations.
