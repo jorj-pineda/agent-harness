@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import json
 import os
 from collections.abc import Callable
@@ -8,6 +9,7 @@ from typing import Any
 import httpx
 import pytest
 
+from providers import compatible_transport_options
 from providers.base import ChatMessage, ChatProvider, Embedder, ProviderError, ToolSpec
 from providers.openai import OpenAIProvider
 from tests._cassette import CassetteTransport
@@ -232,6 +234,62 @@ async def test_custom_client_headers_persist_without_retrying_quota_errors() -> 
             assert json.loads(request.content)["model"] == "fixture-model"
     finally:
         await provider.aclose()
+
+
+async def test_conversation_headers_are_request_local_and_parent_owns_client() -> None:
+    captured: dict[str, str] = {}
+
+    async def handler(request: httpx.Request) -> httpx.Response:
+        await asyncio.sleep(0)
+        message = json.loads(request.content)["messages"][0]["content"]
+        captured[message] = request.headers["x-opencode-session"]
+        assert request.headers["user-agent"] == "agent-harness/0.1"
+        assert request.headers["authorization"] == "Bearer fixture-key"
+        return httpx.Response(
+            200,
+            json={
+                "id": "fixture",
+                "object": "chat.completion",
+                "created": 1,
+                "model": "fixture",
+                "choices": [
+                    {
+                        "index": 0,
+                        "message": {"role": "assistant", "content": "done"},
+                        "finish_reason": "stop",
+                    }
+                ],
+            },
+        )
+
+    client = httpx.AsyncClient(transport=httpx.MockTransport(handler))
+    provider = OpenAIProvider(
+        api_key="fixture-key",
+        model="fixture",
+        http_client=client,
+        **compatible_transport_options("opencode_go"),
+    )
+    try:
+        first = provider.for_conversation("first-session")
+        second = provider.for_conversation("second-session")
+        assert not captured  # Binding performs no HTTP request.
+        with pytest.raises(ProviderError, match="Bind a conversation"):
+            await provider.chat([ChatMessage(role="user", content="unbound")])
+        with pytest.raises(ValueError):
+            provider.for_conversation("unsafe\nheader")
+        await asyncio.gather(
+            first.chat([ChatMessage(role="user", content="first-1")]),
+            second.chat([ChatMessage(role="user", content="second")]),
+            first.chat([ChatMessage(role="user", content="first-2")]),
+        )
+        assert captured == {
+            "first-1": "first-session",
+            "first-2": "first-session",
+            "second": "second-session",
+        }
+    finally:
+        await provider.aclose()
+    assert client.is_closed
 
 
 # ---------------------------------------------------------------------------

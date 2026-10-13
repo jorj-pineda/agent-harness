@@ -74,6 +74,13 @@ class ChatProvider(Protocol):
 
 
 @runtime_checkable
+class ConversationProvider(Protocol):
+    """Optional pure binding; the original provider still owns resources."""
+
+    def for_conversation(self, conversation_id: str) -> ChatProvider: ...
+
+
+@runtime_checkable
 class Embedder(Protocol):
     name: str
 

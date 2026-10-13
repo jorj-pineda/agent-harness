@@ -21,6 +21,7 @@ from openai.types.chat import ChatCompletion, ChatCompletionMessageFunctionToolC
 
 from .base import (
     ChatMessage,
+    ChatProvider,
     FinishReason,
     ProviderError,
     ProviderResponse,
@@ -28,6 +29,20 @@ from .base import (
     ToolCall,
     ToolSpec,
 )
+
+
+def compatible_transport_options(transport: str) -> dict[str, Any]:
+    """Only public configured options; never keys or per-conversation values."""
+    if transport == "generic":
+        return {}
+    if transport != "opencode_go":
+        raise ValueError("Unknown compatible transport")
+    return {
+        "default_headers": {"User-Agent": "agent-harness/0.1"},
+        "conversation_header": "x-opencode-session",
+        "max_retries": 0,
+    }
+
 
 _FINISH_REASON_MAP: dict[str, FinishReason] = {
     "stop": "stop",
@@ -51,10 +66,12 @@ class OpenAIProvider:
         timeout_seconds: float = 60.0,
         max_retries: int = 2,
         default_headers: Mapping[str, str] | None = None,
+        conversation_header: str | None = None,
         http_client: httpx.AsyncClient | None = None,
     ) -> None:
         self.name = provider_name
         self._model = model
+        self._conversation_header = conversation_header
         self._client = AsyncOpenAI(
             api_key=api_key,
             base_url=base_url,
@@ -67,6 +84,17 @@ class OpenAIProvider:
     async def aclose(self) -> None:
         await self._client.close()
 
+    def for_conversation(self, conversation_id: str) -> ChatProvider:
+        if self._conversation_header is None:
+            return self
+        if (
+            not conversation_id
+            or len(conversation_id) > 256
+            or any(ord(char) < 33 or ord(char) > 126 for char in conversation_id)
+        ):
+            raise ValueError("Conversation ID must be bounded printable ASCII without spaces")
+        return _ConversationView(self, {self._conversation_header: conversation_id})
+
     async def chat(
         self,
         messages: list[ChatMessage],
@@ -74,6 +102,21 @@ class OpenAIProvider:
         tools: list[ToolSpec] | None = None,
         temperature: float = 0.0,
         max_tokens: int | None = None,
+    ) -> ProviderResponse:
+        if self._conversation_header is not None:
+            raise ProviderError("Bind a conversation before calling this configured transport")
+        return await self._chat(
+            messages, tools=tools, temperature=temperature, max_tokens=max_tokens
+        )
+
+    async def _chat(
+        self,
+        messages: list[ChatMessage],
+        *,
+        tools: list[ToolSpec] | None,
+        temperature: float,
+        max_tokens: int | None,
+        extra_headers: Mapping[str, str] | None = None,
     ) -> ProviderResponse:
         kwargs: dict[str, Any] = {
             "model": self._model,
@@ -84,6 +127,8 @@ class OpenAIProvider:
             kwargs["max_tokens"] = max_tokens
         if tools:
             kwargs["tools"] = [_tool_to_openai(t) for t in tools]
+        if extra_headers is not None:
+            kwargs["extra_headers"] = extra_headers
 
         start = time.perf_counter()
         try:
@@ -92,6 +137,31 @@ class OpenAIProvider:
             raise ProviderError(f"OpenAI chat request failed: {exc}") from exc
         latency_ms = (time.perf_counter() - start) * 1000
         return _response_from_openai(completion, fallback_model=self._model, latency_ms=latency_ms)
+
+
+class _ConversationView:
+    """Request-local headers over one owned SDK client, safe for concurrent sessions."""
+
+    def __init__(self, parent: OpenAIProvider, headers: Mapping[str, str]) -> None:
+        self.name = parent.name
+        self._parent = parent
+        self._headers = headers
+
+    async def chat(
+        self,
+        messages: list[ChatMessage],
+        *,
+        tools: list[ToolSpec] | None = None,
+        temperature: float = 0.0,
+        max_tokens: int | None = None,
+    ) -> ProviderResponse:
+        return await self._parent._chat(
+            messages,
+            tools=tools,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            extra_headers=self._headers,
+        )
 
 
 def _message_to_openai(m: ChatMessage) -> dict[str, Any]:

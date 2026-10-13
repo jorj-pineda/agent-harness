@@ -118,6 +118,32 @@ def test_custom_provider_identity_stays_unknown():
     assert profile.endpoint_sha256 is None
 
 
+def test_go_recipe_identity_excludes_credentials_and_generic_is_not_invented():
+    settings = Settings(
+        _env_file=None,
+        openai_compatible_base_url="https://fixture.example/v1",
+        openai_compatible_model="fixture",
+        openai_compatible_api_key="fixture-private-key",
+    )
+    generic = capture_execution_profile(settings, "openai_compatible", ToolRegistry())
+    assert generic.provider_options_sha256 is None
+    go = capture_execution_profile(
+        settings.model_copy(update={"openai_compatible_transport": "opencode_go"}),
+        "openai_compatible",
+        ToolRegistry(),
+    )
+    assert go.provider_options_sha256 and len(go.provider_options_sha256) == 64
+    assert "fixture-private-key" not in go.model_dump_json()
+    assert "x-opencode-session" not in go.model_dump_json()
+    assert go.model_dump(exclude={"provider_options_sha256"}) == generic.model_dump(
+        exclude={"provider_options_sha256"}
+    )
+    old_payload = generic.model_dump(exclude={"provider_options_sha256"})
+    from harness.execution_profile import ExecutionProfile
+
+    assert ExecutionProfile.model_validate(old_payload).provider_options_sha256 is None
+
+
 async def test_shared_runtime_callback_precedes_inference_and_finalization(tmp_path: Path):
     seen = []
     session = Session(user_id="dev")

@@ -113,6 +113,52 @@ async def test_compatible_wire_uses_custom_endpoint_model_and_tool_schema() -> N
     assert captured[0].headers["authorization"] == "Bearer local-token"
 
 
+@pytest.mark.parametrize(
+    "values",
+    [
+        {},
+        {
+            "openai_compatible_base_url": "https://fixture.example/v1",
+            "openai_compatible_model": "fixture",
+        },
+        {"openai_compatible_api_key": "fixture-private-key"},
+    ],
+)
+def test_go_requires_configuration_before_client_creation(values):
+    with pytest.raises(ValidationError) as error:
+        Settings(_env_file=None, openai_compatible_transport="opencode_go", **values)
+    assert "fixture-private-key" not in str(error.value)
+
+
+async def test_go_options_are_shared_by_api_and_evaluator(monkeypatch):
+    import harness.providers as configured
+
+    calls = []
+    original = configured.create_chat_provider
+
+    def factory(name, **kwargs):
+        calls.append((name, kwargs))
+        return original(name, **kwargs)
+
+    monkeypatch.setattr(configured, "create_chat_provider", factory)
+    settings = Settings(
+        _env_file=None,
+        openai_compatible_transport="opencode_go",
+        openai_compatible_base_url="https://fixture.example/v1",
+        openai_compatible_model="fixture",
+        openai_compatible_api_key="fixture-key",
+    )
+    app_providers = _build_providers(settings)
+    eval_provider = build_configured_provider("openai_compatible", settings)
+    compatible = [kwargs for name, kwargs in calls if name == "openai"]
+    assert len(compatible) == 2 and compatible[0] == compatible[1]
+    assert compatible[0]["conversation_header"] == "x-opencode-session"
+    assert compatible[0]["default_headers"] == {"User-Agent": "agent-harness/0.1"}
+    assert compatible[0]["max_retries"] == 0
+    for provider in [*app_providers.values(), eval_provider]:
+        await provider.aclose()
+
+
 def test_ollama_generation_settings_reach_provider() -> None:
     provider = build_configured_provider(
         "ollama", Settings(_env_file=None, ollama_num_ctx=8192, ollama_think=False)

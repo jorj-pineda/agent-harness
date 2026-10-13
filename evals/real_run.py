@@ -37,7 +37,13 @@ from harness.runtime import build_registry, run_configured_turn
 from harness.state import Session, ToolCallRecord
 from harness.trace import TurnTraceRecord
 from memory import FactStore
-from providers.base import ChatMessage, ChatProvider, ProviderResponse, ToolSpec
+from providers.base import (
+    ChatMessage,
+    ChatProvider,
+    ConversationProvider,
+    ProviderResponse,
+    ToolSpec,
+)
 from tools.process import ProcessResult, run_process
 from workspace import DisposableWorkspace, disposable_workspace
 
@@ -91,11 +97,17 @@ class RealTaskResult:
 class ObservedProvider:
     def __init__(self, provider: ChatProvider) -> None:
         self.provider = provider
+        self._unbound_provider = provider
         self.name = provider.name
         self.model = "unknown"
         self.prompt_tokens: int | None = 0
         self.completion_tokens: int | None = 0
         self.finish_reason = "unknown"
+
+    def for_conversation(self, conversation_id: str) -> ChatProvider:
+        if isinstance(self._unbound_provider, ConversationProvider):
+            self.provider = self._unbound_provider.for_conversation(conversation_id)
+        return self
 
     async def chat(
         self,
@@ -317,6 +329,7 @@ async def run_task(
             runtime_config={
                 "coding_toolset": settings.coding_toolset,
                 "coding_prompt_profile": settings.coding_prompt_profile,
+                "openai_compatible_transport": settings.openai_compatible_transport,
                 "tool_specs": [spec.model_dump(mode="json") for spec in registry.as_tool_specs()],
                 "max_tool_iterations": settings.max_tool_iterations,
                 "max_tool_calls_per_turn": settings.max_tool_calls_per_turn,

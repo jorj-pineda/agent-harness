@@ -138,6 +138,29 @@ def test_old_whole_file_prompt_label_is_drift_without_rewriting_history():
     assert saved.model_dump_json() == original
 
 
+def test_compatible_transport_recipe_drift_and_legacy_absence():
+    from harness.execution_profile import ExecutionProfile
+
+    settings = Settings(
+        _env_file=None,
+        openai_compatible_base_url="https://fixture.example/v1",
+        openai_compatible_model="fixture",
+        openai_compatible_api_key="fixture-private-key",
+    )
+    generic = capture_execution_profile(settings, "openai_compatible", ToolRegistry())
+    old = ExecutionProfile.model_validate(generic.model_dump(exclude={"provider_options_sha256"}))
+    assert compare_profiles(old, generic).status == "matching"
+    go = capture_execution_profile(
+        settings.model_copy(update={"openai_compatible_transport": "opencode_go"}),
+        "openai_compatible",
+        ToolRegistry(),
+    )
+    result = compare_profiles(old, go)
+    assert result.status == "changed"
+    assert result.changed_fields == ["provider_options_sha256"]
+    assert "fixture-private-key" not in result.model_dump_json()
+
+
 @pytest.mark.parametrize(
     "kind",
     [
