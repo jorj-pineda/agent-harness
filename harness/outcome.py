@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import logging
 
+from workspace.npm import npm_test_prefix
+
 from .outcome_types import VerificationStatus
 from .state import CheckRecord, ToolCallRecord
 
@@ -25,6 +27,8 @@ def is_verification_command(argv: list[str]) -> bool:
     if any(arg in {"--version", "-V", "--help", "-h", "--collect-only"} for arg in argv[1:]):
         return False
     root = argv[0]
+    if root == "npm":
+        return npm_test_prefix(argv) is not None
     if root == "ruff":
         return len(argv) >= 2 and argv[1] == "check"
     if root in VERIFICATION_ROOT_COMMANDS:
