@@ -28,12 +28,14 @@ opening a real provider — the lifespan hands the factory the validated
 from __future__ import annotations
 
 import asyncio
+import json
 import logging
 import sqlite3
 import uuid
 from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager, suppress
 from dataclasses import dataclass, field
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal
 
@@ -45,6 +47,7 @@ from harness.admission import turn_admission
 from harness.cancellation import TurnCancellation
 from harness.checkpoints import CheckpointRecord, CheckpointSummary, capture_checkpoint
 from harness.configuration_review import ConfigurationReview, review_configuration
+from harness.continuation import ContinuationBlocked, check_continuation
 from harness.execution_profile import ExecutionProfile
 from harness.grounding import Grounder
 from harness.policy import classify_task, is_out_of_scope_request
@@ -54,7 +57,7 @@ from harness.router import ProviderNotFoundError, ProviderRouter
 from harness.runs import RequestConflictError, RequestId, RunInput, RunRecord
 from harness.runtime import build_registry, out_of_scope_response, run_configured_turn
 from harness.session_store import SessionArchive, SessionStore, SessionSummary
-from harness.state import Session, TurnResponse
+from harness.state import ContinuationSource, Session, TurnResponse
 from harness.stream import ErrorEvent, EventCallback, StreamEvent, TurnDoneEvent
 from harness.tool_progress import SavedToolEvent, ToolProgress
 from harness.transcript import TranscriptReview, inspect_transcript
@@ -71,6 +74,7 @@ from .models import (
     ChatRequest,
     ChatResponse,
     ConfigurationReviewRequest,
+    ContinueSessionRequest,
     CreateCheckpointRequest,
     CreateSessionRequest,
     CreateSessionResponse,
@@ -215,6 +219,66 @@ def _mount_ui(app: FastAPI) -> None:
 
 
 def _register_routes(app: FastAPI) -> None:
+    @app.post("/sessions/{session_id}/continue", response_model=RunRecord, status_code=202)
+    async def continue_session(
+        session_id: str, req: ContinueSessionRequest, request: Request
+    ) -> RunRecord:
+        """Fork saved history; execution rechecks preconditions inside admission."""
+        components: Components = request.app.state.components
+        settings: Settings = request.app.state.settings
+        source = ContinuationSource(
+            session_id=session_id,
+            turn_id=req.expected_turn_id,
+            acknowledge_uncaptured_state=req.acknowledge_uncaptured_state,
+        )
+        fork_id = uuid.uuid5(
+            uuid.NAMESPACE_URL,
+            json.dumps(
+                [
+                    "agent-harness-continuation",
+                    req.user_id,
+                    session_id,
+                    req.expected_turn_id,
+                    req.request_id,
+                ]
+            ),
+        ).hex
+        chat_req = ChatRequest(
+            user_id=req.user_id,
+            session_id=fork_id,
+            message=req.message,
+            provider=req.provider,
+            request_id=req.request_id,
+        )
+        expected_input = RunInput(**chat_req.model_dump(), continuation_source=source)
+        store = _session_store(components)
+        existing = store.find_run(req.user_id, req.request_id)
+        if existing is not None:
+            if existing.request != expected_input:
+                raise HTTPException(
+                    status_code=409, detail="Continuation key belongs to different input."
+                )
+            return existing
+        archive = _lookup_archive(components, session_id, req.user_id)
+        if not archive.session.turns or archive.session.turns[-1].turn_id != req.expected_turn_id:
+            raise HTTPException(
+                status_code=409, detail="Source turn is not the latest archived turn."
+            )
+        fork = archive.session.model_copy(deep=True)
+        fork.session_id = fork_id
+        fork.created_at = datetime.now(UTC)
+        fork.checkpoint_turns = True
+        fork.continuation_source = source
+        try:
+            components.sessions[fork_id] = fork
+            record, _ = _start_run(
+                components, settings, chat_req, continuation_source=source, fork_archive=archive
+            )
+            return record
+        except BaseException:
+            components.sessions.pop(fork_id, None)
+            raise
+
     @app.get("/file-reverts", response_model=FileRevertRecord | None)
     async def find_revert(
         request: Request, user_id: str = Query(min_length=1), request_id: RequestId = Query()
@@ -655,8 +719,8 @@ def _lookup_session(components: Components, session_id: str, user_id: str) -> Se
         raise HTTPException(
             status_code=409,
             detail=(
-                "Saved session is read-only after restart, interrupted execution, or file reversal. "
-                "Create a new session; resume is not supported."
+                "Saved session is read-only after restart, interrupted execution "
+                "or file reversal. Create a new session or request explicit guarded continuation."
             ),
         )
     if session.user_id != user_id:
@@ -693,6 +757,8 @@ def _start_run(
     req: ChatRequest,
     *,
     on_event: EventCallback | None = None,
+    continuation_source: ContinuationSource | None = None,
+    fork_archive: SessionArchive | None = None,
 ) -> tuple[RunRecord, asyncio.Task[TurnResponse] | None]:
     """Bind request identity durably before scheduling any execution (no awaits)."""
     store = _session_store(components)
@@ -702,6 +768,7 @@ def _start_run(
         message=req.message,
         provider=req.provider,
         request_id=req.request_id or uuid.uuid4().hex,
+        continuation_source=continuation_source,
     )
     existing = store.find_run(req.user_id, run_input.request_id)
     if existing is not None:
@@ -724,6 +791,7 @@ def _start_run(
             run_input,
             provider=provider.name if provider else "policy",
             configured_model=model,
+            fork=(fork_archive, session) if fork_archive else None,
         )
     except RequestConflictError as exc:
         raise HTTPException(status_code=409, detail=str(exc)) from exc
@@ -758,6 +826,8 @@ def _start_run(
                     run_id=record.run_id,
                 )
             result.run_id = record.run_id
+            if session.continuation_source is not None and result.completion_status == "blocked":
+                components.sessions.pop(session.session_id, None)
             # Busy/scope rejections have no finalized Turn, but still have a run result.
             saved = store.get_run(record.run_id)
             if saved is not None and saved.status == "running":
@@ -850,7 +920,9 @@ async def _run_configured_turn(
                 cancellation=cancellation,
                 run_id=run_id,
             )
-            if response.completion_status == "cancelled":
+            if response.completion_status == "cancelled" or (
+                session.continuation_source is not None and response.completion_status == "blocked"
+            ):
                 components.sessions.pop(session.session_id, None)
             return response
         finally:
@@ -967,7 +1039,74 @@ async def _execute_turn(
                     session.session_id,
                     protected_paths=(store.path, components.fact_store.path, settings.chroma_path),
                 )
+                if phase == "before" and session.continuation_source is not None:
+                    archive = _lookup_archive(components, session.session_id, user_id)
+                    saved = archive.responses[-1] if archive.responses else None
+                    previous_run = (
+                        store.get_run(saved.response.run_id)
+                        if saved and saved.response.run_id
+                        else None
+                    )
+                    expected = (
+                        store.get_checkpoint(previous_run.after_checkpoint_id or "")
+                        if previous_run
+                        else None
+                    )
+                    if (
+                        previous_run is None
+                        or expected is None
+                        or previous_run.status == "running"
+                        or previous_run.request.user_id != user_id
+                        or expected.kind != "turn_after"
+                        or expected.run_id != previous_run.run_id
+                        or expected.session_id != previous_run.request.session_id
+                        or expected.paired_before_id != previous_run.before_checkpoint_id
+                        or previous_run.response is None
+                        or saved.response != previous_run.response
+                    ):
+                        raise ContinuationBlocked(
+                            "No valid finalized source checkpoint for continuation."
+                        )
+                    if previous_run.request.session_id != session.session_id:
+                        parent = _lookup_archive(
+                            components, session.continuation_source.session_id, user_id
+                        )
+                        if (
+                            not parent.session.turns
+                            or parent.session.turns[-1].turn_id
+                            != session.continuation_source.turn_id
+                        ):
+                            raise ContinuationBlocked(
+                                "Source archive advanced before continuation admission."
+                            )
+                    relevant_sessions = {
+                        session.session_id,
+                        session.continuation_source.session_id,
+                        previous_run.request.session_id,
+                    }
+                    if any(
+                        store.has_newer_unfinished_work(
+                            user_id, identity, previous_run.created_at, excluding_run_id=run_id
+                        )
+                        for identity in relevant_sessions
+                    ):
+                        raise ContinuationBlocked(
+                            "Source has newer unfinished/failed work; inspect and start fresh."
+                        )
+                    check_continuation(
+                        archive,
+                        expected,
+                        captured.record,
+                        settings=settings,
+                        provider=provider.name,
+                        registry=registry,
+                        fact_store=components.fact_store,
+                        user_id=user_id,
+                        message=message,
+                    )
                 store.bind_run_checkpoint(run_id, captured, phase)
+            except ContinuationBlocked as exc:
+                raise HTTPException(status_code=409, detail=str(exc)) from exc
             except (OSError, ValueError, sqlite3.Error) as exc:
                 raise HTTPException(
                     status_code=503,
@@ -1032,6 +1171,18 @@ async def _execute_turn(
             on_checkpoint=save_turn_checkpoint if session.checkpoint_turns else None,
             cancellation=cancellation,
         )
+    except HTTPException as exc:
+        components.sessions.pop(session.session_id, None)
+        if session.continuation_source is not None and exc.status_code == 409:
+            reason = str(exc.detail)
+            return TurnResponse(
+                answer=reason,
+                completion_status="blocked",
+                completion_reason=reason,
+                provider="policy",
+                latency_ms=0.0,
+            )
+        raise
     except BaseException:
         # Failed/interrupted execution can leave an unfinished transcript. Keep
         # the committed review snapshot, but never archive or reuse that state.

@@ -266,6 +266,23 @@ class SessionStore:
         with self._conn:
             self._write_archive(session, payload)
 
+    def _fork_payload(self, source: SessionArchive, session: Session) -> str:
+        if (
+            session.user_id != source.session.user_id
+            or session.session_id == source.session.session_id
+            or session.continuation_source is None
+            or not session.checkpoint_turns
+            or session.continuation_source.session_id != source.session.session_id
+            or not source.session.turns
+            or session.continuation_source.turn_id != source.session.turns[-1].turn_id
+        ):
+            raise ValueError("Invalid continuation fork identity.")
+        if [turn.turn_id for turn in session.turns] != [
+            item.turn_id for item in source.responses
+        ] or any(turn.finished_at is None for turn in session.turns):
+            raise ValueError("Source archive turn/response alignment is inconsistent.")
+        return SessionArchive(session=session, responses=source.responses).model_dump_json()
+
     def _archive_payload(
         self,
         session: Session,
@@ -317,14 +334,34 @@ class SessionStore:
         ).fetchone()
         return RunRecord.model_validate_json(row[0]) if row else None
 
+    def has_newer_unfinished_work(
+        self, user_id: str, session_id: str, after: datetime, *, excluding_run_id: str
+    ) -> bool:
+        return (
+            self._conn.execute(
+                "SELECT 1 FROM runs WHERE user_id=? AND session_id=? AND created_at>? "
+                "AND run_id!=? AND status IN ('running','failed','interrupted') LIMIT 1",
+                (user_id, session_id, after.isoformat(), excluding_run_id),
+            ).fetchone()
+            is not None
+        )
+
     def create_run(
         self,
         request: RunInput,
         *,
         provider: str,
         configured_model: str | None,
+        fork: tuple[SessionArchive, Session] | None = None,
     ) -> tuple[RunRecord, bool]:
         record = RunRecord(request=request, provider=provider, configured_model=configured_model)
+        fork_payload = self._fork_payload(*fork) if fork else None
+        if fork and (
+            fork[1].session_id != request.session_id
+            or fork[1].user_id != request.user_id
+            or fork[1].continuation_source != request.continuation_source
+        ):
+            raise ValueError("Fork/run identity mismatch.")
         try:
             with self._conn:
                 self._conn.execute(
@@ -339,6 +376,17 @@ class SessionStore:
                         record.model_dump_json(),
                     ),
                 )
+                if fork is not None:
+                    session = fork[1]
+                    self._conn.execute(
+                        "INSERT INTO sessions VALUES (?,?,?,?)",
+                        (
+                            session.session_id,
+                            session.user_id,
+                            session.created_at.isoformat(),
+                            fork_payload,
+                        ),
+                    )
         except sqlite3.IntegrityError:
             existing = self.find_run(request.user_id, request.request_id)
             if existing is None:

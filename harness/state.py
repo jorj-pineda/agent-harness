@@ -118,12 +118,19 @@ class Turn(BaseModel):
     finished_at: datetime | None = None
 
 
+class ContinuationSource(BaseModel):
+    session_id: str = Field(min_length=1)
+    turn_id: str = Field(min_length=1)
+    acknowledge_uncaptured_state: Literal[True]
+
+
 class Session(BaseModel):
     """A live conversation — raw transcript plus structured turn history."""
 
     session_id: str = Field(default_factory=_uuid)
     user_id: str | None = None
     checkpoint_turns: bool = False
+    continuation_source: ContinuationSource | None = None
     workspace_root: str | None = Field(
         default=None,
         description="Absolute sandbox root for code tools (Phase 2+); set at session creation.",
