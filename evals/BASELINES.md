@@ -1289,9 +1289,9 @@ source checkout and synthetic pre-existing work were preserved. No manual patch 
 | Budgets | 8 iterations, 24 tool calls, 600 s dispatch deadline, 180 s request timeout, 8,192 output tokens, 16,384 estimated context, one completion retry |
 | Policies | Full toolset; required verification, no required plan; exact check `python -m pytest -q test_visible.py` |
 | Prompts | harness `coding-v2`, minimal `minimal-v1`; harness still contains legacy support instructions |
-| Environment | Node 26.0.0 native TypeScript adapter; no npm install, Next/Vitest or application integration suites |
+| Environment | Managed Node 24.21.0 native TypeScript adapter; no npm install, Next/Vitest or application integration suites |
 
-| Total-token budget | Order | Mode | Accepted | Terminal status | Prompt/output tokens | Loop seconds |
+| Total-token budget | Order | Mode | Accepted | Terminal status | Prompt/output tokens | Configured-turn seconds |
 |---|---|---|---|---|---|---|
 | 32,000 | first | harness | 0/1 | incomplete, empty final answer | 4,308 / 18 | 31.0 |
 | 32,000 | second | minimal | 0/1 | budget exhausted | 24,775 / 95 | 95.5 |
@@ -1308,8 +1308,9 @@ recovery before tools. None were reported completed or check-passed.
 
 The exploratory 64K variant changed only total-token budget and reversed mode order.
 One repeat per cell on one task, with unmeasured load/cache conditions, establishes
-no prompt, budget or model-quality gain. Loop latency excludes final review/storage/
-transport; setup consumes the dispatch budget. Full application regression coverage,
+no prompt, budget or model-quality gain. Recorded turn duration includes configured setup/final workspace review and excludes
+external acceptance, preparation, report writing and transport. Cleanup/final review can
+exceed the dispatch deadline. Full application regression coverage,
 Node 22 compatibility, held-out tasks and the ten-task release target remain open.
 
 The temporary 32K wrapper initially mislabeled no-edit failures as out-of-scope
@@ -1348,9 +1349,9 @@ The pinned task, external acceptance, full tools, prompt modes, temperature 0,
 8 iterations, 24 calls, 600-second dispatch deadline and verification policy match
 the preceding Gemma 64K variant. No backend-specific thinking option was sent;
 hosted reasoning/context defaults and the provider's served model revision are unknown.
-Node 26 native library coverage and source-preservation limits remain the same.
+Managed Node library coverage and source-preservation limits remain the same.
 
-| Mode (execution order) | Acceptance | Runtime status / checks | Prompt/output tokens | Loop seconds |
+| Mode (execution order) | Acceptance | Runtime status / checks | Prompt/output tokens | Configured-turn seconds |
 |---|---|---|---|---|
 | minimal (first) | 1/1 | budget_exhausted / not_run | 53,548 / 2,050 | 54.4 |
 | harness (second) | 0/1 | budget_exhausted / not_run | 47,638 / 883 | 34.8 |
@@ -1401,7 +1402,7 @@ The user's source checkout stayed unchanged and external criterion hashes matche
 before/after each attempt. No manual rescue, paid fallback, SDK retry or provider error.
 Each conversation had its own stable session header and its provider was closed.
 
-| Mode | Accepted | Status / checks | Prompt/output tokens | Loop seconds | Dispatched tools |
+| Mode | Accepted | Status / checks | Prompt/output tokens | Configured-turn seconds | Dispatched tools |
 |---|---|---|---|---|---|
 | minimal | 0/1 | budget_exhausted / not_run | 31,951 / 1,559 | 35.3 | 7 |
 | harness | 0/1 | incomplete (truncated) / not_run | 30,534 / 2,807 | 56.7 | 5 |
@@ -1422,3 +1423,83 @@ quality improvement. Timer has not been run with Gemma. Context pressure/truncat
 inspection choices and check completion remain concrete obstacles; preserving limits
 and failure evidence is preferable to silently increasing budgets. Native Node library
 criteria still omit full project integration; account billing remains unobserved.
+
+
+## 2026-10-13 — Paired compact prompt trial, free Go, two Duodoro tasks
+
+Raw report: `results/2026-10-13-longcat-free-compact-duodoro.json`.
+Frozen implementation `8becd55a0cfd5a7497dc3ad2494d44f26c22d7e1`, clean.
+Same `longcat-2.5-preview-free`, pinned source/criteria, full tools, temperature 0,
+16,384 context estimate, 64,000 total tokens, 8,192 output tokens, 8 iterations,
+24 calls, 600-second dispatch deadline, 180-second requests and one completion retry.
+Verification required, plan not required. Twelve attempts: two tasks × two prompts
+× three repeats; alternating pair order is recorded. Every conversation had fresh
+isolated workspace/facts and a stable fresh Go session header. SDK retries zero;
+stop on provider error; none occurred. Declared-free pricing rechecked October 13;
+actual account billing, served model revision and load/cache effects remain unobserved.
+No premium supervisor or manual patch repair. Provider clients closed after attempts.
+
+Only the prompt contract changed: legacy coding-v2 (1,044 UTF-8 bytes, 158 words)
+versus compact coding-v3-compact-v1 (640 bytes, 94 words), removing support/memory
+instructions and emphasizing bounded inspection, preservation, check argv and honest
+reporting. These are byte/word counts, not tokenizer counts. Tools, schemas, budget/
+recovery policy, injected check and task requests remained unchanged. Both profiles
+used harness mode; the generic report summary aggregates them, while
+`summary_by_profile`, per-result config/version and `attempt_order` distinguish them.
+Earlier minimal-prompt trials are separate cohorts, not paired controls here.
+
+| Task | Legacy accepted | Compact accepted | Compact completed / latest check passed |
+|---|---|---|---|
+| duration formatting | 1/3 | 3/3 | 1/3 completed; 3/3 checks passed |
+| timer normalization | 0/3 | 1/3 | 0/3 completed; 1/3 checks passed |
+| Total | 1/6 | 4/6 | 1/6 completed; 4/6 checks passed |
+
+Legacy's accepted duration repeat 1 ran an initially failing check, then edited and
+exhausted total tokens without rerunning; its check was stale. The other legacy
+artifacts stayed unchanged: three context-budget stops and two length truncations
+(one with a failed check). No legacy turn completed or had a latest passed check.
+Compact duration repeat 2 completed, passed its configured check and external
+acceptance. Its other two duration successes and timer repeat 1 passed both checks
+but exhausted total tokens before completion; those are accepted partial artifacts,
+not completed turns. Timer compact repeats 2/3 inspected without editing and hit
+estimated context. No failed artifact was labeled completed. All external criteria
+stayed intact and all scope assertions passed; evaluation writes stayed in disposable
+copies. No Duodoro working-tree commits or pushes were made by this trial.
+
+Observed median configured-turn time was 44.3 s legacy / 60.0 s compact; median
+reported prompt+output tokens 42,128.5 / 50,496. More accepted work here also used
+more time/tokens. These timings include configured setup/final workspace review,
+excluding external acceptance, preparation, report writing and transport. They do
+not establish causal efficiency gains or a hard return deadline.
+
+The compact profile is retained **opt-in**, with legacy still default, on the strength
+of these bounded artifact/check observations and a smaller coherent coding contract.
+This is two tuning tasks, not a held-out benchmark, general model ranking, statistical
+proof or completed Milestone 4/5/6. Temperature-zero repeats varied; sequential
+backend/cache effects and fresh workspace paths are uncontrolled. Gemma has not been
+compared with compact. Most accepted artifacts still failed to finish within the
+budget; context management and broader repeated same-model tests remain open.
+
+### Runtime-label correction and replay
+
+Earlier Duodoro reports labeled Node 26.0.0 from a shell probe. Failed check outputs
+show v24.21.0, and a direct `run_process(["node","--version"])` confirms the managed
+command environment selects it while the shell reports 26.0.0. Raw metadata now
+retains the original label and adds correction/provenance notes; no inference,
+artifact or acceptance result was changed. Per-invocation versions were not separately
+captured, so do not treat this as runtime attestation. The adapters omit Next/Vitest,
+full server/browser/integration suites and TypeScript typechecking; Node 22 compatibility
+is unverified. Future evaluation setup should probe the actual managed environment.
+
+Replay at the frozen implementation in an isolated worktree, prepare/validate both
+pinned tasks, reconstruct the published runtime config after removing `tool_specs`,
+set the public compatible endpoint/model, and explicitly assert
+`settings.coding_prompt_profile` is the requested legacy/compact value. Use shared
+`run_task(mode="harness", attempt=repeat)` with the report's alternating order and
+three repeats, privately loaded Go credential, one provider per conversation, own
+User-Agent/stable UUID, and zero SDK retries. Verify free pricing first, stop on
+provider errors, verify criterion hashes and veto out-of-scope file changes. Write
+all results to a unique external path; group by profile rather than the common mode.
+Frozen trial validation: 103 focused, 870 offline tests (five live deselected), Ruff,
+mypy, formatting and both scripted 90/90 matrices with evidence limits inspected.
+Those tests measure mechanics, not model quality.

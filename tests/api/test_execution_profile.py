@@ -1,6 +1,7 @@
 from contextlib import closing
 from pathlib import Path
 
+import pytest
 from fastapi.testclient import TestClient
 
 from harness.session_store import SessionStore
@@ -11,7 +12,10 @@ from .test_runs import HeldProvider
 from .test_session_persistence import make_app
 
 
-def test_profile_is_durable_before_inference_and_survives_finalization_and_restart(tmp_path: Path):
+@pytest.mark.parametrize("prompt_profile", ["legacy", "compact"])
+def test_profile_is_durable_before_inference_and_survives_finalization_and_restart(
+    tmp_path: Path, prompt_profile: str
+):
     repo = tmp_path / "repo"
     repo.mkdir()
     (repo / "a.py").write_text("user = 1\n")
@@ -32,6 +36,7 @@ def test_profile_is_durable_before_inference_and_survives_finalization_and_resta
         "max_context_tokens": 16000,
         "max_tool_calls_per_turn": 12,
         "coding_toolset": "whole_file",
+        "coding_prompt_profile": prompt_profile,
     }
     with TestClient(make_app(tmp_path, provider, **settings)) as client:
         sid = client.post("/sessions", json={"user_id": "dev", "workspace_root": str(repo)}).json()[
@@ -52,7 +57,11 @@ def test_profile_is_durable_before_inference_and_survives_finalization_and_resta
             assert profile["settings"]["max_context_tokens"] == 16000
             assert "write_file" in profile["tool_names"]
             assert "replace_text" not in profile["tool_names"]
-            assert profile["prompt_version"] == "coding-v2-whole-file-v1"
+            assert profile["prompt_version"] == (
+                "coding-v3-compact-whole-file-v1"
+                if prompt_profile == "compact"
+                else "coding-v2-whole-file-v1"
+            )
             assert profile["configured_model"] is None  # Custom provider: unknown.
             assert (repo / "a.py").read_text() == "user = 1\n"
             assert client.post("/runs", json=payload).json()["execution_profile"] == profile
@@ -63,6 +72,8 @@ def test_profile_is_durable_before_inference_and_survives_finalization_and_resta
         system = provider.calls[0][0][0].content
         assert "Use `write_file` with the full file contents" in system
         assert "use `replace_text`" not in system
+        if prompt_profile == "compact":
+            assert "ENABLE_SUPPORT_TOOLS" not in system
         archive = client.get(f"/sessions/{sid}", params={"user_id": "dev"}).json()
         assert archive["responses"][0]["execution_profile"] == profile
         assert (repo / "a.py").read_text() == "user = 1\nagent = 2\n"

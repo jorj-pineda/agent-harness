@@ -13,6 +13,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from .outcome import is_verification_command
 
 CodingToolset = Literal["full", "whole_file"]
+CodingPromptProfile = Literal["legacy", "compact"]
 
 
 class Settings(BaseSettings):
@@ -132,6 +133,9 @@ class Settings(BaseSettings):
     confidence_escalation_threshold: float = Field(default=0.55, ge=0.0, le=1.0)
 
     # Coding agent (Phase 4+)
+    coding_prompt_profile: CodingPromptProfile = Field(
+        default="legacy", description="Opt-in compact coding contract; tools and budgets unchanged."
+    )
     coding_toolset: CodingToolset = Field(
         default="full",
         description="whole_file omits replace_text; all other tools remain unchanged.",

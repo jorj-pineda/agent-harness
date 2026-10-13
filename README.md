@@ -1129,3 +1129,21 @@ retain their original `coding-v2` label and hashes. Configuration review reports
 that label drift, and guarded continuation blocks it rather than rewriting history
 or inferring compatibility. Full-toolset and explicit custom-prompt labels are
 unchanged. This metadata correction does not change the prompt or tools themselves.
+
+
+`CODING_PROMPT_PROFILE=compact` opts into the smaller `coding-v3-compact-v1`
+contract; `legacy` remains default. Whole-file toolsets use the corresponding
+compact whole-file version. Tools, budgets and completion/recovery enforcement
+stay unchanged; support/memory tools and the semantic-search stub are still exposed
+as before. Profile choice is captured by prompt version/hash, without changing the
+saved settings schema. Switching profiles reports configuration drift and blocks
+continuation from mismatched history; old archives are not rewritten. Custom prompt
+overrides remain unversioned.
+
+On two pinned Duodoro tuning tasks with free Go LongCat, paired three-repeat trials
+accepted 4/6 compact artifacts versus 1/6 legacy. Compact had four latest passing
+checks but only one completed turn; accepted partial work remains budget-exhausted.
+This limited result does not establish a general quality gain or suitability for
+Gemma. See `evals/BASELINES.md` for traces, costs/limits and Node runtime-label
+corrections. Context management, held-out tasks and broader model comparisons remain
+open.

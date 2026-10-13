@@ -7,6 +7,7 @@ from harness.config import Settings
 from harness.configuration_review import compare_profiles, review_configuration
 from harness.context import TokenBudget
 from harness.execution_profile import capture_execution_profile
+from harness.prompts import coding_prompt
 from harness.runtime import refresh_system_message
 from harness.session_store import SavedTurnResponse, SessionArchive
 from harness.state import Session, Turn, TurnResponse
@@ -42,8 +43,11 @@ def archive_with_profile(settings: Settings, registry: ToolRegistry) -> SessionA
     )
 
 
-def test_matching_configuration_does_not_grant_resume_permission(tmp_path: Path):
-    settings = Settings(_env_file=None, max_context_tokens=16000)
+@pytest.mark.parametrize("prompt_profile", ["legacy", "compact"])
+def test_matching_configuration_does_not_grant_resume_permission(tmp_path: Path, prompt_profile):
+    settings = Settings(
+        _env_file=None, max_context_tokens=16000, coding_prompt_profile=prompt_profile
+    )
     registry = ToolRegistry()
     registry.register(_echo_tool())
     archive = archive_with_profile(settings, registry)
@@ -60,7 +64,12 @@ def test_matching_configuration_does_not_grant_resume_permission(tmp_path: Path)
             message="proposed task",
         )
         detached = archive.session.model_copy(deep=True)
-        refresh_system_message(detached, store, "dev")
+        refresh_system_message(
+            detached,
+            store,
+            "dev",
+            system_prompt=coding_prompt(settings.coding_toolset, settings.coding_prompt_profile),
+        )
         detached.messages.append(ChatMessage(role="user", content="proposed task"))
         budget = TokenBudget(
             max_context=16000, min_request_output=settings.min_request_output_tokens
@@ -87,6 +96,7 @@ def test_matching_configuration_does_not_grant_resume_permission(tmp_path: Path)
         ("ollama_model", "different", "configured_model"),
         ("ollama_host", "http://fixture-other:11434", "endpoint_sha256"),
         ("coding_toolset", "whole_file", "settings.coding_toolset"),
+        ("coding_prompt_profile", "compact", "prompt_version"),
         ("max_tool_calls_per_turn", 10, "settings.max_tool_calls_per_turn"),
         ("project_check_argv", ["pytest", "-q"], "project_check_sha256"),
         ("ollama_think", False, "ollama_think"),
