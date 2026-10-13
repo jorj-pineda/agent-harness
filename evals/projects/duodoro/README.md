@@ -67,12 +67,23 @@ covers fractional normalization and positive Infinity; it is intentionally narro
 Initial/reference fail/pass both checks. This uses dependency-free CommonJS/Node
 library checks, not Vitest, Socket.IO, database or full server integration.
 
-Next candidate task (not frozen, validated or run yet):
-- Add an optional Sunday-first argument to `monthDays` in
-  `client/src/lib/focusCalendar.ts`, keeping Monday-first behavior the default and
-  preserving leap-month coverage, date order and complete weeks. This is a library
-  feature; UI wiring is outside the bounded task.
+The third frozen task is **calendar layout**. Select
+`task_name="calendar_layout"` to add an optional boolean `sundayFirst` argument to
+`monthDays`, defaulting false. Only `client/src/lib/focusCalendar.ts` may change;
+UI wiring is outside the task. External acceptance independently generates 168
+complete grids with Python's standard calendar library across seven representative
+years (including leap/century boundaries), checks default/explicit Monday layouts,
+other calendar exports and exact file/content/mode scope.
 
-These are two prepared real-project tasks, not completion of the ten-task release target,
+The native TypeScript adapter uses a narrowly scoped synchronous Node resolution
+hook for the existing extensionless `./focusTags` import from `focusCalendar.ts`.
+It loads real library modules, without rewriting source or simulating function
+results. This hook was validated with the managed command environment; the shell
+Node version can differ. See the [Node customization-hook documentation](https://nodejs.org/download/release/v24.0.1/docs/api/module.html).
+Both initial checks fail and the reference passes. Native runtime checks omit
+Next/Vitest, full integration and TypeScript typechecking; Node 22 compatibility
+is unverified. No model inference on this task has run yet.
+
+These are three prepared real-project tasks, not completion of the ten-task release target,
 held-out evaluation or repeated comparisons on multiple lower-tier models. Offline
 baseline/reference validation is criterion validation, not model-quality evidence.

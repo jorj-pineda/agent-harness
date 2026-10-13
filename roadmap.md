@@ -950,6 +950,20 @@ Relevant implementation: `harness/loop.py`, `harness/outcome.py`, `harness/groun
   remain incomplete. Future Duodoro working-tree changes must use branches and PRs;
   existing commits there are left intact as Jorge requested.
 
+- **2026-10-13 — Third frozen Duodoro task:** Sunday-first calendar layout adds an
+  optional boolean argument with Monday-first default, limited to focusCalendar.ts
+  and without UI wiring. Independent Python-calendar grids cover seven representative
+  years × twelve months × two layouts, plus default calls, other exports and exact
+  regular-file/content/mode preservation. A scoped native Node hook resolves the
+  existing focusTags import while loading real modules. Initial/reference fail/pass
+  visible and external checks; criteria protected. Validation passed 20 focused and
+  871 offline tests (five live deselected), Ruff/mypy, formatting and both 90/90
+  scripted matrices with contract limits inspected. No model calls for this task.
+  Full integration/typechecking/Node22 coverage remains open. Three tasks frozen,
+  not ten completed; broader model/profile/context and release criteria are incomplete.
+  All preparation writes stayed in disposable artifacts or agent-harness definitions;
+  Duodoro working-tree changes require branches and PRs, with existing commits left intact.
+
 ## Milestone 1 — Establish a real task-success baseline
 
 **Outcome:** a model attempts real repository tasks through the same runtime used by Jorge, and independent checks determine whether it succeeded.
