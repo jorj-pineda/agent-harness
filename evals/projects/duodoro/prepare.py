@@ -50,6 +50,9 @@ def prepare_task(repository: Path, destination: Path) -> Task:
         with disposable_workspace(extracted) as copy:
             fixture = destination / "fixture"
             shutil.copytree(copy.workspace.root, fixture)
+    for name in ("test_visible.py", "preexisting-user-work.txt"):
+        if (fixture / name).exists():
+            raise ValueError("Task setup would overwrite a pinned source file")
     shutil.copyfile(ROOT / "visible_duration.py", fixture / "test_visible.py")
     (fixture / "preexisting-user-work.txt").write_text("Preserve this setup-owned work.\n")
     acceptance = destination / "acceptance"
