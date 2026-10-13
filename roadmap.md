@@ -983,6 +983,26 @@ Relevant implementation: `harness/loop.py`, `harness/outcome.py`, `harness/groun
   selection. Context management, broader model/held-out/project validation and the rest
   of Milestones 4–6 remain incomplete. Duodoro edits still require branches and PRs.
 
+
+- **2026-10-13 — Bounded read-context trial stopped and retired:** froze an opt-in
+  deterministic request projection preserving raw history, instructions/objective,
+  recent results, diffs/errors/checks and budget accounting. Planned eight free Go
+  attempts on two Duodoro tasks; only one duration pair plus a failed first request
+  of the next repeat ran. Both paired artifacts passed external acceptance, but
+  stopped on total tokens before their requested check executed. Neither activated
+  reduction. A ProviderError at about the 180-second request timeout stopped the
+  trial without retry/fallback; underlying cause unknown. No timer trials or quality/
+  completion gain established. All criterion/scope checks held and clients closed.
+  Following the retention rule, removed the experimental runtime option/tests;
+  frozen revision and raw evidence remain in `evals/BASELINES.md`. Trial validation:
+  124 focused, 888 offline (five live deselected), Ruff/mypy, formatting and both
+  90/90 scripted matrices with metric limits inspected. Report dirty metadata retains
+  documentation/comment-edit provenance; no functional changes during inference.
+  Restored runtime: 116 focused and 880 offline tests, Ruff/mypy passed.
+  All evaluation edits stayed in disposable copies. Context management, broader
+  model/held-out/project comparisons and Milestones 4–6 remain incomplete; Duodoro
+  source changes require branches and PRs.
+
 ## Milestone 1 — Establish a real task-success baseline
 
 **Outcome:** a model attempts real repository tasks through the same runtime used by Jorge, and independent checks determine whether it succeeded.

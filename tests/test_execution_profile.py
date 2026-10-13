@@ -64,7 +64,6 @@ def test_allowlist_does_not_serialize_secrets_paths_endpoints_or_check_arguments
         ("ollama_think", False),
         ("require_plan_before_edit", True),
         ("coding_toolset", "whole_file"),
-        ("context_management", "bounded_reads_v1"),
         ("max_tracked_bytes", 100),
     ],
 )
@@ -222,19 +221,3 @@ async def test_malformed_history_is_rejected_before_profile_capture(tmp_path: Pa
             on_execution_profile=forbidden,
         )
     assert result.completion_status == "blocked"
-
-
-def test_old_profile_keeps_full_context_and_switching_reports_drift():
-    from harness.configuration_review import compare_profiles
-    from harness.execution_profile import ExecutionProfile
-
-    registry = ToolRegistry()
-    full = capture_execution_profile(Settings(_env_file=None), "ollama", registry)
-    payload = full.model_dump()
-    del payload["settings"]["context_management"]
-    old = ExecutionProfile.model_validate(payload)
-    assert old.settings.context_management == "full"
-    bounded = capture_execution_profile(
-        Settings(_env_file=None, context_management="bounded_reads_v1"), "ollama", registry
-    )
-    assert compare_profiles(old, bounded).changed_fields == ["settings.context_management"]

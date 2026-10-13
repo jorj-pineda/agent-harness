@@ -30,7 +30,7 @@ from providers.base import ChatMessage, ChatProvider, ProviderResponse, TokenUsa
 from tools import ToolError, ToolRegistry
 
 from .cancellation import TurnCancellation, TurnCancelled
-from .context import BudgetStop, ContextManagement, TokenBudget, request_context
+from .context import BudgetStop, TokenBudget
 from .grounding import Grounder
 from .memory import harvest_memory_writes
 from .outcome import (
@@ -89,7 +89,6 @@ async def run_turn(
     max_total_tokens_per_turn: int = 0,
     max_context_tokens: int = 0,
     min_request_output_tokens: int = 1,
-    context_management: ContextManagement = "full",
     max_identical_tool_calls: int = 0,
     max_completion_retries: int = 0,
     required_check: list[str] | None = None,
@@ -149,17 +148,13 @@ async def run_turn(
     cancel_reason = "Cancellation requested; owned tool work has settled. Review partial work."
     wall_limit_reason = f"Turn wall-time budget of {max_turn_wall_seconds:g}s reached."
 
-    previous_request: list[ChatMessage] = []
     for iteration in range(max_iterations):
         if cancellation is not None and cancellation.requested:
             final_answer = "(turn cancelled before task completion)"
             completion_status = "cancelled"
             completion_reason = cancel_reason
             break
-        request_messages, reduced_indices = request_context(session.messages, context_management)
-        if previous_request and request_messages[: len(previous_request)] != previous_request:
-            budget.reset_prompt_anchor()
-        allowance = budget.request_allowance(request_messages, tool_specs)
+        allowance = budget.request_allowance(session.messages, tool_specs)
         if isinstance(allowance, BudgetStop):
             final_answer = "(model token budget exhausted before task completion)"
             completion_status = allowance.status
@@ -176,10 +171,8 @@ async def run_turn(
                 RequestTrace(
                     iteration=iteration,
                     message_count=sent_count,
-                    estimated_prompt_tokens=budget.estimate_prompt(request_messages, tool_specs),
+                    estimated_prompt_tokens=budget.estimate_prompt(session.messages, tool_specs),
                     max_tokens=allowance,
-                    reduced_message_indices=reduced_indices,
-                    request_messages=request_messages if reduced_indices else [],
                     initial_messages=[m.model_copy(deep=True) for m in session.messages]
                     if iteration == 0
                     else [],
@@ -188,13 +181,10 @@ async def run_turn(
 
         request_output: int | None = allowance
 
-        async def request_model(
-            max_tokens: int | None = request_output,
-            messages: list[ChatMessage] = request_messages,
-        ) -> ProviderResponse:
+        async def request_model(max_tokens: int | None = request_output) -> ProviderResponse:
             if max_tokens is None:
-                return await provider.chat(messages, tools=tool_specs)
-            return await provider.chat(messages, tools=tool_specs, max_tokens=max_tokens)
+                return await provider.chat(session.messages, tools=tool_specs)
+            return await provider.chat(session.messages, tools=tool_specs, max_tokens=max_tokens)
 
         budget_timeout = asyncio.timeout_at(deadline)
         try:
@@ -251,7 +241,6 @@ async def run_turn(
                     latency_ms=response.latency_ms,
                 )
             )
-        previous_request = request_messages
         budget.record(response.usage, sent_count)
         if deadline is not None and asyncio.get_running_loop().time() >= deadline:
             final_answer = "(turn stopped before task completion)"

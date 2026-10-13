@@ -1181,3 +1181,11 @@ rewritten. Changing to the Go recipe reports configuration drift and blocks mism
 continuation. This is configured evidence, not backend/routing/billing attestation;
 SDK defaults and constructor overrides remain outside capture. Wire/API/restart and
 real-tool evaluation tests use intercepted HTTP replies, not live model-quality proof.
+
+
+A request-only bounded-read experiment was frozen and retired without shipping a
+new setting. One paired free Go duration comparison produced two accepted partial
+artifacts, but neither activated reduction or executed its requested check. A third
+attempt stopped on a provider error before tools, ending the planned comparison.
+See `evals/BASELINES.md` for the frozen implementation and raw evidence. Context
+management remains open; this trial establishes no completion or quality gain.

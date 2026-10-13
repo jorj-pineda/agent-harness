@@ -22,7 +22,6 @@ class CapturedRuntimeSettings(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    context_management: Literal["full", "bounded_reads_v1"] = "full"
     coding_toolset: CodingToolset
     enable_support_tools: bool
     max_tool_iterations: int

@@ -603,9 +603,7 @@ async def test_wall_budget_stops_next_batched_tool_after_inflight_tool_finishes(
         session=session,
         user_input="work",
         provider=provider,
-        registry=_registry(
-            Tool(name="slow", description="slow", input_model=EchoInput, fn=slow_tool)
-        ),
+        registry=_registry(Tool(name="slow", description="slow", input_model=EchoInput, fn=slow_tool)),
         max_turn_wall_seconds=0.1,
     )
     assert invoked == 1
@@ -630,9 +628,7 @@ async def test_wall_budget_skips_next_model_request_after_tool_finishes() -> Non
         session=Session(),
         user_input="work",
         provider=provider,
-        registry=_registry(
-            Tool(name="slow", description="slow", input_model=EchoInput, fn=slow_tool)
-        ),
+        registry=_registry(Tool(name="slow", description="slow", input_model=EchoInput, fn=slow_tool)),
         max_turn_wall_seconds=0.1,
     )
     assert len(provider.calls) == 1
@@ -669,11 +665,7 @@ async def test_output_budget_reduces_next_request_and_stops_tool_dispatch_at_lim
     assert "not executed" in (response.tool_calls[1].error or "")
     assert response.completion_status == "budget_exhausted"
     assert [message.role for message in session.messages] == [
-        "user",
-        "assistant",
-        "tool",
-        "assistant",
-        "tool",
+        "user", "assistant", "tool", "assistant", "tool",
     ]
 
 
@@ -1033,121 +1025,3 @@ async def test_provider_sees_growing_transcript_across_iterations() -> None:
 
 def test_default_max_iterations_is_eight() -> None:
     assert DEFAULT_MAX_ITERATIONS == 8
-
-
-async def test_bounded_read_request_crosses_context_gate_without_rewriting_history() -> None:
-    import json
-
-    from harness.trace import RequestTrace
-
-    read = ChatMessage(
-        role="tool",
-        tool_name="read_file",
-        tool_call_id="old",
-        content=json.dumps(
-            {
-                "path": "code.py",
-                "content": "x" * 12000,
-                "sha256": "a" * 64,
-                "start_line": 1,
-                "end_line": 100,
-                "total_lines": 100,
-            }
-        ),
-    )
-    history = [
-        ChatMessage(role="user", content="original objective"),
-        ChatMessage(role="assistant", tool_calls=[ToolCall(id="old", name="read_file")]),
-        read,
-        *[ChatMessage(role="user", content="keep recent action") for _ in range(8)],
-    ]
-    blocked_provider = FakeProvider([])
-    blocked = await run_turn(
-        session=Session(messages=history),
-        user_input="finish",
-        provider=blocked_provider,
-        registry=_registry(),
-        max_context_tokens=2000,
-    )
-    assert blocked.completion_status == "budget_exhausted"
-    assert blocked_provider.calls == []
-    session = Session(messages=[m.model_copy(deep=True) for m in history])
-    provider = FakeProvider([_response(content="answer", prompt_tokens=600, completion_tokens=10)])
-    trace = []
-    response = await run_turn(
-        session=session,
-        user_input="finish",
-        provider=provider,
-        registry=_registry(),
-        max_context_tokens=2000,
-        context_management="bounded_reads_v1",
-        trace=trace,
-    )
-    assert response.completion_status == "completed"
-    assert session.messages[2] == read
-    sent = provider.calls[0][0]
-    assert sent[2] != read and sent[0] == history[0]
-    request = trace[0]
-    assert isinstance(request, RequestTrace)
-    assert request.request_messages == sent
-    assert request.initial_messages[2] == read
-    assert request.reduced_message_indices == [2]
-    assert request.estimated_prompt_tokens == estimate_message_tokens(sent)
-    assert provider.max_tokens_seen == [2000 - request.estimated_prompt_tokens]
-
-
-async def test_reduction_invalidates_old_request_anchor_and_retains_full_tool_trace() -> None:
-    import json
-
-    from harness.trace import MessageTrace, RequestTrace
-
-    async def read(args: PathInput):
-        return {
-            "path": args.path,
-            "content": "x" * 12000,
-            "sha256": "a" * 64,
-            "start_line": 1,
-            "end_line": 100,
-            "total_lines": 100,
-        }
-
-    responses = [
-        _response(
-            tool_calls=[ToolCall(id="read", name="read_file", arguments={"path": "a.py"})],
-            prompt_tokens=10000,
-            completion_tokens=10,
-        )
-    ]
-    responses.extend(
-        _response(
-            tool_calls=[ToolCall(id=str(i), name="echo", arguments={"text": "ok"})],
-            prompt_tokens=10000,
-            completion_tokens=10,
-        )
-        for i in range(4)
-    )
-    responses.append(_response(content="done", prompt_tokens=600, completion_tokens=10))
-    provider = FakeProvider(responses)
-    session = Session()
-    trace = []
-    result = await run_turn(
-        session=session,
-        user_input="objective",
-        provider=provider,
-        registry=_registry(
-            Tool(name="read_file", description="read", input_model=PathInput, fn=read), _echo_tool()
-        ),
-        max_iterations=6,
-        max_context_tokens=20000,
-        max_total_tokens_per_turn=100000,
-        context_management="bounded_reads_v1",
-        trace=trace,
-    )
-    assert result.completion_status == "completed"
-    requests = [record for record in trace if isinstance(record, RequestTrace)]
-    assert requests[-1].reduced_message_indices == [2]
-    assert requests[-1].estimated_prompt_tokens < 10000
-    assert result.token_usage.prompt_tokens == 50600
-    assert len(json.loads(session.messages[2].content)["content"]) == 12000
-    tool_evidence = [record for record in trace if isinstance(record, MessageTrace)]
-    assert tool_evidence[0].message == session.messages[2]

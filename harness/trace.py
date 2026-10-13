@@ -20,8 +20,6 @@ class RequestTrace(BaseModel):
     message_count: int
     estimated_prompt_tokens: int
     max_tokens: int | None
-    reduced_message_indices: list[int] = Field(default_factory=list)
-    request_messages: list[ChatMessage] = Field(default_factory=list)
     # Only the first request includes history; later requests use message events.
     initial_messages: list[ChatMessage] = Field(default_factory=list)
 

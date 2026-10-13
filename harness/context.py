@@ -21,60 +21,10 @@ import json
 import math
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Literal
 
 from providers.base import ChatMessage, TokenUsage, ToolSpec
 
 from .outcome_types import CompletionStatus
-
-ContextManagement = Literal["full", "bounded_reads_v1"]
-
-
-def request_context(
-    messages: Sequence[ChatMessage], mode: ContextManagement = "full"
-) -> tuple[list[ChatMessage], list[int]]:
-    """Detached request view; keep raw history and all non-read evidence.
-
-    Only older successful native read_file payloads are eligible. Keep the last
-    eight messages verbatim and never reduce AGENTS.md instructions. Omitted
-    content is labeled; exact editing requires a fresh read. This is read elision,
-    not a semantic summary or whole-context cap.
-    """
-    projected = [message.model_copy(deep=True) for message in messages]
-    reduced: list[int] = []
-    if mode == "full":
-        return projected, reduced
-    for index, message in enumerate(projected[:-8]):
-        if message.role != "tool" or message.tool_name != "read_file":
-            continue
-        try:
-            payload = json.loads(message.content)
-        except (ValueError, TypeError):
-            continue
-        if not isinstance(payload, dict):
-            continue
-        path, content = payload.get("path"), payload.get("content")
-        if (
-            not isinstance(path, str)
-            or path.rsplit("/", 1)[-1].lower() == "agents.md"
-            or not isinstance(content, str)
-            or len(content) <= 2048
-            or "error" in payload
-            or not all(
-                key in payload for key in ("sha256", "start_line", "end_line", "total_lines")
-            )
-        ):
-            continue
-        payload["content"] = (
-            content[:512]
-            + "\n[Older read middle omitted; read_file again for exact content.]\n"
-            + content[-512:]
-        )
-        payload["request_content_omitted_chars"] = len(content) - 1024
-        message.content = json.dumps(payload, ensure_ascii=False)
-        reduced.append(index)
-    return projected, reduced
-
 
 BYTES_PER_TOKEN = 3
 MESSAGE_OVERHEAD_TOKENS = 4
@@ -178,11 +128,6 @@ class TokenBudget:
             return
         self._anchor_count = prompt_message_count
         self._anchor_tokens = prompt
-
-    def reset_prompt_anchor(self) -> None:
-        """Changed request prefixes invalidate the anchor, not cumulative usage."""
-        self._anchor_tokens = None
-        self._anchor_count = 0
 
     def mark_unknown(self) -> None:
         self.prompt_used = None

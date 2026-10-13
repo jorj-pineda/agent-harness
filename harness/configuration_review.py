@@ -11,7 +11,7 @@ from providers.base import ChatMessage
 from tools import ToolRegistry
 
 from .config import Settings
-from .context import BudgetStop, TokenBudget, request_context
+from .context import BudgetStop, TokenBudget
 from .execution_profile import ExecutionProfile, capture_execution_profile
 from .prompts import coding_prompt
 from .runtime import refresh_system_message
@@ -148,15 +148,14 @@ def review_configuration(
         max_context=settings.max_context_tokens,
         min_request_output=settings.min_request_output_tokens,
     )
-    request_messages, _ = request_context(detached.messages, settings.context_management)
-    allowance = budget.request_allowance(request_messages, specs)
+    allowance = budget.request_allowance(detached.messages, specs)
     review.context = ContextReview(
         status="blocked"
         if isinstance(allowance, BudgetStop)
         else "estimated_fit"
         if settings.max_context_tokens > 0
         else "unbounded_context",
-        estimated_prompt_tokens=budget.estimate_prompt(request_messages, specs),
+        estimated_prompt_tokens=budget.estimate_prompt(detached.messages, specs),
         includes_proposed_message=bool(message),
         max_context_tokens=settings.max_context_tokens,
         request_output_allowance=None if isinstance(allowance, BudgetStop) else allowance,
