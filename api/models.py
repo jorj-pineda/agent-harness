@@ -72,6 +72,18 @@ class SubmitRunRequest(ChatRequest):
     request_id: RequestId
 
 
+class ContinueSessionRequest(BaseModel):
+    user_id: str = Field(min_length=1)
+    request_id: RequestId
+    expected_turn_id: str = Field(min_length=1)
+    message: str = Field(min_length=1, max_length=100_000)
+    provider: str | None = None
+    acknowledge_uncaptured_state: Literal[True] = Field(
+        description="Required explicit acknowledgment of excluded files, metadata, external "
+        "writers and unrecorded backend/tool state. Guards are scoped evidence, not isolation."
+    )
+
+
 class ConfigurationReviewRequest(BaseModel):
     user_id: str = Field(min_length=1)
     provider: str | None = None
@@ -100,6 +112,7 @@ __all__ = [
     "ChatRequest",
     "ChatResponse",
     "ConfigurationReviewRequest",
+    "ContinueSessionRequest",
     "CreateCheckpointRequest",
     "CreateSessionRequest",
     "CreateSessionResponse",

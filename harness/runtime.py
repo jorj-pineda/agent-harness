@@ -156,7 +156,9 @@ async def run_configured_turn(
                 provider="policy",
                 latency_ms=0.0,
             )
-        if session.checkpoint_turns and on_checkpoint is None:
+        if (session.checkpoint_turns and on_checkpoint is None) or (
+            session.continuation_source is not None and not session.checkpoint_turns
+        ):
             reason = "Turn checkpoint capture is unavailable; no execution started."
             return TurnResponse(
                 answer=reason,

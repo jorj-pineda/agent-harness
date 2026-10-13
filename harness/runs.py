@@ -9,7 +9,7 @@ from typing import Annotated, Literal
 from pydantic import BaseModel, Field
 
 from .execution_profile import ExecutionProfile
-from .state import TurnResponse
+from .state import ContinuationSource, TurnResponse
 
 RequestId = Annotated[
     str, Field(min_length=1, max_length=128, pattern=r"^[A-Za-z0-9][A-Za-z0-9._:-]*$")
@@ -22,6 +22,7 @@ class RunInput(BaseModel):
     message: str = Field(min_length=1)
     provider: str | None = None
     request_id: RequestId
+    continuation_source: ContinuationSource | None = None
 
 
 class RunRecord(BaseModel):

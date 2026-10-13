@@ -711,6 +711,37 @@ The harness does not need to make every model good at every task. It needs to id
   parents must exist and SQLite/filesystem outcome commits are not atomic together.
   Whole-checkpoint/multi-file atomic restore, reconciliation, cross-process locks,
   panel controls and guarded continuation remain open; Milestone 5 incomplete.
+- **2026-10-12 — Explicit guarded continuation API/CLI:** saved history can now be
+  forked into a new checkpoint-enabled session with a pinned latest turn, exact
+  idempotent input/key and required acknowledgment of uncaptured state. Source
+  evidence stays unchanged. Fork seed/run identity commit atomically before work.
+  Each admitted fork turn freshly matches scoped bytes/modes/root identity, valid
+  aligned history, known captured configuration and bounded estimated context;
+  Ollama context configuration must cover the harness limit. Missing/changed/unknown
+  evidence, stale source history, busy roots and newer failed/interrupted/running
+  related or archived same-root work block before inference/tools. Matching keyed
+  continuation replay survives restart without execution; blocked/failed forks are
+  retired. Ordinary saved sessions remain read-only. CLI submits exactly once and
+  exposes keyed inspection without polling or automatic retry.
+  Validation passed 59 focused and 835 offline tests (five live deselected), Ruff,
+  mypy, changed-file formatting and both 90/90 scripted matrices; contract labels and
+  metric limits were inspected. Tests cover real writes/restart/fork/replay, preserved
+  source evidence and user edits, repeated live-turn checks, configuration/context/
+  transcript/checkpoint rejection, ownership, explicit acknowledgment, unknown work,
+  admission and atomic storage failure, plus CLI dispatch/error/replay. An outdated
+  CLI text assertion was updated after the first full gate detected it; the rerun
+  passed. No inference or model-quality comparison ran. Ignored files, empty directory
+  topology, index, ownership/ACL/xattrs, unrecorded runtime/backend/dependency state and
+  external writers remain outside guarantees; context fit is heuristic. Failed
+  unrelated sessions without archives cannot be associated with a workspace. No
+  automatic crash repair, cross-process coordination or general compatibility proof.
+  Panel continuation controls, full reconciliation and Milestone 5 remain incomplete.
+  Jorge selected Duodoro for real-project validation; inspected its clean checkout at
+  `5324cabba4ad3c8ad2e1cd1480218cf087d9b741`, instructions and isolated Node/Vitest
+  package setup without changing it. Candidate tasks are robust invalid-input duration
+  formatting, integer timer-setting normalization, and optional Sunday-first calendar
+  layout. Freeze external acceptance and disposable starting copies before inference;
+  these candidates are not completed tasks or model-quality evidence.
 - **Next:** item 6's listed mechanics are in place; see the known limitations
   below before relying on them unattended. Item 7 has a repeated baseline and
   nine completed comparisons. Argument feedback did not reliably break repeated

@@ -131,6 +131,54 @@ plaintext storage, bounds and external-writer limitations above still apply.
 These pairs are scoped observed content, not independent acceptance, attribution,
 resume permission or a safe revert action. `restore_supported=false` remains.
 
+**Explicit guarded continuation.** `POST /sessions/{source_id}/continue` forks saved
+history into a new session and submits one app-owned asynchronous run. The source
+archive is unchanged and stays read-only after restart. Required fields are
+`user_id`, stable `request_id`, `expected_turn_id` (the latest archived turn),
+`message`, and `acknowledge_uncaptured_state=true`; `provider` is optional.
+Acknowledgment is required because these guards cannot establish whole-workspace
+or backend compatibility. A 202 response means submitted, not that guards passed
+or the task succeeded. Inspect the returned run using `/runs/{run_id}`.
+
+Before inference or tools, under process-local workspace admission, the server
+captures current scoped bytes/modes and requires an exact match with the latest
+saved turn-after checkpoint and original root identity. It requires aligned finished
+turn/response history, valid tool-call/result structure, matching known captured
+configuration, and positive bounded estimated context fit for the proposed message.
+Ollama must explicitly configure `OLLAMA_NUM_CTX >= MAX_CONTEXT_TOKENS`. Older
+sessions without these records cannot continue. Source advancement and newer
+running/failed/interrupted work on related sessions or an archived identical workspace
+root block execution. Active overlapping roots are rejected by admission.
+A guard rejection saves a blocked run without inference, edits, new final transcript,
+or checkpoint/profile evidence. Its fork is retired. Capture/storage failures also
+stop execution. Fork seed and initial run identity are stored in one transaction.
+
+```sh
+agent-harness continue-session <source-id> "Fix the bounded issue" \
+  --expected-turn-id <latest-turn-id> --request-id <stable-key> --user-id dev \
+  --acknowledge-uncaptured-state
+agent-harness runs --request-id <stable-key> --user-id dev
+agent-harness run <run-id> --user-id dev --json
+```
+
+CLI submits once without polling or retrying. If delivery is lost, inspect the key
+first; an explicit repeat of the **same continuation route and exact input** replays
+or returns the original run, including after restart. A different input conflicts.
+Do not retry the first fork turn through `/chat`: its key includes source identity.
+While the fork remains live, ordinary HTTP/SSE turns also repeat these guards against
+its latest saved evidence. Restart never automatically loads any session for editing;
+another explicit fork request is required.
+
+These guards exclude ignored paths (including `.env`), empty directory topology,
+Git index, ownership/ACL/xattrs, environment/dependencies and unrecorded backend/tool
+implementation or capability changes. Context fit is a byte heuristic, not tokenization
+or model capability proof. Configuration matching compares captured fields only.
+External writers can race capture or later execution, and failed unrelated sessions
+without an archive cannot be associated with a workspace. No cross-process lock,
+transcript repair, context compaction, automatic reconciliation or permission to
+edit excluded state is inferred. Inspect these risks and start fresh when unsure.
+Panel continuation controls remain separate work.
+
 **Explicit single-file reversal.** `POST /runs/{run_id}/revert-file` accepts
 `user_id`, one canonical relative `path`, and a stable `request_id`. It requires
 valid turn-linked captures and a terminal run. Current root identity, eligible
@@ -165,7 +213,8 @@ changes inode identity and does not restore ownership/ACLs/extended attributes o
 timestamps, and there is no fsync/power-loss guarantee. File operations and SQLite
 outcome storage are not one atomic transaction: a lost outcome remains pending/
 interrupted, requiring inspection. Whole-workspace restore, safe multi-file atomic
-revert, journal reconciliation, cross-process locks and guarded resume remain open.
+revert, journal reconciliation and cross-process locks remain open. Explicit guarded
+continuation is described above.
 `restore_supported=false` describes whole-checkpoint restoration, not this separate
 explicit run-file action.
 
@@ -399,7 +448,8 @@ current workspace or independently prove a patch works.
 After restart, saved sessions are read-only: new `/chat` and `/chat/stream`
 submissions return 409 for them. Matching keyed retries can replay saved run
 results as described below. Create a new session after inspecting the workspace to begin new
-work. History is never restored into executable session state. While a session
+work, or use the separate explicit guarded fork route described above. History is
+never automatically restored into executable session state. While a session
 is live, review shows its last committed snapshot, excluding unfinished work.
 A final response is saved before HTTP success or SSE `turn_done`; a save failure
 returns an error and prevents further continuation of that session, because edits
@@ -413,8 +463,8 @@ rewritten as complete snapshots, so long histories increase storage and save cos
 Failed or externally interrupted execution also retires the live session; only
 its last committed snapshot remains available. Bounded tool-event metadata now
 survives separately (see below); partial transcript/output/diff recovery, full live
-events, checkpoints, safe resume,
-and cross-process coordination remain separate work. Client run history is available
+events, general resume/repair and cross-process coordination remain separate work.
+Explicit scoped checkpoints and guarded continuation are described above. Client run history is available
 through the review controls described below.
 Out-of-scope and busy rejections do not create runtime turns or archive responses.
 
@@ -559,8 +609,9 @@ on SSE). Inspect the workspace before starting new work with a new session/key.
 
 This remains one API process per database/workspace, with process-local admission;
 there is no cross-process execution coordination or authenticated ownership.
-Runs retain input and final evidence in `SESSION_DB_PATH`, without event journals,
-partial transcript repair, durable checkpoints, retention policy, or safe resume.
+Runs retain input and final evidence in `SESSION_DB_PATH`, without full event journals,
+partial transcript repair, retention policy, or automatic resume. Explicit scoped
+checkpoints and guarded continuation are described above.
 Deduplication prevents transport retries from starting a second run; it cannot
 undo partial edits or guarantee individual tool side effects across crashes.
 

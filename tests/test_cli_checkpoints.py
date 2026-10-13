@@ -124,7 +124,7 @@ def test_cli_opt_in_turn_capture_has_two_server_boundaries_and_no_extra_submissi
         assert reviewed.exit_code == 0
         assert f"before_checkpoint={record['before_checkpoint_id']}" in reviewed.output
         assert f"after_checkpoint={record['after_checkpoint_id']}" in reviewed.output
-        assert "whole-checkpoint restore and resume unsupported" in reviewed.output
+        assert "whole-checkpoint restore unsupported" in reviewed.output
         posted.assert_not_called()
         assert (
             len(
