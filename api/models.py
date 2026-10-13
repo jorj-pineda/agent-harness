@@ -78,7 +78,10 @@ class ContinueSessionRequest(BaseModel):
     expected_turn_id: str = Field(min_length=1)
     message: str = Field(min_length=1, max_length=100_000)
     provider: str | None = None
-    acknowledge_uncaptured_state: Literal[True]
+    acknowledge_uncaptured_state: Literal[True] = Field(
+        description="Required explicit acknowledgment of excluded files, metadata, external "
+        "writers and unrecorded backend/tool state. Guards are scoped evidence, not isolation."
+    )
 
 
 class ConfigurationReviewRequest(BaseModel):
