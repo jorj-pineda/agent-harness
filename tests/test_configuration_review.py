@@ -115,6 +115,19 @@ def test_equal_unknown_identity_is_not_matching():
     assert "prompt_version" in compare_profiles(unknown_prompt, unknown_prompt).unknown_fields
 
 
+def test_old_whole_file_prompt_label_is_drift_without_rewriting_history():
+    settings = Settings(_env_file=None, coding_toolset="whole_file")
+    current = capture_execution_profile(settings, "ollama", ToolRegistry())
+    assert current.prompt_version == "coding-v2-whole-file-v1"
+    saved = current.model_copy(update={"prompt_version": "coding-v2"})
+    original = saved.model_dump_json()
+    review = compare_profiles(saved, current)
+    assert review.status == "changed"
+    assert review.changed_fields == ["prompt_version"]
+    assert saved.base_prompt_sha256 == current.base_prompt_sha256
+    assert saved.model_dump_json() == original
+
+
 @pytest.mark.parametrize(
     "kind",
     [
