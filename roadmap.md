@@ -1,6 +1,6 @@
 # Roadmap: a coding harness for lower-tier models
 
-Updated: 2026-10-12
+Updated: 2026-10-13
 
 ## Direction
 
@@ -913,6 +913,18 @@ Relevant implementation: `harness/loop.py`, `harness/outcome.py`, `harness/groun
   limits are in `evals/BASELINES.md`. Across two project tasks Go has one accepted
   artifact in four attempts; none completed/checked. Timer Gemma trials, repeats,
   held-out/ten-task criteria, profile/context work and Milestone 5 remain open.
+
+- **2026-10-13 — Accurate whole-file prompt identity:** durable execution capture
+  now uses the selected prompt's version helper, matching the adapted whole-file
+  prompt and real-task reports instead of labeling all configured prompts coding-v2.
+  Old archives remain unchanged; equal hashes with an old whole-file label report
+  prompt-version drift and guarded continuation remains conservative. Full/default
+  and custom-override behavior stays unchanged. Validation passed 64 focused and
+  864 offline tests (five live deselected), Ruff/mypy, changed-file formatting and
+  diff checks. API regressions verify pre-inference capture, actual prompt content,
+  archive/restart/replay preservation; review regression detects old-label drift
+  without rewriting history. No inference, prompt/tool behavior or evaluation scorer
+  change; matrices not rerun. Profiles/context management and Milestone 5 remain open.
 
 ## Milestone 1 — Establish a real task-success baseline
 
