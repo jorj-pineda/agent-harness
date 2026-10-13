@@ -1564,7 +1564,7 @@
     "allowed_modified_path": "client/src/lib/format.ts",
     "request": "In Duodoro, harden formatDuration and formatTime in client/src/lib/format.ts against negative and non-finite numeric durations. Negative numbers, NaN, Infinity and -Infinity must render as zero (0m and 0:00). Preserve existing finite-positive formatting, fractional truncation and formatTag behavior. Inspect AGENTS.md and the existing format tests first. Only modify client/src/lib/format.ts; preserve all other files, including pre-existing work and tests. For this disposable library-level evaluation, test_visible.py is an additional visible task check using the installed Node runtime's native TypeScript support; run [\"python\",\"-m\",\"pytest\",\"-q\",\"test_visible.py\"] after the edit. This adapter does not run the full Next/Vitest suite. Do not install dependencies, start services or touch Docker. Report the observed checks and any limits honestly."
   },
-  "node_runtime": "26.0.0; native TypeScript library adapter, not full Vitest/Next suite",
+  "node_runtime": "Managed Node 24.21.0 observed; per-call versions uninstrumented; shell Node 26.0.0; native library adapters only",
   "criterion_hashes": {
     "baseline.json": "b9b094a6d2d7350e8f28ae6fa90efe2b6517c3da40adc3f9a8945527827debd0",
     "test_acceptance.py": "eb658229d6ee00a8b870357c68458cb0dbd4ee05cc9e87caf8142c73bb763e2f"
@@ -1573,7 +1573,11 @@
   "allowed_change_policy": "Only client/src/lib/format.ts may change; no added/deleted files",
   "manual_patch_rescues": 0,
   "order_limitation": "One repeat, harness then minimal; first inference on a fresh owned server. No causal quality/latency gain claim.",
-  "postprocessing_notes": "The temporary wrapper initially labeled no edits as out_of_scope_change. Restored original runtime termination for these unchanged failed artifacts; no new calls or patch repairs.",
+  "postprocessing_notes": [
+    "The temporary wrapper initially labeled no edits as out_of_scope_change. Restored original runtime termination for these unchanged failed artifacts; no new calls or patch repairs.",
+    "Node runtime label corrected after publication: shell node --version reported 26.0.0; managed command_environment selects 24.21.0, also present in failed check outputs. Per-invocation versions were not separately instrumented. Metadata only; no artifacts or model calls changed."
+  ],
   "model_digest": "4eb23ef187e2c5462566d6a1d3bbbc2f1346d0b4327cbb66d58fffbcc9b2b05c",
-  "ollama_version": "0.33.2"
+  "ollama_version": "0.33.2",
+  "original_node_runtime_label": "26.0.0; native TypeScript library adapter, not full Vitest/Next suite"
 }

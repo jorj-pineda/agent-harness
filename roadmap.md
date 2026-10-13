@@ -845,7 +845,7 @@ Relevant implementation: `harness/loop.py`, `harness/outcome.py`, `harness/groun
   manual repairs; no false completed/check-passed status. A separate response-only
   simulated-tool probe had an empty upstream payload; cause unresolved. See
   `evals/BASELINES.md` for raw reports, order/configuration limits and corrected wrapper
-  labels. Node 26 library checks do not cover full application or Node 22 regressions.
+  labels. Managed Node library checks do not cover full application or Node 22 regressions.
   Validation: 15 focused and 860 offline tests (five live deselected), Ruff/mypy,
   changed-file formatting and both 90/90 scripted matrices with contract labels and
   metric limits inspected. Owned Ollama stopped, user services preserved. This is
@@ -925,6 +925,30 @@ Relevant implementation: `harness/loop.py`, `harness/outcome.py`, `harness/groun
   archive/restart/replay preservation; review regression detects old-label drift
   without rewriting history. No inference, prompt/tool behavior or evaluation scorer
   change; matrices not rerun. Profiles/context management and Milestone 5 remain open.
+
+- **2026-10-13 — Opt-in compact coding contract measured:** added a validated
+  legacy/compact prompt selection shared by application, review estimates and real/
+  smoke evaluations. Legacy remains default; tool schemas, budgets and recovery stay
+  unchanged. Identity is captured by selected prompt version/hash; switching blocks
+  mismatched continuation without rewriting archives. Twelve paired free Go attempts
+  on two frozen Duodoro tuning tasks (three repeats/profile, alternating order) yielded
+  compact 4/6 versus legacy 1/6 independently accepted artifacts. Compact had four
+  latest passing checks but only one completed turn; three accepted artifacts stayed
+  budget-exhausted. Legacy's one accepted artifact retained a stale earlier failed
+  check. No failed artifact completed, no manual repair or paid fallback. All scope/
+  criterion assertions passed; evaluation writes were confined to disposable copies.
+  See `evals/BASELINES.md` for raw counts, usage/timing, failures and unmeasured billing/
+  backend/cache effects. Compact is retained opt-in for further bounded testing, not
+  a general quality claim. Gemma compact, held-out tasks, broader repeats and context
+  management remain open. Validation passed 103 focused and 870 offline tests (five
+  live deselected), Ruff/mypy, formatting and both 90/90 scripted matrices with limits
+  inspected. Provider clients closed. Earlier Node labels came from the shell; raw
+  failed checks and managed-process probes show 24.21.0. Report metadata retains the
+  original 26.0.0 label plus correction notes; per-call versions were not instrumented.
+  Duration labels now reflect configured-turn timing, including workspace reviews.
+  No inference/artifacts were changed by those metadata corrections. Milestones 4–6
+  remain incomplete. Future Duodoro working-tree changes must use branches and PRs;
+  existing commits there are left intact as Jorge requested.
 
 ## Milestone 1 — Establish a real task-success baseline
 

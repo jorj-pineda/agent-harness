@@ -21,7 +21,7 @@ process isolation; hashes/file-tool boundaries do not make arbitrary repository
 code unable to access the host.
 
 The adapter uses installed Node's native TypeScript support (validated locally on
-Node 26.0.0). It runs library checks without installing dependencies or running
+managed Node 24.21.0). It runs library checks without installing dependencies or running
 Next/Vitest, authentication, browser, database or server integration suites. Duodoro
 normally uses Node 22 in CI. This task does not establish full application regression
 coverage or runtime compatibility on other Node versions.

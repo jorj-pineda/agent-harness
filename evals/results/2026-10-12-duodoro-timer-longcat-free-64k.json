@@ -2164,7 +2164,7 @@
     "allowed_modified_path": "server/payloadParsers.js",
     "request": "In Duodoro, normalize parseStartSession focusDuration and breakDuration in server/payloadParsers.js to whole seconds by flooring the final defaulted/clamped numeric values. Preserve Number coercion, falsy/NaN defaults (1500 focus, 300 break), min/max clamps (60..7200 focus, 30..3600 break), Infinity clamping, string session-id validation, mode parsing and all other exported parser behavior. Inspect AGENTS.md and server/payloadParsers.test.js first. Only modify server/payloadParsers.js; preserve all other files and tests. This disposable pure-parser evaluation adds test_visible.py as a visible Node adapter: run [\"python\",\"-m\",\"pytest\",\"-q\",\"test_visible.py\"] after editing. It does not run the full Vitest/Socket.IO/server suite. Do not install dependencies, start services or touch Docker. Report actual checks and limits honestly."
   },
-  "node_runtime": "26.0.0; native CommonJS parser adapter, not full Vitest/Next suite",
+  "node_runtime": "Managed Node 24.21.0 observed; per-call versions uninstrumented; shell Node 26.0.0; native library adapters only",
   "criterion_hashes": {
     "baseline.json": "a2052accd1b601c157861a630fc5fa5169e7dcab1050dab62107c818ed8fafb7",
     "test_acceptance.py": "71c615741d10b39668529f0b8e8cdab285e8a6f60bd97b8332717021e11f74ce"
@@ -2186,5 +2186,9 @@
     "declared_output_per_million": 0,
     "actual_billing_observed": false,
     "limit_policy": "Free preview only; no paid fallback; stop on first provider error"
-  }
+  },
+  "original_node_runtime_label": "26.0.0; native CommonJS parser adapter, not full Vitest/Next suite",
+  "postprocessing_notes": [
+    "Node runtime label corrected after publication: shell node --version reported 26.0.0; managed command_environment selects 24.21.0, also present in failed check outputs. Per-invocation versions were not separately instrumented. Metadata only; no artifacts or model calls changed."
+  ]
 }
