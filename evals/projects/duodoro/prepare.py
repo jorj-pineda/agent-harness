@@ -22,7 +22,9 @@ def prepare_task(
     repository: Path,
     destination: Path,
     *,
-    task_name: Literal["duration_format", "timer_normalization"] = "duration_format",
+    task_name: Literal[
+        "duration_format", "timer_normalization", "calendar_layout"
+    ] = "duration_format",
 ) -> Task:
     """Caller owns destination cleanup; never edit or reset the source checkout.
 
@@ -30,13 +32,14 @@ def prepare_task(
     installation, provider calls or services happen here. Grading still executes
     trusted repository code on the host; this is not process isolation.
     """
-    if task_name not in ("duration_format", "timer_normalization"):
+    definitions = {
+        "duration_format": ("task.json", "visible_duration.py"),
+        "timer_normalization": ("task_timer.json", "visible_timer.py"),
+        "calendar_layout": ("task_calendar.json", "visible_calendar.py"),
+    }
+    if task_name not in definitions:
         raise ValueError("Unknown frozen Duodoro task")
-    metadata_file, visible_file = (
-        ("task.json", "visible_duration.py")
-        if task_name == "duration_format"
-        else ("task_timer.json", "visible_timer.py")
-    )
+    metadata_file, visible_file = definitions[task_name]
     metadata = json.loads((ROOT / metadata_file).read_text())
     source = repository.resolve(strict=True)
     destination = destination.resolve()
