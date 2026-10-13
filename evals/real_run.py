@@ -294,7 +294,7 @@ async def run_task(
             prompt_version=(
                 "minimal-v1"
                 if mode == "minimal"
-                else coding_prompt_version(settings.coding_toolset)
+                else coding_prompt_version(settings.coding_toolset, settings.coding_prompt_profile)
             ),
             source_revision=_source_revision(copy),
             passed=acceptance.exit_code == 0,
@@ -316,6 +316,7 @@ async def run_task(
             turn_trace=[record.model_dump(mode="json") for record in turn_trace],
             runtime_config={
                 "coding_toolset": settings.coding_toolset,
+                "coding_prompt_profile": settings.coding_prompt_profile,
                 "tool_specs": [spec.model_dump(mode="json") for spec in registry.as_tool_specs()],
                 "max_tool_iterations": settings.max_tool_iterations,
                 "max_tool_calls_per_turn": settings.max_tool_calls_per_turn,

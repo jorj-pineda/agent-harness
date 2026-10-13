@@ -137,7 +137,7 @@ def review_configuration(
         fact_store,
         user_id,
         project_check_argv=settings.project_check_argv,
-        system_prompt=coding_prompt(settings.coding_toolset),
+        system_prompt=coding_prompt(settings.coding_toolset, settings.coding_prompt_profile),
     )
     if message:
         detached.messages.append(ChatMessage(role="user", content=message))

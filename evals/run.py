@@ -389,11 +389,14 @@ async def _run_one(
         confidence=response.confidence,
         latency_ms=response.latency_ms,
         evaluation_mode=LIVE_SIMULATED_MODE if live else SCRIPTED_MODE,
-        prompt_version=coding_prompt_version(settings.coding_toolset)
+        prompt_version=coding_prompt_version(
+            settings.coding_toolset, settings.coding_prompt_profile
+        )
         if live and settings
         else None,
         runtime_config={
             "coding_toolset": settings.coding_toolset,
+            "coding_prompt_profile": settings.coding_prompt_profile,
             "max_tool_iterations": settings.max_tool_iterations,
             "max_tool_calls_per_turn": settings.max_tool_calls_per_turn,
             "max_turn_wall_seconds": settings.max_turn_wall_seconds,

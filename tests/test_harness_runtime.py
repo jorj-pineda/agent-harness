@@ -343,6 +343,16 @@ def test_toolset_setting_validates_env(monkeypatch: pytest.MonkeyPatch) -> None:
         Settings(_env_file=None)
 
 
+def test_prompt_profile_setting_validates_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("CODING_PROMPT_PROFILE", raising=False)
+    assert Settings(_env_file=None).coding_prompt_profile == "legacy"
+    monkeypatch.setenv("CODING_PROMPT_PROFILE", "compact")
+    assert Settings(_env_file=None).coding_prompt_profile == "compact"
+    monkeypatch.setenv("CODING_PROMPT_PROFILE", "unknown")
+    with pytest.raises(ValidationError):
+        Settings(_env_file=None)
+
+
 async def test_whole_file_toolset_rejects_exact_edits_and_preserves_other_specs(
     tmp_path: Path,
 ) -> None:

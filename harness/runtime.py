@@ -184,7 +184,7 @@ async def run_configured_turn(
             user_id,
             system_prompt=system_prompt
             if system_prompt is not None
-            else coding_prompt(settings.coding_toolset),
+            else coding_prompt(settings.coding_toolset, settings.coding_prompt_profile),
             project_check_argv=settings.project_check_argv,
         )
         tracked_root = (

@@ -114,11 +114,15 @@ def capture_execution_profile(
         provider=provider,
         configured_model=model,
         endpoint_sha256=_endpoint_digest(provider, settings, model),
-        prompt_version=coding_prompt_version(settings.coding_toolset)
+        prompt_version=coding_prompt_version(
+            settings.coding_toolset, settings.coding_prompt_profile
+        )
         if system_prompt is None
         else None,
         base_prompt_sha256=_digest(
-            coding_prompt(settings.coding_toolset) if system_prompt is None else system_prompt
+            coding_prompt(settings.coding_toolset, settings.coding_prompt_profile)
+            if system_prompt is None
+            else system_prompt
         ),
         tool_specs_sha256=_json_digest([spec.model_dump(mode="json") for spec in specs]),
         tool_names=[spec.name for spec in specs],
