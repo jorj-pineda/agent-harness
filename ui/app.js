@@ -7,6 +7,7 @@
 const els = {
   workspace: document.getElementById("workspace"),
   provider: document.getElementById("provider"),
+  checkpointTurns: document.getElementById("checkpoint-turns"),
   cancelTurn: document.getElementById("cancel-turn"),
   newSession: document.getElementById("new-session"),
   sessionPill: document.getElementById("session-pill"),
@@ -31,6 +32,11 @@ const els = {
   reviewProvider: document.getElementById("review-provider"),
   reviewMessage: document.getElementById("review-message"),
   reviewResults: document.getElementById("session-review-results"),
+  prepareContinuation: document.getElementById("prepare-continuation"),
+  continuationTarget: document.getElementById("continuation-target"),
+  continuationMessage: document.getElementById("continuation-message"),
+  continuationAck: document.getElementById("continuation-ack"),
+  submitContinuation: document.getElementById("submit-continuation"),
   runProgress: document.getElementById("run-progress"),
   progressTarget: document.getElementById("progress-target"),
   inspectToolProgress: document.getElementById("inspect-tool-progress"),
@@ -57,6 +63,7 @@ let pendingRequest = null;
 let historyOffset = 0;
 let reviewTarget = null;
 let reviewInFlight = false;
+let continuationTurnId = null;
 const pendingStorageKey = "panel_pending_request";
 
 // ---- helpers ----------------------------------------------------------
@@ -82,7 +89,9 @@ function setBusy(value) {
   const canSend = !busy && sessionId != null && sessionUsable;
   els.send.disabled = !canSend;
   els.input.disabled = sessionId == null || !sessionUsable;
-  els.cancelTurn.disabled = sessionId == null || !(busy || uncertain) || cancelRequested;
+  const cancellationTarget = pendingRequest?.kind === "continuation"
+    ? pendingRequest.fork_session_id : pendingRequest?.session_id || sessionId;
+  els.cancelTurn.disabled = !cancellationTarget || !(busy || uncertain) || cancelRequested;
   els.cancelTurn.textContent = cancelRequested ? "Cancelling…" : "Cancel turn";
   els.newSession.disabled = busy || pendingRequest != null;
   els.refreshRuns.disabled = busy;
@@ -93,6 +102,10 @@ function setBusy(value) {
   els.retryRun.disabled = busy;
   els.forgetRun.disabled = busy;
   for (const button of els.history.querySelectorAll("button")) button.disabled = busy;
+  els.submitContinuation.disabled = busy || reviewInFlight || pendingRequest != null ||
+    reviewTarget == null || !continuationTurnId || !els.continuationAck.checked ||
+    !els.continuationMessage.value.trim();
+  els.prepareContinuation.disabled = busy || reviewInFlight || reviewTarget == null;
   for (const button of [els.reviewWorkspace, els.reviewTranscript, els.reviewConfiguration, els.inspectToolProgress]) {
     button.disabled = busy || reviewInFlight || reviewTarget == null;
   }
@@ -329,6 +342,7 @@ async function createSession() {
   const body = { user_id: userId };
   const workspace = els.workspace.value.trim();
   if (workspace) body.workspace_root = workspace;
+  if (els.checkpointTurns.checked) body.checkpoint_turns = true;
 
   setBusy(true);
   try {
@@ -380,6 +394,7 @@ function sendMessage(message) {
 }
 
 function dispatchRequest(request, reviewOnly = false) {
+  if (request.kind === "continuation") { postContinuation({ ...request }); return; }
   selectReviewTarget(null);
   request = { ...request };
   const reviewAfter = reviewOnly || !sessionUsable;
@@ -516,7 +531,10 @@ async function cancelTurn() {
   cancelRequested = true;
   setBusy(busy);
   try {
-    const resp = await fetch(`/sessions/${encodeURIComponent(pendingRequest?.session_id || sessionId)}/cancel`, {
+    const target = pendingRequest?.kind === "continuation"
+      ? pendingRequest.fork_session_id : pendingRequest?.session_id || sessionId;
+    if (!target) { cancelRequested = false; return; }
+    const resp = await fetch(`/sessions/${encodeURIComponent(target)}/cancel`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ user_id: userId }),
@@ -536,7 +554,7 @@ async function cancelTurn() {
   }
 }
 
-// ---- saved session reviews: observations, never continuation -----------
+// ---- saved session reviews: observations, separate from explicit work ----
 
 function selectReviewTarget(record) {
   // Object identity prevents a delayed response from rendering on another selection.
@@ -547,6 +565,10 @@ function selectReviewTarget(record) {
   els.reviewResults.replaceChildren();
   els.reviewMessage.value = "";
   els.reviewProvider.value = "";
+  continuationTurnId = null;
+  els.continuationMessage.value = "";
+  els.continuationAck.checked = false;
+  els.continuationTarget.textContent = "Load the latest saved turn to pin this request.";
   if (reviewTarget) {
     els.progressTarget.textContent = `Run: ${reviewTarget.runId}; lifecycle when selected: ${record.status || "unknown"}`;
     els.reviewTarget.textContent = `Session: ${reviewTarget.sessionId}; selected run: ${reviewTarget.runId}`;
@@ -680,6 +702,92 @@ async function requestSessionReview(kind) {
   }
 }
 
+// ---- explicit continuation: one POST, exact retained route/input ---------
+
+async function prepareContinuation() {
+  if (busy || reviewInFlight || !reviewTarget) return;
+  const target = reviewTarget;
+  continuationTurnId = null;
+  els.continuationAck.checked = false;
+  reviewInFlight = true;
+  setBusy(busy);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 30000);
+  try {
+    const query = new URLSearchParams({ user_id: userId });
+    const response = await fetch(`/sessions/${encodeURIComponent(target.sessionId)}?${query}`, { signal: controller.signal });
+    if (!response.ok) throw new Error(`Saved history unavailable (HTTP ${response.status})`);
+    const archive = await response.json();
+    if (archive.session?.session_id !== target.sessionId) throw new Error("Mismatched saved session");
+    const turns = archive.session.turns;
+    const last = Array.isArray(turns) ? turns[turns.length - 1] : null;
+    if (!last?.turn_id || !last.finished_at) throw new Error("No finalized saved turn to pin");
+    if (reviewTarget === target) {
+      continuationTurnId = last.turn_id;
+      els.continuationTarget.textContent = `Source: ${target.sessionId}; pinned latest turn: ${last.turn_id}. Loading history grants no edit permission.`;
+    }
+  } catch (_) {
+    if (reviewTarget === target) els.continuationTarget.textContent = "Saved turn unavailable. No task was submitted; explicitly reload the saved turn.";
+  } finally {
+    clearTimeout(timeout);
+    reviewInFlight = false;
+    setBusy(busy);
+  }
+}
+
+function submitContinuation() {
+  if (busy || reviewInFlight || pendingRequest || !reviewTarget || !continuationTurnId ||
+      !els.continuationAck.checked || !els.continuationMessage.value.trim()) return;
+  let request;
+  try {
+    request = {
+      kind: "continuation", user_id: userId, session_id: reviewTarget.sessionId,
+      expected_turn_id: continuationTurnId, message: els.continuationMessage.value.trim(),
+      request_id: crypto.randomUUID(), acknowledge_uncaptured_state: true,
+    };
+    if (els.reviewProvider.value) request.provider = els.reviewProvider.value;
+    localStorage.setItem(pendingStorageKey, JSON.stringify(request));
+  } catch (_) {
+    addErrorMessage("Could not retain exact continuation input. No task was submitted.");
+    return;
+  }
+  pendingRequest = request;
+  postContinuation(request);
+}
+
+async function postContinuation(request) {
+  setBusy(true);
+  sessionUsable = false;
+  uncertain = true;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 30000);
+  try {
+    const { kind, session_id: source, fork_session_id, ...body } = request;
+    const response = await fetch(`/sessions/${encodeURIComponent(source)}/continue`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body), signal: controller.signal,
+    });
+    if (!response.ok) throw new Error(`Continuation submission HTTP ${response.status}`);
+    const record = await response.json();
+    const actual = record.request;
+    if (!record.run_id || !actual?.session_id || actual.session_id === source ||
+        actual.user_id !== request.user_id || actual.request_id !== request.request_id ||
+        actual.message !== request.message || (actual.provider ?? null) !== (request.provider ?? null) ||
+        actual.continuation_source?.session_id !== source ||
+        actual.continuation_source?.turn_id !== request.expected_turn_id ||
+        actual.continuation_source?.acknowledge_uncaptured_state !== true) {
+      throw new Error("Continuation response identity mismatch");
+    }
+    showRun(record);
+    addErrorMessage(`Continuation request ${request.request_id} submitted to fork ${actual.session_id}. Read saved run status; guards and task completion may still be pending. No polling or retry is automatic.`);
+  } catch (_) {
+    addErrorMessage(`Continuation request ${request.request_id} was not confirmed. Inspect this key using Check run before explicitly retrying the exact retained input. No automatic retry was made.`);
+  } finally {
+    clearTimeout(timeout);
+    setBusy(false);
+  }
+}
+
 // ---- read-only recovery/history ---------------------------------------
 
 function clearPending() {
@@ -697,6 +805,12 @@ async function getRuns(params = {}) {
 function showRun(record) {
   // Viewing history never makes a saved session executable.
   selectReviewTarget(record);
+  if (pendingRequest?.request_id === record.request.request_id && pendingRequest.kind === "continuation") {
+    pendingRequest.fork_session_id = record.request.session_id;
+    try { localStorage.setItem(pendingStorageKey, JSON.stringify(pendingRequest)); }
+    catch (_) { addErrorMessage("Could not retain fork identity. Inspect the request key in history after reload."); }
+    uncertain = record.status === "running";
+  }
   sessionId = record.request.session_id;
   sessionUsable = false;
   els.sessionPill.textContent = `review ${sessionId.slice(0, 8)}`;
@@ -775,8 +889,15 @@ function restorePending() {
         typeof request.message !== "string" || typeof request.request_id !== "string") {
       throw new Error("Invalid retained submission");
     }
+    if (request.kind != null && request.kind !== "continuation") throw new Error("Unknown retained route");
+    if (request.kind === "continuation" &&
+        (typeof request.expected_turn_id !== "string" || !request.expected_turn_id ||
+         request.acknowledge_uncaptured_state !== true ||
+         (request.fork_session_id != null && typeof request.fork_session_id !== "string"))) {
+      throw new Error("Invalid retained continuation");
+    }
     pendingRequest = request;
-    sessionId = request.session_id;
+    sessionId = request.fork_session_id || request.session_id;
     uncertain = true;
     sessionUsable = false;
     els.sessionPill.textContent = `review ${sessionId.slice(0, 8)}`;
@@ -789,6 +910,10 @@ function restorePending() {
 
 // ---- events -----------------------------------------------------------
 
+els.prepareContinuation.addEventListener("click", prepareContinuation);
+els.submitContinuation.addEventListener("click", submitContinuation);
+els.continuationMessage.addEventListener("input", () => setBusy(busy));
+els.continuationAck.addEventListener("change", () => setBusy(busy));
 els.inspectToolProgress.addEventListener("click", () => requestSessionReview("tool-progress"));
 els.reviewWorkspace.addEventListener("click", () => requestSessionReview("workspace"));
 els.reviewTranscript.addEventListener("click", () => requestSessionReview("transcript"));

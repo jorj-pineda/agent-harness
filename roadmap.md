@@ -742,6 +742,25 @@ The harness does not need to make every model good at every task. It needs to id
   formatting, integer timer-setting normalization, and optional Sunday-first calendar
   layout. Freeze external acceptance and disposable starting copies before inference;
   these candidates are not completed tasks or model-quality evidence.
+- **2026-10-12 — Panel checkpoint opt-in and guarded fork action:** new sessions can
+  explicitly opt into plaintext scoped turn captures. Saved-run review has a separate
+  guarded continuation action: read/pin the latest saved turn, supply a new task and
+  acknowledge uncaptured state. The panel retains exact route/input/key before its one
+  POST; reload submits nothing, explicit retries preserve that route, returned fork
+  cancellation targets the fork rather than the source, and even completed/passed
+  saved fork views remain read-only. Delayed review responses cannot pin another
+  selection; missing local storage prevents dispatch; response identity mismatch
+  stays unconfirmed. API guards remain the enforcement boundary.
+  Validation passed 24 focused and 835 offline tests (five live deselected), Ruff,
+  mypy and JavaScript syntax/diff checks. Product-native browser checks with scripted
+  HTTP responses covered default/opt-in capture, pinned history and acknowledgment,
+  exact retry/reload behavior, running/blocked/completed fork presentation and cancel
+  target, stale selection, local storage failure, identity mismatch and private
+  exception suppression; desktop rendering was inspected. Scripted matrices were
+  not rerun for this client-only change; no inference, model-quality comparison or
+  real-project coding ran. Static preview server/tab were cleaned up. Panel file
+  reversal controls, general crash repair/reconciliation, cross-process coordination
+  and Milestone 5 remain incomplete. Duodoro acceptance setup is next.
 - **Next:** item 6's listed mechanics are in place; see the known limitations
   below before relying on them unattended. Item 7 has a repeated baseline and
   nine completed comparisons. Argument feedback did not reliably break repeated

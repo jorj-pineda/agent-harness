@@ -177,7 +177,19 @@ External writers can race capture or later execution, and failed unrelated sessi
 without an archive cannot be associated with a workspace. No cross-process lock,
 transcript repair, context compaction, automatic reconciliation or permission to
 edit excluded state is inferred. Inspect these risks and start fresh when unsure.
-Panel continuation controls remain separate work.
+The panel exposes the same explicit action under a selected run's **Saved session
+review → Explicit guarded continuation**. Load the latest saved turn, enter a new
+task and acknowledge the scope, then choose **Fork and submit task**. The provider
+selector is shared with configuration review; estimates still submit no coding work.
+The panel retains the exact source/turn/message/key/acknowledgment before submission.
+Reload does not submit anything; **Check run** reads the key and **Retry submission**
+uses the original continuation route. A returned running fork can be cancelled by
+its own session ID. Viewing even a completed fork keeps the composer read-only;
+further work requires another explicit fork action or a new session. No polling or
+retry is automatic. **Save turn captures** opts new sessions into plaintext scoped
+captures; it is off by default. Captures and continued history increase local
+storage; whole-checkpoint restoration and panel single-file reversal controls remain
+separate work.
 
 **Explicit single-file reversal.** `POST /runs/{run_id}/revert-file` accepts
 `user_id`, one canonical relative `path`, and a stable `request_id`. It requires

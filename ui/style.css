@@ -479,3 +479,11 @@ button:disabled {
 .saved-tool-events summary { cursor: pointer; margin: 8px 0; }
 .saved-tool-events ol { list-style: none; padding-left: 0; max-height: 320px; overflow: auto; }
 .saved-tool-events li { margin: 10px 0; overflow-wrap: anywhere; }
+
+/* Explicit source-capture and continuation controls. */
+.checkpoint-option, .scope-ack { font-size: 0.8rem; color: var(--text-muted); }
+.checkpoint-option input, .scope-ack input { margin-right: 0.4rem; }
+#continuation-controls { margin-top: 1rem; border-top: 1px solid var(--border); padding-top: 0.75rem; }
+#continuation-controls label { display: block; margin: 0.75rem 0 0.35rem; }
+#continuation-message { width: 100%; }
+#continuation-target { overflow-wrap: anywhere; }

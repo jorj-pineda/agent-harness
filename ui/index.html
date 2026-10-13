@@ -26,6 +26,8 @@
           <option value="anthropic">anthropic</option>
           <option value="openai">openai</option>
         </select>
+        <label class="checkpoint-option"><input id="checkpoint-turns" type="checkbox" />
+          Save turn captures (plaintext, scoped)</label>
         <button id="cancel-turn" disabled>Cancel turn</button>
         <button id="new-session">New session</button>
         <span id="session-pill" class="pill muted">no session</span>
@@ -84,7 +86,7 @@
             <button id="review-workspace">Compare workspace</button>
             <button id="review-transcript">Inspect transcript</button>
           </div>
-          <label for="review-provider">Provider for configuration estimate</label>
+          <label for="review-provider">Provider for review / explicit continuation</label>
           <select id="review-provider">
             <option value="">server default</option>
             <option value="ollama">ollama</option>
@@ -96,6 +98,17 @@
           <textarea id="review-message" rows="2" maxlength="100000"></textarea>
           <button id="review-configuration">Estimate configuration/context</button>
           <div id="session-review-results" aria-live="polite"></div>
+          <details id="continuation-controls">
+            <summary>Explicit guarded continuation</summary>
+            <p class="review-note">This action forks saved history and submits one new task. Source evidence remains unchanged. The server rechecks scoped bytes, modes, configuration, transcript and estimated context before work; a submission is not a passed guard.</p>
+            <button id="prepare-continuation">Load latest saved turn</button>
+            <p id="continuation-target" class="review-note">Load the latest saved turn to pin this request.</p>
+            <label for="continuation-message">New coding task (will be submitted)</label>
+            <textarea id="continuation-message" rows="3" maxlength="100000"></textarea>
+            <label class="scope-ack"><input id="continuation-ack" type="checkbox" />
+              I accept risks from excluded files (including .env), directory/ownership metadata, external writers and unrecorded backend/tool state. Context fit is an estimate; checks do not isolate the workspace.</label>
+            <button id="submit-continuation" disabled>Fork and submit task</button>
+          </details>
         </section>
       </aside>
     </main>
