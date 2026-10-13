@@ -52,6 +52,7 @@ def test_profile_is_durable_before_inference_and_survives_finalization_and_resta
             assert profile["settings"]["max_context_tokens"] == 16000
             assert "write_file" in profile["tool_names"]
             assert "replace_text" not in profile["tool_names"]
+            assert profile["prompt_version"] == "coding-v2-whole-file-v1"
             assert profile["configured_model"] is None  # Custom provider: unknown.
             assert (repo / "a.py").read_text() == "user = 1\n"
             assert client.post("/runs", json=payload).json()["execution_profile"] == profile
@@ -59,6 +60,9 @@ def test_profile_is_durable_before_inference_and_survives_finalization_and_resta
             provider.release.set()
         response = client.post("/chat", json=payload).json()
         assert response["completion_status"] == "completed"
+        system = provider.calls[0][0][0].content
+        assert "Use `write_file` with the full file contents" in system
+        assert "use `replace_text`" not in system
         archive = client.get(f"/sessions/{sid}", params={"user_id": "dev"}).json()
         assert archive["responses"][0]["execution_profile"] == profile
         assert (repo / "a.py").read_text() == "user = 1\nagent = 2\n"

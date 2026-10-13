@@ -1121,3 +1121,11 @@ add automatic per-session routing to the API settings. A bounded OpenCode Go fre
 preview comparison is documented in `evals/BASELINES.md`; one accepted artifact
 ended budget-exhausted before a check, and the other remained unchanged. Preview
 pricing is temporary; verify it before replay and stop at account/provider limits.
+
+
+Saved execution profiles now label whole-file mode as `coding-v2-whole-file-v1`,
+matching the actual adapted prompt and real-task reports. Older whole-file archives
+retain their original `coding-v2` label and hashes. Configuration review reports
+that label drift, and guarded continuation blocks it rather than rewriting history
+or inferring compatibility. Full-toolset and explicit custom-prompt labels are
+unchanged. This metadata correction does not change the prompt or tools themselves.

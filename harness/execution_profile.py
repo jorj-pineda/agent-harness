@@ -12,7 +12,7 @@ from pydantic import BaseModel, ConfigDict
 from tools import ToolRegistry
 
 from .config import CodingToolset, Settings
-from .prompts import PROMPT_VERSION, coding_prompt
+from .prompts import coding_prompt, coding_prompt_version
 from .providers import configured_model, provider_endpoint
 
 
@@ -114,7 +114,9 @@ def capture_execution_profile(
         provider=provider,
         configured_model=model,
         endpoint_sha256=_endpoint_digest(provider, settings, model),
-        prompt_version=PROMPT_VERSION if system_prompt is None else None,
+        prompt_version=coding_prompt_version(settings.coding_toolset)
+        if system_prompt is None
+        else None,
         base_prompt_sha256=_digest(
             coding_prompt(settings.coding_toolset) if system_prompt is None else system_prompt
         ),
