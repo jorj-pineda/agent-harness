@@ -258,7 +258,7 @@ def test_cli_repeats_both_modes_and_alternates_order(
     ]
     assert data["summary"]["harness"]["attempts"] == 2
     assert data["sampling"] == {"temperature": 0.0}
-    assert data["trace_format"] == "normalized-turn-v1"
+    assert data["trace_format"] == "normalized-turn-v2"
     assert all(
         [r["kind"] for r in row["turn_trace"]] == ["request", "response"] for row in data["results"]
     )
@@ -372,4 +372,30 @@ async def test_go_binding_preserves_observation_and_real_tool_acceptance():
     assert len(captured) == 4
     assert len({request.headers["x-opencode-session"] for request in captured}) == 1
     assert result.runtime_config["openai_compatible_transport"] == "opencode_go"
+    assert (task.fixture / "calc.py").read_bytes() == original
+
+
+async def test_prevented_request_footprint_survives_real_task_report(tmp_path):
+    task = load_tasks()[0]
+    original = (task.fixture / "calc.py").read_bytes()
+    provider = ScriptedProvider()
+    result = await run_task(
+        task,
+        provider=provider,
+        settings=Settings(_env_file=None, max_context_tokens=1),
+        mode="harness",
+    )
+    assert result.completion_status == "budget_exhausted"
+    assert result.passed is False
+    assert provider.calls == [] and result.tool_trace == []
+    assert len(result.turn_trace) == 1
+    stop = result.turn_trace[0]
+    assert stop["kind"] == "budget_stop"
+    assert stop["footprint"]["estimated_prompt_tokens"] > stop["max_context_tokens"]
+    assert stop["footprint"]["tool_schema_estimate_tokens"] > 0
+    path = tmp_path / "report.json"
+    real_run.write_report(path, "fixture-start", [result])
+    report = json.loads(path.read_text())
+    assert report["trace_format"] == "normalized-turn-v2"
+    assert report["results"][0]["turn_trace"][0] == stop
     assert (task.fixture / "calc.py").read_bytes() == original

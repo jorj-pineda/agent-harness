@@ -34,14 +34,18 @@ def _tokens_for_bytes(size: int) -> int:
     return math.ceil(size / BYTES_PER_TOKEN)
 
 
+def message_size_bytes(message: ChatMessage) -> int:
+    """UTF-8 payload bytes counted by the existing heuristic (not wire size)."""
+    size = len(message.content.encode("utf-8"))
+    size += len((message.tool_name or "").encode("utf-8"))
+    for call in message.tool_calls:
+        size += len(call.name.encode("utf-8"))
+        size += len(json.dumps(call.arguments, default=str).encode("utf-8"))
+    return size
+
+
 def estimate_message_tokens(messages: Sequence[ChatMessage]) -> int:
-    size = 0
-    for message in messages:
-        size += len(message.content.encode("utf-8"))
-        size += len((message.tool_name or "").encode("utf-8"))
-        for call in message.tool_calls:
-            size += len(call.name.encode("utf-8"))
-            size += len(json.dumps(call.arguments, default=str).encode("utf-8"))
+    size = sum(message_size_bytes(message) for message in messages)
     return _tokens_for_bytes(size) + MESSAGE_OVERHEAD_TOKENS * len(messages)
 
 

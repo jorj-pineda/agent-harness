@@ -44,7 +44,15 @@ from .outcome_types import CompletionStatus
 from .policy import edit_precondition_error, repeated_unchanged_call, unresolved_edit_blocks
 from .state import Session, ToolCallRecord, Turn, TurnResponse
 from .stream import EventCallback, ToolEndEvent, ToolStartEvent
-from .trace import MessageTrace, RequestFailureTrace, RequestTrace, ResponseTrace, TurnTraceRecord
+from .trace import (
+    BudgetStopTrace,
+    MessageTrace,
+    RequestFailureTrace,
+    RequestTrace,
+    ResponseTrace,
+    TurnTraceRecord,
+    prompt_footprint,
+)
 from .transcript import tool_batch_issue, transcript_block_reason
 
 RESULT_SNIPPET_LIMIT = 600
@@ -156,6 +164,22 @@ async def run_turn(
             break
         allowance = budget.request_allowance(session.messages, tool_specs)
         if isinstance(allowance, BudgetStop):
+            if trace is not None:
+                trace.append(
+                    BudgetStopTrace(
+                        iteration=iteration,
+                        message_count=len(session.messages),
+                        status=allowance.status,
+                        reason=allowance.reason,
+                        footprint=prompt_footprint(session.messages, tool_specs, budget),
+                        prompt_tokens_used=budget.prompt_used,
+                        completion_tokens_used=budget.completion_used,
+                        max_context_tokens=budget.max_context,
+                        max_total_tokens=budget.max_total,
+                        max_completion_tokens=budget.max_output,
+                        min_request_output_tokens=budget.min_request_output,
+                    )
+                )
             final_answer = "(model token budget exhausted before task completion)"
             completion_status = allowance.status
             completion_reason = allowance.reason
@@ -173,6 +197,7 @@ async def run_turn(
                     message_count=sent_count,
                     estimated_prompt_tokens=budget.estimate_prompt(session.messages, tool_specs),
                     max_tokens=allowance,
+                    footprint=prompt_footprint(session.messages, tool_specs, budget),
                     initial_messages=[m.model_copy(deep=True) for m in session.messages]
                     if iteration == 0
                     else [],

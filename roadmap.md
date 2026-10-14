@@ -1,6 +1,6 @@
 # Roadmap: a coding harness for lower-tier models
 
-Updated: 2026-10-13
+Updated: 2026-10-14
 
 ## Direction
 
@@ -1002,6 +1002,24 @@ Relevant implementation: `harness/loop.py`, `harness/outcome.py`, `harness/groun
   All evaluation edits stayed in disposable copies. Context management, broader
   model/held-out/project comparisons and Milestones 4–6 remain incomplete; Duodoro
   source changes require branches and PRs.
+
+
+- **2026-10-14 — Context-pressure trace evidence:** request footprints now expose
+  shared message/schema heuristic estimates, reported-anchor adjustment and capped
+  payload rankings; separate budget_stop records identify pre-request token-gate
+  prevention without implying dispatch. Real-task reports label normalized-turn-v2;
+  older records/reports remain unchanged. Offline real-read regression crosses a
+  context gate with full source evidence/user work preserved and no second model
+  call; report serialization and traced/untraced parity are covered. Post-hoc timer
+  reconstruction reproduces the earlier 16,690-token minimal context stop: large
+  instruction reads, search output and schemas contribute beyond source reads.
+  See `evals/BASELINES.md` for estimator provenance/limits. Validation passed 75
+  focused, 883 offline (five live deselected), Ruff/mypy and both 90/90 scripted
+  matrices with labels/limits inspected. No inference, new quality claim or Duodoro
+  source edits. This is diagnostic evidence, not compaction or completion of
+  Milestone 4. Post-response/pre-tool stops, later wall-time/other conditions are
+  outside new stop coverage; raw source traces remain sensitive and processing adds
+  deadline overhead. Context management/profiles and Milestones 4–6 remain open.
 
 ## Milestone 1 — Establish a real task-success baseline
 

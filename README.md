@@ -1189,3 +1189,14 @@ artifacts, but neither activated reduction or executed its requested check. A th
 attempt stopped on a provider error before tools, ending the planned comparison.
 See `evals/BASELINES.md` for the frozen implementation and raw evidence. Context
 management remains open; this trial establishes no completion or quality gain.
+
+
+New real-task reports use `normalized-turn-v2` tracing. Request attempts include
+metadata-only prompt footprints, and requests prevented by a pre-request token
+gate have a separate `budget_stop` record. These expose message/schema estimates,
+anchor adjustment and the ten largest payloads by index/role/tool name, without
+copying raw source/arguments into the footprint. Existing raw traces remain sensitive.
+Historical reports stay unchanged; old request records have no invented footprint.
+See [trace evidence](evals/real_tasks/README.md) for coverage and estimate limits.
+This supplies context-pressure diagnostics; it does not compact context, change
+budgets or scoring, or demonstrate better model coding quality.
