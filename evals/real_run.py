@@ -117,9 +117,16 @@ class ObservedProvider:
         temperature: float = 0.0,
         max_tokens: int | None = None,
     ) -> ProviderResponse:
-        response = await self.provider.chat(
-            messages, tools=tools, temperature=temperature, max_tokens=max_tokens
-        )
+        try:
+            response = await self.provider.chat(
+                messages, tools=tools, temperature=temperature, max_tokens=max_tokens
+            )
+        except (Exception, asyncio.CancelledError):
+            # A failed in-flight request may still consume backend tokens. Known
+            # prefix usage remains in response traces; the full total is unknown.
+            self.prompt_tokens = None
+            self.completion_tokens = None
+            raise
         self.model = response.model
         self.finish_reason = response.finish_reason
         self.prompt_tokens = (

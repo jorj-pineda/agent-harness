@@ -32,6 +32,14 @@ tool trace, final diff, independent check
 output, termination, usage, and latency. A single run is a baseline observation,
 not evidence of a repeatable model improvement.
 
+A failed, timed-out or cancelled in-flight evaluation request makes aggregate
+prompt/completion usage `null`: the backend may have consumed unreported tokens.
+Earlier known usage remains in response traces; the summary excludes unknown
+full totals from its median and counts them as unreported attempts. Zero remains
+valid when the harness prevented every request or the provider actually reported
+zero. This does not attest to backend billing. Historical reports remain unchanged;
+earlier failure rows labeled zero need their original evidence/limitations.
+
 The disposable directory prevents edits to the source fixture, but it is not a
 security sandbox. Python tests and agent commands can access the host and network.
 Use only these trusted fixtures until an isolated execution mode exists. The
