@@ -1246,3 +1246,11 @@ an explanation in its check record. It cannot certify verification. Consistent
 nonzero or signal exit codes remain failures. Legacy boolean-only check records
 remain supported; this validates metadata consistency, not semantic acceptance.
 Raw tool results and older archives are not rewritten.
+
+
+Exact edits capture permission bits from the initial bounded file descriptor,
+copy those bits to the prepared replacement, and compare current bits during the
+final bounded stale check. Permission drift rejects publication and cleans the
+temporary file while preserving later content/modes. This checks drift between
+observations, not an external-writer lock: a race after the final check remains.
+Ownership, ACLs, extended attributes and hard-link relationships are not restored.
