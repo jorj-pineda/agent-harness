@@ -167,17 +167,18 @@ def _open_regular_file(target: Path) -> BinaryIO:
     return stream
 
 
-def _read_replace_file(target: Path) -> bytes:
+def _read_replace_file(target: Path) -> tuple[bytes, int]:
     """Bound both exact-edit hashes and reject final-component special-file swaps."""
     with _open_regular_file(target) as stream:
         raw = stream.read(MAX_READ_SCAN_BYTES + 1)
+        mode = stat.S_IMODE(os.fstat(stream.fileno()).st_mode)
     if len(raw) > MAX_READ_SCAN_BYTES:
         raise ToolError(
             f"replace_text whole-file scan exceeds {MAX_READ_SCAN_BYTES} bytes; "
             "no complete edit precondition is available. Choose a smaller file; "
             "a narrower replacement cannot reduce this whole-file scan."
         )
-    return raw
+    return raw, mode
 
 
 def _atomic_write_file(target: Path, content: bytes) -> None:
@@ -387,7 +388,7 @@ def build_code_tools(
         if not target.is_file():
             raise ToolError(f"Not a file: {args.path}")
 
-        raw = _read_replace_file(target)
+        raw, original_mode = _read_replace_file(target)
         current_sha256 = hashlib.sha256(raw).hexdigest()
         if current_sha256 != args.expected_sha256:
             raise ToolError(
@@ -422,10 +423,13 @@ def build_code_tools(
             with tempfile.NamedTemporaryFile(dir=target.parent, delete=False) as temporary:
                 temporary_path = temporary.name
                 temporary.write(encoded)
-            os.chmod(temporary_path, target.stat().st_mode)
-            # Catch changes made while preparing the replacement as well.
-            if hashlib.sha256(_read_replace_file(target)).hexdigest() != args.expected_sha256:
+            os.chmod(temporary_path, original_mode)
+            # Catch content and permission changes during preparation.
+            current_raw, current_mode = _read_replace_file(target)
+            if hashlib.sha256(current_raw).hexdigest() != args.expected_sha256:
                 raise ToolError("File changed during replacement; read the file again.")
+            if current_mode != original_mode:
+                raise ToolError("File permissions changed during replacement; inspect and retry.")
             os.replace(temporary_path, target)
             temporary_path = None
         finally:

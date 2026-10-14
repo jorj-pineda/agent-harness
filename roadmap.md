@@ -1084,6 +1084,16 @@ Relevant implementation: `harness/loop.py`, `harness/outcome.py`, `harness/groun
   Validation: 94 focused, 936 offline (five live deselected), Ruff/mypy and both
   scripted 90/90 matrices with labels/limits inspected. Milestones 4–6 remain open.
 
+- **2026-10-14 — Exact-edit permission precondition:** initial bounded descriptor
+  reads capture permission bits, preparation copies that baseline and the final
+  bounded check rejects mode drift as well as stale bytes. Rejection preserves
+  later user content/modes and cleans the temporary replacement. Private/executable
+  modes are covered. This is drift detection, not a writer lock: post-check races,
+  ownership/ACL/xattr and hard-link restoration remain outside guarantees. No
+  inference, Duodoro edits or model-quality claim; Milestones 4–6 remain open.
+  Validation: 59 focused, 939 offline (five live deselected), Ruff/mypy, formatting
+  and both scripted 90/90 matrices with labels/limits inspected.
+
 ## Milestone 1 — Establish a real task-success baseline
 
 **Outcome:** a model attempts real repository tasks through the same runtime used by Jorge, and independent checks determine whether it succeeded.
