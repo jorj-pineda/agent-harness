@@ -1219,3 +1219,13 @@ Selected read spans retain exact internal LF/CRLF endings and literal carriage
 returns. Only the span's final LF or CRLF terminator is omitted, as before. Copy
 multiline `old_text` from this returned content for hash-guarded exact replacement;
 no file conversion or automatic normalization of `new_text` occurs.
+
+
+`replace_text` scans at most 16,000,000 bytes plus one overflow-detection byte
+per whole-file pass, both before preparing an edit and during its final stale
+check. Overflow returns a tool error without a partial hash or publication;
+preparation temporaries are cleaned up. Selected old text does not narrow these
+scans. The existing output-file size cap remains. Regular-file descriptor guards
+reject final-component special-file/link swaps where supported; external writer/
+parent-path races, filesystem stalls and hard return deadlines remain outside
+this bound. Path validation and command allowlists are not process isolation.

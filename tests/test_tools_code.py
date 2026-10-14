@@ -454,3 +454,113 @@ async def test_read_span_is_exact_multiline_edit_evidence_on_crlf_file(tmp_path)
         },
     )
     assert path.read_bytes() == b"a = 1\r\nb = 20\r\nuser = 3\r\n"
+
+
+@pytest.mark.parametrize("size", [32, 33])
+async def test_replace_text_scan_exact_limit_and_overflow(tmp_path, monkeypatch, size):
+    from contextlib import contextmanager
+
+    import tools.code as code
+
+    monkeypatch.setattr(code, "MAX_READ_SCAN_BYTES", 32)
+    path = tmp_path / "source.txt"
+    raw = b"x" * size
+    path.write_bytes(raw)
+    reads = []
+    original_open = code._open_regular_file
+
+    @contextmanager
+    def tracked_open(target):
+        with original_open(target) as stream:
+
+            class Reader:
+                def read(self, count):
+                    reads.append(count)
+                    return stream.read(count)
+
+            yield Reader()
+
+    monkeypatch.setattr(code, "_open_regular_file", tracked_open)
+    registry = ToolRegistry()
+    register_code_tools(registry, workspace=Workspace(root=tmp_path))
+    args = {
+        "path": "source.txt",
+        "old_text": raw.decode(),
+        "new_text": "y",
+        "expected_sha256": hashlib.sha256(raw).hexdigest(),
+    }
+    if size == 33:
+        with pytest.raises(ToolError, match="whole-file scan exceeds 32 bytes"):
+            await registry.invoke("replace_text", args)
+        assert path.read_bytes() == raw and reads == [33]
+    else:
+        await registry.invoke("replace_text", args)
+        assert path.read_bytes() == b"y" and reads == [33, 33]
+    assert list(tmp_path.iterdir()) == [path]
+
+
+async def test_replace_text_final_scan_overflow_preserves_later_content_and_cleans_temp(
+    tmp_path, monkeypatch
+):
+    import tools.code as code
+
+    monkeypatch.setattr(code, "MAX_READ_SCAN_BYTES", 32)
+    path = tmp_path / "source.txt"
+    raw = b"original"
+    path.write_bytes(raw)
+    later = b"later user work" * 4
+    original_chmod = code.os.chmod
+
+    def grow_during_preparation(target, mode):
+        path.write_bytes(later)
+        original_chmod(target, mode)
+
+    monkeypatch.setattr(code.os, "chmod", grow_during_preparation)
+    registry = ToolRegistry()
+    register_code_tools(registry, workspace=Workspace(root=tmp_path))
+    with pytest.raises(ToolError, match="whole-file scan exceeds 32 bytes"):
+        await registry.invoke(
+            "replace_text",
+            {
+                "path": "source.txt",
+                "old_text": "original",
+                "new_text": "edited",
+                "expected_sha256": hashlib.sha256(raw).hexdigest(),
+            },
+        )
+    assert path.read_bytes() == later
+    assert list(tmp_path.iterdir()) == [path]
+
+
+@pytest.mark.skipif(os.name != "posix", reason="requires POSIX no-follow open")
+async def test_replace_text_rejects_link_swap_before_initial_scan(tmp_path, monkeypatch):
+    import tools.code as code
+
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    path = repo / "source.txt"
+    path.write_bytes(b"original")
+    outside = tmp_path / "outside.txt"
+    outside.write_bytes(b"outside user work")
+    original_open = code._open_regular_file
+
+    def swapped_open(target):
+        target.unlink()
+        target.symlink_to(outside)
+        return original_open(target)
+
+    monkeypatch.setattr(code, "_open_regular_file", swapped_open)
+    registry = ToolRegistry()
+    register_code_tools(registry, workspace=Workspace(root=repo))
+    with pytest.raises(ToolError):
+        await registry.invoke(
+            "replace_text",
+            {
+                "path": "source.txt",
+                "old_text": "original",
+                "new_text": "edited",
+                "expected_sha256": hashlib.sha256(b"original").hexdigest(),
+            },
+        )
+    assert outside.read_bytes() == b"outside user work"
+    assert path.is_symlink()
