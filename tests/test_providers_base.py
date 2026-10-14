@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import pytest
+from pydantic import ValidationError
+
 from providers.base import (
     ChatMessage,
     ChatProvider,
@@ -78,3 +81,16 @@ class _StubEmbed:
 def test_stubs_satisfy_protocols() -> None:
     assert isinstance(_StubChat(), ChatProvider)
     assert isinstance(_StubEmbed(), Embedder)
+
+
+@pytest.mark.parametrize("field", ["prompt_tokens", "completion_tokens"])
+@pytest.mark.parametrize("value", [-1, -100])
+def test_usage_rejects_negative_counts_at_validated_boundary(field, value):
+    with pytest.raises(ValidationError):
+        TokenUsage.model_validate({field: value})
+
+
+@pytest.mark.parametrize("value", [None, 0, 1, 100000])
+def test_usage_preserves_unknown_zero_and_nonnegative_counts(value):
+    usage = TokenUsage(prompt_tokens=value, completion_tokens=value)
+    assert TokenUsage.model_validate_json(usage.model_dump_json()) == usage
