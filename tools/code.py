@@ -167,6 +167,19 @@ def _open_regular_file(target: Path) -> BinaryIO:
     return stream
 
 
+def _read_replace_file(target: Path) -> bytes:
+    """Bound both exact-edit hashes and reject final-component special-file swaps."""
+    with _open_regular_file(target) as stream:
+        raw = stream.read(MAX_READ_SCAN_BYTES + 1)
+    if len(raw) > MAX_READ_SCAN_BYTES:
+        raise ToolError(
+            f"replace_text whole-file scan exceeds {MAX_READ_SCAN_BYTES} bytes; "
+            "no complete edit precondition is available. Choose a smaller file; "
+            "a narrower replacement cannot reduce this whole-file scan."
+        )
+    return raw
+
+
 def _atomic_write_file(target: Path, content: bytes) -> None:
     """Publish complete content with a same-directory rename, leaving failures intact.
 
@@ -374,7 +387,7 @@ def build_code_tools(
         if not target.is_file():
             raise ToolError(f"Not a file: {args.path}")
 
-        raw = target.read_bytes()
+        raw = _read_replace_file(target)
         current_sha256 = hashlib.sha256(raw).hexdigest()
         if current_sha256 != args.expected_sha256:
             raise ToolError(
@@ -411,7 +424,7 @@ def build_code_tools(
                 temporary.write(encoded)
             os.chmod(temporary_path, target.stat().st_mode)
             # Catch changes made while preparing the replacement as well.
-            if hashlib.sha256(target.read_bytes()).hexdigest() != args.expected_sha256:
+            if hashlib.sha256(_read_replace_file(target)).hexdigest() != args.expected_sha256:
                 raise ToolError("File changed during replacement; read the file again.")
             os.replace(temporary_path, target)
             temporary_path = None
