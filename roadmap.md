@@ -1094,6 +1094,17 @@ Keep the loop flexible: inspect → edit → verify → repair is a useful defau
 
 **Done when:** tests prove that an unrelated read cannot certify a fix, `pytest --version` cannot certify verification, a later edit invalidates earlier checks, a later failure is not hidden by an earlier pass, and early completion produces bounded corrective feedback.
 
+**2026-10-14 — Nonnegative usage boundary:** normalized token usage rejects negative
+prompt/output counts before accounting or tool dispatch. Unknown/zero/positive
+counts remain valid. A mocked backend attempting a write with malformed usage
+fails normalization and preserves user content. Invalid historical negative values
+fail validation without automatic repair; reported counts remain backend claims,
+not billing/tokenizer attestation. No model calls or Duodoro source edits; this is
+basic budget integrity, not a capability improvement or completed milestone.
+Validation: 55 focused, 893 offline (five live deselected), Ruff/mypy and both
+scripted 90/90 matrices with labels/limits inspected.
+
+
 ## Milestone 4 — Tune the prompt and context for weaker models
 
 **Outcome:** each model gets a small, coherent interface and enough relevant context to make the next coding decision.

@@ -566,3 +566,64 @@ async def test_live_ollama_embed() -> None:
         assert all(len(v) > 0 for v in vectors)
     finally:
         await provider.aclose()
+
+
+@pytest.mark.parametrize("count_field", ["prompt_eval_count", "eval_count"])
+async def test_negative_backend_usage_cannot_dispatch_a_file_edit(tmp_path, count_field):
+    from pydantic import ValidationError
+
+    from harness.loop import run_turn
+    from harness.state import Session
+    from harness.trace import RequestFailureTrace
+    from tools import ToolRegistry
+    from tools.code import build_code_tools
+    from workspace import Workspace
+
+    path = tmp_path / "user.txt"
+    path.write_text("preserved user work")
+    payload = {
+        "model": "fixture",
+        "done": True,
+        "prompt_eval_count": 10,
+        "eval_count": 2,
+        "message": {
+            "role": "assistant",
+            "content": "",
+            "tool_calls": [
+                {
+                    "function": {
+                        "name": "write_file",
+                        "arguments": {"path": "user.txt", "content": "overwrite"},
+                    }
+                }
+            ],
+        },
+    }
+    payload[count_field] = -1
+    provider = OllamaProvider(
+        host="http://fake",
+        model="fixture",
+        embed_model="fixture",
+        transport=_chat_response(payload),
+    )
+    registry = ToolRegistry()
+    for tool in build_code_tools(Workspace(root=tmp_path)):
+        registry.register(tool)
+    session = Session()
+    trace = []
+    try:
+        with pytest.raises(ValidationError):
+            await run_turn(
+                session=session,
+                user_input="edit",
+                provider=provider,
+                registry=registry,
+                max_total_tokens_per_turn=10000,
+                trace=trace,
+            )
+    finally:
+        await provider.aclose()
+    assert path.read_text() == "preserved user work"
+    assert session.turns[0].tool_calls == []
+    assert isinstance(trace[-1], RequestFailureTrace)
+    assert trace[-1].exception_type == "ValidationError"

@@ -460,6 +460,13 @@ reported output usage spends it. Missing output usage stops a budgeted turn as
 with `null` where usage was not reported. Prompt tokens are known only after
 a request, so this is not a strict prompt-plus-output token budget.
 
+Provider usage counts are validated as nonnegative integers or `null`. Negative
+counts fail normalization before the response can drive tools or decrease token
+accounting. Unknown, zero and positive counts retain their existing meaning;
+this validates reported values, not backend billing or tokenizer accuracy.
+Existing invalid negative archive values fail validation rather than being
+silently repaired; historical files are not rewritten.
+
 `MAX_CONTEXT_TOKENS` and `MAX_TOTAL_TOKENS_PER_TURN` (both `0` = disabled) are
 checked before each model request using an estimated prompt size. The estimate
 is the larger of a UTF-8 byte heuristic over the whole prompt and the previous
