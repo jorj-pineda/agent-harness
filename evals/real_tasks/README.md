@@ -66,13 +66,16 @@ and model context are unchanged. Each record carries a zero-based iteration:
   Payload size is not provider tokenization or wire size. Rankings contain message
   index, role and tool name, excluding raw content, arguments, paths and call IDs.
   Older request records parse with `footprint=null`; no footprint is invented.
-- `budget_stop`: a request prevented by the pre-request output/total/context token
-  gate, with iteration/message count, status/reason, footprint, observed cumulative
-  usage and configured limits/minimum output. It is not a request, provider usage,
-  or dispatch record. A first-request stop can be the only trace entry. It does
-  not capture later post-response/pre-tool budget stops, wall-time stops or other
-  terminal conditions; existing response/tool evidence and final reason remain
-  authoritative.
+- `budget_stop`: stage is `pre_request` for a prevented request or `post_response`
+  for a token stop after a response, before tool dispatch/final completion. Old
+  records default to `pre_request`. Records include status/reason, observed usage,
+  configured limits and `requested_tool_count` (zero for pre-request stops).
+  Post-response footprints describe current normalized history including the
+  assistant reply; that view is not a request that was sent. The post-response
+  gate itself uses reported usage and its conservative follow-up lower bound,
+  not necessarily the displayed history estimate. Requested calls still receive
+  existing not-executed tool records. Wall-time and other terminal conditions
+  remain outside this record's coverage; final status/reason stay authoritative.
 - `response`: full normalized content, requested tool calls with IDs and batch
   boundaries, finish reason, reported usage, model, and provider latency. Captured
   before completion/budget gates, including whitespace replies and calls that a

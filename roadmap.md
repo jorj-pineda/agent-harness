@@ -1021,6 +1021,18 @@ Relevant implementation: `harness/loop.py`, `harness/outcome.py`, `harness/groun
   outside new stop coverage; raw source traces remain sensitive and processing adds
   deadline overhead. Context management/profiles and Milestones 4–6 remain open.
 
+- **2026-10-14 — Post-response token-stop evidence:** normalized-turn-v2 stop
+  records distinguish pre-request prevention from post-response token gates,
+  including observed usage and requested-tool counts before dispatch. Existing
+  old stop records default to pre_request. Post-response footprints describe
+  current history, not a sent request or the reported-usage follow-up lower bound.
+  Budgets, rejection records and completion/response contracts remain unchanged.
+  Focused tests cover overshoot, missing usage, follow-up shortage and old records.
+  No model calls or Duodoro edits; wall-time/other stops and context compaction
+  remain open. Validation: 82 focused, 890 offline (five live deselected), Ruff/mypy
+  and both scripted 90/90 matrices with labels/limits inspected. Milestones 4–6
+  are incomplete.
+
 ## Milestone 1 — Establish a real task-success baseline
 
 **Outcome:** a model attempts real repository tasks through the same runtime used by Jorge, and independent checks determine whether it succeeded.
