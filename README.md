@@ -1207,3 +1207,9 @@ Historical reports stay unchanged; old request records have no invented footprin
 See [trace evidence](evals/real_tasks/README.md) for coverage and estimate limits.
 This supplies context-pressure diagnostics; it does not compact context, change
 budgets or scoring, or demonstrate better model coding quality.
+
+
+`read_file` rejects invalid UTF-8 in selected lines instead of returning invented
+replacement characters. Valid selected spans still return whole-file hash/count
+metadata even if an unselected line has invalid bytes; that metadata does not
+certify whole-file UTF-8 validity. File contents are never converted or repaired.
