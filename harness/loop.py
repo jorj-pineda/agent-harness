@@ -306,6 +306,24 @@ async def run_turn(
             break
 
         budget_stop = budget.after_response(wants_tools=bool(usable_calls))
+        if budget_stop is not None and trace is not None:
+            trace.append(
+                BudgetStopTrace(
+                    stage="post_response",
+                    requested_tool_count=len(usable_calls),
+                    iteration=iteration,
+                    message_count=len(session.messages),
+                    status=budget_stop.status,
+                    reason=budget_stop.reason,
+                    footprint=prompt_footprint(session.messages, tool_specs, budget),
+                    prompt_tokens_used=budget.prompt_used,
+                    completion_tokens_used=budget.completion_used,
+                    max_context_tokens=budget.max_context,
+                    max_total_tokens=budget.max_total,
+                    max_completion_tokens=budget.max_output,
+                    min_request_output_tokens=budget.min_request_output,
+                )
+            )
         if budget_stop is not None and not usable_calls:
             final_answer = response.content
             completion_status = budget_stop.status

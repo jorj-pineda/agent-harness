@@ -71,9 +71,11 @@ def prompt_footprint(
 
 
 class BudgetStopTrace(BaseModel):
-    """A prevented request, never evidence that inference or tools dispatched."""
+    """Token-gate stop evidence; stage distinguishes request prevention from response handling."""
 
     kind: Literal["budget_stop"] = "budget_stop"
+    stage: Literal["pre_request", "post_response"] = "pre_request"
+    requested_tool_count: int = 0
     iteration: int
     message_count: int
     status: CompletionStatus

@@ -359,3 +359,66 @@ async def test_real_reads_reach_a_blocked_request_without_changing_user_work(tmp
     assert path.read_text() == content
     assert result.workspace_changes.status == "tracked"
     assert result.workspace_changes.modified == []
+
+
+@pytest.mark.parametrize("tools_requested", [False, True])
+@pytest.mark.parametrize("usage", ["over", "missing", "followup"])
+async def test_post_response_stop_keeps_usage_and_prevents_dispatch(tools_requested, usage):
+    records: list[TurnTraceRecord] = []
+    registry = ToolRegistry()
+    registry.register(_echo_tool())
+    calls = (
+        [ToolCall(id="echo", name="echo", arguments={"text": "private-text"})]
+        if tools_requested
+        else []
+    )
+    prompt = {"over": 1001, "missing": None, "followup": 600}[usage]
+    if usage == "followup" and not tools_requested:
+        prompt = 1001
+    provider = FakeProvider(
+        [_response(content="answer", tool_calls=calls, prompt_tokens=prompt, completion_tokens=10)]
+    )
+    result = await run_turn(
+        session=Session(),
+        user_input="task",
+        provider=provider,
+        registry=registry,
+        max_total_tokens_per_turn=1000,
+        trace=records,
+    )
+    stops = [record for record in records if isinstance(record, BudgetStopTrace)]
+    assert len(stops) == 1
+    stop = stops[0]
+    assert stop.stage == "post_response" and stop.requested_tool_count == len(calls)
+    assert stop.message_count == 2
+    assert stop.prompt_tokens_used == prompt and stop.completion_tokens_used == 10
+    assert stop.reason == result.completion_reason
+    assert result.completion_status == ("incomplete" if usage == "missing" else "budget_exhausted")
+    assert len(provider.calls) == 1
+    assert all(call.result is None and call.error for call in result.tool_calls)
+    assert "private-text" not in stop.model_dump_json()
+    assert records[1].kind == "response" and records[2].kind == "budget_stop"
+    assert stop.footprint.anchor_adjustment_tokens >= 0
+
+
+def test_old_budget_stop_record_defaults_to_pre_request():
+    from harness.context import TokenBudget
+    from harness.trace import prompt_footprint
+
+    record = BudgetStopTrace(
+        iteration=0,
+        message_count=0,
+        status="budget_exhausted",
+        reason="fixture",
+        footprint=prompt_footprint([], [], TokenBudget()),
+        prompt_tokens_used=0,
+        completion_tokens_used=0,
+        max_context_tokens=1,
+        max_total_tokens=0,
+        max_completion_tokens=0,
+        min_request_output_tokens=1,
+    )
+    payload = record.model_dump()
+    del payload["stage"], payload["requested_tool_count"]
+    restored = BudgetStopTrace.model_validate(payload)
+    assert restored.stage == "pre_request" and restored.requested_tool_count == 0
