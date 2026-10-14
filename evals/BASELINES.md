@@ -1503,3 +1503,79 @@ all results to a unique external path; group by profile rather than the common m
 Frozen trial validation: 103 focused, 870 offline tests (five live deselected), Ruff,
 mypy, formatting and both scripted 90/90 matrices with evidence limits inspected.
 Those tests measure mechanics, not model quality.
+
+## 2026-10-13 — Bounded read-context trial stopped and retired
+
+Raw report: `results/2026-10-13-longcat-free-bounded-context-duodoro.json`.
+Frozen trial implementation `d411ded636e90257f3483095878354de90ded98e` is available
+for isolated replay; **the runtime option and its tests were subsequently removed**.
+The trial's deterministic request projection kept the last eight messages, all
+AGENTS.md reads, instructions/objectives, edits/diffs, errors and command/check
+output. Older native read results above 2,048 content characters kept their first/
+last 512 characters, path/hash/range and an explicit omission/reread notice.
+Raw transcripts/results stayed complete. Request and review estimates used the
+same view; changed prefixes reset only the prompt anchor, retaining observed usage.
+This is read elision, not semantic compaction or a complete context strategy.
+
+The planned comparison was two frozen Duodoro tuning tasks × two modes × two
+repeats, with alternating pair order. Both modes used compact prompt/full tools,
+Go `longcat-2.5-preview-free`, temperature zero, 16,384 estimated context,
+64,000 total tokens, 8,192 output tokens, eight iterations, 24 tools, 600-second
+configured dispatch deadline, 180-second requests, one completion retry and required
+verification. Source/criteria, settings and explicit manual Go transport recipe
+matched between arms: own User-Agent, fresh stable conversation UUID, zero SDK
+retries. This trial uses that constructor recipe, not the new configured Go mode.
+[Go documentation](https://opencode.ai/v2/docs/console/go/) listed free preview
+input/output/cache pricing on October 13. Actual billing/backend/cache/load and
+served revision remain unobserved; no paid fallback or premium supervisor.
+
+Only three of eight attempts ran, all on duration formatting:
+
+| Attempt | Accepted artifact | Completion / check status | Reduced requests | Configured-turn seconds |
+|---|---|---|---|---|
+| repeat 1, full | yes | budget exhausted / failed | 0 | 66.5 |
+| repeat 1, bounded reads | yes | budget exhausted / failed | 0 | 53.6 |
+| repeat 2, bounded reads | no, unchanged | incomplete / not run; ProviderError | 0 | 180.1 |
+
+Both accepted patches passed external acceptance and scope checks without manual
+repair. Their requested configured check was **blocked by the total-token gate**,
+so failed status is a blocked invocation, not an executed test failure. Neither
+completed. The third attempt failed at the first request before tools; normalized
+trace records ProviderError. The underlying cause is unobserved; elapsed time near
+the configured timeout does not establish its cause. Zero reported tokens on that
+attempt mean no response usage observed, not proof that the backend did no work.
+The runner stopped the entire comparison at that first provider error without
+retry/fallback. No second full repeat or timer attempts were run. Clients closed;
+criterion hashes and file/mode scope assertions stayed intact.
+
+The single completed pair did **not activate reduction**. Its token/timing/patch
+variation cannot be attributed to the new mode. The incomplete, unequal cohorts
+must not be presented as a quality ranking. The roadmap retains only demonstrated
+improvements or basic correctness changes: this trial establishes neither a
+model-quality gain nor a reason to ship this particular reduction policy. Retire
+it, retain the frozen evidence, and leave context management/Milestone 4 open.
+No inference was used to repair any evaluated patch. All evaluation writes stayed
+in disposable copies; future Duodoro source changes require branches and PRs.
+
+The process imported the frozen implementation before inference. README and a
+nonfunctional context comment were edited during the run; the report's resulting
+dirty flag is preserved with that provenance, rather than labeled clean. No
+functional runtime edits occurred during inference. Managed Node 24.21.0 comes
+from earlier managed-process observations, not per-call attestation; library
+adapters omit full application/Vitest/TypeScript/Node22 coverage.
+
+Trial mechanics validation: 124 focused and 888 offline tests (five live deselected),
+Ruff/mypy, changed-file formatting, and both 90/90 scripted matrices with labels/
+metric limits inspected. The initial added fixtures used the wrong response field,
+exceeded the native read-line limit and hit the intentional repetition guard; each
+was corrected before the final gate. These tests validate request/budget/trace,
+profile/review and archive/restart mechanics, not model quality. After retiring the
+trial, the restored runtime passed 116 focused and 880 offline tests (five live
+deselected), Ruff and mypy; the existing Chroma deprecation warning remained.
+
+For replay, use the frozen revision in an isolated worktree; prepare the published
+pinned tasks/criteria, reconstruct per-result settings without `tool_specs`, and
+select compact prompt plus full or bounded_reads_v1. Use shared `run_task` in
+harness mode, privately configured Go credential and the recorded explicit transport
+recipe. Recheck free pricing and stop on provider errors; protect criteria and veto
+out-of-scope artifacts. Never reuse the actual Duodoro working tree as a fixture.
