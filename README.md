@@ -1213,3 +1213,9 @@ budgets or scoring, or demonstrate better model coding quality.
 replacement characters. Valid selected spans still return whole-file hash/count
 metadata even if an unselected line has invalid bytes; that metadata does not
 certify whole-file UTF-8 validity. File contents are never converted or repaired.
+
+
+Selected read spans retain exact internal LF/CRLF endings and literal carriage
+returns. Only the span's final LF or CRLF terminator is omitted, as before. Copy
+multiline `old_text` from this returned content for hash-guarded exact replacement;
+no file conversion or automatic normalization of `new_text` occurs.
