@@ -248,18 +248,25 @@ def build_code_tools(
                         f"Selected line {total_lines} is not valid UTF-8; "
                         "read_file cannot return exact text for this range."
                     ) from exc
-                selected.append(line.removesuffix("\n").removesuffix("\r"))
+                selected.append(line)
 
         if total_lines and start > total_lines:
             raise ToolError(f"start_line {start} beyond file length {total_lines}")
         if not total_lines and start != 1:
             raise ToolError(f"start_line {start} beyond file length 0")
         end = min(args.end_line or total_lines, total_lines)
+        content = "".join(selected)
+        # Omit only the selected span's final terminator. Internal terminators
+        # are exact source evidence for multiline replace_text preconditions.
+        if content.endswith("\n"):
+            content = content[:-1]
+            if content.endswith("\r"):
+                content = content[:-1]
         return {
             "path": workspace.relative_str(target),
             "start_line": start,
             "end_line": end,
-            "content": "\n".join(selected),
+            "content": content,
             "total_lines": total_lines,
             "sha256": digest.hexdigest(),
         }
