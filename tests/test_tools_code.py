@@ -459,6 +459,7 @@ async def test_read_span_is_exact_multiline_edit_evidence_on_crlf_file(tmp_path)
 @pytest.mark.parametrize("size", [32, 33])
 async def test_replace_text_scan_exact_limit_and_overflow(tmp_path, monkeypatch, size):
     from contextlib import contextmanager
+
     import tools.code as code
 
     monkeypatch.setattr(code, "MAX_READ_SCAN_BYTES", 32)

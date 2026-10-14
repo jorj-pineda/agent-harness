@@ -1051,6 +1051,18 @@ Relevant implementation: `harness/loop.py`, `harness/outcome.py`, `harness/groun
   Validation: 52 focused, 916 offline (five live deselected), Ruff/mypy, formatting
   and both scripted 90/90 matrices with labels/limits inspected.
 
+- **2026-10-14 — Bounded exact-edit scans:** initial and final stale-content
+  checks now use bounded regular-file reads, sharing the 16 MB scan cap plus one
+  overflow byte. Exact caps remain valid; overflow rejects before publication,
+  preserves later content and cleans preparation temporaries. POSIX final-link
+  guards prevent deliberate link-follow reads; parent/external-writer races,
+  blocking filesystems, hard deadlines and isolation remain open. Existing result
+  size caps/hash preconditions remain. This is preventive tool correctness, not
+  model-quality evidence; no inference or Duodoro edits and Milestones 4–6 remain
+  incomplete.
+  Validation: 56 focused, 920 offline (five live deselected), Ruff/mypy, formatting
+  and both scripted 90/90 matrices with labels/limits inspected.
+
 ## Milestone 1 — Establish a real task-success baseline
 
 **Outcome:** a model attempts real repository tasks through the same runtime used by Jorge, and independent checks determine whether it succeeded.
