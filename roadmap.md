@@ -1063,6 +1063,17 @@ Relevant implementation: `harness/loop.py`, `harness/outcome.py`, `harness/groun
   Validation: 56 focused, 920 offline (five live deselected), Ruff/mypy, formatting
   and both scripted 90/90 matrices with labels/limits inspected.
 
+- **2026-10-14 — Consistent unavailable-check summaries:** summary status now
+  derives from the same canonical records as check details, retaining relevance,
+  strict argv and staleness. Added unavailable to the API summary enum; old archives
+  remain unchanged and boolean verification stays pass-only. Panel badges warn on
+  unavailable/stale/failed and stay neutral for not_run/unknown. Validation: 81
+  focused, 923 offline (five live deselected), Ruff/mypy, JS syntax and both scripted
+  90/90 matrices with labels/limits inspected. Native-browser rendering checked six
+  statuses including confidence 1.0; fixture server/tab closed. Initial fixture
+  field/asset-root assumptions were corrected before the final gate. No inference
+  or Duodoro edits; context management and Milestones 4–6 remain open.
+
 ## Milestone 1 — Establish a real task-success baseline
 
 **Outcome:** a model attempts real repository tasks through the same runtime used by Jorge, and independent checks determine whether it succeeded.
