@@ -313,7 +313,7 @@ function renderEnvelope(data, includeRunId = true) {
   const verification = data.verification_status || "unknown";
   badges.appendChild(el("span", `badge ${status === "completed" ? "ok" : "escalated"}`,
     `completion: ${status}`));
-  badges.appendChild(el("span", `badge ${verification === "failed" ? "escalated" : "ok"}`,
+  badges.appendChild(el("span", `badge ${verification === "passed" ? "ok" : ["failed", "unavailable", "stale"].includes(verification) ? "escalated" : ""}`,
     `checks: ${verification}`));
   badges.appendChild(el("span", `badge ${data.escalated ? "escalated" : "ok"}`,
     data.escalated ? "review requested" : "no escalation flag"));

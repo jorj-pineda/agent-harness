@@ -1229,3 +1229,12 @@ scans. The existing output-file size cap remains. Regular-file descriptor guards
 reject final-component special-file/link swaps where supported; external writer/
 parent-path races, filesystem stalls and hard return deadlines remain outside
 this bound. Path validation and command allowlists are not process isolation.
+
+
+New turns may report `verification_status=unavailable` when the latest relevant
+check could not execute or its result is unavailable. Summary and detailed check
+records now use the same typed-argv/relevance/staleness rules. This is an additive
+API enum value; exhaustive clients must accept it. `verification_ran` stays false
+unless the latest relevant check passed. Earlier archived summaries are not
+rewritten. Panel check badges are positive only for passed evidence, warn for
+failed/unavailable/stale, and remain neutral for not-run/unknown states.
