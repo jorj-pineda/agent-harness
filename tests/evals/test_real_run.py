@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import json
 from pathlib import Path
 
@@ -388,6 +389,7 @@ async def test_prevented_request_footprint_survives_real_task_report(tmp_path):
     assert result.completion_status == "budget_exhausted"
     assert result.passed is False
     assert provider.calls == [] and result.tool_trace == []
+    assert result.prompt_tokens == 0 and result.completion_tokens == 0
     assert len(result.turn_trace) == 1
     stop = result.turn_trace[0]
     assert stop["kind"] == "budget_stop"
@@ -399,3 +401,52 @@ async def test_prevented_request_footprint_survives_real_task_report(tmp_path):
     assert report["trace_format"] == "normalized-turn-v2"
     assert report["results"][0]["turn_trace"][0] == stop
     assert (task.fixture / "calc.py").read_bytes() == original
+
+
+@pytest.mark.parametrize("failure", [RuntimeError, TimeoutError, asyncio.CancelledError])
+@pytest.mark.parametrize("has_prefix", [False, True])
+async def test_observation_failure_invalidates_totals_but_keeps_prior_response(failure, has_prefix):
+    class FailingProvider(ScriptedProvider):
+        async def chat(self, *args, **kwargs):
+            if self._queue:
+                return await super().chat(*args, **kwargs)
+            raise failure("private exception detail")
+
+    provider = FailingProvider()
+    if has_prefix:
+        provider.script(make_response(content="prefix", prompt_tokens=10, completion_tokens=2))
+    observed = real_run.ObservedProvider(provider)
+    if has_prefix:
+        response = await observed.chat([])
+        assert response.usage.prompt_tokens == 10 and observed.prompt_tokens == 10
+    with pytest.raises(failure):
+        await observed.chat([])
+    assert observed.prompt_tokens is None and observed.completion_tokens is None
+
+
+async def test_failed_request_after_read_reports_unknown_usage_without_hiding_prefix():
+    class FailingProvider(ScriptedProvider):
+        async def chat(self, *args, **kwargs):
+            if self._queue:
+                return await super().chat(*args, **kwargs)
+            raise RuntimeError("private exception detail")
+
+    provider = FailingProvider()
+    provider.script(
+        make_response(
+            tool_calls=[ToolCall(id="read", name="read_file", arguments={"path": "calc.py"})],
+            prompt_tokens=10,
+            completion_tokens=2,
+        )
+    )
+    result = await run_task(
+        load_tasks()[0], provider=provider, settings=Settings(_env_file=None), mode="harness"
+    )
+    assert result.termination == "error:RuntimeError"
+    assert result.prompt_tokens is None and result.completion_tokens is None
+    assert len(result.tool_trace) == 1 and result.tool_trace[0]["result"] is not None
+    prefix = [r for r in result.turn_trace if r["kind"] == "response"]
+    assert prefix[0]["usage"] == {"prompt_tokens": 10, "completion_tokens": 2}
+    summary = summarize([result])["harness"]
+    assert summary["unreported_token_attempts"] == 1 and summary["median_total_tokens"] is None
+    assert "private exception detail" not in json.dumps(result.turn_trace)
