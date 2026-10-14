@@ -6,7 +6,13 @@ import pytest
 
 from harness.loop import run_turn
 from harness.state import Session
-from harness.trace import MessageTrace, RequestFailureTrace, ResponseTrace, TurnTraceRecord
+from harness.trace import (
+    BudgetStopTrace,
+    MessageTrace,
+    RequestFailureTrace,
+    ResponseTrace,
+    TurnTraceRecord,
+)
 from providers.base import ChatMessage, ToolCall
 from tests.test_harness_loop import FakeProvider, _echo_tool, _response
 from tools import ToolRegistry
@@ -214,7 +220,12 @@ async def test_budget_before_request_emits_no_request_evidence() -> None:
         trace=records,
     )
     assert result.completion_status == "budget_exhausted"
-    assert records == []
+    assert len(records) == 1 and isinstance(records[0], BudgetStopTrace)
+    assert records[0].footprint.estimated_prompt_tokens > 1
+    assert records[0].max_context_tokens == 1
+    assert records[0].message_count == 1
+    assert records[0].prompt_tokens_used == 0
+    assert "long task" not in records[0].model_dump_json()
     assert provider.calls == []
 
 
@@ -236,3 +247,115 @@ async def test_wall_timeout_records_request_failure() -> None:
     assert [r.kind for r in records] == ["request", "request_failure"]
     assert isinstance(records[-1], RequestFailureTrace)
     assert records[-1].exception_type == "TimeoutError"
+
+
+def test_footprint_uses_budget_math_and_caps_payload_free_rankings() -> None:
+    import json
+
+    from harness.context import TokenBudget, estimate_message_tokens, estimate_tool_tokens
+    from harness.trace import RequestTrace, prompt_footprint
+    from providers.base import TokenUsage, ToolSpec
+
+    messages = [ChatMessage(role="user", content="é" * 6) for _ in range(12)]
+    messages.append(
+        ChatMessage(
+            role="assistant",
+            tool_calls=[
+                ToolCall(
+                    id="private-call-id",
+                    name="read_file",
+                    arguments={"path": "private-path", "text": "secret-text"},
+                )
+            ],
+        )
+    )
+    tools = [ToolSpec(name="echo", description="private-schema", parameters_schema={})]
+    budget = TokenBudget()
+    budget.record(TokenUsage(prompt_tokens=10000, completion_tokens=2), len(messages))
+    footprint = prompt_footprint(messages, tools, budget)
+    assert footprint.heuristic_prompt_tokens == estimate_message_tokens(
+        messages
+    ) + estimate_tool_tokens(tools)
+    assert footprint.estimated_prompt_tokens == 10000
+    assert footprint.heuristic_prompt_tokens + footprint.anchor_adjustment_tokens == 10000
+    assert footprint.largest_messages_truncated
+    assert len(footprint.largest_messages) == 10
+    assert [row.message_index for row in footprint.largest_messages] == [12, *range(9)]
+    assert footprint.largest_messages[1].payload_bytes == 12
+    serialized = footprint.model_dump_json()
+    for secret in ("private-call-id", "private-path", "secret-text", "private-schema"):
+        assert secret not in serialized
+    legacy = RequestTrace.model_validate(
+        json.loads(
+            '{"iteration":0,"message_count":1,"estimated_prompt_tokens":10,"max_tokens":null}'
+        )
+    )
+    assert legacy.footprint is None
+
+
+async def test_real_reads_reach_a_blocked_request_without_changing_user_work(tmp_path) -> None:
+    from harness.config import Settings
+    from harness.runtime import build_registry, run_configured_turn
+    from memory import FactStore
+
+    content = "preserved source " * 1000
+    path = tmp_path / "source.txt"
+    path.write_text(content)
+    settings = Settings(_env_file=None, max_context_tokens=0)
+    with FactStore(tmp_path / "facts.db") as store:
+        registry = build_registry(fact_store=store, user_id="dev", workspace_root=str(tmp_path))
+
+        def provider():
+            return FakeProvider(
+                [
+                    _response(
+                        tool_calls=[
+                            ToolCall(id="read", name="read_file", arguments={"path": "source.txt"})
+                        ],
+                        prompt_tokens=10,
+                        completion_tokens=2,
+                    ),
+                    _response(content="Reviewed", prompt_tokens=20, completion_tokens=2),
+                ]
+            )
+
+        control_trace: list[TurnTraceRecord] = []
+        await run_configured_turn(
+            session=Session(workspace_root=str(tmp_path)),
+            message="Inspect source",
+            provider=provider(),
+            registry=registry,
+            fact_store=store,
+            user_id="dev",
+            settings=settings,
+            trace=control_trace,
+        )
+        first = control_trace[0]
+        assert first.kind == "request"
+        limit = first.estimated_prompt_tokens + settings.min_request_output_tokens
+        traced: list[TurnTraceRecord] = []
+        model = provider()
+        session = Session(workspace_root=str(tmp_path))
+        result = await run_configured_turn(
+            session=session,
+            message="Inspect source",
+            provider=model,
+            registry=registry,
+            fact_store=store,
+            user_id="dev",
+            settings=settings.model_copy(update={"max_context_tokens": limit}),
+            trace=traced,
+        )
+    assert result.completion_status == "budget_exhausted"
+    assert len(model.calls) == 1
+    stop = traced[-1]
+    assert isinstance(stop, BudgetStopTrace) and stop.iteration == 1
+    assert stop.max_context_tokens == limit
+    assert stop.footprint.estimated_prompt_tokens + stop.min_request_output_tokens > limit
+    assert stop.footprint.largest_messages[0].tool_name == "read_file"
+    assert stop.footprint.largest_messages[0].message_index == 3
+    assert stop.prompt_tokens_used == 10 and stop.completion_tokens_used == 2
+    assert result.tool_calls[0].result["content"] == content
+    assert path.read_text() == content
+    assert result.workspace_changes.status == "tracked"
+    assert result.workspace_changes.modified == []

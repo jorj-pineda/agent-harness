@@ -437,7 +437,7 @@ def write_report(path: Path, started: str, results: list[RealTaskResult]) -> Non
         json.dumps(
             {
                 "mode": "real-tools-trusted-fixtures",
-                "trace_format": "normalized-turn-v1",
+                "trace_format": "normalized-turn-v2",
                 "started_at": started,
                 "harness_revision": _harness_revision(),
                 "sampling": {"temperature": 0.0},
