@@ -387,3 +387,30 @@ async def test_emit_plan_records_steps_in_tool_trace(registry: ToolRegistry) -> 
 async def test_emit_plan_rejects_empty_steps(registry: ToolRegistry) -> None:
     with pytest.raises(ToolError, match="non-empty step"):
         await registry.invoke("emit_plan", {"steps": ["  ", ""]})
+
+
+@pytest.mark.parametrize("invalid", [b"\xff", b"\xc3", b"\xed\xa0\x80"])
+async def test_read_file_refuses_invented_text_for_invalid_utf8(tmp_path, invalid):
+    raw = b"valid first\n" + invalid + b"\nvalid last\n"
+    path = tmp_path / "source.py"
+    path.write_bytes(raw)
+    registry = ToolRegistry()
+    register_code_tools(registry, workspace=Workspace(root=tmp_path))
+    with pytest.raises(ToolError, match="Selected line 2 is not valid UTF-8"):
+        await registry.invoke("read_file", {"path": "source.py"})
+    valid = await registry.invoke(
+        "read_file", {"path": "source.py", "start_line": 3, "end_line": 3}
+    )
+    assert valid["content"] == "valid last"
+    assert valid["sha256"] == hashlib.sha256(raw).hexdigest()
+    assert valid["total_lines"] == 3
+    assert path.read_bytes() == raw
+
+
+async def test_read_file_preserves_real_unicode_replacement_character(tmp_path):
+    text = "é = '�'\n"
+    (tmp_path / "unicode.py").write_text(text, encoding="utf-8")
+    registry = ToolRegistry()
+    register_code_tools(registry, workspace=Workspace(root=tmp_path))
+    result = await registry.invoke("read_file", {"path": "unicode.py"})
+    assert result["content"] == text.removesuffix("\n")

@@ -1033,6 +1033,15 @@ Relevant implementation: `harness/loop.py`, `harness/outcome.py`, `harness/groun
   and both scripted 90/90 matrices with labels/limits inspected. Milestones 4–6
   are incomplete.
 
+- **2026-10-14 — Exact selected UTF-8 read evidence:** invalid selected bytes now
+  return an explicit line-numbered tool error instead of invented replacement
+  characters. Valid spans keep hashes/counts even with invalid unselected bytes;
+  whole-file encoding validity is not claimed. Source bytes remain untouched.
+  This is file-tool correctness, not model-quality evidence; context work and
+  Milestones 4–6 remain incomplete. No inference or Duodoro edits.
+  Validation: 47 focused, 911 offline (five live deselected), Ruff/mypy, changed-file
+  formatting and both scripted 90/90 matrices with labels/limits inspected.
+
 ## Milestone 1 — Establish a real task-success baseline
 
 **Outcome:** a model attempts real repository tasks through the same runtime used by Jorge, and independent checks determine whether it succeeded.
