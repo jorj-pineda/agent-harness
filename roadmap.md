@@ -1042,6 +1042,15 @@ Relevant implementation: `harness/loop.py`, `harness/outcome.py`, `harness/groun
   Validation: 47 focused, 911 offline (five live deselected), Ruff/mypy, changed-file
   formatting and both scripted 90/90 matrices with labels/limits inspected.
 
+- **2026-10-14 — Exact internal newline read evidence:** selected spans preserve
+  internal CRLF/mixed endings and literal carriage returns; only the outer final
+  LF/CRLF terminator is omitted. Read-to-exact-replace regression preserves the
+  user's remaining CRLF bytes. Tool fields are unchanged; callers choose new-text
+  endings explicitly. No inference, file conversion, Duodoro edits or quality
+  claim; broader context/workflow milestones remain incomplete.
+  Validation: 52 focused, 916 offline (five live deselected), Ruff/mypy, formatting
+  and both scripted 90/90 matrices with labels/limits inspected.
+
 ## Milestone 1 — Establish a real task-success baseline
 
 **Outcome:** a model attempts real repository tasks through the same runtime used by Jorge, and independent checks determine whether it succeeded.

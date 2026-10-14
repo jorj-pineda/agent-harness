@@ -414,3 +414,43 @@ async def test_read_file_preserves_real_unicode_replacement_character(tmp_path):
     register_code_tools(registry, workspace=Workspace(root=tmp_path))
     result = await registry.invoke("read_file", {"path": "unicode.py"})
     assert result["content"] == text.removesuffix("\n")
+
+
+@pytest.mark.parametrize(
+    "raw,expected",
+    [
+        (b"first\r\nsecond\r\n", "first\r\nsecond"),
+        (b"first\nsecond\r\nthird\n", "first\nsecond\r\nthird"),
+        (b"first\r\nsecond", "first\r\nsecond"),
+        (b"literal\r", "literal\r"),
+    ],
+)
+async def test_read_file_preserves_internal_and_literal_carriage_returns(tmp_path, raw, expected):
+    path = tmp_path / "source.txt"
+    path.write_bytes(raw)
+    registry = ToolRegistry()
+    register_code_tools(registry, workspace=Workspace(root=tmp_path))
+    result = await registry.invoke("read_file", {"path": "source.txt"})
+    assert result["content"] == expected
+    assert result["sha256"] == hashlib.sha256(raw).hexdigest()
+    assert path.read_bytes() == raw
+
+
+async def test_read_span_is_exact_multiline_edit_evidence_on_crlf_file(tmp_path):
+    path = tmp_path / "source.py"
+    raw = b"a = 1\r\nb = 2\r\nuser = 3\r\n"
+    path.write_bytes(raw)
+    registry = ToolRegistry()
+    register_code_tools(registry, workspace=Workspace(root=tmp_path))
+    read = await registry.invoke("read_file", {"path": "source.py", "start_line": 1, "end_line": 2})
+    assert read["content"] == "a = 1\r\nb = 2"
+    await registry.invoke(
+        "replace_text",
+        {
+            "path": "source.py",
+            "old_text": read["content"],
+            "new_text": read["content"].replace("b = 2", "b = 20"),
+            "expected_sha256": read["sha256"],
+        },
+    )
+    assert path.read_bytes() == b"a = 1\r\nb = 20\r\nuser = 3\r\n"
