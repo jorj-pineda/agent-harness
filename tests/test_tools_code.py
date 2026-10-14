@@ -478,6 +478,9 @@ async def test_replace_text_scan_exact_limit_and_overflow(tmp_path, monkeypatch,
                     reads.append(count)
                     return stream.read(count)
 
+                def fileno(self):
+                    return stream.fileno()
+
             yield Reader()
 
     monkeypatch.setattr(code, "_open_regular_file", tracked_open)
@@ -564,3 +567,59 @@ async def test_replace_text_rejects_link_swap_before_initial_scan(tmp_path, monk
         )
     assert outside.read_bytes() == b"outside user work"
     assert path.is_symlink()
+
+
+@pytest.mark.skipif(os.name != "posix", reason="POSIX mode bits")
+@pytest.mark.parametrize("mode", [0o600, 0o755])
+async def test_exact_edit_preserves_initial_private_or_executable_mode(tmp_path, mode):
+    import stat
+
+    path = tmp_path / "source.txt"
+    path.write_bytes(b"original")
+    path.chmod(mode)
+    registry = ToolRegistry()
+    register_code_tools(registry, workspace=Workspace(root=tmp_path))
+    await registry.invoke(
+        "replace_text",
+        {
+            "path": "source.txt",
+            "old_text": "original",
+            "new_text": "edited",
+            "expected_sha256": hashlib.sha256(b"original").hexdigest(),
+        },
+    )
+    assert path.read_bytes() == b"edited"
+    assert stat.S_IMODE(path.stat().st_mode) == mode
+
+
+@pytest.mark.skipif(os.name != "posix", reason="POSIX mode bits")
+async def test_exact_edit_rejects_permission_change_during_preparation(tmp_path, monkeypatch):
+    import stat
+
+    import tools.code as code
+
+    path = tmp_path / "source.txt"
+    path.write_bytes(b"original")
+    path.chmod(0o755)
+    original_chmod = code.os.chmod
+
+    def later_user_permission_change(target, mode):
+        original_chmod(target, mode)
+        original_chmod(path, 0o600)
+
+    monkeypatch.setattr(code.os, "chmod", later_user_permission_change)
+    registry = ToolRegistry()
+    register_code_tools(registry, workspace=Workspace(root=tmp_path))
+    with pytest.raises(ToolError, match="File permissions changed during replacement"):
+        await registry.invoke(
+            "replace_text",
+            {
+                "path": "source.txt",
+                "old_text": "original",
+                "new_text": "edited",
+                "expected_sha256": hashlib.sha256(b"original").hexdigest(),
+            },
+        )
+    assert path.read_bytes() == b"original"
+    assert stat.S_IMODE(path.stat().st_mode) == 0o600
+    assert list(tmp_path.iterdir()) == [path]
