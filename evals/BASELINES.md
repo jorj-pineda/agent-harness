@@ -1635,3 +1635,18 @@ Later post-response/pre-tool budget stops and wall-time conditions are outside t
 new stop-record coverage; raw traces/final reasons remain authoritative. Trace
 processing adds overhead inside existing deadlines. Context reduction, model
 profiles/calibration and Milestones 4–6 remain open.
+
+
+## 2026-10-14 — Unknown usage after failed evaluation requests
+
+The real-task observation wrapper now marks prompt/completion totals unknown when
+an in-flight request raises, times out or is cancelled, including after earlier
+successful responses. Known prefix usage remains in raw response traces. Existing
+summary logic excludes these incomplete totals from token medians and counts them
+as unreported attempts. Runs blocked before any request still retain zero, and
+reported zero remains valid. No retry or fallback is introduced.
+
+This fixes the reporting limitation seen in the retired context trial: its failed
+first request showed zero tokens because the wrapper had no response. That did not
+prove no backend work. Historical raw reports are left intact with their existing
+notes; this change affects new evaluations. No model comparison or quality claim.

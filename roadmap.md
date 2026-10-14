@@ -1219,3 +1219,17 @@ enters the queue when a real task or evaluation shows the limitation matters.
 | Exhausting the context stops the turn instead of continuing. | Add Milestone 4 compaction that keeps the objective, current diff, relevant file spans, unresolved failures, and recent actions. Keep raw traces outside the model context. |
 | The total budget is estimate-gated. One request can overshoot it when the provider's count exceeds the estimate. The overshoot is reported, not prevented. | Profile calibration narrows the error. A stricter variant can reserve a safety margin proportional to the observed estimate error. |
 | Some backends can omit cached prompt tokens from reported usage, so the total budget may undercount work. This was not observed in the one local check. | Record the per-request estimate beside reported usage in real-eval traces, and flag requests where the reported prompt count is far below the estimate. |
+
+
+### Evaluation usage observation (2026-10-14)
+
+Failed/timed-out/cancelled in-flight real-task requests now make aggregate token
+usage unknown, preserving known prefix response evidence. Existing medians exclude
+unknown totals and count unreported attempts; pre-request prevention retains zero.
+This fixes the retired trial's misleading zero-total failure convention for new
+reports without rewriting historical results. It does not establish billing,
+model quality, compaction or completion of Milestones 4–6.
+
+Validation: 35 focused and 890 offline tests (five live deselected), Ruff/mypy,
+and both scripted 90/90 matrices with labels/limits inspected. No model calls or
+Duodoro source edits.
