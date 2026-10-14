@@ -135,23 +135,12 @@ def verification_status(
     tool_calls: list[ToolCallRecord], *, required_check: list[str] | None = None
 ) -> VerificationStatus:
     """Summarize the latest check, invalidating it when a later edit succeeds."""
-    status: VerificationStatus = "not_run"
-    for call in tool_calls:
-        if _may_have_mutated(call):
-            status = "stale" if status != "not_run" else "not_run"
-            if call.name in EDIT_TOOL_NAMES:
-                continue
-        if call.name != RUN_COMMAND_TOOL_NAME:
-            continue
-        argv = call.arguments.get("argv")
-        if not isinstance(argv, list) or not is_verification_command([str(a) for a in argv]):
-            continue
-        if required_check is not None and argv != required_check:
-            continue
-        result = call.result
-        status = (
-            "passed"
-            if call.error is None and isinstance(result, dict) and result.get("success") is True
-            else "failed"
-        )
-    return status
+    relevant = [
+        check
+        for check in harvest_checks(tool_calls, required_check=required_check)
+        if check.relevant
+    ]
+    if not relevant:
+        return "not_run"
+    latest = relevant[-1]
+    return "stale" if latest.superseded_by_edit else latest.status

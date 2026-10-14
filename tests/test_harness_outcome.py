@@ -19,9 +19,7 @@ def test_check_attempts_distinguish_failure_unavailable_and_stale_evidence() -> 
             arguments={"argv": ["pytest", "-q"]},
             result={"exit_code": 1, "success": False},
         ),
-        ToolCallRecord(
-            name="write_file", arguments={"path": "a.py"}, result={"path": "a.py"}
-        ),
+        ToolCallRecord(name="write_file", arguments={"path": "a.py"}, result={"path": "a.py"}),
         ToolCallRecord(
             name="run_command", arguments={"argv": ["ruff", "check", "."]}, error="missing"
         ),
@@ -201,3 +199,24 @@ def test_python3_checks_preserve_exact_configuration_and_latest_check_status() -
     checks = harvest_checks([passing], required_check=argv)
     assert [(c.argv, c.status, c.relevant) for c in checks] == [(argv, "passed", True)]
     assert not harvest_checks([passing], required_check=canonical)[0].relevant
+
+
+def test_summary_uses_the_same_unavailable_and_stale_evidence_as_details():
+    unavailable = ToolCallRecord(
+        name="run_command",
+        arguments={"argv": ["pytest", "-q"]},
+        error="Tool not executed: token budget exhausted",
+    )
+    edit = ToolCallRecord(name="write_file", result={"path": "a.py"})
+    assert harvest_checks([unavailable])[0].status == "unavailable"
+    assert verification_status([unavailable]) == "unavailable"
+    assert not harvest_verification_ran([unavailable])
+    assert verification_status([unavailable, edit]) == "stale"
+
+
+def test_invalid_argv_is_not_a_check_in_either_summary_or_details():
+    malformed = ToolCallRecord(
+        name="run_command", arguments={"argv": ["pytest", 123]}, error="invalid arguments"
+    )
+    assert harvest_checks([malformed]) == []
+    assert verification_status([malformed]) == "not_run"

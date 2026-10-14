@@ -603,7 +603,9 @@ async def test_wall_budget_stops_next_batched_tool_after_inflight_tool_finishes(
         session=session,
         user_input="work",
         provider=provider,
-        registry=_registry(Tool(name="slow", description="slow", input_model=EchoInput, fn=slow_tool)),
+        registry=_registry(
+            Tool(name="slow", description="slow", input_model=EchoInput, fn=slow_tool)
+        ),
         max_turn_wall_seconds=0.1,
     )
     assert invoked == 1
@@ -628,7 +630,9 @@ async def test_wall_budget_skips_next_model_request_after_tool_finishes() -> Non
         session=Session(),
         user_input="work",
         provider=provider,
-        registry=_registry(Tool(name="slow", description="slow", input_model=EchoInput, fn=slow_tool)),
+        registry=_registry(
+            Tool(name="slow", description="slow", input_model=EchoInput, fn=slow_tool)
+        ),
         max_turn_wall_seconds=0.1,
     )
     assert len(provider.calls) == 1
@@ -665,7 +669,11 @@ async def test_output_budget_reduces_next_request_and_stops_tool_dispatch_at_lim
     assert "not executed" in (response.tool_calls[1].error or "")
     assert response.completion_status == "budget_exhausted"
     assert [message.role for message in session.messages] == [
-        "user", "assistant", "tool", "assistant", "tool",
+        "user",
+        "assistant",
+        "tool",
+        "assistant",
+        "tool",
     ]
 
 
@@ -1025,3 +1033,28 @@ async def test_provider_sees_growing_transcript_across_iterations() -> None:
 
 def test_default_max_iterations_is_eight() -> None:
     assert DEFAULT_MAX_ITERATIONS == 8
+
+
+async def test_check_blocked_by_budget_is_unavailable_in_response_and_details():
+    provider = FakeProvider(
+        [
+            _response(
+                tool_calls=[
+                    ToolCall(id="check", name="run_command", arguments={"argv": ["pytest", "-q"]})
+                ],
+                prompt_tokens=600,
+                completion_tokens=10,
+            )
+        ]
+    )
+    result = await run_turn(
+        session=Session(),
+        user_input="check",
+        provider=provider,
+        registry=_registry(),
+        max_total_tokens_per_turn=1000,
+    )
+    assert result.completion_status == "budget_exhausted"
+    assert result.verification_status == "unavailable"
+    assert result.check_attempts[0].status == "unavailable" and result.check_attempts[0].error
+    assert result.verification_ran is False
