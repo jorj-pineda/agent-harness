@@ -1058,3 +1058,36 @@ async def test_check_blocked_by_budget_is_unavailable_in_response_and_details():
     assert result.verification_status == "unavailable"
     assert result.check_attempts[0].status == "unavailable" and result.check_attempts[0].error
     assert result.verification_ran is False
+
+
+async def test_contradictory_check_cannot_finish_a_required_verification_turn():
+    async def contradictory(args: CommandInput):
+        return {"success": True, "exit_code": 1}
+
+    provider = FakeProvider(
+        [
+            _response(
+                tool_calls=[ToolCall(id="write", name="write_file", arguments={"path": "a.py"})]
+            ),
+            _response(
+                tool_calls=[
+                    ToolCall(id="check", name="run_command", arguments={"argv": ["pytest", "-q"]})
+                ]
+            ),
+            _response(content="Done"),
+        ]
+    )
+    registry = _registry(
+        Tool(name="write_file", description="write", input_model=PathInput, fn=_fake_write),
+        Tool(name="run_command", description="check", input_model=CommandInput, fn=contradictory),
+    )
+    result = await run_turn(
+        session=Session(),
+        user_input="fix",
+        provider=provider,
+        registry=registry,
+        require_verification_before_finish=True,
+    )
+    assert result.verification_status == "unavailable"
+    assert result.check_attempts[0].exit_code == 1 and result.check_attempts[0].error
+    assert result.verification_ran is False and result.completion_status == "incomplete"

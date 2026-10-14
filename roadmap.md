@@ -1074,6 +1074,16 @@ Relevant implementation: `harness/loop.py`, `harness/outcome.py`, `harness/groun
   field/asset-root assumptions were corrected before the final gate. No inference
   or Duodoro edits; context management and Milestones 4–6 remain open.
 
+- **2026-10-14 — Consistent check-result evidence:** malformed exit codes/flags
+  and success/exit-code contradictions now yield unavailable with an explanation,
+  never verification success. Consistent results, signal failures and legacy
+  boolean-only records retain their meaning. Raw records/archives stay unchanged.
+  A required-verification regression prevents contradictory evidence from marking
+  an editing turn completed. This is bookkeeping integrity, not task acceptance
+  or a model-quality improvement; no inference or Duodoro source edits.
+  Validation: 94 focused, 936 offline (five live deselected), Ruff/mypy and both
+  scripted 90/90 matrices with labels/limits inspected. Milestones 4–6 remain open.
+
 ## Milestone 1 — Establish a real task-success baseline
 
 **Outcome:** a model attempts real repository tasks through the same runtime used by Jorge, and independent checks determine whether it succeeded.

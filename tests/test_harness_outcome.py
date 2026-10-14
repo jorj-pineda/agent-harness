@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pytest
+
 from harness.outcome import (
     harvest_checks,
     harvest_files_touched,
@@ -220,3 +222,41 @@ def test_invalid_argv_is_not_a_check_in_either_summary_or_details():
     )
     assert harvest_checks([malformed]) == []
     assert verification_status([malformed]) == "not_run"
+
+
+@pytest.mark.parametrize(
+    "result",
+    [
+        {"success": True, "exit_code": 1},
+        {"success": False, "exit_code": 0},
+        {"success": True, "exit_code": True},
+        {"success": True, "exit_code": "0"},
+        {"success": "true", "exit_code": 0},
+        {"exit_code": 0},
+        {},
+    ],
+)
+def test_inconsistent_check_results_cannot_certify_verification(result):
+    before = dict(result)
+    call = ToolCallRecord(name="run_command", arguments={"argv": ["pytest", "-q"]}, result=result)
+    checks = harvest_checks([call])
+    assert checks[0].status == "unavailable" and checks[0].error
+    assert verification_status([call]) == "unavailable"
+    assert not harvest_verification_ran([call])
+    assert call.result == before
+
+
+@pytest.mark.parametrize(
+    "result,status",
+    [
+        ({"success": True, "exit_code": 0}, "passed"),
+        ({"success": False, "exit_code": 1}, "failed"),
+        ({"success": False, "exit_code": -15}, "failed"),
+        ({"success": True}, "passed"),
+        ({"success": False}, "failed"),
+    ],
+)
+def test_consistent_and_legacy_check_results_keep_existing_meaning(result, status):
+    call = ToolCallRecord(name="run_command", arguments={"argv": ["pytest", "-q"]}, result=result)
+    assert verification_status([call]) == status
+    assert harvest_checks([call])[0].error is None

@@ -1238,3 +1238,11 @@ API enum value; exhaustive clients must accept it. `verification_ran` stays fals
 unless the latest relevant check passed. Earlier archived summaries are not
 rewritten. Panel check badges are positive only for passed evidence, warn for
 failed/unavailable/stale, and remain neutral for not-run/unknown states.
+
+
+A check with contradictory success/exit-code values, a non-integer exit code
+(including booleans), or a missing boolean success flag is `unavailable`, with
+an explanation in its check record. It cannot certify verification. Consistent
+nonzero or signal exit codes remain failures. Legacy boolean-only check records
+remain supported; this validates metadata consistency, not semantic acceptance.
+Raw tool results and older archives are not rewritten.

@@ -101,19 +101,29 @@ def harvest_checks(
             continue
         result = call.result if isinstance(call.result, dict) else {}
         exit_code = result.get("exit_code")
+        valid_exit = isinstance(exit_code, int) and not isinstance(exit_code, bool)
+        success = result.get("success")
+        error = call.error
+        if error is None:
+            if exit_code is not None and not valid_exit:
+                error = "Check result has a non-integer exit_code."
+            elif not isinstance(success, bool):
+                error = "Check result has no boolean success flag."
+            elif valid_exit and success != (exit_code == 0):
+                error = "Check success flag disagrees with exit_code."
         checks.append(
             CheckRecord(
                 argv=argv,
-                exit_code=exit_code if isinstance(exit_code, int) else None,
+                exit_code=exit_code if valid_exit else None,
                 status=(
                     "unavailable"
-                    if call.error is not None
+                    if error is not None
                     else "passed"
                     if result.get("success") is True
                     else "failed"
                 ),
                 relevant=required_check is None or argv == required_check,
-                error=call.error,
+                error=error,
             )
         )
     return checks
