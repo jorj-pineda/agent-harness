@@ -241,9 +241,14 @@ def build_code_tools(
                     raise ToolError(
                         f"Selected range exceeds {MAX_READ_BYTES} bytes; narrow the request."
                     )
-                selected.append(
-                    raw_line.decode("utf-8", errors="replace").removesuffix("\n").removesuffix("\r")
-                )
+                try:
+                    line = raw_line.decode("utf-8")
+                except UnicodeDecodeError as exc:
+                    raise ToolError(
+                        f"Selected line {total_lines} is not valid UTF-8; "
+                        "read_file cannot return exact text for this range."
+                    ) from exc
+                selected.append(line.removesuffix("\n").removesuffix("\r"))
 
         if total_lines and start > total_lines:
             raise ToolError(f"start_line {start} beyond file length {total_lines}")
