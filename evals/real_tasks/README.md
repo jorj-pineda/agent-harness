@@ -49,7 +49,7 @@ selection. Reports record the toolset and exposed schemas. Keep settings and
 budgets identical when comparing toolsets, and use unique report paths. The
 initial comparison did not establish a reliable gain; see `evals/BASELINES.md`.
 
-New reports identify `trace_format: normalized-turn-v1` and include an ordered
+New reports identify `trace_format: normalized-turn-v2` (older v1 reports remain unchanged) and include an ordered
 `turn_trace` per attempt, alongside the existing `tool_trace`. The shared loop
 collects this only when a caller supplies a trace list; application API payloads
 and model context are unchanged. Each record carries a zero-based iteration:
@@ -58,7 +58,21 @@ and model context are unchanged. Each record carries a zero-based iteration:
   requested output allowance (`null` means no harness cap). The first request
   includes a deep copy of the initial normalized messages, including system
   instructions; subsequent requests do not duplicate history. Tool schemas
-  remain in `runtime_config.tool_specs`.
+  remain in `runtime_config.tool_specs`. New records also include a metadata-only
+  `footprint`: message/tool-schema heuristic tokens, the adjustment from the
+  previous reported prompt anchor, and the ten largest message payloads by
+  heuristic UTF-8 bytes (ties use ascending message index). The message estimate
+  includes overhead; message + schema + anchor adjustment equals the gate estimate.
+  Payload size is not provider tokenization or wire size. Rankings contain message
+  index, role and tool name, excluding raw content, arguments, paths and call IDs.
+  Older request records parse with `footprint=null`; no footprint is invented.
+- `budget_stop`: a request prevented by the pre-request output/total/context token
+  gate, with iteration/message count, status/reason, footprint, observed cumulative
+  usage and configured limits/minimum output. It is not a request, provider usage,
+  or dispatch record. A first-request stop can be the only trace entry. It does
+  not capture later post-response/pre-tool budget stops, wall-time stops or other
+  terminal conditions; existing response/tool evidence and final reason remain
+  authoritative.
 - `response`: full normalized content, requested tool calls with IDs and batch
   boundaries, finish reason, reported usage, model, and provider latency. Captured
   before completion/budget gates, including whitespace replies and calls that a
@@ -104,3 +118,10 @@ comparison or inference was run for it. The real runner's existing `latency_ms`
 measures the whole configured call, including snapshots/diffs, and remains unchanged.
 Application envelopes retain loop-only `latency_ms` and now expose separate nullable
 `workspace_review_ms`; neither application field represents end-to-end HTTP latency.
+
+
+Footprints are opt-in trace evidence. API response fields, model context, token
+limits, recovery and acceptance scoring are unchanged. Metadata excludes payloads;
+other trace entries still contain sensitive source and are not credential-redacted.
+Trace computation consumes processing time under existing dispatch deadlines.
+No compaction, profile calibration or model-quality improvement is established.

@@ -1579,3 +1579,59 @@ select compact prompt plus full or bounded_reads_v1. Use shared `run_task` in
 harness mode, privately configured Go credential and the recorded explicit transport
 recipe. Recheck free pricing and stop on provider errors; protect criteria and veto
 out-of-scope artifacts. Never reuse the actual Duodoro working tree as a fixture.
+
+
+## 2026-10-14 — Context-pressure evidence, offline only
+
+New normalized-turn-v2 traces record metadata-only prompt footprints for request
+attempts and separate pre-request `budget_stop` records. The shared estimator's
+math is unchanged: message tokens include overhead; schema tokens plus message
+estimate plus nonnegative reported-anchor adjustment equal the gate estimate.
+Rankings cap at ten message payloads by heuristic UTF-8 bytes, with stable index
+ordering on ties. They are not provider tokenizer counts or wire sizes. Budget-stop
+metadata records observed cumulative usage, configured limits and required output;
+it never claims a prevented request dispatched. Old request records parse without
+invented footprints and historical raw reports remain unchanged.
+
+An offline real-file regression reaches an actual context gate after a successful
+read, preserves user content/full tool results, identifies that read as the largest
+payload and prevents a second provider call. A separate real-task report regression
+retains an initial prevented request through JSON serialization without inference
+or changing external acceptance. Existing traced/untraced parity checks pass.
+These use scripted providers and real tools, not model-quality evaluations.
+
+Post-hoc reconstruction of
+`results/2026-10-12-duodoro-timer-longcat-free-64k.json` was performed locally without
+new inference or modifying its results. Rebuild the normalized transcript from
+request initial history, response messages and tool/recovery events; update
+TokenBudget from each response's usage and sent message count; apply
+`harness.trace.prompt_footprint` with the recorded tool schemas. The minimal
+attempt's final-history estimate reproduces the published context stop:
+
+| Component | Reconstructed estimate / heuristic payload bytes |
+|---|---|
+| Message estimate, including overhead | 13,971 tokens |
+| Tool schemas | 2,719 tokens |
+| Anchor adjustment | 0 tokens |
+| Final prompt estimate | 16,690 tokens, against 16,384 context plus 256 required output |
+| Largest message: AGENTS.md read, index 3 | 17,396 payload bytes |
+| Search output, index 12 | 6,906 payload bytes |
+| Parser source read, index 6 | 6,168 payload bytes |
+| Parser tests read, index 4 | 5,030 payload bytes |
+
+File labels come from the existing raw trace; footprints themselves contain no
+paths/content/arguments. This is retrospective estimator analysis, not a new
+observed request, backend token attestation, latency/cost comparison or quality
+result. It explains why source-read elision alone missed substantial pressure;
+applicable instructions must remain preserved in any future context experiment.
+The historical harness attempt still ended on length truncation; its reconstructed
+13,726-token history does not imply another request would succeed.
+
+Validation: 75 focused, 883 offline tests (five live deselected), Ruff/mypy and both
+90/90 scripted matrices with labels/metric limits inspected. The new workspace
+assertion initially used the wrong status name and was corrected to `tracked`.
+No live calls, paid calls, Duodoro source edits or model comparison occurred.
+Later post-response/pre-tool budget stops and wall-time conditions are outside the
+new stop-record coverage; raw traces/final reasons remain authoritative. Trace
+processing adds overhead inside existing deadlines. Context reduction, model
+profiles/calibration and Milestones 4–6 remain open.
