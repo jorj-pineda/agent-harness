@@ -63,7 +63,7 @@ from harness.tool_progress import SavedToolEvent, ToolProgress
 from harness.transcript import TranscriptReview, inspect_transcript
 from harness.workspace_review import WorkspaceReview, WorkspaceReviewBaseline, compare_workspace
 from memory import FactStore
-from memory.review import MemoryPage, review_notes
+from memory.review import MemoryPage, preview_note, review_notes
 from memory.store import FactConflictError
 from providers import create_embedder
 from providers.base import ChatProvider, Embedder
@@ -77,6 +77,8 @@ from .models import (
     ChatResponse,
     ConfigurationReviewRequest,
     ContinueSessionRequest,
+    CorrectMemoryRequest,
+    CorrectMemoryResponse,
     CreateCheckpointRequest,
     CreateSessionRequest,
     CreateSessionResponse,
@@ -427,6 +429,32 @@ def _register_routes(app: FastAPI) -> None:
         if not deleted:
             raise HTTPException(status_code=404, detail="No matching owner-scoped note.")
         return DeleteMemoryResponse(fact_id=fact_id)
+
+    @app.put("/memory/{fact_id}", response_model=CorrectMemoryResponse)
+    async def correct_memory(
+        fact_id: int, req: CorrectMemoryRequest, request: Request
+    ) -> CorrectMemoryResponse:
+        """Replace this owner's reviewed note; never modifies archived evidence."""
+        if fact_id < 1:
+            raise HTTPException(status_code=422, detail="fact_id must be positive.")
+        try:
+            note = request.app.state.components.fact_store.correct(
+                req.user_id, fact_id, req.expected_fact_sha256, req.replacement
+            )
+        except (FactConflictError, sqlite3.IntegrityError) as exc:
+            raise HTTPException(
+                status_code=409,
+                detail="Note changed or replacement already remembered; inspect again.",
+            ) from exc
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+        except sqlite3.Error as exc:
+            raise HTTPException(
+                status_code=503, detail="Memory correction failed; inspect memory before retrying."
+            ) from exc
+        if note is None:
+            raise HTTPException(status_code=404, detail="No matching owner-scoped note.")
+        return CorrectMemoryResponse(note=preview_note(note))
 
     @app.post("/sessions", response_model=CreateSessionResponse)
     async def create_session(req: CreateSessionRequest, request: Request) -> CreateSessionResponse:

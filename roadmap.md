@@ -1177,6 +1177,21 @@ Relevant implementation: `harness/loop.py`, `harness/outcome.py`, `harness/groun
   suite was not rerun locally for docs/description-only edits. Broader onboarding
   for selectable model profiles and Milestones 4–6 remain open.
 
+- **2026-10-14 — Guarded owner memory correction:** shared normalization caps
+  corrected notes at 4,096 UTF-8 bytes after trimming; API raw replacement input
+  is also capped at 8,192 characters. Explicit PUT/CLI correction uses the reviewed
+  whole-note hash and final SQL predicate; stale/duplicate/concurrent changes retain
+  the original. ID/creation/order are preserved, correction time is recorded and
+  old source-turn attribution cleared. Additive legacy migration leaves historical
+  correction times null. Restart/future prompts use corrected text without rewriting
+  archived evidence or changing model recall shapes; clients send one request and
+  never automatically retry uncertain outcomes.
+  Validation: 80 focused, 981 offline (five live deselected), Ruff/mypy and both
+  scripted 90/90 matrices with labels/limits inspected. No inference or Duodoro
+  source edits. Repository scope, turn-linked provenance, panel memory controls,
+  full audit/secure erasure and broader context/profile work remain open; this is
+  not completion of Milestones 4–6.
+
 ## Milestone 1 — Establish a real task-success baseline
 
 **Outcome:** a model attempts real repository tasks through the same runtime used by Jorge, and independent checks determine whether it succeeded.

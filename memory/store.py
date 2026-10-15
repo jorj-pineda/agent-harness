@@ -49,6 +49,15 @@ MEMORY_OMISSION_NOTICE = (
 FACTS_HEADING = "Engineering memory for this developer (persists across sessions):"
 
 
+def normalize_fact(fact: str) -> str:
+    normalized = fact.strip()
+    if not normalized:
+        raise ValueError("fact must not be empty")
+    if len(normalized.encode("utf-8")) > MAX_FACT_BYTES:
+        raise ValueError(f"fact exceeds {MAX_FACT_BYTES} UTF-8 bytes after trimming")
+    return normalized
+
+
 class Fact(BaseModel):
     """One persisted engineering note about a user/developer."""
 
@@ -57,10 +66,11 @@ class Fact(BaseModel):
     fact: str
     source_turn_id: str | None = None
     created_at: str = Field(..., description="ISO-8601 UTC timestamp")
+    updated_at: str | None = None
 
 
 class FactConflictError(ValueError):
-    """The stored note no longer matches the content selected for deletion."""
+    """The stored note no longer matches the reviewed content."""
 
 
 class FactStore:
@@ -78,7 +88,19 @@ class FactStore:
     def __init__(self, db_path: str | Path) -> None:
         self._path = Path(db_path)
         self._conn: sqlite3.Connection = open_rw(self._path)
-        init_schema(self._conn, MEMORY_SCHEMA_PATH)
+        try:
+            init_schema(self._conn, MEMORY_SCHEMA_PATH)
+            # Serialize this additive migration across concurrent constructors.
+            with self._conn:
+                self._conn.execute("BEGIN IMMEDIATE")
+                columns = {
+                    row["name"] for row in self._conn.execute("PRAGMA table_info(memory_facts)")
+                }
+                if "updated_at" not in columns:
+                    self._conn.execute("ALTER TABLE memory_facts ADD COLUMN updated_at TEXT")
+        except Exception:
+            self._conn.close()
+            raise
 
     def add(
         self,
@@ -89,12 +111,7 @@ class FactStore:
         """Insert a fact. Returns True if new, False if already recorded."""
         if not user_id:
             raise ValueError("user_id must not be empty")
-        normalized = fact.strip()
-        if not normalized:
-            raise ValueError("fact must not be empty")
-
-        if len(normalized.encode("utf-8")) > MAX_FACT_BYTES:
-            raise ValueError(f"fact exceeds {MAX_FACT_BYTES} UTF-8 bytes after trimming")
+        normalized = normalize_fact(fact)
 
         now = datetime.now(UTC).isoformat()
         cursor = self._conn.execute(
@@ -123,7 +140,7 @@ class FactStore:
         if before_id is not None and before_id < 1:
             raise ValueError("before_id must be >= 1")
         rows = self._conn.execute(
-            "SELECT id, user_id, fact, source_turn_id, created_at "
+            "SELECT id, user_id, fact, source_turn_id, created_at, updated_at "
             "FROM memory_facts WHERE user_id = ? "
             "AND (? IS NULL OR id < ?) ORDER BY id DESC LIMIT ?",
             (user_id, before_id, before_id, limit),
@@ -154,6 +171,40 @@ class FactStore:
             if cursor.rowcount != 1:
                 raise FactConflictError("Stored note changed during deletion; inspect again.")
         return True
+
+    def correct(
+        self, user_id: str, fact_id: int, expected_fact_sha256: str, replacement: str
+    ) -> Fact | None:
+        """Replace reviewed content atomically, preserving creation/ID ordering.
+
+        Owner correction records its time and clears original source attribution.
+        Missing/other-owner IDs return None; duplicate-note conflicts roll back.
+        """
+        if not user_id or fact_id < 1:
+            raise ValueError("user_id must not be empty and fact_id must be positive")
+        normalized = normalize_fact(replacement)
+        row = self._conn.execute(
+            "SELECT fact FROM memory_facts WHERE user_id = ? AND id = ?", (user_id, fact_id)
+        ).fetchone()
+        if row is None:
+            return None
+        fact: str = row["fact"]
+        if hashlib.sha256(fact.encode("utf-8")).hexdigest() != expected_fact_sha256:
+            raise FactConflictError("Stored note differs from the reviewed content; inspect again.")
+        with self._conn:
+            cursor = self._conn.execute(
+                "UPDATE memory_facts SET fact = ?, source_turn_id = NULL, updated_at = ? "
+                "WHERE user_id = ? AND id = ? AND fact = ?",
+                (normalized, datetime.now(UTC).isoformat(), user_id, fact_id, fact),
+            )
+            if cursor.rowcount != 1:
+                raise FactConflictError("Stored note changed during correction; inspect again.")
+            result = self._conn.execute(
+                "SELECT id, user_id, fact, source_turn_id, created_at, updated_at "
+                "FROM memory_facts WHERE user_id = ? AND id = ?",
+                (user_id, fact_id),
+            ).fetchone()
+            return Fact(**dict(result))
 
     def format_for_system_prompt(
         self,

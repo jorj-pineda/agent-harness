@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS memory_facts (
     fact           TEXT NOT NULL,
     source_turn_id TEXT,
     created_at     TEXT NOT NULL,
+    updated_at     TEXT,
     UNIQUE(user_id, fact)
 );
 
