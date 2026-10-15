@@ -16,6 +16,7 @@ from __future__ import annotations
 import json
 import logging
 from collections.abc import Callable
+from typing import Literal
 
 from pydantic import BaseModel, Field
 
@@ -34,7 +35,14 @@ REMEMBER_TOOL_NAMES = frozenset({"remember_fact", "remember"})
 RECALL_TOOL_NAMES = frozenset({"recall_facts", "recall"})
 
 
-class RememberFactInput(BaseModel):
+class MemoryScopeInput(BaseModel):
+    scope: Literal["current", "global"] = Field(
+        default="current",
+        description="current uses this workspace (or global without one); global is user-wide.",
+    )
+
+
+class RememberFactInput(MemoryScopeInput):
     fact: str = Field(
         ...,
         min_length=1,
@@ -45,7 +53,7 @@ class RememberFactInput(BaseModel):
     )
 
 
-class RememberInput(BaseModel):
+class RememberInput(MemoryScopeInput):
     note: str = Field(
         ...,
         min_length=1,
@@ -53,16 +61,20 @@ class RememberInput(BaseModel):
     )
 
 
-class RecallFactsInput(BaseModel):
+class RecallFactsInput(MemoryScopeInput):
     max_results: int = Field(DEFAULT_LIST_LIMIT, ge=1, le=MAX_RECALL)
 
 
-class RecallInput(BaseModel):
+class RecallInput(MemoryScopeInput):
     max_results: int = Field(DEFAULT_LIST_LIMIT, ge=1, le=MAX_RECALL)
 
 
 def build_memory_tools(
-    store: FactStore, user_id: str, *, source_turn_id: Callable[[], str | None] | None = None
+    store: FactStore,
+    user_id: str,
+    *,
+    source_turn_id: Callable[[], str | None] | None = None,
+    workspace_root: str | None = None,
 ) -> list[Tool]:
     """Build memory Tool instances bound to a specific user."""
     if not user_id:
@@ -71,19 +83,33 @@ def build_memory_tools(
     async def remember_fact(args: RememberFactInput) -> dict[str, object]:
         log.info("memory_tool=remember_fact user_id=%s", user_id)
         inserted = store.add(
-            user_id, args.fact, source_turn_id=source_turn_id() if source_turn_id else None
+            user_id,
+            args.fact,
+            source_turn_id=source_turn_id() if source_turn_id else None,
+            workspace_root=workspace_root if args.scope == "current" else None,
         )
         return {"stored": inserted, "fact": args.fact.strip()}
 
     async def remember(args: RememberInput) -> dict[str, object]:
         log.info("memory_tool=remember user_id=%s", user_id)
         inserted = store.add(
-            user_id, args.note, source_turn_id=source_turn_id() if source_turn_id else None
+            user_id,
+            args.note,
+            source_turn_id=source_turn_id() if source_turn_id else None,
+            workspace_root=workspace_root if args.scope == "current" else None,
         )
         return {"stored": inserted, "fact": args.note.strip()}
 
-    def recall_notes(limit: int) -> list[str]:
-        notes = [f.fact for f in store.list(user_id, limit=limit, scoped=True)]
+    def recall_notes(limit: int, scope: str) -> list[str]:
+        notes = [
+            f.fact
+            for f in store.list(
+                user_id,
+                limit=limit,
+                scoped=True,
+                workspace_root=workspace_root if scope == "current" else None,
+            )
+        ]
         # Match the loop's default JSON tool-message encoding, including ASCII
         # escapes. Raw UTF-8 note sizes underestimate this serialized payload.
         if len(json.dumps(notes, default=str).encode("utf-8")) > MAX_RECALL_BYTES:
@@ -100,7 +126,7 @@ def build_memory_tools(
             user_id,
             args.max_results,
         )
-        return recall_notes(args.max_results)
+        return recall_notes(args.max_results, args.scope)
 
     async def recall(args: RecallInput) -> list[str]:
         log.info(
@@ -108,17 +134,21 @@ def build_memory_tools(
             user_id,
             args.max_results,
         )
-        return recall_notes(args.max_results)
+        return recall_notes(args.max_results, args.scope)
 
     remember_description = (
         "Persist a durable engineering note for this developer across sessions "
         "(stack choices, repo conventions, review preferences). Returns "
         "{stored: true} on first insert, {stored: false} if the exact note "
-        f"was already known. Notes must fit {MAX_FACT_BYTES} UTF-8 bytes after trimming."
+        "was already known in that namespace. Default current scope stores workspace conventions; "
+        "choose global for user-wide preferences. "
+        f"Notes must fit {MAX_FACT_BYTES} UTF-8 bytes after trimming."
     )
     recall_description = (
         "Return engineering notes previously remembered for this developer, "
-        "most recently added first. Notes are also injected into the system "
+        "most recently added first. Current scope returns global plus current-workspace notes; "
+        "global scope returns only user-wide notes. Other workspaces cannot be selected. "
+        "Notes are also injected into the system "
         "prompt at the start of each turn within a separate byte limit. "
         f"Recall rejects responses over {MAX_RECALL_BYTES} serialized JSON bytes; "
         "reduce max_results on overflow. No notes are silently dropped from a recall result."
@@ -158,7 +188,10 @@ def register_memory_tools(
     store: FactStore,
     user_id: str,
     source_turn_id: Callable[[], str | None] | None = None,
+    workspace_root: str | None = None,
 ) -> None:
     """Register memory tools on the given registry for the given user."""
-    for tool in build_memory_tools(store, user_id, source_turn_id=source_turn_id):
+    for tool in build_memory_tools(
+        store, user_id, source_turn_id=source_turn_id, workspace_root=workspace_root
+    ):
         registry.register(tool)

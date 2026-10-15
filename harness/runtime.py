@@ -66,7 +66,11 @@ def build_registry(
     for tool in support_tools:
         registry.register(tool)
     register_memory_tools(
-        registry, store=fact_store, user_id=user_id, source_turn_id=memory_source_turn
+        registry,
+        store=fact_store,
+        user_id=user_id,
+        source_turn_id=memory_source_turn,
+        workspace_root=str(Path(workspace_root).resolve()) if workspace_root else None,
     )
     if workspace_root is not None:
         code_registry = ToolRegistry()
@@ -95,7 +99,12 @@ def refresh_system_message(
         )
     if session.workspace_root:
         blocks.append(f"Workspace root: {session.workspace_root}")
-    facts = fact_store.format_for_system_prompt(user_id)
+    facts = fact_store.format_for_system_prompt(
+        user_id,
+        workspace_root=str(Path(session.workspace_root).resolve())
+        if session.workspace_root
+        else None,
+    )
     if facts:
         blocks.append(facts)
     message = ChatMessage(role="system", content="\n\n".join(blocks))

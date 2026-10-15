@@ -250,3 +250,53 @@ def test_api_remember_source_turn_survives_restart_and_deduplication(tmp_path):
     with TestClient(make_app(tmp_path, ScriptedProvider())) as client:
         assert client.get("/memory", params={"user_id": "dev"}).json()["notes"] == [note]
         assert client.get(f"/sessions/{sid}", params={"user_id": "dev"}).json() == archive
+
+
+def test_runtime_injection_is_workspace_scoped_across_restart(tmp_path):
+    a, b = tmp_path / "a", tmp_path / "b"
+    a.mkdir()
+    b.mkdir()
+    provider = ScriptedProvider()
+    provider.script(
+        make_response(
+            tool_calls=[
+                ToolCall(id="local", name="remember", arguments={"note": "A convention"}),
+                ToolCall(
+                    id="global",
+                    name="remember_fact",
+                    arguments={"fact": "Global preference", "scope": "global"},
+                ),
+            ]
+        ),
+        make_response(content="Stored"),
+        make_response(content="B answer"),
+        make_response(content="A answer"),
+    )
+    with TestClient(make_app(tmp_path, provider)) as client:
+        ids = [
+            client.post("/sessions", json={"user_id": "dev", "workspace_root": str(root)}).json()[
+                "session_id"
+            ]
+            for root in [a, b]
+        ]
+        for sid, message in [(ids[0], "Remember"), (ids[1], "Explain B"), (ids[0], "Explain A")]:
+            assert (
+                client.post(
+                    "/chat", json={"user_id": "dev", "session_id": sid, "message": message}
+                ).status_code
+                == 200
+            )
+        assert "A convention" not in provider.calls[2][0][0].content
+        assert "Global preference" in provider.calls[2][0][0].content
+        assert "A convention" in provider.calls[3][0][0].content
+        notes = client.get("/memory", params={"user_id": "dev"}).json()["notes"]
+        assert {n["workspace_root"] for n in notes} == {str(a), None}
+    restarted = ScriptedProvider()
+    restarted.script(make_response(content="B after restart"))
+    with TestClient(make_app(tmp_path, restarted)) as client:
+        sid = client.post("/sessions", json={"user_id": "dev", "workspace_root": str(b)}).json()[
+            "session_id"
+        ]
+        client.post("/chat", json={"user_id": "dev", "session_id": sid, "message": "Explain"})
+        assert "A convention" not in restarted.calls[0][0][0].content
+        assert "Global preference" in restarted.calls[0][0][0].content

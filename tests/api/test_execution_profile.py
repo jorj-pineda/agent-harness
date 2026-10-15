@@ -60,7 +60,7 @@ def test_profile_is_durable_before_inference_and_survives_finalization_and_resta
             assert profile["prompt_version"] == (
                 "coding-v3-compact-whole-file-v1"
                 if prompt_profile == "compact"
-                else "coding-v2-whole-file-v1"
+                else "coding-v2-whole-file-memory-scope-v1"
             )
             assert profile["configured_model"] is None  # Custom provider: unknown.
             assert (repo / "a.py").read_text() == "user = 1\n"

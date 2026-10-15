@@ -1234,6 +1234,21 @@ Relevant implementation: `harness/loop.py`, `harness/outcome.py`, `harness/groun
   owner classification and runtime/panel scope controls remain separate. This does
   not complete Milestones 4–6.
 
+- **2026-10-14 — Configured workspace memory:** shared remember tools default to
+  current-workspace writes (global without a workspace), with explicit global scope
+  for user-wide preferences. Recall/injection select global plus current workspace;
+  models cannot select foreign roots. Owner inspection still covers all owned scopes
+  and CLI previews show roots. Byte bounds/result shapes/provenance are preserved.
+  Configuration review uses the same prompt scope; nullable memory_scope_version
+  marks old behavior unknown and blocks mismatched continuation. Legacy prompt text
+  was corrected/versioned; compact text stays unchanged with updated shared schemas.
+  Validation: 133 focused (one live deselected), 997 offline (five live deselected),
+  Ruff/mypy/format and both scripted 90/90 matrices with labels/limits inspected.
+  API restart/cross-workspace and read-only context-review parity are covered. No
+  inference, Duodoro edits or quality claim. Old notes remain global, path keys are
+  not Git identity/isolation, and owner classification/panel controls, broader
+  context/model profiles and Milestones 4–6 remain open.
+
 ## Milestone 1 — Establish a real task-success baseline
 
 **Outcome:** a model attempts real repository tasks through the same runtime used by Jorge, and independent checks determine whether it succeeded.

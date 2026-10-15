@@ -42,7 +42,7 @@ class MemoryPage(BaseModel):
     notes: list[MemoryNotePreview]
     next_before_id: int | None
     scope_note: str = (
-        "User-scoped memory, not repository-scoped. Previews may omit note text. "
+        "Notes are global or workspace-path scoped. Previews may omit note text. "
         "Deletion changes future recall/injection, not saved transcripts, run evidence or "
         "already sent prompts. It is not secure erasure. Source turn IDs may be unrecorded."
     )
