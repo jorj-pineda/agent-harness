@@ -1352,3 +1352,17 @@ final bounded stale check. Permission drift rejects publication and cleans the
 temporary file while preserving later content/modes. This checks drift between
 observations, not an external-writer lock: a race after the final check remains.
 Ownership, ACLs, extended attributes and hard-link relationships are not restored.
+
+
+Workspace memory storage now uses a separate namespace table while retaining
+legacy global rows and schema. Programmer-facing `FactStore.add(...,
+workspace_root=...)` deduplicates within user/root/text; `list(..., scoped=True,
+workspace_root=...)` selects global plus that workspace, and owner listing retains
+all scopes. Previews expose nullable `workspace_root`. Supported writes share a
+transactional monotonic ID counter, including across deletions/restart; historic
+IDs deleted before upgrade cannot be reconstructed. Mixed old/new writers or
+manual database edits are unsupported; ambiguous owner IDs fail closed. Namespace
+keys are canonical absolute paths, not Git/revision identities or process isolation.
+Legacy recall/prompt injection remains global-only until configured scope binding
+lands separately. No old note is automatically reclassified. Database quotas and
+secure erasure remain outside these output/write bounds.
