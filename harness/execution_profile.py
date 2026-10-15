@@ -60,6 +60,7 @@ class ExecutionProfile(BaseModel):
     project_check_sha256: str | None
     provider_options_sha256: str | None = None
     memory_prompt_max_bytes: int | None = Field(default=None, ge=1)
+    memory_scope_version: Literal["workspace-path-v1"] | None = None
     settings: CapturedRuntimeSettings
     ollama_num_ctx: int | None = None
     ollama_think: bool | None = None
@@ -142,6 +143,7 @@ def capture_execution_profile(
         if provider == "openai_compatible" and settings.openai_compatible_transport != "generic"
         else None,
         memory_prompt_max_bytes=MAX_MEMORY_PROMPT_BYTES,
+        memory_scope_version="workspace-path-v1",
         settings=CapturedRuntimeSettings.model_validate(
             {name: getattr(settings, name) for name in CapturedRuntimeSettings.model_fields}
         ),

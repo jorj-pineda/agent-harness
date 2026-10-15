@@ -134,7 +134,7 @@ def test_equal_unknown_identity_is_not_matching():
 def test_old_whole_file_prompt_label_is_drift_without_rewriting_history():
     settings = Settings(_env_file=None, coding_toolset="whole_file")
     current = capture_execution_profile(settings, "ollama", ToolRegistry())
-    assert current.prompt_version == "coding-v2-whole-file-v1"
+    assert current.prompt_version == "coding-v2-whole-file-memory-scope-v1"
     saved = current.model_copy(update={"prompt_version": "coding-v2"})
     original = saved.model_dump_json()
     review = compare_profiles(saved, current)
@@ -254,3 +254,47 @@ def test_legacy_semantic_stub_exposure_is_configuration_drift(tmp_path: Path):
     assert review.status == "changed"
     assert review.changed_fields == ["tool_names", "tool_specs_sha256"]
     assert old.model_dump_json() == original
+
+
+def test_missing_memory_scope_version_cannot_match_current_profile():
+    from harness.execution_profile import ExecutionProfile
+
+    current = capture_execution_profile(Settings(_env_file=None), "ollama", ToolRegistry())
+    old = ExecutionProfile.model_validate(current.model_dump(exclude={"memory_scope_version"}))
+    result = compare_profiles(old, current)
+    assert result.status == "changed"
+    assert result.changed_fields == ["memory_scope_version"]
+    assert "memory_scope_version" in result.unknown_fields
+    assert compare_profiles(old, old).status == "unknown"
+
+
+def test_configuration_context_review_uses_current_workspace_memory(tmp_path: Path):
+    settings = Settings(_env_file=None, max_context_tokens=16000)
+    registry = ToolRegistry()
+    archive = archive_with_profile(settings, registry)
+    archive.session.workspace_root = str(tmp_path / "a")
+    original = archive.model_dump_json()
+    with FactStore(tmp_path / "memory.db") as store:
+        store.add("dev", "global")
+        store.add("dev", "only A", workspace_root=str(tmp_path / "a"))
+        store.add("dev", "B" * 4096, workspace_root=str(tmp_path / "b"))
+        result = review_configuration(
+            archive,
+            settings=settings,
+            provider="ollama",
+            registry=registry,
+            fact_store=store,
+            user_id="dev",
+            message="Explain",
+        )
+        detached = archive.session.model_copy(deep=True)
+        refresh_system_message(
+            detached, store, "dev", system_prompt=coding_prompt(settings.coding_toolset)
+        )
+        assert "only A" in detached.messages[0].content
+        assert "B" * 4096 not in detached.messages[0].content
+        detached.messages.append(ChatMessage(role="user", content="Explain"))
+        assert result.context.estimated_prompt_tokens == TokenBudget(
+            max_context=16000
+        ).estimate_prompt(detached.messages, registry.as_tool_specs())
+    assert archive.model_dump_json() == original

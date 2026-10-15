@@ -229,3 +229,20 @@ async def test_legacy_recall_does_not_leak_programmatically_scoped_notes(
     assert await registry.invoke("recall", {}) == ["global"]
     assert "workspace only" not in store.format_for_system_prompt("alice")
     assert "workspace only" in store.format_for_system_prompt("alice", workspace_root="/repo-a")
+
+
+async def test_memory_scope_is_closed_over_workspace_and_global_is_explicit(
+    store: FactStore,
+) -> None:
+    a, b = ToolRegistry(), ToolRegistry()
+    register_memory_tools(a, store=store, user_id="alice", workspace_root="/repo-a")
+    register_memory_tools(b, store=store, user_id="alice", workspace_root="/repo-b")
+    await a.invoke("remember", {"note": "only A", "workspace_root": "/repo-b"})
+    await a.invoke("remember_fact", {"fact": "preference", "scope": "global"})
+    await b.invoke("remember", {"note": "only B"})
+    assert await a.invoke("recall", {}) == ["preference", "only A"]
+    assert await b.invoke("recall_facts", {}) == ["only B", "preference"]
+    assert await b.invoke("recall", {"scope": "global"}) == ["preference"]
+    with pytest.raises(ToolError):
+        await b.invoke("recall", {"scope": "/repo-a"})
+    assert store.list("alice")[-1].workspace_root == "/repo-a"

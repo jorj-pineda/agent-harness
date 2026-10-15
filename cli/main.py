@@ -291,7 +291,8 @@ def memory(
         return
     for note in page["notes"]:
         typer.echo(
-            f"id={note['id']} bytes={note['fact_bytes']} truncated={note['preview_truncated']} "
+            f"id={note['id']} workspace={json.dumps(note.get('workspace_root'))} "
+            f"bytes={note['fact_bytes']} truncated={note['preview_truncated']} "
             f"sha256={note['fact_sha256']}"
         )
         # Quote previews to prevent remembered control characters from driving a terminal.

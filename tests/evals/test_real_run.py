@@ -166,7 +166,9 @@ async def test_minimal_baseline_uses_same_tools_and_budget(toolset: str, profile
         )
     else:
         assert harness.prompt_version == (
-            "coding-v2-whole-file-v1" if toolset == "whole_file" else "coding-v2"
+            "coding-v2-whole-file-memory-scope-v1"
+            if toolset == "whole_file"
+            else "coding-v2-memory-scope-v1"
         )
 
 
@@ -461,9 +463,9 @@ async def test_real_task_runtime_records_active_memory_source(monkeypatch) -> No
     captured = []
     original = FactStore.add
 
-    def record_source(self, user_id, fact, source_turn_id=None):
+    def record_source(self, user_id, fact, source_turn_id=None, *, workspace_root=None):
         captured.append((user_id, source_turn_id))
-        return original(self, user_id, fact, source_turn_id)
+        return original(self, user_id, fact, source_turn_id, workspace_root=workspace_root)
 
     monkeypatch.setattr(FactStore, "add", record_source)
     provider = ScriptedProvider()

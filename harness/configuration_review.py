@@ -79,6 +79,7 @@ def compare_profiles(
             "endpoint_sha256",
             "prompt_version",
             "memory_prompt_max_bytes",
+            "memory_scope_version",
         )
         if saved_fields[field] is None or current_fields[field] is None
     ]
