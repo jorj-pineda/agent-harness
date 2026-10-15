@@ -579,3 +579,59 @@ async def test_configured_registry_omits_unavailable_semantic_tool(
         assert {"remember", "remember_fact", "recall", "recall_facts"} <= set(registry.names())
         with pytest.raises(ToolError, match="Unknown tool"):
             await registry.invoke("semantic_search", {"query": "anything"})
+
+
+async def test_memory_source_tracks_active_turn_without_relabeling_duplicates(
+    tmp_path: Path,
+) -> None:
+    session = Session(user_id="dev")
+    provider = ScriptedProvider()
+    provider.script(
+        make_response(
+            tool_calls=[
+                ToolCall(
+                    id="first",
+                    name="remember_fact",
+                    arguments={"fact": "durable note", "source_turn_id": "model-supplied"},
+                )
+            ]
+        ),
+        make_response(content="Stored"),
+        make_response(
+            tool_calls=[ToolCall(id="second", name="remember", arguments={"note": "durable note"})]
+        ),
+        make_response(content="Already known"),
+    )
+    with FactStore(tmp_path / "memory.db") as store:
+        registry = build_registry(
+            fact_store=store, user_id="dev", workspace_root=None, memory_session=session
+        )
+        for message in ["Remember", "Remember again"]:
+            await run_configured_turn(
+                settings=Settings(_env_file=None),
+                session=session,
+                user_id="dev",
+                message=message,
+                provider=provider,
+                fact_store=store,
+                registry=registry,
+            )
+        note = store.list("dev")[0]
+        assert note.source_turn_id == session.turns[0].turn_id
+        assert note.source_turn_id != session.turns[1].turn_id
+        assert note.updated_at is None
+        # No active turn: a direct factory invocation must not borrow a finished source.
+        await registry.invoke("remember", {"note": "outside configured turn"})
+        assert store.list("dev")[0].source_turn_id is None
+
+
+def test_memory_source_session_owner_mismatch_prevents_registry_binding(tmp_path: Path) -> None:
+    with FactStore(tmp_path / "memory.db") as store:
+        with pytest.raises(ValueError, match="source session owner"):
+            build_registry(
+                fact_store=store,
+                user_id="dev",
+                workspace_root=None,
+                memory_session=Session(user_id="other"),
+            )
+        assert store.list("dev") == store.list("other") == []

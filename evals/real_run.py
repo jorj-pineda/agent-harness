@@ -255,6 +255,7 @@ async def run_task(
                     workspace_root=str(copy.workspace.root),
                     coding_toolset=settings.coding_toolset,
                     command_env={"PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1"},
+                    memory_session=session,
                 )
                 answer = ""
                 failure = ""

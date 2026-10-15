@@ -451,3 +451,34 @@ async def test_failed_request_after_read_reports_unknown_usage_without_hiding_pr
     summary = summarize([result])["harness"]
     assert summary["unreported_token_attempts"] == 1 and summary["median_total_tokens"] is None
     assert "private exception detail" not in json.dumps(result.turn_trace)
+
+
+async def test_real_task_runtime_records_active_memory_source(monkeypatch) -> None:
+    from uuid import UUID
+
+    from memory import FactStore
+
+    captured = []
+    original = FactStore.add
+
+    def record_source(self, user_id, fact, source_turn_id=None):
+        captured.append((user_id, source_turn_id))
+        return original(self, user_id, fact, source_turn_id)
+
+    monkeypatch.setattr(FactStore, "add", record_source)
+    provider = ScriptedProvider()
+    provider.script(
+        make_response(
+            tool_calls=[
+                ToolCall(id="remember", name="remember", arguments={"note": "fixture convention"})
+            ]
+        ),
+        make_response(content="Inspected"),
+    )
+    result = await run_task(
+        load_tasks()[0], provider=provider, settings=Settings(_env_file=None), mode="harness"
+    )
+    assert result.passed is False  # Unedited fixture; source metadata is not acceptance.
+    assert len(captured) == 1 and captured[0][0] == "eval"
+    assert captured[0][1] is not None
+    UUID(captured[0][1])

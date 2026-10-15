@@ -133,8 +133,16 @@ Correction replaces the entire note even when its preview was truncated. The CLI
 sends one PUT and reports transport/identity errors with inspection guidance,
 without automatic retries or model runs. Archives and already sent prompts remain
 unchanged; this is not secure erasure or a complete correction audit trail.
-Repository scope, turn-linked tool-write provenance and panel memory controls
-remain open.
+Configured API and real-task remember calls now record the active owning turn as
+`source_turn_id` for newly inserted notes. Model arguments cannot choose that ID;
+duplicates keep the original source, and corrections clear it. The shared factory
+can bind an owning session; direct/legacy calls without an active bound session
+remain unknown. Existing notes are not backfilled. This links note creation,
+without validating its truth, repository scope or permission to act on its text.
+The memory write precedes final archive storage in a separate database, so a crash
+or archive failure may leave a source ID without a durable turn archive. It is not
+a complete audit/atomic crash-recovery guarantee. Repository scope and panel memory
+controls remain open.
 
 
 **Workspace path guard + policy.** Code tools resolve paths under `workspace_root`; [harness/policy.py](harness/policy.py) classifies task kind and flags unsafe scope; `MAX_FILES_TOUCHED_PER_TURN` blocks file-tool edits to additional distinct paths before mutation; command side effects remain outside that file-tool gate. These controls do not isolate code executed by tests.

@@ -1021,6 +1021,7 @@ def _build_turn_registry(
         workspace_root=session.workspace_root,
         support_tools=support_registry,
         coding_toolset=settings.coding_toolset,
+        memory_session=session,
     )
 
 
