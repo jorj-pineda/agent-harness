@@ -1,20 +1,32 @@
 # agent-harness
 
-**Current direction:** a practical coding harness for lower-tier local and hosted
-models. See [roadmap.md](roadmap.md) for the implementation plan and
-[AGENTS.md](AGENTS.md) for contributor instructions. The portfolio description and
-historical results below describe the project's starting point, not demonstrated
-improvements in model coding ability.
+A practical coding harness for lower-tier local and affordable hosted models.
+A handwritten loop, provider adapters and shared tools help a model inspect code,
+make focused changes and report observed checks within configured budgets. No
+premium supervisor is required. The useful task envelope is still being measured;
+this is not an unattended coding-success guarantee.
 
 [![CI](https://github.com/jorj-pineda/agent-harness/actions/workflows/ci.yml/badge.svg)](https://github.com/jorj-pineda/agent-harness/actions/workflows/ci.yml)
 
-Most agent tutorials stop at `LangChain.AgentExecutor`. **agent-harness** is the opposite: a hand-written ReAct loop, grounding layer, and memory store you can read in an afternoon — built to show how a **senior coding agent** is wired, not how to import a framework. No LangChain, LlamaIndex, or LangGraph. One FastAPI process, pluggable providers (Ollama / Anthropic / OpenAI), workspace-scoped code tools, and an eval harness that scores every turn from the same metadata envelope.
+Start with [demo.md](demo.md) for local setup using a disposable Python fixture,
+explicit budgets and Jorge's configured `gemma4:12b`. The CLI and browser panel
+share the API runtime. Coding-only startup needs no embeddings or support corpus.
+Use trusted repositories: path validation and command allowlists do not isolate
+repository code or its test processes.
 
-Three ideas carry the portfolio story. **Observed run evidence:** completion status, check attempts, tool failures, and bounded working-tree diffs support review. The retained `confidence` field is a legacy tool heuristic, not patch correctness. **Cross-session repo memory:** SQLite facts per `user_id` injected into the system prompt so conventions survive across sessions. **Eval honesty:** offline scores replay scripted tool traces (30 scenarios); live Ollama runs are documented separately — the README table measures harness shape, not which model wins.
+Current workflow includes bounded diffs, observed completion/check status, saved
+run/session inspection, keyed submission recovery, cancellation, scoped checkpoints,
+explicit single-file reversal and guarded continuation forks. Saved history is
+read-only by default. Cancellation waits for owned cleanup; guarded continuation
+checks scoped evidence and cannot certify all external/dependency state.
 
-**Run it in five minutes:** `docker compose up --build -d`, `ollama pull gemma4`, then `POST /sessions` + `POST /chat` against the vendored `tiny_repo` fixture. Step-by-step curls, envelope field guide, and Windows PowerShell notes: [demo.md](demo.md). Live provider behavior (Mac Docker OOM, 4070 gemma4 multi-turn validation): [evals/LIVE.md](evals/LIVE.md).
-
-> **Coding-agent pivot complete (phases 1–10, PR #13).** Default demo: workspace code tools on `fixtures/tiny_repo`. Legacy support tools off unless `ENABLE_SUPPORT_TOOLS=true`.
+Read [roadmap.md](roadmap.md) for remaining acceptance criteria and
+[AGENTS.md](AGENTS.md) for development rules. Model observations in
+[evals/BASELINES.md](evals/BASELINES.md) distinguish independently accepted patches
+from completed/checked turns. Offline matrices validate scripted contracts, and
+`--live` matrices use real inference with simulated tools. Neither establishes
+real coding quality. Repeated held-out comparisons and the ten-task real-project
+workflow remain open. Historical demo results retain their original limitations.
 
 ## Architecture
 
@@ -46,13 +58,13 @@ installation extras are not part of this slice.
 
 Each layer depends only on the ones below it. Model-specific quirks (Gemma 4's tool-call format vs OpenAI's function-call shape) are normalized at the provider boundary, so adding a fourth backend is a single-file change.
 
-## What's novel
+## Runtime and review
 
 Every response ships one envelope — `{answer, confidence, citations, escalated, tool_calls, memory_writes, files_touched, verification_ran, patch_summary, provider, latency_ms}` — so consumers and eval scorers never re-parse prose.
 
 **Legacy evidence score.** [harness/grounding.py](harness/grounding.py) retains `confidence` and its escalation threshold for API compatibility. It scores tool results with `top_score × coverage × health`; a successful file read can score 1.0 even when unrelated to the answer. Citations identify tool-reported source locations without validating the answer's claims. Neither field establishes answer or patch correctness. No evidence tool call yields `confidence=null`.
 
-**Cross-session repo memory.** [memory/store.py](memory/store.py) persists facts per `user_id`; [api/server.py](api/server.py) injects them at turn start. Memory tools are factory-bound to the session user — no cross-user leakage. New notes must fit 4,096 UTF-8 bytes after trimming; both remember aliases reject overflow before storage. Existing oversized notes remain readable and are not migrated. This is a per-note write limit, not a database quota or a bound on historical recall.
+**User memory across sessions.** [memory/store.py](memory/store.py) persists facts per `user_id`; [api/server.py](api/server.py) injects them at turn start. Memory tools are factory-bound to the session user — no cross-user leakage. New notes must fit 4,096 UTF-8 bytes after trimming; both remember aliases reject overflow before storage. Existing oversized notes remain readable and are not migrated. This is a per-note write limit, not a database quota or a bound on historical recall.
 
 Automatic memory injection examines the most recent 20 notes and bounds its whole
 UTF-8 block, including heading and omission notice, to 8,192 bytes. Whole notes
@@ -92,7 +104,8 @@ owner action. Thin CLI commands use the same endpoints:
 ```sh
 agent-harness memory --user-id jorge --limit 20
 agent-harness memory --user-id jorge --before-id 123 --json
-agent-harness memory-delete 123 --user-id jorge --expected-sha256 <full-note-hash>
+# Replace 123 and the quoted placeholder with the inspected note's ID/hash.
+agent-harness memory-delete 123 --user-id jorge --expected-sha256 'COPY_REVIEWED_64_CHARACTER_HASH'
 ```
 
 `memory-delete` sends one DELETE and requires a hash from inspection; it deletes
@@ -103,7 +116,7 @@ JSON-quoted to escape terminal control characters. Correction, repository scope,
 fuller provenance and panel memory controls remain open.
 
 
-**Workspace path guard + policy.** Code tools resolve paths under `workspace_root`; [harness/policy.py](harness/policy.py) classifies task kind and flags unsafe scope; `MAX_FILES_TOUCHED_PER_TURN` flags oversized edits after the turn. These controls do not isolate code executed by tests.
+**Workspace path guard + policy.** Code tools resolve paths under `workspace_root`; [harness/policy.py](harness/policy.py) classifies task kind and flags unsafe scope; `MAX_FILES_TOUCHED_PER_TURN` blocks file-tool edits to additional distinct paths before mutation; command side effects remain outside that file-tool gate. These controls do not isolate code executed by tests.
 
 **Ripgrep-first search.** Configured coding runs advertise lexical `grep_repo`, without an embedding model or unavailable semantic tool. The deferred stub in [tools/semantic.py](tools/semantic.py) remains only for direct historical contracts.
 
@@ -1084,11 +1097,10 @@ Local dev (no Docker):
 
 ```bash
 uv sync --extra dev
-cp .env.example .env   # set DEFAULT_WORKSPACE_ROOT to tests/fixtures/tiny_repo
-ollama pull gemma4
-uvicorn api.server:app --reload
-pytest -m "not live"
-python -m evals.run --providers ollama,anthropic,openai
+uv run agent-harness serve   # configure the selected backend and budgets first; see demo.md
+uv run pytest -m 'not live'
+uv run ruff check .
+uv run mypy
 ```
 
 ### Saved session review in the panel

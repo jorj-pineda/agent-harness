@@ -39,8 +39,8 @@ class CreateSessionRequest(BaseModel):
         default=None,
         min_length=1,
         description=(
-            "Optional absolute path to the repo sandbox. Resolved and stored on the session; "
-            "code tools (Phase 2+) jail all paths under this root."
+            "Optional absolute trusted workspace path, resolved and stored on the session. "
+            "File-tool path validation is not process isolation for repository commands."
         ),
     )
 

@@ -1164,6 +1164,19 @@ Relevant implementation: `harness/loop.py`, `harness/outcome.py`, `harness/groun
   context selection/compaction and model profiles remain open; Milestones 4–6 are
   not complete.
 
+- **2026-10-14 — Current local onboarding:** README now leads with the lower-tier
+  coding goal, actual recovery/review boundaries and unfulfilled acceptance targets.
+  The walkthrough uses an explicit-budget local model and disposable fixture copy,
+  distinguishes checks from independent acceptance and scripted/live-simulated/real
+  evaluations, and documents one-request/keyed recovery without stream-to-POST
+  resubmission. API/settings descriptions no longer call path validation a sandbox
+  or jail. Historical model results retain their original limitations.
+  Validation: four shell blocks passed syntax-only inspection; example settings,
+  CLI flags and panel labels matched implementation; Ruff/mypy passed. No runtime
+  behavior changed, inference ran, workspace was edited or Docker touched. The full
+  suite was not rerun locally for docs/description-only edits. Broader onboarding
+  for selectable model profiles and Milestones 4–6 remain open.
+
 ## Milestone 1 — Establish a real task-success baseline
 
 **Outcome:** a model attempts real repository tasks through the same runtime used by Jorge, and independent checks determine whether it succeeded.

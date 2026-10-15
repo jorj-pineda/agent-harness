@@ -186,7 +186,7 @@ class Settings(BaseSettings):
     max_diff_snapshot_bytes: int = Field(default=2_000_000, ge=1, le=100_000_000)
     default_workspace_root: Path | None = Field(
         default=None,
-        description="Optional default repo sandbox when sessions omit workspace_root.",
+        description="Default trusted workspace when sessions omit workspace_root; not isolation.",
     )
 
     # Logging
