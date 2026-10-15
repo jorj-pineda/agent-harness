@@ -41,6 +41,10 @@ log = logging.getLogger(__name__)
 MEMORY_SCHEMA_PATH = Path(__file__).parent.parent / "data" / "memory_schema.sql"
 DEFAULT_LIST_LIMIT = 20
 MAX_FACT_BYTES = 4096
+MAX_MEMORY_PROMPT_BYTES = 8192
+MEMORY_OMISSION_NOTICE = (
+    "[Some notes in the selected recent window were omitted to fit the memory byte limit.]"
+)
 FACTS_HEADING = "Engineering memory for this developer (persists across sessions):"
 
 
@@ -125,13 +129,29 @@ class FactStore:
         """Render a user's engineering notes as a system-prompt injection block.
 
         Returns "" when the user has no notes so the API layer can concatenate
-        unconditionally. Notes are listed most-recent first, matching `list()`.
+        unconditionally. Notes are listed most-recent first, matching `list()`. The UTF-8 block
+        is bounded; omitted whole notes are announced without changing storage.
         """
         facts = self.list(user_id, limit=limit)
         if not facts:
             return ""
+        candidates = [f"- {f.fact}" for f in facts]
+        sizes = [len(line.encode("utf-8")) + 1 for line in candidates]
+        heading_size = len(FACTS_HEADING.encode("utf-8"))
+        if heading_size + sum(sizes) <= MAX_MEMORY_PROMPT_BYTES:
+            return "\n".join([FACTS_HEADING, *candidates])
+
+        # Reserve the notice before selecting whole notes. Skipping a large recent
+        # note may let smaller older notes within the same selected window fit.
+        remaining = (
+            MAX_MEMORY_PROMPT_BYTES - heading_size - 1 - len(MEMORY_OMISSION_NOTICE.encode("utf-8"))
+        )
         lines = [FACTS_HEADING]
-        lines.extend(f"- {f.fact}" for f in facts)
+        for line, size in zip(candidates, sizes, strict=True):
+            if size <= remaining:
+                lines.append(line)
+                remaining -= size
+        lines.append(MEMORY_OMISSION_NOTICE)
         return "\n".join(lines)
 
     def close(self) -> None:

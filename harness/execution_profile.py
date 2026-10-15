@@ -7,8 +7,9 @@ import json
 from typing import Literal
 from urllib.parse import urlsplit
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
+from memory.store import MAX_MEMORY_PROMPT_BYTES
 from providers import compatible_transport_options
 from tools import ToolRegistry
 
@@ -58,6 +59,7 @@ class ExecutionProfile(BaseModel):
     tool_names: list[str]
     project_check_sha256: str | None
     provider_options_sha256: str | None = None
+    memory_prompt_max_bytes: int | None = Field(default=None, ge=1)
     settings: CapturedRuntimeSettings
     ollama_num_ctx: int | None = None
     ollama_think: bool | None = None
@@ -67,6 +69,7 @@ class ExecutionProfile(BaseModel):
         "tool implementations, and provider/server defaults. Null identities are unknown."
         " A special compatible transport recipe hash records public configured options only; "
         "null has no recorded recipe. Conversation IDs and constructor overrides are excluded."
+        " Memory prompt byte limits are recorded; null means the boundary was not recorded."
     )
 
 
@@ -138,6 +141,7 @@ def capture_execution_profile(
         )
         if provider == "openai_compatible" and settings.openai_compatible_transport != "generic"
         else None,
+        memory_prompt_max_bytes=MAX_MEMORY_PROMPT_BYTES,
         settings=CapturedRuntimeSettings.model_validate(
             {name: getattr(settings, name) for name in CapturedRuntimeSettings.model_fields}
         ),

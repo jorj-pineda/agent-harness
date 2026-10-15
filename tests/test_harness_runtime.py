@@ -488,3 +488,28 @@ async def test_enabled_checkpoints_require_capture_before_execution(tmp_path: Pa
     assert response.completion_status == "blocked"
     assert provider.calls == []
     assert session.messages == [] and session.turns == []
+
+
+async def test_shared_runtime_bounds_injected_memory_without_changing_store(tmp_path: Path) -> None:
+    from memory.store import FACTS_HEADING, MAX_MEMORY_PROMPT_BYTES, MEMORY_OMISSION_NOTICE
+
+    provider = ScriptedProvider()
+    provider.script(make_response(content="Review complete"))
+    with FactStore(tmp_path / "memory.db") as store:
+        for i in range(20):
+            store.add("dev", f"{i}:" + "é" * 2000)
+        await run_configured_turn(
+            settings=Settings(_env_file=None),
+            session=Session(user_id="dev"),
+            user_id="dev",
+            message="Explain",
+            provider=provider,
+            fact_store=store,
+            registry=build_registry(fact_store=store, user_id="dev", workspace_root=None),
+        )
+        expected = store.format_for_system_prompt("dev")
+        injected = provider.calls[0][0][0].content.split(FACTS_HEADING, 1)[1]
+        assert FACTS_HEADING + injected == expected
+        assert len(expected.encode()) <= MAX_MEMORY_PROMPT_BYTES
+        assert MEMORY_OMISSION_NOTICE in injected
+        assert len(store.list("dev")) == 20
