@@ -1249,6 +1249,15 @@ Relevant implementation: `harness/loop.py`, `harness/outcome.py`, `harness/groun
   not Git identity/isolation, and owner classification/panel controls, broader
   context/model profiles and Milestones 4–6 remain open.
 
+- **2026-10-15 — Filtered owner memory review:** optional exact global/workspace
+  namespace filters apply before bounded pagination, preserving the default all-scope
+  owner view. Invalid namespace/root combinations reject without inference or writes.
+  Restart tests cover interleaved scopes, cursors and owner separation. This is an
+  API review control; CLI/panel filtering, note reclassification and broader memory/
+  context milestones remain open. Validation: 57 focused, 998 offline tests (five
+  live deselected), Ruff/format/mypy passed. Evaluation behavior unchanged; matrices
+  were not rerun. No inference, Duodoro edits or model-quality claim.
+
 ## Milestone 1 — Establish a real task-success baseline
 
 **Outcome:** a model attempts real repository tasks through the same runtime used by Jorge, and independent checks determine whether it succeeded.
