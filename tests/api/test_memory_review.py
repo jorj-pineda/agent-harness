@@ -217,3 +217,36 @@ def test_memory_correction_conflict_and_storage_failure_are_private_and_atomic(t
         assert failed.status_code == 409 and "private-marker" not in failed.text
         assert client.get("/memory", params={"user_id": "dev"}).json()["notes"][-1] == note
     assert provider.calls == []
+
+
+def test_api_remember_source_turn_survives_restart_and_deduplication(tmp_path):
+    provider = ScriptedProvider()
+    provider.script(
+        make_response(
+            tool_calls=[ToolCall(id="first", name="remember", arguments={"note": "convention"})]
+        ),
+        make_response(content="Stored"),
+        make_response(
+            tool_calls=[
+                ToolCall(id="duplicate", name="remember_fact", arguments={"fact": "convention"})
+            ]
+        ),
+        make_response(content="Already known"),
+    )
+    with TestClient(make_app(tmp_path, provider)) as client:
+        sid = client.post("/sessions", json={"user_id": "dev"}).json()["session_id"]
+        for message in ["Remember", "Remember again"]:
+            assert (
+                client.post(
+                    "/chat", json={"user_id": "dev", "session_id": sid, "message": message}
+                ).status_code
+                == 200
+            )
+        archive = client.get(f"/sessions/{sid}", params={"user_id": "dev"}).json()
+        note = client.get("/memory", params={"user_id": "dev"}).json()["notes"][0]
+        assert note["source_turn_id"] == archive["session"]["turns"][0]["turn_id"]
+        assert note["source_turn_id"] != archive["session"]["turns"][1]["turn_id"]
+        assert client.get("/memory", params={"user_id": "other"}).json()["notes"] == []
+    with TestClient(make_app(tmp_path, ScriptedProvider())) as client:
+        assert client.get("/memory", params={"user_id": "dev"}).json()["notes"] == [note]
+        assert client.get(f"/sessions/{sid}", params={"user_id": "dev"}).json() == archive

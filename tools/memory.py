@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import json
 import logging
+from collections.abc import Callable
 
 from pydantic import BaseModel, Field
 
@@ -60,19 +61,25 @@ class RecallInput(BaseModel):
     max_results: int = Field(DEFAULT_LIST_LIMIT, ge=1, le=MAX_RECALL)
 
 
-def build_memory_tools(store: FactStore, user_id: str) -> list[Tool]:
+def build_memory_tools(
+    store: FactStore, user_id: str, *, source_turn_id: Callable[[], str | None] | None = None
+) -> list[Tool]:
     """Build memory Tool instances bound to a specific user."""
     if not user_id:
         raise ValueError("user_id must not be empty")
 
     async def remember_fact(args: RememberFactInput) -> dict[str, object]:
         log.info("memory_tool=remember_fact user_id=%s", user_id)
-        inserted = store.add(user_id, args.fact)
+        inserted = store.add(
+            user_id, args.fact, source_turn_id=source_turn_id() if source_turn_id else None
+        )
         return {"stored": inserted, "fact": args.fact.strip()}
 
     async def remember(args: RememberInput) -> dict[str, object]:
         log.info("memory_tool=remember user_id=%s", user_id)
-        inserted = store.add(user_id, args.note)
+        inserted = store.add(
+            user_id, args.note, source_turn_id=source_turn_id() if source_turn_id else None
+        )
         return {"stored": inserted, "fact": args.note.strip()}
 
     def recall_notes(limit: int) -> list[str]:
@@ -150,7 +157,8 @@ def register_memory_tools(
     *,
     store: FactStore,
     user_id: str,
+    source_turn_id: Callable[[], str | None] | None = None,
 ) -> None:
     """Register memory tools on the given registry for the given user."""
-    for tool in build_memory_tools(store, user_id):
+    for tool in build_memory_tools(store, user_id, source_turn_id=source_turn_id):
         registry.register(tool)

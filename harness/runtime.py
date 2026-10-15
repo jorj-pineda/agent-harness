@@ -51,11 +51,23 @@ def build_registry(
     coding_toolset: CodingToolset = "full",
     code_tool_transform: Callable[[Tool], Tool] | None = None,
     command_env: Mapping[str, str] | None = None,
+    memory_session: Session | None = None,
 ) -> ToolRegistry:
+    if memory_session is not None and memory_session.user_id != user_id:
+        raise ValueError("Memory source session owner must match the registry user")
+
+    def memory_source_turn() -> str | None:
+        if memory_session is None or not memory_session.turns:
+            return None
+        turn = memory_session.turns[-1]
+        return turn.turn_id if turn.finished_at is None else None
+
     registry = ToolRegistry()
     for tool in support_tools:
         registry.register(tool)
-    register_memory_tools(registry, store=fact_store, user_id=user_id)
+    register_memory_tools(
+        registry, store=fact_store, user_id=user_id, source_turn_id=memory_source_turn
+    )
     if workspace_root is not None:
         code_registry = ToolRegistry()
         for tool in build_code_tools(Workspace(root=Path(workspace_root)), command_env=command_env):
