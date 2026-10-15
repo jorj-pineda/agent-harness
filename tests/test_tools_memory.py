@@ -155,3 +155,67 @@ async def test_remember_aliases_reject_oversized_utf8_notes(
         "stored": True,
         "fact": "short note",
     }
+
+
+@pytest.mark.parametrize("name", ["recall", "recall_facts"])
+async def test_recall_exact_json_boundary_and_overflow_recovery(
+    registry: ToolRegistry, store: FactStore, name: str
+) -> None:
+    from harness.loop import _encode_tool_result
+    from tools.memory import MAX_RECALL_BYTES
+
+    notes = [chr(97 + i) * 4096 for i in range(7)]
+    notes.append("z" * (MAX_RECALL_BYTES - 7 * 4096 - 4 * 8))
+    for note in notes:
+        store.add("alice", note)
+    result = await registry.invoke(name, {})
+    assert result == list(reversed(notes))
+    assert len(_encode_tool_result(result).encode()) == MAX_RECALL_BYTES
+    store.add("alice", "latest")
+    with pytest.raises(ToolError, match=r"32000 serialized JSON bytes.*Reduce max_results"):
+        await registry.invoke(name, {})
+    assert await registry.invoke(name, {"max_results": 1}) == ["latest"]
+    assert [f.fact for f in store.list("alice")] == ["latest", *reversed(notes)]
+
+
+@pytest.mark.parametrize("name", ["recall", "recall_facts"])
+async def test_recall_counts_json_unicode_and_control_escaping(
+    registry: ToolRegistry, store: FactStore, name: str
+) -> None:
+    from harness.loop import _encode_tool_result
+    from tools.memory import MAX_RECALL_BYTES
+
+    notes = [f"{i}" + "é" * 2047 for i in range(3)]
+    for note in notes:
+        store.add("alice", note)
+    assert sum(len(note.encode()) for note in notes) < MAX_RECALL_BYTES
+    assert len(_encode_tool_result(notes).encode()) > MAX_RECALL_BYTES
+    with pytest.raises(ToolError, match="Reduce max_results"):
+        await registry.invoke(name, {})
+    assert await registry.invoke(name, {"max_results": 2}) == notes[:0:-1]
+    # JSON control escapes also consume more bytes than their raw note text.
+    store.add("bob", "first" + "\x01" * 4000)
+    store.add("bob", "second" + "\x01" * 4000)
+    bob = ToolRegistry()
+    register_memory_tools(bob, store=store, user_id="bob")
+    with pytest.raises(ToolError, match="Reduce max_results"):
+        await bob.invoke(name, {})
+    assert len(_encode_tool_result(await bob.invoke(name, {"max_results": 1})).encode()) <= (
+        MAX_RECALL_BYTES
+    )
+
+
+@pytest.mark.parametrize("name", ["recall", "recall_facts"])
+async def test_single_legacy_oversized_note_recall_fails_explicitly(
+    store: FactStore, registry: ToolRegistry, name: str
+) -> None:
+    # Simulate a record written by an older harness without the new write limit.
+    note = "legacy" * 6000
+    with store._conn:
+        store._conn.execute(
+            "INSERT INTO memory_facts (user_id, fact, created_at) VALUES (?, ?, ?)",
+            ("alice", note, "2026-10-14"),
+        )
+    with pytest.raises(ToolError, match="inspect stored memory outside the model"):
+        await registry.invoke(name, {"max_results": 1})
+    assert store.list("alice")[0].fact == note

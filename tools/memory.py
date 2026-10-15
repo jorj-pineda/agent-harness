@@ -13,6 +13,7 @@ lives in this module's closure.
 
 from __future__ import annotations
 
+import json
 import logging
 
 from pydantic import BaseModel, Field
@@ -20,12 +21,13 @@ from pydantic import BaseModel, Field
 from memory import DEFAULT_LIST_LIMIT, FactStore
 from memory.store import MAX_FACT_BYTES
 
-from .base import Tool
+from .base import Tool, ToolError
 from .registry import ToolRegistry
 
 log = logging.getLogger(__name__)
 
 MAX_RECALL = 50
+MAX_RECALL_BYTES = 32000
 
 REMEMBER_TOOL_NAMES = frozenset({"remember_fact", "remember"})
 RECALL_TOOL_NAMES = frozenset({"recall_facts", "recall"})
@@ -73,13 +75,25 @@ def build_memory_tools(store: FactStore, user_id: str) -> list[Tool]:
         inserted = store.add(user_id, args.note)
         return {"stored": inserted, "fact": args.note.strip()}
 
+    def recall_notes(limit: int) -> list[str]:
+        notes = [f.fact for f in store.list(user_id, limit=limit)]
+        # Match the loop's default JSON tool-message encoding, including ASCII
+        # escapes. Raw UTF-8 note sizes underestimate this serialized payload.
+        if len(json.dumps(notes, default=str).encode("utf-8")) > MAX_RECALL_BYTES:
+            raise ToolError(
+                f"Recall exceeds {MAX_RECALL_BYTES} serialized JSON bytes. Reduce max_results; "
+                "if one legacy note still exceeds the limit, "
+                "inspect stored memory outside the model."
+            )
+        return notes
+
     async def recall_facts(args: RecallFactsInput) -> list[str]:
         log.info(
             "memory_tool=recall_facts user_id=%s max_results=%d",
             user_id,
             args.max_results,
         )
-        return [f.fact for f in store.list(user_id, limit=args.max_results)]
+        return recall_notes(args.max_results)
 
     async def recall(args: RecallInput) -> list[str]:
         log.info(
@@ -87,7 +101,7 @@ def build_memory_tools(store: FactStore, user_id: str) -> list[Tool]:
             user_id,
             args.max_results,
         )
-        return [f.fact for f in store.list(user_id, limit=args.max_results)]
+        return recall_notes(args.max_results)
 
     remember_description = (
         "Persist a durable engineering note for this developer across sessions "
@@ -98,7 +112,9 @@ def build_memory_tools(store: FactStore, user_id: str) -> list[Tool]:
     recall_description = (
         "Return engineering notes previously remembered for this developer, "
         "most recently added first. Notes are also injected into the system "
-        "prompt at the start of each turn."
+        "prompt at the start of each turn within a separate byte limit. "
+        f"Recall rejects responses over {MAX_RECALL_BYTES} serialized JSON bytes; "
+        "reduce max_results on overflow. No notes are silently dropped from a recall result."
     )
 
     return [
