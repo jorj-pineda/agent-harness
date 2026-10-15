@@ -1,152 +1,134 @@
-# Demo guide — coding agent
+# Local coding workflow
 
-How to run the **coding-agent** harness end-to-end. The default path uses the
-vendored `fixtures/tiny_repo` workspace (no support DB seed, no Chroma embed).
+Use the shared CLI/API/panel runtime on a disposable trusted fixture first. This
+example uses Jorge's already selected `gemma4:12b` on a local Ollama service. It
+creates no hosted-model calls or premium supervisor. The recorded model results
+and limits are in [evals/BASELINES.md](evals/BASELINES.md); completing this walkthrough
+is not a model-quality comparison.
 
-## Quick start (Docker — recommended)
+## Start the API with explicit limits
 
-```bash
-docker compose up --build -d
+From the agent-harness checkout, install dependencies and ensure your existing
+Ollama service has the selected model. In one terminal:
 
-# Pull chat model (embed model only needed if ENABLE_SUPPORT_TOOLS=true)
-docker exec agent-harness-ollama ollama pull gemma4
-
-# Create session — workspace defaults to /app/fixtures/tiny_repo in compose
-curl -s -X POST http://localhost:8000/sessions \
-  -H 'content-type: application/json' \
-  -d '{"user_id":"dev1"}' | tee /tmp/session.json
-
-SESSION_ID=$(python3 -c "import json; print(json.load(open('/tmp/session.json'))['session_id'])")
-
-# Ask for a bugfix (model must support tool calling)
-curl -s -X POST http://localhost:8000/chat \
-  -H 'content-type: application/json' \
-  -d "{\"user_id\":\"dev1\",\"session_id\":\"$SESSION_ID\",\"message\":\"Fix the failing divide test in test_calc.py\"}" \
-  | python3 -m json.tool
-```
-
-### Reading the envelope
-
-Every `/chat` response includes:
-
-| Field | Meaning |
-|-------|---------|
-| `answer` | Final assistant text |
-| `citations` | File:line keys from `read_file` / `grep_repo` (e.g. `calc.py:4-6`) |
-| `confidence` | Grounding score; `null` when no evidence tools ran |
-| `escalated` | `true` when confidence is low, verification missing (if required), or edit budget exceeded |
-| `files_touched` | Repo paths written this turn |
-| `verification_ran` | `true` after a successful allowlisted `pytest`/`ruff`/`mypy` run |
-| `tool_calls` | Full tool trace |
-
-### Hardware / memory
-
-- **GPU laptop (8 GB VRAM):** Gemma 4 E4B with `OLLAMA_KV_CACHE_TYPE=q8_0` (set on the Ollama service).
-- **Docker Desktop without GPU:** allocate **≥ 12 GB RAM** or use a cloud provider in `.env` (`DEFAULT_PROVIDER=anthropic`).
-
-**Smoke-tested constraint (2026-05, Apple Silicon + Docker Desktop):** With Docker limited to ~8 GiB total, Ollama fails to load `gemma4` (`model requires more system memory (9.7 GiB) than is available`). `/sessions` succeeds but `/chat` returns HTTP 500. Fix: raise Docker Desktop **Settings → Resources → Memory** to **≥ 12 GiB**, or set `DEFAULT_PROVIDER=anthropic` / `OPENAI_API_KEY` in `.env` and pass `"provider":"anthropic"` on `/chat`.
-
-## Quick start (local, no Docker)
-
-```bash
+```sh
 uv sync --extra dev
-cp .env.example .env
-
-ollama pull gemma4
-
-uvicorn api.server:app --reload
+DEFAULT_PROVIDER=ollama OLLAMA_MODEL=gemma4:12b \
+OLLAMA_NUM_CTX=16384 OLLAMA_THINK=false ENABLE_SUPPORT_TOOLS=false \
+MAX_CONTEXT_TOKENS=16000 MAX_TOTAL_TOKENS_PER_TURN=64000 \
+MAX_COMPLETION_TOKENS_PER_TURN=4096 MAX_TOOL_CALLS_PER_TURN=20 \
+MAX_TURN_WALL_SECONDS=300 REQUEST_TIMEOUT_SECONDS=120 \
+REQUIRE_VERIFICATION_BEFORE_FINISH=true \
+PROJECT_CHECK_ARGV='["python","-m","pytest","-q","test_calc.py"]' \
+uv run agent-harness serve
 ```
 
-Create a session with an explicit workspace:
+These are explicit example limits, not measured optimal settings. The default
+prompt remains `legacy`; `CODING_PROMPT_PROFILE=compact` is opt-in with limited
+paired observations. Prompt/context and total-token gates use estimates; reported
+usage can exceed an estimate. Setup consumes the dispatch deadline, while owned
+cleanup, final review and storage may exceed it. Thinking/context settings are
+requested backend options, not backend attestation. The check command is global
+server configuration: change it for a different project before submitting work.
 
-```bash
-curl -X POST http://localhost:8000/sessions \
-  -H 'content-type: application/json' \
-  -d "{\"user_id\":\"dev1\",\"workspace_root\":\"$(pwd)/tests/fixtures/tiny_repo\"}"
+Settings can also come from a local `.env`, which may contain credentials. Do not
+commit or include that file in model-visible artifacts. No support corpus or
+embedding model is needed with support tools disabled. Choose hosted endpoints
+explicitly with a separate call budget; there is no automatic paid fallback.
+
+## Open a disposable fixture
+
+In another terminal, from the same checkout:
+
+```sh
+task_workspace="$(mktemp -d /tmp/agent-harness-demo.XXXXXX)"
+cp tests/fixtures/tiny_repo/calc.py tests/fixtures/tiny_repo/test_calc.py "$task_workspace/"
+uv run agent-harness chat --user-id demo-user --provider ollama \
+  --workspace "$task_workspace" --checkpoints
 ```
 
-## Agent panel + CLI (curl-free)
+Ask: `Fix divide in calc.py so the failing divide test passes. Preserve add and run
+the configured check.` The copy protects the vendored fixture from demo edits.
+Checkpoints opt into bounded plaintext source copies in local SQLite; keep this
+disposable path until you finish inspecting or reversing its changes.
 
-The harness ships a **Typer CLI** and a **static demo panel** so you can drive a
-turn without curl. Both are thin HTTP clients — no agent logic lives in them.
+For the panel, open **http://127.0.0.1:8000/**, enter that absolute disposable path,
+choose `ollama`, opt into turn checkpoints if wanted and create a new session.
+The panel and CLI are thin HTTP clients of the same runtime.
 
-### Start the server
+## Review and recover explicitly
 
-```bash
-uv sync --extra dev
-agent-harness serve                 # = uvicorn api.server:app; --host/--port/--reload
+Review completion/check status, changed paths, bounded diffs and tool errors.
+A `passed` check is observed execution evidence, not independent task acceptance.
+`verification_ran` is retained as a legacy pass indicator; `confidence` is a
+read/tool heuristic and cannot establish answer or patch correctness. Unavailable,
+stale, failed, not-run and missing evidence stay distinct. Compare the artifact
+against the requested behavior, including cases beyond the visible fixture test.
+
+The CLI prints the session ID and submission key. `/check` inspects a pending
+submission; `/retry` repeats only its exact retained input/key. New messages are
+blocked after an uncertain outcome. Type `/quit` to exit. The separate
+`uv run agent-harness cancel SESSION_ID --user-id demo-user` command requests
+cancellation and returns before final settlement. The server waits for owned
+cleanup before final reporting; it cannot promise remote inference/billing or
+synchronous workers stop immediately.
+
+The panel's **Cancel turn**, **Check run** and explicit retry controls use
+the API boundaries. A stream disconnect leaves app-owned work running under its
+budgets; it never triggers an automatic edit-producing POST fallback. Reload
+restores pending references without submitting them. Forgetting a reference does
+not cancel server work.
+
+After an API restart, inspect **Saved runs** in the panel, or:
+
+```sh
+uv run agent-harness runs --user-id demo-user
+uv run agent-harness run RUN_ID --user-id demo-user --json
+uv run agent-harness memory --user-id demo-user
 ```
 
-### Browser panel
+Replace `RUN_ID` with an actual printed ID. Saved history stays read-only. Explicit
+continuation forks require fresh scoped workspace/configuration/transcript/context
+checks and acknowledgment of uncaptured state; older/changed/unknown profiles may
+require a fresh session. Explicit reversal is single-file, hash/mode guarded and
+preserves other paths. Checkpoint/reversal controls and CLI commands are documented
+in [README.md](README.md). Never reset a dirty repository to recover a run.
 
-Open **http://127.0.0.1:8000/**. The panel is served from `ui/` (static mount):
+## Keep evaluation evidence separate
 
-1. (Optional) paste an absolute `workspace_root` and pick a provider in the top bar.
-2. Click **New session**.
-3. Type a coding task and press **Enter**.
-
-Tool calls stream in **live as cards** (name, arguments, result/error, latency)
-via Server-Sent Events (`GET /chat/stream`); the right-hand **envelope rail**
-shows the confidence badge, escalation pill, provider, latency, citations,
-`files_touched`, `patch_summary`, and `memory_writes`. If the browser can't open
-an `EventSource`, the panel falls back to a single `POST /chat`.
-
-> **Screenshot (30-second capture):** with the server running and a turn sent,
-> screenshot `http://127.0.0.1:8000/` and save it to `docs/panel.png` — the
-> README references that path. A populated capture needs a tool-calling provider
-> (cloud key or a model that completes read→edit→verify; gemma4 may stop early on
-> 8 GB VRAM — see the hardware note above).
-
-### Terminal REPL
-
-```bash
-agent-harness chat \
-  --workspace "$(pwd)/tests/fixtures/tiny_repo" \
-  --provider anthropic            # omit for the configured default
+```sh
+report_dir="$(mktemp -d /tmp/agent-harness-contracts.XXXXXX)"
+uv run python -m evals.run --providers ollama,anthropic,openai \
+  --report "$report_dir/coding.md"
+uv run python -m evals.run --scenarios evals/scenarios_support.yaml \
+  --providers ollama,anthropic,openai --report "$report_dir/support.md"
 ```
 
-`chat` creates a session, then loops on stdin: each line is a turn, and the reply
-prints the answer plus a one-line envelope summary (confidence, escalation,
-provider, latency, `files_touched`). Type `/quit` or Ctrl-D to exit.
+Those matrices use scripted responses/tools and validate mechanics. Adding
+`--live` uses inference with simulated tools; it still does not produce or grade
+real repository patches. Real coding evaluations use [evals/real_tasks](evals/real_tasks),
+disposable workspaces and immutable external acceptance. Existing raw results are
+preserved by using unique report paths. No offline test proves model improvement.
 
-## Eval matrix (offline)
+## Execution limits and troubleshooting
 
-```bash
-python -m evals.run --providers ollama,anthropic,openai
-```
+| Observation | Next action |
+|---|---|
+| Model unavailable or load failure | Inspect your selected local backend/model; stop and resolve setup before another run. |
+| No file tools | Create a session with the intended absolute workspace path. |
+| Budget-exhausted/incomplete | Inspect preserved diffs/errors; narrow the task or explicitly revise limits. |
+| Unavailable/failed/stale check | Inspect the attempt and configured argv; rerun the relevant check after the latest edit. |
+| Lost response or stream | Inspect the exact saved submission; use an explicit same-key retry only if appropriate. |
+| Saved continuation blocked | Inspect review diagnostics; changed/unknown evidence does not grant permission to edit. |
 
-Scores are deterministic (scripted `FakeProvider`). Use `--live` only for real provider comparison — scores vary run-to-run.
+Path validation and command allowlists are not process isolation. Tests/npm scripts
+execute trusted repository code with host permissions. Admission coordinates one
+harness process, not editors, other API workers or external writers. Checkpoints
+exclude some paths/metadata and are not an atomic whole-workspace restore.
+Cross-process isolation, full reconciliation, context compaction, selectable model
+profiles and broader held-out/project acceptance remain roadmap work.
 
-## Optional: legacy support demo
-
-Set `ENABLE_SUPPORT_TOOLS=true`, pull `nomic-embed-text`, then seed:
-
-```bash
-docker exec agent-harness-ollama ollama pull nomic-embed-text
-docker exec agent-harness-app python -m data.seed
-docker exec agent-harness-app python -m data.embed
-curl -X POST http://localhost:8000/chat \
-  -H 'content-type: application/json' \
-  -d '{"user_id":"u1","session_id":"<id>","message":"what is your return window?"}'
-```
-
-Support eval scenarios: `python -m evals.run --scenarios evals/scenarios_support.yaml`
-
-See **Agent panel + CLI** above for the curl-free demo — plan in [GUI-integ.md](GUI-integ.md).
-
-## Optional: cloud providers
-
-Copy `.env.example` to `.env` and set `ANTHROPIC_API_KEY` and/or `OPENAI_API_KEY`. Pass `"provider":"anthropic"` on `/chat`.
-
-## Troubleshooting
-
-| Symptom | Fix |
-|---------|-----|
-| Ollama 500 / OOM on `/chat` | More Docker RAM (**≥ 12 GiB** for gemma4), smaller model, or cloud provider |
-| `model requires more system memory (9.7 GiB)` in Ollama logs | Same as above — gemma4 weights alone need ~9.4 GiB on CPU |
-| `read_file` not in tool list | Session needs `workspace_root` (or `DEFAULT_WORKSPACE_ROOT`) |
-| Empty citations | Model skipped read/grep tools — check `tool_calls` in response |
-| Model reads files then answers without editing | After merging `fix/ollama-tool-loop`, multi-turn tools work; gemma4 may still stop with text instead of `write_file` — try `"provider":"anthropic"` for edit→verify demos |
-| `escalated: true` after edit | Edit budget (`MAX_FILES_TOUCHED_PER_TURN`, default 5) or low grounding confidence |
-| Panel loads but Send is disabled | Click **New session** first — the input enables once a session exists |
-| Panel tool cards never fill in | Stream interrupted; the panel falls back to `POST /chat`. Check the server log and that the provider supports tool calls |
+Legacy Docker/support smoke observations remain in [evals/LIVE.md](evals/LIVE.md).
+They are historical environment observations, not a recommendation to spend money
+or change your running containers. This walkthrough uses neither Docker nor support
+resource initialization.
