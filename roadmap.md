@@ -1219,6 +1219,21 @@ Relevant implementation: `harness/loop.py`, `harness/outcome.py`, `harness/groun
   missing source archives after crash/failure. Repository scope, full audit/crash
   reconciliation, panel controls and broader Milestones 4–6 remain open.
 
+- **2026-10-14 — Workspace memory storage foundation:** new workspace notes
+  use a separate table with owner/root/text dedupe; legacy global rows and operator
+  schema additions remain intact. One transactional monotonic ID counter spans both
+  tables; owner correction/deletion resolves either table and rejects ambiguous
+  unsupported IDs. Scoped selection includes global plus the chosen canonical path;
+  legacy tool/prompt reads remain global-only until runtime scope binding. Owner
+  previews expose nullable workspace roots; no note is automatically classified.
+  Validation: 79 focused, 993 offline (five live deselected), Ruff/mypy/format and
+  both scripted 90/90 matrices with labels/limits inspected. Namespace isolation,
+  dedupe, rollback, restart/IDs and operator-trigger preservation are covered. No
+  inference, Duodoro edits or model-quality claim. Path keys are not repository
+  identity/isolation; mixed-version/manual writes, historical deleted IDs, quotas,
+  owner classification and runtime/panel scope controls remain separate. This does
+  not complete Milestones 4–6.
+
 ## Milestone 1 — Establish a real task-success baseline
 
 **Outcome:** a model attempts real repository tasks through the same runtime used by Jorge, and independent checks determine whether it succeeded.

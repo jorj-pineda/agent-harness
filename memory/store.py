@@ -13,9 +13,9 @@ Design choices worth calling out:
   strictly read-only connection; memory is inherently read-write. Keeping
   them in different files means one accidental write path can't taint
   the other.
-* **Exact-string dedupe per user.** `UNIQUE(user_id, fact)` at the schema
-  level plus `INSERT OR IGNORE` at the call site. The agent is free to
-  "remember" the same thing twice; the store just no-ops.
+* **Exact-string dedupe per user and namespace.** Legacy global rows stay
+  in their original table; workspace rows dedupe by user/root/text. One
+  transactional counter assigns IDs across both without reusing deleted IDs.
 * **Generated timestamps in Python, not SQL.** ISO-8601 UTC strings match
   the format already in `data/schema.sql` and stay inspectable in tests.
 
@@ -49,6 +49,32 @@ MEMORY_OMISSION_NOTICE = (
 FACTS_HEADING = "Engineering memory for this developer (persists across sessions):"
 
 
+_TABLE_SQL = {
+    "memory_facts": {
+        "find": "SELECT id FROM memory_facts WHERE user_id = ? AND fact = ?",
+        "insert": "INSERT INTO memory_facts (id, user_id, fact, source_turn_id, created_at) "
+        "VALUES (?, ?, ?, ?, ?)",
+        "delete": "DELETE FROM memory_facts WHERE user_id = ? AND id = ? AND fact = ?",
+        "correct": "UPDATE memory_facts SET fact = ?, source_turn_id = NULL, updated_at = ? "
+        "WHERE user_id = ? AND id = ? AND fact = ?",
+        "get": "SELECT id, user_id, fact, source_turn_id, created_at, updated_at, "
+        "NULL AS workspace_root FROM memory_facts WHERE user_id = ? AND id = ?",
+    },
+    "workspace_memory_facts": {
+        "find": "SELECT id FROM workspace_memory_facts WHERE user_id = ? AND fact = ? "
+        "AND workspace_root = ?",
+        "insert": "INSERT INTO workspace_memory_facts "
+        "(id, user_id, fact, source_turn_id, created_at, workspace_root) "
+        "VALUES (?, ?, ?, ?, ?, ?)",
+        "delete": "DELETE FROM workspace_memory_facts WHERE user_id = ? AND id = ? AND fact = ?",
+        "correct": "UPDATE workspace_memory_facts SET fact = ?, source_turn_id = NULL, "
+        "updated_at = ? WHERE user_id = ? AND id = ? AND fact = ?",
+        "get": "SELECT id, user_id, fact, source_turn_id, created_at, updated_at, workspace_root "
+        "FROM workspace_memory_facts WHERE user_id = ? AND id = ?",
+    },
+}
+
+
 def normalize_fact(fact: str) -> str:
     normalized = fact.strip()
     if not normalized:
@@ -56,6 +82,15 @@ def normalize_fact(fact: str) -> str:
     if len(normalized.encode("utf-8")) > MAX_FACT_BYTES:
         raise ValueError(f"fact exceeds {MAX_FACT_BYTES} UTF-8 bytes after trimming")
     return normalized
+
+
+def _workspace_key(root: str | None) -> str | None:
+    if root is None:
+        return None
+    path = Path(root)
+    if not path.is_absolute() or ".." in path.parts or str(path) != root:
+        raise ValueError("workspace_root must be a canonical absolute path")
+    return root
 
 
 class Fact(BaseModel):
@@ -67,6 +102,7 @@ class Fact(BaseModel):
     source_turn_id: str | None = None
     created_at: str = Field(..., description="ISO-8601 UTC timestamp")
     updated_at: str | None = None
+    workspace_root: str | None = None
 
 
 class FactConflictError(ValueError):
@@ -98,6 +134,11 @@ class FactStore:
                 }
                 if "updated_at" not in columns:
                     self._conn.execute("ALTER TABLE memory_facts ADD COLUMN updated_at TEXT")
+                self._conn.execute(
+                    "UPDATE memory_id_counter SET last_id = MAX(last_id, "
+                    "COALESCE((SELECT MAX(id) FROM memory_facts), 0), "
+                    "COALESCE((SELECT MAX(id) FROM workspace_memory_facts), 0))"
+                )
         except Exception:
             self._conn.close()
             raise
@@ -107,20 +148,39 @@ class FactStore:
         user_id: str,
         fact: str,
         source_turn_id: str | None = None,
+        *,
+        workspace_root: str | None = None,
     ) -> bool:
         """Insert a fact. Returns True if new, False if already recorded."""
         if not user_id:
             raise ValueError("user_id must not be empty")
         normalized = normalize_fact(fact)
 
-        now = datetime.now(UTC).isoformat()
-        cursor = self._conn.execute(
-            "INSERT OR IGNORE INTO memory_facts "
-            "(user_id, fact, source_turn_id, created_at) VALUES (?, ?, ?, ?)",
-            (user_id, normalized, source_turn_id, now),
-        )
-        self._conn.commit()
-        inserted = cursor.rowcount > 0
+        workspace_root = _workspace_key(workspace_root)
+        with self._conn:
+            self._conn.execute("BEGIN IMMEDIATE")
+            sql = _TABLE_SQL["memory_facts" if workspace_root is None else "workspace_memory_facts"]
+            existing = self._conn.execute(
+                sql["find"],
+                (user_id, normalized, workspace_root)
+                if workspace_root is not None
+                else (user_id, normalized),
+            ).fetchone()
+            if existing is not None:
+                return False
+            last_id = self._conn.execute(
+                "SELECT MAX(value) FROM (SELECT last_id AS value FROM memory_id_counter "
+                "UNION ALL SELECT MAX(id) FROM memory_facts "
+                "UNION ALL SELECT MAX(id) FROM workspace_memory_facts)"
+            ).fetchone()[0]
+            fact_id = int(last_id) + 1
+            self._conn.execute("UPDATE memory_id_counter SET last_id = ?", (fact_id,))
+            values = (fact_id, user_id, normalized, source_turn_id, datetime.now(UTC).isoformat())
+            self._conn.execute(
+                sql["insert"],
+                (*values, workspace_root) if workspace_root is not None else values,
+            )
+        inserted = True
         log.info(
             "fact_store=add user_id=%s inserted=%s source_turn_id=%s",
             user_id,
@@ -130,7 +190,13 @@ class FactStore:
         return inserted
 
     def list(
-        self, user_id: str, limit: int = DEFAULT_LIST_LIMIT, *, before_id: int | None = None
+        self,
+        user_id: str,
+        limit: int = DEFAULT_LIST_LIMIT,
+        *,
+        before_id: int | None = None,
+        workspace_root: str | None = None,
+        scoped: bool = False,
     ) -> list[Fact]:
         """Return a user's facts, most recently added first."""
         if not user_id:
@@ -139,13 +205,30 @@ class FactStore:
             raise ValueError("limit must be >= 1")
         if before_id is not None and before_id < 1:
             raise ValueError("before_id must be >= 1")
+        workspace_root = _workspace_key(workspace_root)
         rows = self._conn.execute(
-            "SELECT id, user_id, fact, source_turn_id, created_at, updated_at "
-            "FROM memory_facts WHERE user_id = ? "
-            "AND (? IS NULL OR id < ?) ORDER BY id DESC LIMIT ?",
-            (user_id, before_id, before_id, limit),
+            "SELECT * FROM ("
+            "SELECT id, user_id, fact, source_turn_id, created_at, updated_at, "
+            "NULL AS workspace_root FROM memory_facts UNION ALL "
+            "SELECT id, user_id, fact, source_turn_id, created_at, updated_at, workspace_root "
+            "FROM workspace_memory_facts) WHERE user_id = ? "
+            "AND (? IS NULL OR id < ?) "
+            "AND (? = 0 OR workspace_root IS NULL OR workspace_root = ?) "
+            "ORDER BY id DESC LIMIT ?",
+            (user_id, before_id, before_id, scoped, workspace_root, limit),
         ).fetchall()
         return [Fact(**dict(r)) for r in rows]
+
+    def _lookup(self, user_id: str, fact_id: int) -> tuple[str, str] | None:
+        rows = self._conn.execute(
+            "SELECT 'memory_facts' AS storage, fact FROM memory_facts WHERE user_id=? AND id=? "
+            "UNION ALL SELECT 'workspace_memory_facts', fact FROM workspace_memory_facts "
+            "WHERE user_id=? AND id=?",
+            (user_id, fact_id, user_id, fact_id),
+        ).fetchall()
+        if len(rows) > 1:
+            raise FactConflictError("Ambiguous memory ID from unsupported writes; inspect storage.")
+        return (rows[0]["storage"], rows[0]["fact"]) if rows else None
 
     def delete(self, user_id: str, fact_id: int, expected_fact_sha256: str) -> bool:
         """Delete only this owner's exact reviewed content; missing IDs return False.
@@ -155,17 +238,15 @@ class FactStore:
         """
         if not user_id or fact_id < 1:
             raise ValueError("user_id must not be empty and fact_id must be positive")
-        row = self._conn.execute(
-            "SELECT fact FROM memory_facts WHERE user_id = ? AND id = ?", (user_id, fact_id)
-        ).fetchone()
-        if row is None:
+        found = self._lookup(user_id, fact_id)
+        if found is None:
             return False
-        fact: str = row["fact"]
+        table, fact = found
         if hashlib.sha256(fact.encode("utf-8")).hexdigest() != expected_fact_sha256:
             raise FactConflictError("Stored note differs from the reviewed content; inspect again.")
         with self._conn:
             cursor = self._conn.execute(
-                "DELETE FROM memory_facts WHERE user_id = ? AND id = ? AND fact = ?",
+                _TABLE_SQL[table]["delete"],
                 (user_id, fact_id, fact),
             )
             if cursor.rowcount != 1:
@@ -183,25 +264,21 @@ class FactStore:
         if not user_id or fact_id < 1:
             raise ValueError("user_id must not be empty and fact_id must be positive")
         normalized = normalize_fact(replacement)
-        row = self._conn.execute(
-            "SELECT fact FROM memory_facts WHERE user_id = ? AND id = ?", (user_id, fact_id)
-        ).fetchone()
-        if row is None:
+        found = self._lookup(user_id, fact_id)
+        if found is None:
             return None
-        fact: str = row["fact"]
+        table, fact = found
         if hashlib.sha256(fact.encode("utf-8")).hexdigest() != expected_fact_sha256:
             raise FactConflictError("Stored note differs from the reviewed content; inspect again.")
         with self._conn:
             cursor = self._conn.execute(
-                "UPDATE memory_facts SET fact = ?, source_turn_id = NULL, updated_at = ? "
-                "WHERE user_id = ? AND id = ? AND fact = ?",
+                _TABLE_SQL[table]["correct"],
                 (normalized, datetime.now(UTC).isoformat(), user_id, fact_id, fact),
             )
             if cursor.rowcount != 1:
                 raise FactConflictError("Stored note changed during correction; inspect again.")
             result = self._conn.execute(
-                "SELECT id, user_id, fact, source_turn_id, created_at, updated_at "
-                "FROM memory_facts WHERE user_id = ? AND id = ?",
+                _TABLE_SQL[table]["get"],
                 (user_id, fact_id),
             ).fetchone()
             return Fact(**dict(result))
@@ -210,6 +287,8 @@ class FactStore:
         self,
         user_id: str,
         limit: int = DEFAULT_LIST_LIMIT,
+        *,
+        workspace_root: str | None = None,
     ) -> str:
         """Render a user's engineering notes as a system-prompt injection block.
 
@@ -217,7 +296,7 @@ class FactStore:
         unconditionally. Notes are listed most-recent first, matching `list()`. The UTF-8 block
         is bounded; omitted whole notes are announced without changing storage.
         """
-        facts = self.list(user_id, limit=limit)
+        facts = self.list(user_id, limit=limit, workspace_root=workspace_root, scoped=True)
         if not facts:
             return ""
         candidates = [f"- {f.fact}" for f in facts]
