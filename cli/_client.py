@@ -123,6 +123,31 @@ class AgentClient:
         resp.raise_for_status()
         return summarize(resp.json())
 
+    def memory(
+        self, user_id: str, *, limit: int = 20, before_id: int | None = None
+    ) -> dict[str, Any]:
+        params: dict[str, str | int] = {"user_id": user_id, "limit": limit}
+        if before_id is not None:
+            params["before_id"] = before_id
+        resp = httpx.get(f"{self._base}/memory", params=params, timeout=30)
+        resp.raise_for_status()
+        return dict(resp.json())
+
+    def delete_memory(
+        self, user_id: str, fact_id: int, expected_fact_sha256: str
+    ) -> dict[str, Any]:
+        resp = httpx.request(
+            "DELETE",
+            f"{self._base}/memory/{fact_id}",
+            json={"user_id": user_id, "expected_fact_sha256": expected_fact_sha256},
+            timeout=30,
+        )
+        resp.raise_for_status()
+        record = dict(resp.json())
+        if record.get("status") != "deleted" or record.get("fact_id") != fact_id:
+            raise ValueError("Mismatched memory deletion response; inspect memory.")
+        return record
+
     def runs(
         self,
         user_id: str,
