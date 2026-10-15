@@ -1102,6 +1102,17 @@ Relevant implementation: `harness/loop.py`, `harness/outcome.py`, `harness/groun
   Milestones 4–6 remain open. Validation: 48 focused, 945 offline (five live
   deselected), Ruff/mypy and both scripted 90/90 matrices with labels inspected.
 
+- **2026-10-14 — Bounded automatic memory injection:** shared prompt refresh
+  caps the memory block at 8,192 UTF-8 bytes including heading/omission notice.
+  Whole notes are selected from the recent 20-note window; skipped notes remain
+  stored, and smaller older notes in that window may fit. Configuration review
+  uses the same refresh. Execution profiles record the boundary; old missing
+  boundaries stay unknown and block guarded continuation without rewriting
+  history. Explicit recall, database quota and legacy read I/O remain separate.
+  Validation: 115 focused, 951 offline (five live deselected), Ruff/mypy and both
+  scripted 90/90 matrices with labels/limits inspected. No inference, Duodoro
+  source edits or model-quality claim; context work and Milestones 4–6 remain open.
+
 ## Milestone 1 — Establish a real task-success baseline
 
 **Outcome:** a model attempts real repository tasks through the same runtime used by Jorge, and independent checks determine whether it succeeded.
