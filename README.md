@@ -73,6 +73,22 @@ fail at `max_results=1`; inspect that stored note outside the model. This bounds
 each recall payload, not SQLite read/allocation work, total history or guaranteed
 context fit. The harness's request budgets still govern subsequent inference.
 
+Owner-facing `GET /memory?user_id=...&limit=20&before_id=...` lists newest-first
+notes with 1,024-byte UTF-8 previews, explicit truncation, full note byte counts
+and SHA-256 hashes, timestamps and recorded source-turn IDs (which may be null).
+Pages accept 1–50 notes; `next_before_id` supplies the next cursor. These are
+user-scoped notes, not repository-scoped conventions or an authenticated account
+system. Legacy oversized notes remain inspectable through bounded previews;
+SQLite read/allocation work is not bounded by the preview limit.
+
+`DELETE /memory/{fact_id}` requires JSON `user_id` and `expected_fact_sha256`.
+The hash identifies the entire stored note even when the preview is truncated.
+A stale hash/content change returns 409; missing/other-owner IDs return 404.
+Deletion removes the whole note from future recall and prompt refresh, including
+after restart. It does not revoke already sent prompts, erase saved transcripts/
+run evidence, or securely erase SQLite storage. No model tool can invoke this
+owner action. Correction, repository scope and fuller provenance remain open.
+
 
 **Workspace path guard + policy.** Code tools resolve paths under `workspace_root`; [harness/policy.py](harness/policy.py) classifies task kind and flags unsafe scope; `MAX_FILES_TOUCHED_PER_TURN` flags oversized edits after the turn. These controls do not isolate code executed by tests.
 
