@@ -85,7 +85,8 @@ async def test_subprocess_receives_only_selected_environment(
     monkeypatch.setenv("ANTHROPIC_API_KEY", "secret")
     result = await run_process(
         [
-            sys.executable, "-c",
+            sys.executable,
+            "-c",
             "import os; print(os.getenv('ANTHROPIC_API_KEY'), os.getenv('PROJECT_FLAG'))",
         ],
         cwd=tmp_path,
