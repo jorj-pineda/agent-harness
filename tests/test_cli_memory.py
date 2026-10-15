@@ -136,3 +136,61 @@ def test_memory_empty_and_lookup_timeout_are_read_only():
         result = runner.invoke(app, ["memory"])
     assert result.exit_code == 1 and "private-marker" not in result.output
     assert get.call_count == 1
+
+
+def test_cli_correction_uses_one_put_and_real_owner_guards(tmp_path):
+    provider = ScriptedProvider()
+    with TestClient(make_app(tmp_path, provider)) as api:
+
+        def seed():
+            api.app.state.components.fact_store.add("dev", "original")
+
+        api.portal.call(seed)
+        note = api.get("/memory", params={"user_id": "dev"}).json()["notes"][0]
+
+        def request(method, url, **kwargs):
+            return api.request(
+                method, url.removeprefix("http://localhost:8000"), json=kwargs["json"]
+            )
+
+        with (
+            patch("httpx.request", side_effect=request) as put,
+            patch("httpx.get") as get,
+            patch("httpx.post") as post,
+        ):
+            result = runner.invoke(
+                app,
+                [
+                    "memory-correct",
+                    str(note["id"]),
+                    "new note",
+                    "--user-id",
+                    "dev",
+                    "--expected-sha256",
+                    note["fact_sha256"],
+                ],
+            )
+            assert result.exit_code == 0, result.output
+            assert "Corrected memory note" in result.output
+            assert put.call_count == 1 and put.call_args.args[0] == "PUT"
+            get.assert_not_called()
+            post.assert_not_called()
+        assert (
+            api.get("/memory", params={"user_id": "dev"}).json()["notes"][0]["preview"]
+            == "new note"
+        )
+    assert provider.calls == []
+
+
+def test_cli_correction_timeout_never_retries_and_bad_hash_never_dispatches():
+    with (
+        patch("httpx.request", side_effect=httpx.ReadTimeout("private-marker")) as put,
+        patch("httpx.get") as get,
+    ):
+        result = runner.invoke(app, ["memory-correct", "1", "new", "--expected-sha256", "a" * 64])
+        assert result.exit_code == 1
+        assert "Outcome may be unknown" in result.output and "No automatic retry" in result.output
+        assert "private-marker" not in result.output and put.call_count == 1
+        get.assert_not_called()
+        invalid = runner.invoke(app, ["memory-correct", "1", "new", "--expected-sha256", "bad"])
+        assert invalid.exit_code != 0 and put.call_count == 1

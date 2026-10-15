@@ -18,6 +18,7 @@ class MemoryNotePreview(BaseModel):
     fact_bytes: int
     fact_sha256: str
     created_at: str
+    updated_at: str | None = None
     source_turn_id: str | None
 
 
@@ -30,6 +31,7 @@ def preview_note(fact: Fact) -> MemoryNotePreview:
         fact_bytes=len(raw),
         fact_sha256=hashlib.sha256(raw).hexdigest(),
         created_at=fact.created_at,
+        updated_at=fact.updated_at,
         source_turn_id=fact.source_turn_id,
     )
 

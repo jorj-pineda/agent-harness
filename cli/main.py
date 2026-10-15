@@ -298,6 +298,7 @@ def memory(
         typer.echo(json.dumps(note["preview"]))
         typer.echo(
             f"created={json.dumps(note['created_at'])} "
+            f"updated={json.dumps(note.get('updated_at'))} "
             f"source_turn={json.dumps(note.get('source_turn_id'))}"
         )
     if not page["notes"]:
@@ -327,6 +328,31 @@ def memory_delete(
         )
         raise typer.Exit(code=1) from exc
     typer.echo(f"Deleted memory note {record['fact_id']}. {record['scope_note']}")
+
+
+@app.command()
+def memory_correct(
+    fact_id: int = typer.Argument(..., min=1),
+    replacement: str = typer.Argument(...),
+    expected_sha256: str = typer.Option(..., "--expected-sha256"),
+    base_url: str = typer.Option("http://localhost:8000", "--base-url"),
+    user_id: str = typer.Option("cli-user", "--user-id"),
+) -> None:
+    """Replace a whole reviewed note; server enforces UTF-8 size/conflict guards."""
+    if re.fullmatch(r"[0-9a-f]{64}", expected_sha256) is None:
+        raise typer.BadParameter("Use the 64-character lowercase hash from memory inspection.")
+    try:
+        record = AgentClient(base_url).correct_memory(
+            user_id, fact_id, expected_sha256, replacement
+        )
+    except Exception as exc:
+        typer.echo(
+            f"Memory correction failed ({type(exc).__name__}). Outcome may be unknown; "
+            "inspect memory before retrying. No automatic retry.",
+            err=True,
+        )
+        raise typer.Exit(code=1) from exc
+    typer.echo(f"Corrected memory note {record['note']['id']}. {record['scope_note']}")
 
 
 @app.command()

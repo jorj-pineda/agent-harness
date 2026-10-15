@@ -148,6 +148,25 @@ class AgentClient:
             raise ValueError("Mismatched memory deletion response; inspect memory.")
         return record
 
+    def correct_memory(
+        self, user_id: str, fact_id: int, expected_fact_sha256: str, replacement: str
+    ) -> dict[str, Any]:
+        resp = httpx.request(
+            "PUT",
+            f"{self._base}/memory/{fact_id}",
+            json={
+                "user_id": user_id,
+                "expected_fact_sha256": expected_fact_sha256,
+                "replacement": replacement,
+            },
+            timeout=30,
+        )
+        resp.raise_for_status()
+        record = dict(resp.json())
+        if record.get("status") != "corrected" or (record.get("note") or {}).get("id") != fact_id:
+            raise ValueError("Mismatched memory correction response; inspect memory.")
+        return record
+
     def runs(
         self,
         user_id: str,

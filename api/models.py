@@ -14,6 +14,7 @@ from pydantic import BaseModel, Field, field_validator
 from harness.reverts import FileRevertInput
 from harness.runs import RequestId
 from harness.state import TurnResponse
+from memory.review import MemoryNotePreview
 
 
 class DeleteMemoryRequest(BaseModel):
@@ -24,6 +25,18 @@ class DeleteMemoryRequest(BaseModel):
 class DeleteMemoryResponse(BaseModel):
     status: Literal["deleted"] = "deleted"
     fact_id: int
+    scope_note: str = (
+        "Future memory use only; saved history and already sent prompts are unchanged."
+    )
+
+
+class CorrectMemoryRequest(DeleteMemoryRequest):
+    replacement: str = Field(min_length=1, max_length=8192)
+
+
+class CorrectMemoryResponse(BaseModel):
+    status: Literal["corrected"] = "corrected"
+    note: MemoryNotePreview
     scope_note: str = (
         "Future memory use only; saved history and already sent prompts are unchanged."
     )
@@ -126,9 +139,13 @@ __all__ = [
     "ChatResponse",
     "ConfigurationReviewRequest",
     "ContinueSessionRequest",
+    "CorrectMemoryRequest",
+    "CorrectMemoryResponse",
     "CreateCheckpointRequest",
     "CreateSessionRequest",
     "CreateSessionResponse",
+    "DeleteMemoryRequest",
+    "DeleteMemoryResponse",
     "RevertFileRequest",
     "SubmitRunRequest",
 ]

@@ -145,3 +145,75 @@ def test_legacy_oversized_note_has_bounded_preview_and_can_be_deleted(tmp_path):
         assert delete(client, note).status_code == 200
         assert client.get("/memory", params={"user_id": "dev"}).json()["notes"] == []
     assert provider.calls == []
+
+
+def correct(client, note, text, *, user_id="dev", digest=None):
+    return client.put(
+        f"/memory/{note['id']}",
+        json={
+            "user_id": user_id,
+            "expected_fact_sha256": digest or note["fact_sha256"],
+            "replacement": text,
+        },
+    )
+
+
+def test_owner_correction_and_restart_preserve_old_run_evidence(tmp_path):
+    provider = ScriptedProvider()
+    provider.script(
+        make_response(
+            tool_calls=[
+                ToolCall(id="note", name="remember", arguments={"note": "Wrong convention"})
+            ]
+        ),
+        make_response(content="Stored"),
+        make_response(content="Reviewed"),
+    )
+    with TestClient(make_app(tmp_path, provider)) as client:
+        sid = client.post("/sessions", json={"user_id": "dev"}).json()["session_id"]
+        client.post("/chat", json={"user_id": "dev", "session_id": sid, "message": "Remember"})
+        saved = client.get(f"/sessions/{sid}", params={"user_id": "dev"}).json()
+        note = client.get("/memory", params={"user_id": "dev"}).json()["notes"][0]
+        assert correct(client, note, "Right convention", user_id="other").status_code == 404
+        assert correct(client, note, "Right convention", digest="0" * 64).status_code == 409
+        for text in [" ", "x" * 4097, "é" * 2049, "x" * 8193]:
+            assert correct(client, note, text).status_code == 422
+        response = correct(client, note, "  Right convention  ")
+        assert response.status_code == 200, response.text
+        changed = response.json()["note"]
+        assert changed["id"] == note["id"] and changed["created_at"] == note["created_at"]
+        assert changed["updated_at"] is not None and changed["source_turn_id"] is None
+        assert changed["preview"] == "Right convention"
+        assert client.get(f"/sessions/{sid}", params={"user_id": "dev"}).json() == saved
+        assert correct(client, note, "Stale replacement").status_code == 409
+    with TestClient(make_app(tmp_path, provider)) as client:
+        assert client.get("/memory", params={"user_id": "dev"}).json()["notes"] == [changed]
+        sid = client.post("/sessions", json={"user_id": "dev"}).json()["session_id"]
+        client.post("/chat", json={"user_id": "dev", "session_id": sid, "message": "Explain"})
+        prompt = provider.calls[-1][0][0].content
+        assert "Right convention" in prompt and "Wrong convention" not in prompt
+
+
+def test_memory_correction_conflict_and_storage_failure_are_private_and_atomic(tmp_path):
+    provider = ScriptedProvider()
+    with TestClient(make_app(tmp_path, provider)) as client:
+
+        def seed():
+            store = client.app.state.components.fact_store
+            store.add("dev", "original", source_turn_id="old-turn")
+            store.add("dev", "existing")
+
+        client.portal.call(seed)
+        note = client.get("/memory", params={"user_id": "dev"}).json()["notes"][-1]
+        assert correct(client, note, "existing").status_code == 409
+
+        def fail():
+            client.app.state.components.fact_store._conn.execute(
+                "CREATE TRIGGER reject_correction BEFORE UPDATE ON memory_facts BEGIN SELECT RAISE(ABORT, 'private-marker'); END"
+            )
+
+        client.portal.call(fail)
+        failed = correct(client, note, "replacement")
+        assert failed.status_code == 409 and "private-marker" not in failed.text
+        assert client.get("/memory", params={"user_id": "dev"}).json()["notes"][-1] == note
+    assert provider.calls == []

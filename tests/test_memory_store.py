@@ -364,3 +364,89 @@ def test_delete_reused_id_cannot_delete_different_note(store: FactStore) -> None
     with pytest.raises(FactConflictError):
         store.delete("alice", note.id, expected)
     assert store.list("alice")[0].fact == "replacement"
+
+
+def test_legacy_memory_schema_migrates_without_invented_correction(tmp_path: Path) -> None:
+    import sqlite3
+
+    path = tmp_path / "legacy.db"
+    with sqlite3.connect(path) as connection:
+        connection.execute(
+            "CREATE TABLE memory_facts (id INTEGER PRIMARY KEY, user_id TEXT NOT NULL, fact TEXT NOT NULL, source_turn_id TEXT, created_at TEXT NOT NULL, UNIQUE(user_id, fact))"
+        )
+        connection.execute(
+            "INSERT INTO memory_facts VALUES (7, 'alice', 'old note', 'old-turn', 'original-time')"
+        )
+    for _ in range(2):
+        with FactStore(path) as store:
+            note = store.list("alice")[0]
+            assert note.id == 7 and note.fact == "old note"
+            assert note.created_at == "original-time" and note.source_turn_id == "old-turn"
+            assert note.updated_at is None
+
+
+def test_memory_correction_retains_creation_clears_source_and_persists(tmp_path: Path) -> None:
+    import hashlib
+
+    path = tmp_path / "memory.db"
+    with FactStore(path) as store:
+        store.add("alice", "wrong", source_turn_id="original-turn")
+        before = store.list("alice")[0]
+        digest = hashlib.sha256(before.fact.encode()).hexdigest()
+        assert store.correct("bob", before.id, digest, "right") is None
+        after = store.correct("alice", before.id, digest, "  right  ")
+        assert after is not None
+        assert after.id == before.id and after.created_at == before.created_at
+        assert after.fact == "right" and after.source_turn_id is None
+        assert after.updated_at is not None
+        datetime.fromisoformat(after.updated_at)
+    with FactStore(path) as store:
+        assert store.list("alice")[0] == after
+        assert "right" in store.format_for_system_prompt("alice")
+        assert "wrong" not in store.format_for_system_prompt("alice")
+
+
+def test_invalid_stale_and_duplicate_corrections_preserve_original(store: FactStore) -> None:
+    import hashlib
+    import sqlite3
+
+    from memory.store import FactConflictError
+
+    store.add("alice", "original", source_turn_id="old-turn")
+    store.add("alice", "existing")
+    before = store.list("alice")[-1]
+    digest = hashlib.sha256(before.fact.encode()).hexdigest()
+    for replacement in ["  ", "x" * 4097, "é" * 2049]:
+        with pytest.raises(ValueError):
+            store.correct("alice", before.id, digest, replacement)
+    with pytest.raises(FactConflictError):
+        store.correct("alice", before.id, "0" * 64, "valid")
+    with pytest.raises(sqlite3.IntegrityError):
+        store.correct("alice", before.id, digest, "existing")
+    assert store.list("alice")[-1] == before
+    assert store.correct("alice", before.id, digest, "é" * 2048).fact == "é" * 2048
+
+
+def test_memory_correction_final_predicate_preserves_later_content(
+    store: FactStore, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import hashlib
+    import sqlite3
+
+    from memory.store import FactConflictError
+
+    store.add("alice", "original")
+    note = store.list("alice")[0]
+    expected = hashlib.sha256(note.fact.encode()).hexdigest()
+    digest = hashlib.sha256
+
+    def change_after_read(raw: bytes):
+        with sqlite3.connect(store.path) as other:
+            other.execute("UPDATE memory_facts SET fact=? WHERE id=?", ("later edit", note.id))
+        return digest(raw)
+
+    monkeypatch.setattr("memory.store.hashlib.sha256", change_after_read)
+    with pytest.raises(FactConflictError, match="changed during correction"):
+        store.correct("alice", note.id, expected, "replacement")
+    assert store.list("alice")[0].fact == "later edit"
+    assert store.list("alice")[0].updated_at is None
