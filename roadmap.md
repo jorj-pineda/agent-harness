@@ -1139,6 +1139,18 @@ Relevant implementation: `harness/loop.py`, `harness/outcome.py`, `harness/groun
   database/read-allocation quotas and broader context work remain open; this does
   not complete Milestones 4–6.
 
+- **2026-10-14 — CLI owner memory controls:** thin `memory` / `memory-delete`
+  commands inspect paged previews and send one explicit hash-guarded whole-note
+  deletion. Human previews escape terminal controls; JSON retains metadata/scope.
+  Invalid hashes/pages do not dispatch; timeout/mismatched responses report unknown
+  outcome with inspection guidance and no automatic retry/lookup/model submission.
+  Validation: 19 focused, 970 offline (five live deselected), Ruff/mypy; real API
+  restart tests preserve other notes and empty run history. Evaluation behavior is
+  unchanged, so matrices were not rerun for this client-only slice. No inference,
+  quality claim or Duodoro source edits. Panel controls, correction, repository
+  scope/full provenance and broader context work remain open; Milestones 4–6 are
+  not complete.
+
 ## Milestone 1 — Establish a real task-success baseline
 
 **Outcome:** a model attempts real repository tasks through the same runtime used by Jorge, and independent checks determine whether it succeeded.
