@@ -142,3 +142,16 @@ async def test_register_memory_tools_rejects_double_registration(store: FactStor
 
     with pytest.raises(ToolError, match="already registered"):
         register_memory_tools(reg, store=store, user_id="alice")
+
+
+@pytest.mark.parametrize("name,key", [("remember", "note"), ("remember_fact", "fact")])
+async def test_remember_aliases_reject_oversized_utf8_notes(
+    registry: ToolRegistry, store: FactStore, name: str, key: str
+) -> None:
+    with pytest.raises(ToolError, match="4096 UTF-8 bytes"):
+        await registry.invoke(name, {key: "é" * 2049})
+    assert store.list("alice") == []
+    assert await registry.invoke(name, {key: "short note"}) == {
+        "stored": True,
+        "fact": "short note",
+    }

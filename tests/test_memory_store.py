@@ -219,3 +219,36 @@ def test_format_for_system_prompt_rejects_empty_user_id(store: FactStore) -> Non
 def test_format_for_system_prompt_rejects_non_positive_limit(store: FactStore) -> None:
     with pytest.raises(ValueError, match="limit"):
         store.format_for_system_prompt("alice", limit=0)
+
+
+@pytest.mark.parametrize("note", ["x" * 4097, "é" * 2049])
+def test_oversized_note_rejected_without_mutation(store: FactStore, note: str) -> None:
+    store.add("alice", "keep this")
+    with pytest.raises(ValueError, match="4096 UTF-8 bytes"):
+        store.add("alice", note)
+    assert [f.fact for f in store.list("alice")] == ["keep this"]
+
+
+def test_note_byte_boundary_applies_after_trimming(store: FactStore) -> None:
+    note = "é" * 2048
+    assert store.add("alice", f"  {note}\n")
+    assert store.list("alice")[0].fact == note
+
+
+def test_legacy_oversized_note_remains_readable(tmp_path: Path) -> None:
+    import sqlite3
+
+    path = tmp_path / "memory.db"
+    with FactStore(path):
+        pass
+    note = "x" * 4097
+    with sqlite3.connect(path) as connection:
+        connection.execute(
+            "INSERT INTO memory_facts (user_id, fact, created_at) VALUES (?, ?, ?)",
+            ("alice", note, "2026-10-14"),
+        )
+    with FactStore(path) as reopened:
+        assert reopened.list("alice")[0].fact == note
+        with pytest.raises(ValueError, match="4096 UTF-8 bytes"):
+            reopened.add("alice", note)
+        assert reopened.list("alice")[0].fact == note

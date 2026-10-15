@@ -1094,6 +1094,14 @@ Relevant implementation: `harness/loop.py`, `harness/outcome.py`, `harness/groun
   Validation: 59 focused, 939 offline (five live deselected), Ruff/mypy, formatting
   and both scripted 90/90 matrices with labels/limits inspected.
 
+- **2026-10-14 — Bounded new memory notes:** the shared store rejects notes over
+  4,096 UTF-8 bytes after trimming before SQLite mutation; both remember aliases
+  advertise/enforce the boundary. Historical oversized notes remain readable and
+  unchanged. This limits new individual writes, not database growth, legacy reads
+  or prompt/recall output. No inference or Duodoro source edits; context work and
+  Milestones 4–6 remain open. Validation: 48 focused, 945 offline (five live
+  deselected), Ruff/mypy and both scripted 90/90 matrices with labels inspected.
+
 ## Milestone 1 — Establish a real task-success baseline
 
 **Outcome:** a model attempts real repository tasks through the same runtime used by Jorge, and independent checks determine whether it succeeded.
