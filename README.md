@@ -112,8 +112,29 @@ agent-harness memory-delete 123 --user-id jorge --expected-sha256 'COPY_REVIEWED
 the whole note even when the preview is truncated. A timeout/mismatched response
 reports an uncertain outcome and asks for memory inspection before retrying. No
 automatic retry, lookup, model turn or session creation occurs. Human previews are
-JSON-quoted to escape terminal control characters. Correction, repository scope,
-fuller provenance and panel memory controls remain open.
+JSON-quoted to escape terminal control characters.
+
+`PUT /memory/{fact_id}` accepts `user_id`, `expected_fact_sha256` and
+`replacement` for an atomic owner correction. Replacements must fit 4,096 UTF-8
+bytes after trimming; the API also caps raw input at 8,192 characters. Stale
+content/concurrent changes or duplicate notes conflict without losing the original.
+The note retains its ID/creation time and creation-based ordering; correction
+records `updated_at` and clears the old source-turn attribution. Older databases
+upgrade with null correction times, without inventing previous corrections. The
+bounded owner preview exposes these fields; model recall remains list-of-strings.
+
+```sh
+# Replace the example ID/hash with those from memory inspection.
+agent-harness memory-correct 123 'Correct convention' --user-id jorge \
+  --expected-sha256 'COPY_REVIEWED_64_CHARACTER_HASH'
+```
+
+Correction replaces the entire note even when its preview was truncated. The CLI
+sends one PUT and reports transport/identity errors with inspection guidance,
+without automatic retries or model runs. Archives and already sent prompts remain
+unchanged; this is not secure erasure or a complete correction audit trail.
+Repository scope, turn-linked tool-write provenance and panel memory controls
+remain open.
 
 
 **Workspace path guard + policy.** Code tools resolve paths under `workspace_root`; [harness/policy.py](harness/policy.py) classifies task kind and flags unsafe scope; `MAX_FILES_TOUCHED_PER_TURN` blocks file-tool edits to additional distinct paths before mutation; command side effects remain outside that file-tool gate. These controls do not isolate code executed by tests.
