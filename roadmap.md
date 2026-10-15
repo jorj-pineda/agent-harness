@@ -1355,6 +1355,17 @@ scripted 90/90 matrices with labels/limits inspected.
 
 **Done when:** repeated benchmark runs show which changes help the selected models, and a longer task can cross the context-management threshold without losing its objective, diff, or unresolved failures. Retain only demonstrated improvements or changes needed for basic correctness.
 
+**2026-10-15 — Bounded complete memory inspection:** owner API detail reads expose
+whole notes up to 4,096 UTF-8 bytes with matching preview/hash/provenance metadata,
+without model calls or writes. SQL omits oversized legacy text before returning
+rows to Python; those notes retain bounded list previews. Missing/other-owner IDs,
+ambiguous unsupported IDs and private storage errors have explicit responses.
+This is review access, not note truth, authenticated accounts or a SQLite internal
+work quota. CLI/panel detail controls, reclassification and broader context/profile
+milestones remain open; no Duodoro edits or model-quality claim. Validation: 59
+focused, 1,000 offline tests (five live deselected), Ruff/format/mypy passed.
+Evaluation behavior unchanged; scripted matrices were not rerun.
+
 ## Milestone 5 — Make daily use recoverable and comfortable
 
 **Outcome:** Jorge can use the harness on an actual project without treating every run as a disposable demo.
