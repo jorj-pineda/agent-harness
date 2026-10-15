@@ -64,6 +64,15 @@ I/O. Explicit recall is separate. Execution profiles record
 remain reviewable, but guarded continuation requires a matching recorded boundary
 and therefore blocks those old profiles. Start a fresh session for new work.
 
+Explicit `recall` / `recall_facts` retains its list-of-strings result on success.
+Requested results above 32,000 serialized JSON bytes raise an explicit tool error
+before they enter model history; lower `max_results` to retry. The limit includes
+JSON escaping, which can expand Unicode and control text beyond raw UTF-8 size.
+No selected notes are silently dropped. A single oversized legacy note may still
+fail at `max_results=1`; inspect that stored note outside the model. This bounds
+each recall payload, not SQLite read/allocation work, total history or guaranteed
+context fit. The harness's request budgets still govern subsequent inference.
+
 
 **Workspace path guard + policy.** Code tools resolve paths under `workspace_root`; [harness/policy.py](harness/policy.py) classifies task kind and flags unsafe scope; `MAX_FILES_TOUCHED_PER_TURN` flags oversized edits after the turn. These controls do not isolate code executed by tests.
 

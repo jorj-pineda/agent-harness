@@ -1113,6 +1113,19 @@ Relevant implementation: `harness/loop.py`, `harness/outcome.py`, `harness/groun
   scripted 90/90 matrices with labels/limits inspected. No inference, Duodoro
   source edits or model-quality claim; context work and Milestones 4–6 remain open.
 
+- **2026-10-14 — Bounded explicit memory recall:** both aliases preserve list
+  results on success and reject requested results over 32,000 serialized JSON
+  bytes before model-history delivery. JSON escaping is counted; overflow gives
+  an explicit lower-max_results retry hint instead of silently dropping notes.
+  A single oversized legacy note may require inspection outside the model. This
+  is a per-payload boundary, not a database/read-allocation quota, whole-history
+  compaction or guaranteed context fit. Stored notes remain unchanged.
+  Validation: 59 focused, 958 offline (five live deselected), Ruff/mypy and both
+  scripted 90/90 matrices with labels/limits inspected; a scripted shared-runtime
+  regression checks overflow feedback followed by a successful smaller retry.
+  No inference, Duodoro source edits or model-quality claim; Milestones 4–6 and
+  broader context selection/compaction remain open.
+
 ## Milestone 1 — Establish a real task-success baseline
 
 **Outcome:** a model attempts real repository tasks through the same runtime used by Jorge, and independent checks determine whether it succeeded.

@@ -513,3 +513,41 @@ async def test_shared_runtime_bounds_injected_memory_without_changing_store(tmp_
         assert len(expected.encode()) <= MAX_MEMORY_PROMPT_BYTES
         assert MEMORY_OMISSION_NOTICE in injected
         assert len(store.list("dev")) == 20
+
+
+async def test_runtime_recall_overflow_feedback_allows_smaller_retry(tmp_path: Path) -> None:
+    import json
+
+    from tools.memory import MAX_RECALL_BYTES
+
+    provider = ScriptedProvider()
+    provider.script(
+        make_response(tool_calls=[ToolCall(id="large", name="recall", arguments={})]),
+        make_response(
+            tool_calls=[ToolCall(id="small", name="recall_facts", arguments={"max_results": 1})]
+        ),
+        make_response(content="Reviewed latest note"),
+    )
+    with FactStore(tmp_path / "memory.db") as store:
+        for i in range(8):
+            store.add("dev", chr(97 + i) * 4096)
+        response = await run_configured_turn(
+            settings=Settings(_env_file=None),
+            session=Session(user_id="dev"),
+            user_id="dev",
+            message="Recall engineering notes",
+            provider=provider,
+            fact_store=store,
+            registry=build_registry(fact_store=store, user_id="dev", workspace_root=None),
+        )
+        assert len(store.list("dev")) == 8
+    assert response.completion_status == "completed"
+    assert "Reduce max_results" in response.tool_calls[0].error
+    assert response.tool_calls[1].error is None
+    assert response.tool_calls[1].result == ["h" * 4096]
+    error_message = next(m for m in provider.calls[1][0] if m.role == "tool")
+    assert "Reduce max_results" in json.loads(error_message.content)
+    assert "h" * 4096 not in error_message.content
+    result_message = [m for m in provider.calls[2][0] if m.role == "tool"][-1]
+    assert json.loads(result_message.content) == ["h" * 4096]
+    assert len(result_message.content.encode()) <= MAX_RECALL_BYTES
