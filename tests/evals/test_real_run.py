@@ -153,6 +153,7 @@ async def test_minimal_baseline_uses_same_tools_and_budget(toolset: str, profile
     assert harness.runtime_config["coding_prompt_profile"] == profile
     assert harness.runtime_config["tool_specs"] == [s.model_dump(mode="json") for s in specs]
     assert ("replace_text" in {s.name for s in specs}) == (toolset == "full")
+    assert "semantic_search" not in {s.name for s in specs}
     if toolset == "whole_file":
         assert "replace_text" not in harness_provider.calls[0][0][0].content
         assert "write_file" in harness_provider.calls[0][0][0].content

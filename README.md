@@ -105,7 +105,7 @@ fuller provenance and panel memory controls remain open.
 
 **Workspace path guard + policy.** Code tools resolve paths under `workspace_root`; [harness/policy.py](harness/policy.py) classifies task kind and flags unsafe scope; `MAX_FILES_TOUCHED_PER_TURN` flags oversized edits after the turn. These controls do not isolate code executed by tests.
 
-**Ripgrep-first search.** Default demo needs no embed model; deferred semantic path in [tools/semantic.py](tools/semantic.py).
+**Ripgrep-first search.** Configured coding runs advertise lexical `grep_repo`, without an embedding model or unavailable semantic tool. The deferred stub in [tools/semantic.py](tools/semantic.py) remains only for direct historical contracts.
 
 `grep_repo` enforces the workspace's literal ignored component names in both
 ripgrep and Python fallback searches. Caller globs cannot override those exclusions;
@@ -1189,12 +1189,19 @@ unchanged. This metadata correction does not change the prompt or tools themselv
 
 `CODING_PROMPT_PROFILE=compact` opts into the smaller `coding-v3-compact-v1`
 contract; `legacy` remains default. Whole-file toolsets use the corresponding
-compact whole-file version. Tools, budgets and completion/recovery enforcement
-stay unchanged; support/memory tools and the semantic-search stub are still exposed
-as before. Profile choice is captured by prompt version/hash, without changing the
+compact whole-file version. The original comparison held tool schemas fixed.
+Current configured runs omit the unavailable semantic-search stub; memory aliases
+and explicitly enabled support tools remain. Budgets and completion/recovery
+enforcement are unchanged. Profile choice is captured by prompt version/hash, without changing the
 saved settings schema. Switching profiles reports configuration drift and blocks
 continuation from mismatched history; old archives are not rewritten. Custom prompt
 overrides remain unversioned.
+
+Removing the unavailable semantic tool changes captured tool names/schema hashes.
+Older profiles with that exposure remain inspectable but report configuration drift
+and cannot grant guarded continuation. Start a fresh session; archives and historical
+comparison results retain their original tool surface. This removes a nonfunctional
+affordance, without a measured claim about prompt efficiency or coding quality.
 
 On two pinned Duodoro tuning tasks with free Go LongCat, paired three-repeat trials
 accepted 4/6 compact artifacts versus 1/6 legacy. Compact had four latest passing

@@ -250,6 +250,7 @@ async def test_simulated_tools_preserve_specs_without_executing_code(
             fact_store=store, user_id="dev", workspace_root=str(tmp_path), coding_toolset=toolset
         )
         assert simulated.as_tool_specs() == production.as_tool_specs()
+        assert "semantic_search" not in simulated.names()
         await simulated.invoke("write_file", {"path": "must-not-exist.py", "content": "x"})
         # A real command tool rejects this argv. Simulation must never execute it.
         result = await simulated.invoke("run_command", {"argv": ["not-a-real-command"]})

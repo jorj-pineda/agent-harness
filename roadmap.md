@@ -1151,6 +1151,19 @@ Relevant implementation: `harness/loop.py`, `harness/outcome.py`, `harness/groun
   scope/full provenance and broader context work remain open; Milestones 4–6 are
   not complete.
 
+- **2026-10-14 — Omit unavailable semantic tool:** the shared configured registry
+  no longer advertises an always-failing semantic search stub. API, real-task and
+  simulated-tool evaluations share the smaller actual surface; lexical grep and
+  deferred stub direct contracts remain. Captured tool-name/schema drift blocks
+  old guarded continuation without rewriting histories or historical comparisons.
+  Validation: 93 focused (one live deselected), 973 offline (five live deselected),
+  Ruff/mypy and both scripted 90/90 matrices with labels/limits inspected. An edit
+  script initially wrote to the wrong test file; the gate caught it, the file was
+  restored and the corrected full gate passed before publication. No inference,
+  Duodoro source edits or measured quality/efficiency gain. Duplicate memory aliases,
+  context selection/compaction and model profiles remain open; Milestones 4–6 are
+  not complete.
+
 ## Milestone 1 — Establish a real task-success baseline
 
 **Outcome:** a model attempts real repository tasks through the same runtime used by Jorge, and independent checks determine whether it succeeded.

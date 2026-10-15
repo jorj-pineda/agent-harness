@@ -19,7 +19,6 @@ from providers.base import ChatMessage, ChatProvider, ConversationProvider
 from tools import Tool, ToolRegistry
 from tools.code import build_code_tools
 from tools.memory import register_memory_tools
-from tools.semantic import register_semantic_search_stub
 from workspace import SnapshotLimitError, Workspace, compare, snapshot
 from workspace.changes import TextCapture, review_diffs
 from workspace.core import DEFAULT_IGNORE_GLOBS
@@ -63,7 +62,6 @@ def build_registry(
             if coding_toolset == "whole_file" and tool.name == "replace_text":
                 continue
             code_registry.register(tool)
-        register_semantic_search_stub(code_registry)
         for tool in code_registry:
             registry.register(code_tool_transform(tool) if code_tool_transform else tool)
     return registry

@@ -238,3 +238,19 @@ def test_memory_prompt_boundary_recorded_and_legacy_absence_is_drift():
     assert review.unknown_fields == ["memory_prompt_max_bytes"]
     assert compare_profiles(old, old).status == "unknown"
     assert old.model_dump_json() == original
+
+
+def test_legacy_semantic_stub_exposure_is_configuration_drift(tmp_path: Path):
+    from harness.runtime import build_registry
+    from tools.semantic import register_semantic_search_stub
+
+    with FactStore(tmp_path / "facts.db") as store:
+        registry = build_registry(fact_store=store, user_id="dev", workspace_root=str(tmp_path))
+        current = capture_execution_profile(Settings(_env_file=None), "ollama", registry)
+        register_semantic_search_stub(registry)
+        old = capture_execution_profile(Settings(_env_file=None), "ollama", registry)
+    original = old.model_dump_json()
+    review = compare_profiles(old, current)
+    assert review.status == "changed"
+    assert review.changed_fields == ["tool_names", "tool_specs_sha256"]
+    assert old.model_dump_json() == original
