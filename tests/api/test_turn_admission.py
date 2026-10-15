@@ -90,9 +90,7 @@ def test_http_and_stream_share_turn_admission(
             assert harness.provider.calls == []
             # A busy response must not save the other turn's mutable transcript.
             for sid in sessions:
-                saved = harness.client.get(
-                    f"/sessions/{sid}", params={"user_id": "dev"}
-                ).json()
+                saved = harness.client.get(f"/sessions/{sid}", params={"user_id": "dev"}).json()
                 assert saved["session"]["turns"] == []
                 assert saved["responses"] == []
         finally:

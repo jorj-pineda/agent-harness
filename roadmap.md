@@ -1192,6 +1192,20 @@ Relevant implementation: `harness/loop.py`, `harness/outcome.py`, `harness/groun
   full audit/secure erasure and broader context/profile work remain open; this is
   not completion of Milestones 4–6.
 
+- **2026-10-14 — Checklist/format audit:** six previously unchecked narrow items
+  are now marked complete based on merged implementation/tests: bounded ranged
+  reads, exact stale/unique edits, nullable CLI review, observed check distinctions,
+  versioned shared prompts, and run IDs/keyed retry. This is progress accounting,
+  not new runtime capability or completion of a broader milestone. Two remaining
+  pre-existing formatting failures in regression tests were cleared with identical
+  Python syntax trees. Read-only range inspection in a temporary fixture confirmed
+  five invalid inputs reject, empty-file shape is predictable and contents remain
+  untouched. CI now enforces `ruff format --check .` in the baseline job; local
+  contributor/onboarding gates match. Validation: 981 offline (five live deselected),
+  Ruff/mypy and all 192 Python files formatted. Runtime/evaluation behavior is
+  unchanged, so scripted matrices were not rerun locally for this style/docs/CI
+  slice. No inference or Duodoro source edits; broader milestone limits remain.
+
 ## Milestone 1 — Establish a real task-success baseline
 
 **Outcome:** a model attempts real repository tasks through the same runtime used by Jorge, and independent checks determine whether it succeeded.
@@ -1213,13 +1227,27 @@ The first baseline can use one already-supported provider. Configurable endpoint
 
 **Dependencies:** disposable execution and timeout cleanup from Milestone 2 are required before unattended real-model evaluations. Initial runner construction can use deterministic providers and trusted fixtures.
 
+### Checklist audit evidence (2026-10-14)
+
+Completed checks below refer to shipped mechanics, not model-quality/release
+acceptance. The six newly reconciled boxes are supported by:
+
+| Item | Implementation and regression evidence | Scope retained |
+|---|---|---|
+| Bounded ranged reads | `tools/code.py`; `tests/test_tools_code.py` | 16 MB scan and selected output caps; external path/content races remain. |
+| Unique/stale exact edits | `tools/code.py`; `tests/test_tools_code.py` | Bounded regular-file reads, unique text and content/mode guards; no writer lock. |
+| Nullable CLI evidence | `cli/_client.py`, `cli/main.py`; `tests/test_cli.py` | Partial/unavailable review is surfaced; legacy confidence is not correctness. |
+| Observed check distinctions | `harness/outcome.py`; `tests/test_harness_outcome.py` | Invocation/results/staleness are evidence, not independent task acceptance. |
+| Shared versioned prompt | `harness/prompts.py`, `harness/runtime.py`; `tests/test_execution_profile.py`, `tests/evals/test_run.py`, `tests/evals/test_real_run.py` | Legacy default and compact opt-in retain their original comparison limits. |
+| Run identity/keyed retry | `api/server.py`, `harness/session_store.py`; `tests/api/test_runs.py`, `tests/test_cli.py` | Matching keyed submissions join/replay; legacy unkeyed calls remain distinct; coordination is process-local. |
+
 ## Milestone 2 — Make tools and execution dependable
 
 **Outcome:** the agent can explore, edit, and run checks without fighting the harness or losing control of running work.
 
 - [x] Fix single-file grep output, option-like search patterns, ignored paths, and explicit truncation reporting.
-- [ ] Make bounded reads work on large files; handle empty files and invalid ranges predictably.
-- [ ] Add exact text replacement with unique-match validation and a stale-content precondition. Return the applied diff or an actionable mismatch error.
+- [x] Make bounded reads work on large files; handle empty files and invalid ranges predictably.
+- [x] Add exact text replacement with unique-match validation and a stale-content precondition. Return the applied diff or an actionable mismatch error.
 - [x] Retain whole-file writes for new files and deliberate replacements; use atomic writes where possible.
 - [ ] Record the initial working-tree state and derive actual agent changes from snapshots/diffs, including changes made by commands and new untracked files.
 - [x] Reject overlapping workspace and session turns within one configured-runtime process. Cross-process/external-writer coordination remains open.
@@ -1228,7 +1256,7 @@ The first baseline can use one already-supported provider. Configurable endpoint
 - [ ] Use disposable execution environments for evaluations. Provide an explicit local workspace mode for trusted projects and an isolated mode before running unfamiliar repository code.
 - [ ] Keep model-provider credentials in the orchestrator; expose only explicitly configured environment variables and mounts to repository commands.
 - [ ] Configure project check commands explicitly. Detect likely commands as suggestions; do not guess that every project uses pytest.
-- [ ] Fix CLI handling of nullable confidence and other response states that are already valid in the API.
+- [x] Fix CLI handling of nullable confidence and other response states that are already valid in the API.
 
 **Done when:** regressions cover single-file search, large/empty reads, ambiguous edits, stale edits, command timeouts, cancellation, command-created file changes, and preservation of pre-existing user edits. No command continues after its run is reported cancelled or terminated.
 
@@ -1240,7 +1268,7 @@ The first baseline can use one already-supported provider. Configurable endpoint
 - [ ] Enforce write permissions and file budgets before mutation. Where a plan is required, reject a premature edit with a specific instruction rather than flagging it afterward.
 - [ ] Do not require planning for every trivial edit or tests for read-only questions.
 - [ ] Require configured relevant checks after the latest mutation before marking an editing task verified.
-- [ ] Distinguish check invocation, check success, check failure, unavailable checks, and stale verification. Version/help commands do not count as checks.
+- [x] Distinguish check invocation, check success, check failure, unavailable checks, and stale verification. Version/help commands do not count as checks.
 - [ ] When the model tries to finish too early, return concise feedback describing the missing action and allow a bounded retry.
 - [ ] Return targeted feedback for malformed tool arguments, edit mismatches, failed checks, and recoverable provider failures.
 - [ ] Detect repeated identical calls and repeated unchanged failures; stop or change strategy instead of spending the full budget on a loop.
@@ -1268,7 +1296,7 @@ scripted 90/90 matrices with labels/limits inspected.
 
 **Outcome:** each model gets a small, coherent interface and enough relevant context to make the next coding decision.
 
-- [ ] Move the runtime prompt into a versioned module or template used by both application and evaluations.
+- [x] Move the runtime prompt into a versioned module or template used by both application and evaluations.
 - [ ] Start with a concise coding contract: inspect relevant files, make focused changes, use actual check results, repair actionable failures, and report uncertainty honestly.
 - [ ] Remove support-demo instructions, duplicate memory aliases, and unavailable semantic-search tools from the default coding toolset.
 - [ ] Avoid asking the model to generate bookkeeping that the runtime can derive.
@@ -1290,7 +1318,7 @@ scripted 90/90 matrices with labels/limits inspected.
 
 - [ ] Persist sessions, run state, events, and model/profile identity in SQLite.
 - [ ] Provide reliable cancel and resume behavior across CLI, API, and panel. A browser disconnect must have an explicit execution policy.
-- [ ] Use run IDs and idempotent submission/reconnection so transport retries cannot duplicate an edit-producing turn.
+- [x] Use run IDs and idempotent submission/reconnection so transport retries cannot duplicate an edit-producing turn.
 - [ ] Resume from persisted state only after checking whether the workspace has changed since the checkpoint.
 - [ ] Show a concise live view of current activity, recent tool failures, budget consumption, and final status.
 - [ ] Show reviewable diffs, test output, and a partial-work summary on failure.
@@ -1390,7 +1418,7 @@ enters the queue when a real task or evaluation shows the limitation matters.
 | Default ignored top-level entries now have metadata-only reporting, but child rewrites and deeper edits can leave that metadata unchanged. | Keep scope explicit; require selected dependency/Git checks or broader bounded capture before using ignored state as an execution precondition. Metadata equality cannot certify unchanged contents. |
 | Initial setup/snapshot now consumes the dispatch budget; final review and storage can still exceed it. Application loop latency and workspace review duration omit setup/storage/transport. | Keep timing scopes explicit. A hard end-to-end bound requires safely interruptible work and a deliberate policy for preserving final evidence; do not abandon workers or imply a hard return deadline. |
 | Each turn reads every tracked file twice, up to the limits. Large repositories hit `unavailable`. | Cache `(size, mtime_ns, inode)` beside each hash and rehash only files whose metadata changed. Reuse the previous turn's after-snapshot when metadata is unchanged. |
-| Five files on `main` fail `ruff format --check` (pre-existing). | Run a formatting-only PR with no behavior changes. |
+| Remaining pre-existing formatting failures were cleared in the 2026-10-14 audit. | Keep `uv run ruff format --check .` clean; both formatted regression files retained identical Python syntax trees. |
 
 ### Context and total-token budgets (item 6)
 

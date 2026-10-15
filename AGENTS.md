@@ -74,6 +74,7 @@ checks. With dependencies installed, the normal offline gate is:
 ```sh
 uv run pytest -m 'not live'
 uv run ruff check .
+uv run ruff format --check .
 uv run mypy
 ```
 
