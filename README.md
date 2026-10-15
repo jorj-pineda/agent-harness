@@ -87,7 +87,20 @@ A stale hash/content change returns 409; missing/other-owner IDs return 404.
 Deletion removes the whole note from future recall and prompt refresh, including
 after restart. It does not revoke already sent prompts, erase saved transcripts/
 run evidence, or securely erase SQLite storage. No model tool can invoke this
-owner action. Correction, repository scope and fuller provenance remain open.
+owner action. Thin CLI commands use the same endpoints:
+
+```sh
+agent-harness memory --user-id jorge --limit 20
+agent-harness memory --user-id jorge --before-id 123 --json
+agent-harness memory-delete 123 --user-id jorge --expected-sha256 <full-note-hash>
+```
+
+`memory-delete` sends one DELETE and requires a hash from inspection; it deletes
+the whole note even when the preview is truncated. A timeout/mismatched response
+reports an uncertain outcome and asks for memory inspection before retrying. No
+automatic retry, lookup, model turn or session creation occurs. Human previews are
+JSON-quoted to escape terminal control characters. Correction, repository scope,
+fuller provenance and panel memory controls remain open.
 
 
 **Workspace path guard + policy.** Code tools resolve paths under `workspace_root`; [harness/policy.py](harness/policy.py) classifies task kind and flags unsafe scope; `MAX_FILES_TOUCHED_PER_TURN` flags oversized edits after the turn. These controls do not isolate code executed by tests.

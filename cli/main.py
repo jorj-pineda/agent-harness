@@ -9,6 +9,7 @@ chat    Interactive REPL against a running server.
 from __future__ import annotations
 
 import json
+import re
 import sys
 import uuid
 from typing import Any
@@ -269,6 +270,63 @@ def show_run(record: dict) -> None:
         show_turn(summarize(record["response"]))
     else:
         typer.echo("No saved final response. Workspace edits may exist; inspect before new work.")
+
+
+@app.command()
+def memory(
+    base_url: str = typer.Option("http://localhost:8000", "--base-url"),
+    user_id: str = typer.Option("cli-user", "--user-id"),
+    limit: int = typer.Option(20, "--limit", min=1, max=50),
+    before_id: int | None = typer.Option(None, "--before-id", min=1),
+    raw: bool = typer.Option(False, "--json"),
+) -> None:
+    """Inspect bounded user-memory previews; never submits a model turn."""
+    try:
+        page = AgentClient(base_url).memory(user_id, limit=limit, before_id=before_id)
+    except Exception as exc:
+        typer.echo(f"Memory lookup failed ({type(exc).__name__}).", err=True)
+        raise typer.Exit(code=1) from exc
+    if raw:
+        typer.echo(json.dumps(page, indent=2))
+        return
+    for note in page["notes"]:
+        typer.echo(
+            f"id={note['id']} bytes={note['fact_bytes']} truncated={note['preview_truncated']} "
+            f"sha256={note['fact_sha256']}"
+        )
+        # Quote previews to prevent remembered control characters from driving a terminal.
+        typer.echo(json.dumps(note["preview"]))
+        typer.echo(
+            f"created={json.dumps(note['created_at'])} "
+            f"source_turn={json.dumps(note.get('source_turn_id'))}"
+        )
+    if not page["notes"]:
+        typer.echo("No remembered notes found.")
+    if page.get("next_before_id") is not None:
+        typer.echo(f"Next page: --before-id {page['next_before_id']}")
+    typer.echo(page["scope_note"])
+
+
+@app.command()
+def memory_delete(
+    fact_id: int = typer.Argument(..., min=1),
+    expected_sha256: str = typer.Option(..., "--expected-sha256"),
+    base_url: str = typer.Option("http://localhost:8000", "--base-url"),
+    user_id: str = typer.Option("cli-user", "--user-id"),
+) -> None:
+    """Delete a whole note using its reviewed full-content hash, even if preview is truncated."""
+    if re.fullmatch(r"[0-9a-f]{64}", expected_sha256) is None:
+        raise typer.BadParameter("Use the 64-character lowercase hash from memory inspection.")
+    try:
+        record = AgentClient(base_url).delete_memory(user_id, fact_id, expected_sha256)
+    except Exception as exc:
+        typer.echo(
+            f"Memory deletion failed ({type(exc).__name__}). Outcome may be unknown; "
+            "inspect memory before retrying. No automatic retry.",
+            err=True,
+        )
+        raise typer.Exit(code=1) from exc
+    typer.echo(f"Deleted memory note {record['fact_id']}. {record['scope_note']}")
 
 
 @app.command()
