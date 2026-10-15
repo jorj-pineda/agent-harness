@@ -360,7 +360,9 @@ def test_delete_reused_id_cannot_delete_different_note(store: FactStore) -> None
     expected = hashlib.sha256(note.fact.encode()).hexdigest()
     assert store.delete("alice", note.id, expected)
     store.add("alice", "replacement")
-    assert store.list("alice")[0].id == note.id
+    assert store.list("alice")[0].id != note.id
+    with store._conn:
+        store._conn.execute("UPDATE memory_facts SET id=? WHERE fact=?", (note.id, "replacement"))
     with pytest.raises(FactConflictError):
         store.delete("alice", note.id, expected)
     assert store.list("alice")[0].fact == "replacement"
@@ -450,3 +452,67 @@ def test_memory_correction_final_predicate_preserves_later_content(
         store.correct("alice", note.id, expected, "replacement")
     assert store.list("alice")[0].fact == "later edit"
     assert store.list("alice")[0].updated_at is None
+
+
+def test_workspace_namespaces_dedupe_and_scoped_selection(tmp_path: Path) -> None:
+    with FactStore(tmp_path / "memory.db") as store:
+        for root in [None, "/repo-a", "/repo-b"]:
+            assert store.add("alice", "same note", workspace_root=root)
+            assert not store.add("alice", "same note", workspace_root=root)
+        store.add("alice", "only B", workspace_root="/repo-b")
+        store.add("bob", "private", workspace_root="/repo-a")
+        assert len(store.list("alice")) == 4
+        a = store.list("alice", workspace_root="/repo-a", scoped=True)
+        assert [f.workspace_root for f in a] == ["/repo-a", None]
+        assert [f.fact for f in a] == ["same note", "same note"]
+        assert [f.fact for f in store.list("alice", scoped=True)] == ["same note"]
+        assert len({f.id for f in store.list("alice")}) == 4
+        assert store.list("alice", before_id=a[0].id)[0].workspace_root is None
+    with FactStore(tmp_path / "memory.db") as store:
+        assert len(store.list("alice")) == 4
+
+
+def test_workspace_correction_deletion_and_monotonic_ids(store: FactStore) -> None:
+    import hashlib
+
+    store.add("alice", "old", workspace_root="/repo-a", source_turn_id="source")
+    store.add("alice", "old", workspace_root="/repo-b")
+    a = next(f for f in store.list("alice") if f.workspace_root == "/repo-a")
+    corrected = store.correct("alice", a.id, hashlib.sha256(b"old").hexdigest(), "new")
+    assert corrected.workspace_root == "/repo-a" and corrected.source_turn_id is None
+    assert [f.fact for f in store.list("alice", workspace_root="/repo-b", scoped=True)] == ["old"]
+    highest = store.list("alice")[0]
+    assert store.delete("alice", highest.id, hashlib.sha256(highest.fact.encode()).hexdigest())
+    store.add("alice", "global")
+    assert store.list("alice")[0].id > highest.id
+
+
+def test_counter_rollback_and_legacy_schema_preservation(tmp_path: Path) -> None:
+    import sqlite3
+
+    path = tmp_path / "memory.db"
+    with FactStore(path) as store:
+        store.add("alice", "legacy")
+        store._conn.execute(
+            "CREATE TRIGGER protect_note BEFORE DELETE ON memory_facts BEGIN SELECT RAISE(ABORT, 'protected'); END"
+        )
+    with FactStore(path) as store:
+        assert store.list("alice")[0].workspace_root is None
+        assert store._conn.execute(
+            "SELECT name FROM sqlite_master WHERE name='protect_note'"
+        ).fetchone()
+        store._conn.execute(
+            "CREATE TRIGGER reject_scoped BEFORE INSERT ON workspace_memory_facts BEGIN SELECT RAISE(ABORT, 'blocked'); END"
+        )
+        before = store._conn.execute("SELECT last_id FROM memory_id_counter").fetchone()[0]
+        with pytest.raises(sqlite3.IntegrityError):
+            store.add("alice", "reject", workspace_root="/repo-a")
+        assert store._conn.execute("SELECT last_id FROM memory_id_counter").fetchone()[0] == before
+        assert [f.fact for f in store.list("alice")] == ["legacy"]
+
+
+@pytest.mark.parametrize("root", ["relative", "/repo/../other", "/repo/", ""])
+def test_workspace_namespace_requires_canonical_absolute_path(store: FactStore, root: str) -> None:
+    with pytest.raises(ValueError, match="canonical absolute"):
+        store.add("alice", "note", workspace_root=root)
+    assert store.list("alice") == []

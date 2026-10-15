@@ -20,6 +20,7 @@ class MemoryNotePreview(BaseModel):
     created_at: str
     updated_at: str | None = None
     source_turn_id: str | None
+    workspace_root: str | None = None
 
 
 def preview_note(fact: Fact) -> MemoryNotePreview:
@@ -33,6 +34,7 @@ def preview_note(fact: Fact) -> MemoryNotePreview:
         created_at=fact.created_at,
         updated_at=fact.updated_at,
         source_turn_id=fact.source_turn_id,
+        workspace_root=fact.workspace_root,
     )
 
 

@@ -219,3 +219,13 @@ async def test_single_legacy_oversized_note_recall_fails_explicitly(
     with pytest.raises(ToolError, match="inspect stored memory outside the model"):
         await registry.invoke(name, {"max_results": 1})
     assert store.list("alice")[0].fact == note
+
+
+async def test_legacy_recall_does_not_leak_programmatically_scoped_notes(
+    store: FactStore, registry: ToolRegistry
+) -> None:
+    store.add("alice", "global")
+    store.add("alice", "workspace only", workspace_root="/repo-a")
+    assert await registry.invoke("recall", {}) == ["global"]
+    assert "workspace only" not in store.format_for_system_prompt("alice")
+    assert "workspace only" in store.format_for_system_prompt("alice", workspace_root="/repo-a")

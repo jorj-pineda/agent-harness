@@ -83,7 +83,7 @@ def build_memory_tools(
         return {"stored": inserted, "fact": args.note.strip()}
 
     def recall_notes(limit: int) -> list[str]:
-        notes = [f.fact for f in store.list(user_id, limit=limit)]
+        notes = [f.fact for f in store.list(user_id, limit=limit, scoped=True)]
         # Match the loop's default JSON tool-message encoding, including ASCII
         # escapes. Raw UTF-8 note sizes underestimate this serialized payload.
         if len(json.dumps(notes, default=str).encode("utf-8")) > MAX_RECALL_BYTES:
