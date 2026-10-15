@@ -1206,6 +1206,19 @@ Relevant implementation: `harness/loop.py`, `harness/outcome.py`, `harness/groun
   unchanged, so scripted matrices were not rerun locally for this style/docs/CI
   slice. No inference or Duodoro source edits; broader milestone limits remain.
 
+- **2026-10-14 — Turn-linked memory creation:** the shared factory can bind an
+  owning session and resolves only its unfinished latest turn at write time. API
+  and real-task execution bind that session; model inputs cannot select the stored
+  source ID. New inserts record the source, duplicates retain it, owner corrections
+  clear it, and finished/unbound/legacy sources remain unknown without backfill.
+  Validation: 122 focused (one live deselected), 985 offline (five live deselected),
+  Ruff/mypy/format and both scripted 90/90 matrices with labels/limits inspected.
+  API restart/deduplication, owning-session guards and real evaluator binding are
+  covered. No inference or Duodoro source edits. Source links are creation metadata,
+  not note truth or execution permission; separate memory/archive commits can leave
+  missing source archives after crash/failure. Repository scope, full audit/crash
+  reconciliation, panel controls and broader Milestones 4–6 remain open.
+
 ## Milestone 1 — Establish a real task-success baseline
 
 **Outcome:** a model attempts real repository tasks through the same runtime used by Jorge, and independent checks determine whether it succeeded.
