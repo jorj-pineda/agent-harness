@@ -26,6 +26,7 @@ nearest-neighbor helper without changing the public surface.
 
 from __future__ import annotations
 
+import hashlib
 import logging
 import sqlite3
 from datetime import UTC, datetime
@@ -56,6 +57,10 @@ class Fact(BaseModel):
     fact: str
     source_turn_id: str | None = None
     created_at: str = Field(..., description="ISO-8601 UTC timestamp")
+
+
+class FactConflictError(ValueError):
+    """The stored note no longer matches the content selected for deletion."""
 
 
 class FactStore:
@@ -107,19 +112,48 @@ class FactStore:
         )
         return inserted
 
-    def list(self, user_id: str, limit: int = DEFAULT_LIST_LIMIT) -> list[Fact]:
+    def list(
+        self, user_id: str, limit: int = DEFAULT_LIST_LIMIT, *, before_id: int | None = None
+    ) -> list[Fact]:
         """Return a user's facts, most recently added first."""
         if not user_id:
             raise ValueError("user_id must not be empty")
         if limit < 1:
             raise ValueError("limit must be >= 1")
+        if before_id is not None and before_id < 1:
+            raise ValueError("before_id must be >= 1")
         rows = self._conn.execute(
             "SELECT id, user_id, fact, source_turn_id, created_at "
             "FROM memory_facts WHERE user_id = ? "
-            "ORDER BY id DESC LIMIT ?",
-            (user_id, limit),
+            "AND (? IS NULL OR id < ?) ORDER BY id DESC LIMIT ?",
+            (user_id, before_id, before_id, limit),
         ).fetchall()
         return [Fact(**dict(r)) for r in rows]
+
+    def delete(self, user_id: str, fact_id: int, expected_fact_sha256: str) -> bool:
+        """Delete only this owner's exact reviewed content; missing IDs return False.
+
+        The final SQL content predicate detects a concurrent edit after the read.
+        No transcript/archive erasure or secure storage deletion is implied.
+        """
+        if not user_id or fact_id < 1:
+            raise ValueError("user_id must not be empty and fact_id must be positive")
+        row = self._conn.execute(
+            "SELECT fact FROM memory_facts WHERE user_id = ? AND id = ?", (user_id, fact_id)
+        ).fetchone()
+        if row is None:
+            return False
+        fact: str = row["fact"]
+        if hashlib.sha256(fact.encode("utf-8")).hexdigest() != expected_fact_sha256:
+            raise FactConflictError("Stored note differs from the reviewed content; inspect again.")
+        with self._conn:
+            cursor = self._conn.execute(
+                "DELETE FROM memory_facts WHERE user_id = ? AND id = ? AND fact = ?",
+                (user_id, fact_id, fact),
+            )
+            if cursor.rowcount != 1:
+                raise FactConflictError("Stored note changed during deletion; inspect again.")
+        return True
 
     def format_for_system_prompt(
         self,

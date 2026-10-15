@@ -63,6 +63,8 @@ from harness.tool_progress import SavedToolEvent, ToolProgress
 from harness.transcript import TranscriptReview, inspect_transcript
 from harness.workspace_review import WorkspaceReview, WorkspaceReviewBaseline, compare_workspace
 from memory import FactStore
+from memory.review import MemoryPage, review_notes
+from memory.store import FactConflictError
 from providers import create_embedder
 from providers.base import ChatProvider, Embedder
 from tools import ToolRegistry
@@ -78,6 +80,8 @@ from .models import (
     CreateCheckpointRequest,
     CreateSessionRequest,
     CreateSessionResponse,
+    DeleteMemoryRequest,
+    DeleteMemoryResponse,
     RevertFileRequest,
     SubmitRunRequest,
 )
@@ -390,6 +394,39 @@ def _register_routes(app: FastAPI) -> None:
         task = asyncio.create_task(apply_and_save())
         _own_task(components, task)
         return deliver(await asyncio.shield(task))
+
+    @app.get("/memory", response_model=MemoryPage)
+    async def inspect_memory(
+        request: Request,
+        user_id: str = Query(min_length=1),
+        limit: int = Query(default=20, ge=1, le=50),
+        before_id: int | None = Query(default=None, ge=1),
+    ) -> MemoryPage:
+        """Inspect bounded note previews without inference, tools or submissions."""
+        return review_notes(
+            request.app.state.components.fact_store, user_id, limit=limit, before_id=before_id
+        )
+
+    @app.delete("/memory/{fact_id}", response_model=DeleteMemoryResponse)
+    async def delete_memory(
+        fact_id: int, req: DeleteMemoryRequest, request: Request
+    ) -> DeleteMemoryResponse:
+        """Delete this owner's note only if its content hash still matches the review."""
+        if fact_id < 1:
+            raise HTTPException(status_code=422, detail="fact_id must be positive.")
+        try:
+            deleted = request.app.state.components.fact_store.delete(
+                req.user_id, fact_id, req.expected_fact_sha256
+            )
+        except FactConflictError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+        except sqlite3.Error as exc:
+            raise HTTPException(
+                status_code=503, detail="Memory deletion failed; inspect memory before retrying."
+            ) from exc
+        if not deleted:
+            raise HTTPException(status_code=404, detail="No matching owner-scoped note.")
+        return DeleteMemoryResponse(fact_id=fact_id)
 
     @app.post("/sessions", response_model=CreateSessionResponse)
     async def create_session(req: CreateSessionRequest, request: Request) -> CreateSessionResponse:

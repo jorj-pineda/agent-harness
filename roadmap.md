@@ -1126,6 +1126,19 @@ Relevant implementation: `harness/loop.py`, `harness/outcome.py`, `harness/groun
   No inference, Duodoro source edits or model-quality claim; Milestones 4–6 and
   broader context selection/compaction remain open.
 
+- **2026-10-14 — Owner memory inspection/deletion:** paged API inspection exposes
+  bounded 1,024-byte UTF-8 previews, full content hashes/byte counts and recorded
+  timestamps/source IDs without inference. Explicit owner deletion requires that
+  full-note hash; stale content and final SQL predicate drift preserve later edits.
+  Missing/other-owner IDs do not reveal a note. Restart/future injection reflect
+  deletion while archives and already sent prompts remain intact; no secure erasure
+  or authenticated accounts are implied. Oversized legacy notes have previews.
+  Validation: 62 focused, 965 offline (five live deselected), Ruff/mypy and both
+  scripted 90/90 matrices with labels/limits inspected. No inference or Duodoro
+  source edits. CLI/panel controls, correction, repository scope/full provenance,
+  database/read-allocation quotas and broader context work remain open; this does
+  not complete Milestones 4–6.
+
 ## Milestone 1 — Establish a real task-success baseline
 
 **Outcome:** a model attempts real repository tasks through the same runtime used by Jorge, and independent checks determine whether it succeeded.
