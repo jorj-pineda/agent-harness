@@ -40,6 +40,7 @@ log = logging.getLogger(__name__)
 
 MEMORY_SCHEMA_PATH = Path(__file__).parent.parent / "data" / "memory_schema.sql"
 DEFAULT_LIST_LIMIT = 20
+MAX_FACT_BYTES = 4096
 FACTS_HEADING = "Engineering memory for this developer (persists across sessions):"
 
 
@@ -82,6 +83,9 @@ class FactStore:
         normalized = fact.strip()
         if not normalized:
             raise ValueError("fact must not be empty")
+
+        if len(normalized.encode("utf-8")) > MAX_FACT_BYTES:
+            raise ValueError(f"fact exceeds {MAX_FACT_BYTES} UTF-8 bytes after trimming")
 
         now = datetime.now(UTC).isoformat()
         cursor = self._conn.execute(

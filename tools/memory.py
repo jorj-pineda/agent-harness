@@ -18,6 +18,7 @@ import logging
 from pydantic import BaseModel, Field
 
 from memory import DEFAULT_LIST_LIMIT, FactStore
+from memory.store import MAX_FACT_BYTES
 
 from .base import Tool
 from .registry import ToolRegistry
@@ -92,7 +93,7 @@ def build_memory_tools(store: FactStore, user_id: str) -> list[Tool]:
         "Persist a durable engineering note for this developer across sessions "
         "(stack choices, repo conventions, review preferences). Returns "
         "{stored: true} on first insert, {stored: false} if the exact note "
-        "was already known."
+        f"was already known. Notes must fit {MAX_FACT_BYTES} UTF-8 bytes after trimming."
     )
     recall_description = (
         "Return engineering notes previously remembered for this developer, "
