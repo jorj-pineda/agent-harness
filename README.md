@@ -66,7 +66,7 @@ Every response ships one envelope — `{answer, confidence, citations, escalated
 
 **User memory across sessions.** [memory/store.py](memory/store.py) persists facts per `user_id`; [api/server.py](api/server.py) injects them at turn start. Memory tools are factory-bound to the session user — no cross-user leakage. New notes must fit 4,096 UTF-8 bytes after trimming; both remember aliases reject overflow before storage. Existing oversized notes remain readable and are not migrated. This is a per-note write limit, not a database quota or a bound on historical recall.
 
-Automatic memory injection examines the most recent 20 notes and bounds its whole
+Automatic memory injection examines the most recent 20 matching global/workspace notes and bounds its whole
 UTF-8 block, including heading and omission notice, to 8,192 bytes. Whole notes
 that do not fit are skipped; smaller older notes within that selected window may
 still fit. The notice refers only to that window. Stored notes are unchanged.
@@ -89,8 +89,8 @@ Owner-facing `GET /memory?user_id=...&limit=20&before_id=...` lists newest-first
 notes with 1,024-byte UTF-8 previews, explicit truncation, full note byte counts
 and SHA-256 hashes, timestamps and recorded source-turn IDs (which may be null).
 Pages accept 1–50 notes; `next_before_id` supplies the next cursor. These are
-user-scoped notes, not repository-scoped conventions or an authenticated account
-system. Legacy oversized notes remain inspectable through bounded previews;
+user-owned global or workspace-path notes, not Git/revision identity or an authenticated
+account system. Legacy oversized notes remain inspectable through bounded previews;
 SQLite read/allocation work is not bounded by the preview limit.
 
 `DELETE /memory/{fact_id}` requires JSON `user_id` and `expected_fact_sha256`.
@@ -141,8 +141,8 @@ remain unknown. Existing notes are not backfilled. This links note creation,
 without validating its truth, repository scope or permission to act on its text.
 The memory write precedes final archive storage in a separate database, so a crash
 or archive failure may leave a source ID without a durable turn archive. It is not
-a complete audit/atomic crash-recovery guarantee. Repository scope and panel memory
-controls remain open.
+a complete audit/atomic crash-recovery guarantee. Git/revision identity, owner scope
+classification and panel memory controls remain open.
 
 
 **Workspace path guard + policy.** Code tools resolve paths under `workspace_root`; [harness/policy.py](harness/policy.py) classifies task kind and flags unsafe scope; `MAX_FILES_TOUCHED_PER_TURN` blocks file-tool edits to additional distinct paths before mutation; command side effects remain outside that file-tool gate. These controls do not isolate code executed by tests.
@@ -1363,6 +1363,25 @@ transactional monotonic ID counter, including across deletions/restart; historic
 IDs deleted before upgrade cannot be reconstructed. Mixed old/new writers or
 manual database edits are unsupported; ambiguous owner IDs fail closed. Namespace
 keys are canonical absolute paths, not Git/revision identities or process isolation.
-Legacy recall/prompt injection remains global-only until configured scope binding
-lands separately. No old note is automatically reclassified. Database quotas and
+Configured recall/prompt injection now uses global plus current-workspace notes. No old note is automatically reclassified. Database quotas and
 secure erasure remain outside these output/write bounds.
+
+
+Configured remember aliases accept `scope="current"` (default) or `scope="global"`.
+Current writes target the configured workspace, falling back to global without a
+workspace. Use global explicitly for user-wide preferences. Recall current scope
+includes global plus that workspace; global recall excludes workspace notes.
+The model cannot select another workspace namespace. Owner API inspection still
+lists all of the owner's scopes, and CLI previews print each nullable root.
+Successful tool result shapes, byte caps and creation provenance are unchanged.
+
+This intentionally changes new writes in workspace sessions. Legacy notes remain
+global and may still include old repository conventions until the owner corrects
+or removes them; no semantic classifier or automatic move is introduced. The
+shared API/evaluation runtime and configuration review use the same scope selection.
+`memory_scope_version=workspace-path-v1` records the behavior; old missing scope
+versions are unknown and block guarded continuation. Updated legacy prompt versions
+are `coding-v2-memory-scope-v1` / `coding-v2-whole-file-memory-scope-v1`; compact
+prompt text/version is unchanged, but exposed memory schemas change for both.
+Old archives/reports retain their original prompts/scopes. These are path namespaces,
+not isolation, Git identity, secure storage or evidence of model-quality improvement.
