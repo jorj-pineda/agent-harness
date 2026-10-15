@@ -109,6 +109,10 @@ class FactConflictError(ValueError):
     """The stored note no longer matches the reviewed content."""
 
 
+class FactTooLargeError(ValueError):
+    """The note exceeds the owner detail response limit; use bounded previews."""
+
+
 class FactStore:
     """SQLite-backed long-term memory for user-scoped facts.
 
@@ -218,6 +222,31 @@ class FactStore:
             (user_id, before_id, before_id, scoped, workspace_root, limit),
         ).fetchall()
         return [Fact(**dict(r)) for r in rows]
+
+    def get_for_review(self, user_id: str, fact_id: int) -> Fact | None:
+        """Read one owned note up to MAX_FACT_BYTES; refuse larger legacy text.
+
+        SQL omits oversized text before returning rows to Python. This is a response
+        bound, not a bound on SQLite scanning/internal allocation or database size.
+        """
+        if not user_id or fact_id < 1:
+            raise ValueError("user_id must not be empty and fact_id must be positive")
+        rows = self._conn.execute(
+            "SELECT id, user_id, source_turn_id, created_at, updated_at, workspace_root, "
+            "CASE WHEN length(CAST(fact AS BLOB)) <= ? THEN fact ELSE NULL END AS fact "
+            "FROM (SELECT id, user_id, fact, source_turn_id, created_at, updated_at, "
+            "NULL AS workspace_root FROM memory_facts UNION ALL "
+            "SELECT id, user_id, fact, source_turn_id, created_at, updated_at, workspace_root "
+            "FROM workspace_memory_facts) WHERE user_id = ? AND id = ?",
+            (MAX_FACT_BYTES, user_id, fact_id),
+        ).fetchall()
+        if len(rows) > 1:
+            raise FactConflictError("Ambiguous memory ID from unsupported writes; inspect storage.")
+        if not rows:
+            return None
+        if rows[0]["fact"] is None:
+            raise FactTooLargeError("Note exceeds the detail limit; use bounded memory previews.")
+        return Fact(**dict(rows[0]))
 
     def _lookup(self, user_id: str, fact_id: int) -> tuple[str, str] | None:
         rows = self._conn.execute(
