@@ -551,3 +551,31 @@ async def test_runtime_recall_overflow_feedback_allows_smaller_retry(tmp_path: P
     result_message = [m for m in provider.calls[2][0] if m.role == "tool"][-1]
     assert json.loads(result_message.content) == ["h" * 4096]
     assert len(result_message.content.encode()) <= MAX_RECALL_BYTES
+
+
+@pytest.mark.parametrize("toolset", ["full", "whole_file"])
+async def test_configured_registry_omits_unavailable_semantic_tool(
+    tmp_path: Path, toolset: str
+) -> None:
+    from tools import Tool
+
+    seen: list[str] = []
+
+    def transform(tool: Tool) -> Tool:
+        seen.append(tool.name)
+        return tool
+
+    with FactStore(tmp_path / "memory.db") as store:
+        registry = build_registry(
+            fact_store=store,
+            user_id="dev",
+            workspace_root=str(tmp_path),
+            coding_toolset=toolset,
+            code_tool_transform=transform,
+        )
+        assert "semantic_search" not in registry.names()
+        assert "semantic_search" not in seen
+        assert {"grep_repo", "read_file", "write_file", "run_command"} <= set(seen)
+        assert {"remember", "remember_fact", "recall", "recall_facts"} <= set(registry.names())
+        with pytest.raises(ToolError, match="Unknown tool"):
+            await registry.invoke("semantic_search", {"query": "anything"})
