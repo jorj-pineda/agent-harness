@@ -54,6 +54,17 @@ Every response ships one envelope — `{answer, confidence, citations, escalated
 
 **Cross-session repo memory.** [memory/store.py](memory/store.py) persists facts per `user_id`; [api/server.py](api/server.py) injects them at turn start. Memory tools are factory-bound to the session user — no cross-user leakage. New notes must fit 4,096 UTF-8 bytes after trimming; both remember aliases reject overflow before storage. Existing oversized notes remain readable and are not migrated. This is a per-note write limit, not a database quota or a bound on historical recall.
 
+Automatic memory injection examines the most recent 20 notes and bounds its whole
+UTF-8 block, including heading and omission notice, to 8,192 bytes. Whole notes
+that do not fit are skipped; smaller older notes within that selected window may
+still fit. The notice refers only to that window. Stored notes are unchanged.
+This caps memory injection, not the full prompt, database growth or legacy read
+I/O. Explicit recall is separate. Execution profiles record
+`memory_prompt_max_bytes`; old profiles load with an unknown/null boundary and
+remain reviewable, but guarded continuation requires a matching recorded boundary
+and therefore blocks those old profiles. Start a fresh session for new work.
+
+
 **Workspace path guard + policy.** Code tools resolve paths under `workspace_root`; [harness/policy.py](harness/policy.py) classifies task kind and flags unsafe scope; `MAX_FILES_TOUCHED_PER_TURN` flags oversized edits after the turn. These controls do not isolate code executed by tests.
 
 **Ripgrep-first search.** Default demo needs no embed model; deferred semantic path in [tools/semantic.py](tools/semantic.py).

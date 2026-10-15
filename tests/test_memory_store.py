@@ -252,3 +252,55 @@ def test_legacy_oversized_note_remains_readable(tmp_path: Path) -> None:
         with pytest.raises(ValueError, match="4096 UTF-8 bytes"):
             reopened.add("alice", note)
         assert reopened.list("alice")[0].fact == note
+
+
+def test_memory_prompt_bounded_whole_utf8_notes_with_notice(store: FactStore) -> None:
+    from memory.store import MAX_MEMORY_PROMPT_BYTES, MEMORY_OMISSION_NOTICE
+
+    notes = [f"{i}:" + "é" * 2000 for i in range(20)]
+    for note in notes:
+        store.add("alice", note)
+    block = store.format_for_system_prompt("alice")
+    assert len(block.encode("utf-8")) <= MAX_MEMORY_PROMPT_BYTES
+    assert block.splitlines()[1:-1] == [f"- {notes[-1]}", f"- {notes[-2]}"]
+    assert block.endswith(MEMORY_OMISSION_NOTICE)
+    assert [f.fact for f in store.list("alice")] == list(reversed(notes))
+
+
+def test_memory_prompt_exact_byte_boundary_needs_no_notice(store: FactStore) -> None:
+    from memory.store import MAX_MEMORY_PROMPT_BYTES, MEMORY_OMISSION_NOTICE
+
+    first = "a" * 4096
+    second = "b" * (MAX_MEMORY_PROMPT_BYTES - len(FACTS_HEADING.encode()) - 6 - len(first))
+    store.add("alice", first)
+    store.add("alice", second)
+    block = store.format_for_system_prompt("alice")
+    assert len(block.encode()) == MAX_MEMORY_PROMPT_BYTES
+    assert block == f"{FACTS_HEADING}\n- {second}\n- {first}"
+    assert MEMORY_OMISSION_NOTICE not in block
+
+
+def test_memory_prompt_skips_legacy_large_note_and_retains_smaller_older_note(
+    tmp_path: Path,
+) -> None:
+    import sqlite3
+
+    from memory.store import MAX_MEMORY_PROMPT_BYTES, MEMORY_OMISSION_NOTICE
+
+    path = tmp_path / "memory.db"
+    with FactStore(path) as store:
+        store.add("alice", "small older note")
+    huge = "old large note " * 2000
+    with sqlite3.connect(path) as connection:
+        connection.execute(
+            "INSERT INTO memory_facts (user_id, fact, created_at) VALUES (?, ?, ?)",
+            ("alice", huge, "2026-10-14"),
+        )
+    with FactStore(path) as reopened:
+        block = reopened.format_for_system_prompt("alice")
+        assert block == f"{FACTS_HEADING}\n- small older note\n{MEMORY_OMISSION_NOTICE}"
+        assert len(block.encode()) <= MAX_MEMORY_PROMPT_BYTES
+        assert reopened.list("alice")[0].fact == huge
+        assert reopened.format_for_system_prompt("alice", limit=1) == (
+            f"{FACTS_HEADING}\n{MEMORY_OMISSION_NOTICE}"
+        )

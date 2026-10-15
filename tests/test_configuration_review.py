@@ -54,6 +54,8 @@ def test_matching_configuration_does_not_grant_resume_permission(tmp_path: Path,
     saved = archive.model_dump_json()
     with FactStore(tmp_path / "facts.db") as store:
         store.add("dev", "current fixture context")
+        for i in range(20):
+            store.add("dev", f"{i}:" + "é" * 2000)
         result = review_configuration(
             archive,
             settings=settings,
@@ -70,6 +72,10 @@ def test_matching_configuration_does_not_grant_resume_permission(tmp_path: Path,
             "dev",
             system_prompt=coding_prompt(settings.coding_toolset, settings.coding_prompt_profile),
         )
+        from memory.store import MEMORY_OMISSION_NOTICE
+
+        assert MEMORY_OMISSION_NOTICE in detached.messages[0].content
+        assert len(store.list("dev")) == 20
         detached.messages.append(ChatMessage(role="user", content="proposed task"))
         budget = TokenBudget(
             max_context=16000, min_request_output=settings.min_request_output_tokens
@@ -215,3 +221,20 @@ def test_context_limits_and_archive_problems(tmp_path: Path, kind):
     if kind == "legacy":
         assert result.configuration.status == "not_recorded"
     assert archive.model_dump_json() == before
+
+
+def test_memory_prompt_boundary_recorded_and_legacy_absence_is_drift():
+    from harness.execution_profile import ExecutionProfile
+    from memory.store import MAX_MEMORY_PROMPT_BYTES
+
+    current = capture_execution_profile(Settings(_env_file=None), "ollama", ToolRegistry())
+    assert current.memory_prompt_max_bytes == MAX_MEMORY_PROMPT_BYTES
+    old = ExecutionProfile.model_validate(current.model_dump(exclude={"memory_prompt_max_bytes"}))
+    original = old.model_dump_json()
+    assert old.memory_prompt_max_bytes is None
+    review = compare_profiles(old, current)
+    assert review.status == "changed"
+    assert review.changed_fields == ["memory_prompt_max_bytes"]
+    assert review.unknown_fields == ["memory_prompt_max_bytes"]
+    assert compare_profiles(old, old).status == "unknown"
+    assert old.model_dump_json() == original

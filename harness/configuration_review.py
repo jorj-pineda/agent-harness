@@ -74,7 +74,12 @@ def compare_profiles(
             changed.append(field)
     unknown = [
         field
-        for field in ("configured_model", "endpoint_sha256", "prompt_version")
+        for field in (
+            "configured_model",
+            "endpoint_sha256",
+            "prompt_version",
+            "memory_prompt_max_bytes",
+        )
         if saved_fields[field] is None or current_fields[field] is None
     ]
     return ProfileComparison(

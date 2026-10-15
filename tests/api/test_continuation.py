@@ -293,7 +293,9 @@ def test_invalid_provider_creates_no_fork_or_run(tmp_path):
     assert provider.calls == []
 
 
-@pytest.mark.parametrize("corruption", ["transcript", "missing-checkpoint"])
+@pytest.mark.parametrize(
+    "corruption", ["transcript", "missing-checkpoint", "unrecorded-memory-boundary"]
+)
 def test_damaged_saved_evidence_cannot_grant_continuation(tmp_path, corruption):
     import json
 
@@ -303,11 +305,14 @@ def test_damaged_saved_evidence_cannot_grant_continuation(tmp_path, corruption):
 
         def damage():
             store = client.app.state.components.session_store
-            if corruption == "transcript":
+            if corruption in {"transcript", "unrecorded-memory-boundary"}:
                 damaged = dict(archived)
-                damaged["session"]["messages"].append(
-                    {"role": "tool", "content": "unmatched", "tool_call_id": "missing"}
-                )
+                if corruption == "transcript":
+                    damaged["session"]["messages"].append(
+                        {"role": "tool", "content": "unmatched", "tool_call_id": "missing"}
+                    )
+                else:
+                    damaged["responses"][-1]["execution_profile"].pop("memory_prompt_max_bytes")
                 with store._conn:
                     store._conn.execute(
                         "UPDATE sessions SET archive=? WHERE session_id=?",
