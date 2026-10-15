@@ -1121,6 +1121,7 @@ uv sync --extra dev
 uv run agent-harness serve   # configure the selected backend and budgets first; see demo.md
 uv run pytest -m 'not live'
 uv run ruff check .
+uv run ruff format --check .
 uv run mypy
 ```
 
