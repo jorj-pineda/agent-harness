@@ -32,6 +32,7 @@ import sqlite3
 from datetime import UTC, datetime
 from pathlib import Path
 from types import TracebackType
+from typing import Literal
 
 from pydantic import BaseModel, Field
 
@@ -197,6 +198,7 @@ class FactStore:
         before_id: int | None = None,
         workspace_root: str | None = None,
         scoped: bool = False,
+        namespace: Literal["all", "global", "workspace"] = "all",
     ) -> list[Fact]:
         """Return a user's facts, most recently added first."""
         if not user_id:
@@ -206,6 +208,10 @@ class FactStore:
         if before_id is not None and before_id < 1:
             raise ValueError("before_id must be >= 1")
         workspace_root = _workspace_key(workspace_root)
+        if namespace not in {"all", "global", "workspace"}:
+            raise ValueError("invalid memory namespace")
+        if namespace == "workspace" and workspace_root is None:
+            raise ValueError("workspace namespace requires workspace_root")
         rows = self._conn.execute(
             "SELECT * FROM ("
             "SELECT id, user_id, fact, source_turn_id, created_at, updated_at, "
@@ -214,8 +220,21 @@ class FactStore:
             "FROM workspace_memory_facts) WHERE user_id = ? "
             "AND (? IS NULL OR id < ?) "
             "AND (? = 0 OR workspace_root IS NULL OR workspace_root = ?) "
+            "AND (? = 'all' OR (? = 'global' AND workspace_root IS NULL) "
+            "OR (? = 'workspace' AND workspace_root = ?)) "
             "ORDER BY id DESC LIMIT ?",
-            (user_id, before_id, before_id, scoped, workspace_root, limit),
+            (
+                user_id,
+                before_id,
+                before_id,
+                scoped,
+                workspace_root,
+                namespace,
+                namespace,
+                namespace,
+                workspace_root,
+                limit,
+            ),
         ).fetchall()
         return [Fact(**dict(r)) for r in rows]
 

@@ -403,11 +403,21 @@ def _register_routes(app: FastAPI) -> None:
         user_id: str = Query(min_length=1),
         limit: int = Query(default=20, ge=1, le=50),
         before_id: int | None = Query(default=None, ge=1),
+        namespace: Literal["all", "global", "workspace"] = Query(default="all"),
+        workspace_root: str | None = Query(default=None),
     ) -> MemoryPage:
-        """Inspect bounded note previews without inference, tools or submissions."""
-        return review_notes(
-            request.app.state.components.fact_store, user_id, limit=limit, before_id=before_id
-        )
+        """Inspect all notes, global notes or one exact workspace namespace."""
+        try:
+            return review_notes(
+                request.app.state.components.fact_store,
+                user_id,
+                limit=limit,
+                before_id=before_id,
+                namespace=namespace,
+                workspace_root=workspace_root,
+            )
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
 
     @app.delete("/memory/{fact_id}", response_model=DeleteMemoryResponse)
     async def delete_memory(
