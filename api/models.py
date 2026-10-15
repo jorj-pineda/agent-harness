@@ -16,6 +16,19 @@ from harness.runs import RequestId
 from harness.state import TurnResponse
 
 
+class DeleteMemoryRequest(BaseModel):
+    user_id: str = Field(min_length=1)
+    expected_fact_sha256: str = Field(min_length=64, max_length=64, pattern=r"^[0-9a-f]{64}$")
+
+
+class DeleteMemoryResponse(BaseModel):
+    status: Literal["deleted"] = "deleted"
+    fact_id: int
+    scope_note: str = (
+        "Future memory use only; saved history and already sent prompts are unchanged."
+    )
+
+
 class CreateSessionRequest(BaseModel):
     user_id: str = Field(..., min_length=1, description="Stable per-user identifier.")
     checkpoint_turns: bool = Field(

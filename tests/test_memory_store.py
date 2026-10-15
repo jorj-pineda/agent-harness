@@ -304,3 +304,63 @@ def test_memory_prompt_skips_legacy_large_note_and_retains_smaller_older_note(
         assert reopened.format_for_system_prompt("alice", limit=1) == (
             f"{FACTS_HEADING}\n{MEMORY_OMISSION_NOTICE}"
         )
+
+
+def test_delete_requires_owner_and_reviewed_hash_and_survives_reopen(tmp_path: Path) -> None:
+    import hashlib
+
+    from memory.store import FactConflictError
+
+    path = tmp_path / "memory.db"
+    with FactStore(path) as store:
+        store.add("alice", "delete me")
+        store.add("alice", "keep")
+        note = store.list("alice")[-1]
+        digest = hashlib.sha256(note.fact.encode()).hexdigest()
+        assert not store.delete("bob", note.id, digest)
+        with pytest.raises(FactConflictError):
+            store.delete("alice", note.id, "0" * 64)
+        assert store.delete("alice", note.id, digest)
+        assert not store.delete("alice", note.id, digest)
+    with FactStore(path) as store:
+        assert [f.fact for f in store.list("alice")] == ["keep"]
+
+
+def test_delete_final_content_predicate_preserves_concurrent_change(
+    store: FactStore, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import hashlib
+    import sqlite3
+
+    from memory.store import FactConflictError
+
+    store.add("alice", "original")
+    note = store.list("alice")[0]
+    expected = hashlib.sha256(note.fact.encode()).hexdigest()
+    digest = hashlib.sha256
+
+    def change_after_read(raw: bytes):
+        with sqlite3.connect(store.path) as other:
+            other.execute("UPDATE memory_facts SET fact=? WHERE id=?", ("later edit", note.id))
+        return digest(raw)
+
+    monkeypatch.setattr("memory.store.hashlib.sha256", change_after_read)
+    with pytest.raises(FactConflictError, match="changed during deletion"):
+        store.delete("alice", note.id, expected)
+    assert store.list("alice")[0].fact == "later edit"
+
+
+def test_delete_reused_id_cannot_delete_different_note(store: FactStore) -> None:
+    import hashlib
+
+    from memory.store import FactConflictError
+
+    store.add("alice", "original")
+    note = store.list("alice")[0]
+    expected = hashlib.sha256(note.fact.encode()).hexdigest()
+    assert store.delete("alice", note.id, expected)
+    store.add("alice", "replacement")
+    assert store.list("alice")[0].id == note.id
+    with pytest.raises(FactConflictError):
+        store.delete("alice", note.id, expected)
+    assert store.list("alice")[0].fact == "replacement"
