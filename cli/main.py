@@ -313,6 +313,41 @@ def memory(
 
 
 @app.command()
+def memory_note(
+    fact_id: int = typer.Argument(..., min=1),
+    base_url: str = typer.Option("http://localhost:8000", "--base-url"),
+    user_id: str = typer.Option("cli-user", "--user-id"),
+    raw: bool = typer.Option(False, "--json"),
+) -> None:
+    """Inspect one complete note up to 4,096 UTF-8 bytes, without submitting work."""
+    try:
+        record = AgentClient(base_url).memory_note(user_id, fact_id)
+    except Exception as exc:
+        typer.echo(
+            f"Memory detail lookup failed ({type(exc).__name__}). "
+            "Use memory for bounded previews, including oversized legacy notes. "
+            "No automatic retry.",
+            err=True,
+        )
+        raise typer.Exit(code=1) from exc
+    if raw:
+        typer.echo(json.dumps(record, indent=2))
+        return
+    note = record["note"]
+    typer.echo(
+        f"id={note['id']} workspace={json.dumps(note.get('workspace_root'))} "
+        f"bytes={note['fact_bytes']} sha256={note['fact_sha256']}"
+    )
+    typer.echo(json.dumps(record["text"]))
+    typer.echo(
+        f"created={json.dumps(note['created_at'])} "
+        f"updated={json.dumps(note.get('updated_at'))} "
+        f"source_turn={json.dumps(note.get('source_turn_id'))}"
+    )
+    typer.echo(record["scope_note"])
+
+
+@app.command()
 def memory_delete(
     fact_id: int = typer.Argument(..., min=1),
     expected_sha256: str = typer.Option(..., "--expected-sha256"),
