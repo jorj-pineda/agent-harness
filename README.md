@@ -458,12 +458,54 @@ temporary file; there is no fsync/power-loss guarantee, checkpoint or revert.
 File-tool edit metadata includes either operation. These mechanics have offline
 regression coverage; model-level success still requires real coding evaluations.
 
+**Named startup model profiles.** `MODEL_PROFILES` is an optional JSON map of up
+to 16 definitions. `MODEL_PROFILE` selects one explicitly; unset/empty keeps direct
+settings and does not activate catalog entries. Example syntax (unmeasured budgets):
+
+```sh
+MODEL_PROFILES='{"local":{"provider":"ollama","model":"gemma4:12b","max_context_tokens":16384,"max_request_output_tokens":2048,"ollama_think":false}}'
+MODEL_PROFILE=local
+```
+
+Put these in operator startup configuration, then restart the API; they are not
+workspace instructions or a request to run inference. Programmatic `Settings(...)`
+uses the same validation. Required fields are `provider`, `model`, context tokens
+(256–1,048,576) and request output tokens (1–1,000,000, no larger than context).
+Optional byte/token calibration (1–8), Ollama thinking and completion-feedback
+retries (0–3) inherit existing settings when omitted/null. Thinking is Ollama-only.
+Names use up to 64 ASCII alphanumeric/dot/underscore/hyphen characters; model IDs
+use up to 128 ASCII identifier characters and no whitespace. Unknown fields,
+invalid definitions/selections, oversized catalogs and missing hosted setup fail
+before provider construction. Credentials and endpoints are not profile fields;
+existing provider credentials/OLLAMA_HOST/compatible URL and transport remain in
+operator settings. Validation error strings omit input values.
+
+Selected definition values take precedence over individual model/context/request-cap
+settings, including constructor arguments. Ollama profiles also request that same
+context window from the server. Cumulative turn budgets, workspace/verification
+policy, prompt and toolset stay separately configured. Only the selected provider
+is constructed/allowed; there is no automatic fallback or per-turn selection.
+The shared runtime also blocks an injected mismatched provider before mutation.
+The real evaluator must explicitly name the same provider; simulated live matrices
+reject other providers. This does not expand that smoke runner's provider catalog.
+
+Durable execution/evaluation metadata record the selected name/provider/model and
+canonical definition hash, alongside effective settings; unused definitions are not
+recorded. Omitted optional values are outside the definition hash, while inherited
+runtime values remain captured separately. Rename/change/selection drift blocks
+guarded continuation; restart restores review evidence, not execution permission.
+These are configured bindings, not backend/model revision attestation, discovered
+tool capabilities, safe model switching or measured profile quality. There are no
+built-in recommended profiles or additional model calls. Owner review/client profile
+visibility follows separately; the broader model-profile milestone remains open.
+
 **Prompt estimate calibration.** `PROMPT_ESTIMATE_BYTES_PER_TOKEN` defaults to 3
 and accepts finite values from 1 through 8. It divides the UTF-8 message/schema
 payload estimate; per-message overhead and the larger reported-prompt anchor remain.
 Higher ratios estimate fewer tokens, potentially admitting requests that do not
 actually fit. Choose a ratio from recorded observations for the selected model;
-there is no automatic tuning, tokenizer guarantee or named model-profile selection.
+there is no automatic tuning or tokenizer guarantee. Named startup profiles may
+bind this ratio explicitly.
 The same setting governs API execution, read-only context review and real-task
 execution. Durable configuration, trace footprints and new evaluation metadata
 record it; old configured records/footprints used the known fixed ratio of 3.
@@ -704,8 +746,8 @@ this is not a billing guarantee. Explicit caps can be below
 `MIN_REQUEST_OUTPUT_TOKENS`, whose floor applies to remaining context/total room.
 Runtime review exposes the configured cap and resulting allowance; durable settings,
 normalized stop traces and evaluation metadata record it. Older records default to
-0 (no such cap); changed values cause continuation configuration drift. Model profile
-selection and capability checks remain separate work.
+0 (no such cap); changed values cause continuation configuration drift. Named startup
+profiles can bind the cap; capability checks remain separate work.
 
 `MAX_CONTEXT_TOKENS` and `MAX_TOTAL_TOKENS_PER_TURN` use estimated prompt size
 before each model request. Zero disables the corresponding configured harness cap;

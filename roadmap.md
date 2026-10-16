@@ -1525,6 +1525,24 @@ milestones remain open; no Duodoro edits or model-quality claim. Validation: 59
 focused, 1,000 offline tests (five live deselected), Ruff/format/mypy passed.
 Evaluation behavior unchanged; scripted matrices were not rerun.
 
+**2026-10-16 — Named startup model bindings:** optional bounded MODEL_PROFILES JSON
+and explicit MODEL_PROFILE selection share Settings validation across app/evaluator.
+Selected provider/model/context/request cap override individual settings; optional
+calibration/thinking/completion-retry values inherit when absent. Ollama context is
+sent explicitly. Credentials/endpoints stay outside profile definitions; missing
+hosted setup, invalid fields/names and unknown selections fail before construction.
+Only the selected provider is built/allowed; injected mismatches block before session
+mutation/inference. No selection preserves the direct configuration path. Allowlisted
+selected name/provider/model/hash evidence excludes unused catalog entries and
+participates in continuation drift; matching identity survives restart, rename blocks
+without inference or source changes. Validation: 145 focused and 1,130 offline tests
+(five live deselected), Ruff/format/mypy and both 90/90 scripted matrices with labels/
+limits inspected. A scripted-provider disposable real-file evaluation confirms shared
+binding/metadata and independent rejection of its unchanged artifact; no model calls
+or quality gain. No Duodoro edits. Owner/client selection review, tool-capability/
+generation profiles, automatic switching, measured calibration and broader Milestone 4
+remain open.
+
 **2026-10-16 — Separate per-request output cap:** explicit
 MAX_REQUEST_OUTPUT_TOKENS (default 0 unchanged) participates in the shared minimum
 request allowance without replacing cumulative turn budgets. Each request resets
