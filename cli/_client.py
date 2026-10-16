@@ -124,11 +124,21 @@ class AgentClient:
         return summarize(resp.json())
 
     def memory(
-        self, user_id: str, *, limit: int = 20, before_id: int | None = None
+        self,
+        user_id: str,
+        *,
+        limit: int = 20,
+        before_id: int | None = None,
+        namespace: str = "all",
+        workspace_root: str | None = None,
     ) -> dict[str, Any]:
         params: dict[str, str | int] = {"user_id": user_id, "limit": limit}
         if before_id is not None:
             params["before_id"] = before_id
+        if namespace != "all":
+            params["namespace"] = namespace
+        if workspace_root is not None:
+            params["workspace_root"] = workspace_root
         resp = httpx.get(f"{self._base}/memory", params=params, timeout=30)
         resp.raise_for_status()
         return dict(resp.json())

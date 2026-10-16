@@ -281,17 +281,30 @@ def memory(
     user_id: str = typer.Option("cli-user", "--user-id"),
     limit: int = typer.Option(20, "--limit", min=1, max=50),
     before_id: int | None = typer.Option(None, "--before-id", min=1),
+    namespace: str = typer.Option("all", "--namespace", help="all, global or workspace"),
+    workspace_root: str | None = typer.Option(None, "--workspace-root"),
     raw: bool = typer.Option(False, "--json"),
 ) -> None:
     """Inspect bounded user-memory previews; never submits a model turn."""
+    if namespace not in {"all", "global", "workspace"}:
+        raise typer.BadParameter("--namespace must be all, global or workspace.")
+    if (namespace == "workspace") != (workspace_root is not None):
+        raise typer.BadParameter("--workspace-root is required only with --namespace workspace.")
     try:
-        page = AgentClient(base_url).memory(user_id, limit=limit, before_id=before_id)
+        page = AgentClient(base_url).memory(
+            user_id,
+            limit=limit,
+            before_id=before_id,
+            namespace=namespace,
+            workspace_root=workspace_root,
+        )
     except Exception as exc:
         typer.echo(f"Memory lookup failed ({type(exc).__name__}).", err=True)
         raise typer.Exit(code=1) from exc
     if raw:
         typer.echo(json.dumps(page, indent=2))
         return
+    typer.echo(f"Namespace: {namespace}; workspace={json.dumps(workspace_root)}")
     for note in page["notes"]:
         typer.echo(
             f"id={note['id']} workspace={json.dumps(note.get('workspace_root'))} "
@@ -308,7 +321,10 @@ def memory(
     if not page["notes"]:
         typer.echo("No remembered notes found.")
     if page.get("next_before_id") is not None:
-        typer.echo(f"Next page: --before-id {page['next_before_id']}")
+        typer.echo(
+            f"Next page: --before-id {page['next_before_id']} "
+            "(keep the same namespace/root filters)"
+        )
     typer.echo(page["scope_note"])
 
 
