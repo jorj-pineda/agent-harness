@@ -178,6 +178,38 @@ class AgentClient:
             raise ValueError("Mismatched memory correction response; inspect memory.")
         return record
 
+    def reclassify_memory(
+        self,
+        user_id: str,
+        fact_id: int,
+        expected_fact_sha256: str,
+        expected_workspace_root: str | None,
+        workspace_root: str | None,
+    ) -> dict[str, Any]:
+        resp = httpx.request(
+            "PUT",
+            f"{self._base}/memory/{fact_id}/scope",
+            json={
+                "user_id": user_id,
+                "expected_fact_sha256": expected_fact_sha256,
+                "expected_workspace_root": expected_workspace_root,
+                "workspace_root": workspace_root,
+            },
+            timeout=30,
+        )
+        resp.raise_for_status()
+        record = dict(resp.json())
+        note = record.get("note") or {}
+        if (
+            record.get("status") != "reclassified"
+            or note.get("id") != fact_id
+            or "workspace_root" not in note
+            or note["workspace_root"] != workspace_root
+            or note.get("fact_sha256") != expected_fact_sha256
+        ):
+            raise ValueError("Mismatched memory scope response; inspect memory.")
+        return record
+
     def memory_note(self, user_id: str, fact_id: int) -> dict[str, Any]:
         resp = httpx.get(f"{self._base}/memory/{fact_id}", params={"user_id": user_id}, timeout=30)
         resp.raise_for_status()
