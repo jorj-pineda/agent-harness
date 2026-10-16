@@ -329,6 +329,41 @@ def memory(
 
 
 @app.command()
+def memory_scope(
+    fact_id: int = typer.Argument(..., min=1),
+    expected_sha256: str = typer.Option(..., "--expected-sha256"),
+    from_global: bool = typer.Option(False, "--from-global"),
+    from_workspace: str | None = typer.Option(None, "--from-workspace"),
+    to_global: bool = typer.Option(False, "--to-global"),
+    to_workspace: str | None = typer.Option(None, "--to-workspace"),
+    base_url: str = typer.Option("http://localhost:8000", "--base-url"),
+    user_id: str = typer.Option("cli-user", "--user-id"),
+) -> None:
+    """Reclassify one reviewed note; select explicit source and destination scopes."""
+    if re.fullmatch(r"[0-9a-f]{64}", expected_sha256) is None:
+        raise typer.BadParameter("Use the 64-character lowercase hash from memory inspection.")
+    if from_global == (from_workspace is not None):
+        raise typer.BadParameter("Choose exactly one of --from-global or --from-workspace.")
+    if to_global == (to_workspace is not None):
+        raise typer.BadParameter("Choose exactly one of --to-global or --to-workspace.")
+    try:
+        record = AgentClient(base_url).reclassify_memory(
+            user_id, fact_id, expected_sha256, from_workspace, to_workspace
+        )
+    except Exception as exc:
+        typer.echo(
+            f"Memory reclassification failed ({type(exc).__name__}). Outcome may be unknown; "
+            "inspect memory before retrying. No automatic retry.",
+            err=True,
+        )
+        raise typer.Exit(code=1) from exc
+    typer.echo(
+        f"Memory note {fact_id} scope={json.dumps(record['note']['workspace_root'])}. "
+        f"{record['scope_note']}"
+    )
+
+
+@app.command()
 def memory_note(
     fact_id: int = typer.Argument(..., min=1),
     base_url: str = typer.Option("http://localhost:8000", "--base-url"),
