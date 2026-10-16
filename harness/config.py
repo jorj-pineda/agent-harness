@@ -112,7 +112,9 @@ class Settings(BaseSettings):
         default=0,
         ge=0,
         le=10_000_000,
-        description="Model context window; estimated prompt + output must fit (0 disables).",
+        description=(
+            "Harness context cap; 0 disables this cap, but explicit Ollama context still caps."
+        ),
     )
     prompt_estimate_bytes_per_token: float = Field(
         default=3,
@@ -147,6 +149,13 @@ class Settings(BaseSettings):
                 "Project check must be pytest, ruff check, mypy, or npm [--prefix DIR] run test:run"
             )
         return value
+
+    def context_limit_for(self, provider: str) -> int:
+        """Smallest positive configured cap; no discovery of backend defaults/capabilities."""
+        limits = [self.max_context_tokens]
+        if provider == "ollama" and self.ollama_num_ctx is not None:
+            limits.append(self.ollama_num_ctx)
+        return min((limit for limit in limits if limit > 0), default=0)
 
     # Grounding
     confidence_escalation_threshold: float = Field(default=0.55, ge=0.0, le=1.0)

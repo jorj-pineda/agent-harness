@@ -32,6 +32,9 @@ class ContextReview(BaseModel):
     prompt_estimate_bytes_per_token: float | None = None
     includes_proposed_message: bool = False
     max_context_tokens: int | None = None
+    configured_max_context_tokens: int | None = None
+    ollama_num_ctx: int | None = None
+    context_limit_policy: Literal["configured-min-v1"] | None = None
     request_output_allowance: int | None = None
     reason: str | None = None
 
@@ -81,6 +84,8 @@ def compare_profiles(
             "prompt_version",
             "memory_prompt_max_bytes",
             "memory_scope_version",
+            "context_limit_policy",
+            "effective_max_context_tokens",
         )
         if saved_fields[field] is None or current_fields[field] is None
     ]
@@ -152,7 +157,7 @@ def review_configuration(
     budget = TokenBudget(
         max_output=settings.max_completion_tokens_per_turn,
         max_total=settings.max_total_tokens_per_turn,
-        max_context=settings.max_context_tokens,
+        max_context=settings.context_limit_for(provider),
         min_request_output=settings.min_request_output_tokens,
         bytes_per_token=settings.prompt_estimate_bytes_per_token,
     )
@@ -161,12 +166,15 @@ def review_configuration(
         status="blocked"
         if isinstance(allowance, BudgetStop)
         else "estimated_fit"
-        if settings.max_context_tokens > 0
+        if budget.max_context > 0
         else "unbounded_context",
         estimated_prompt_tokens=budget.estimate_prompt(detached.messages, specs),
         prompt_estimate_bytes_per_token=budget.bytes_per_token,
         includes_proposed_message=bool(message),
-        max_context_tokens=settings.max_context_tokens,
+        max_context_tokens=budget.max_context,
+        configured_max_context_tokens=settings.max_context_tokens,
+        ollama_num_ctx=settings.ollama_num_ctx if provider == "ollama" else None,
+        context_limit_policy="configured-min-v1",
         request_output_allowance=None if isinstance(allowance, BudgetStop) else allowance,
         reason=allowance.reason if isinstance(allowance, BudgetStop) else None,
     )

@@ -64,6 +64,8 @@ class ExecutionProfile(BaseModel):
     memory_prompt_max_bytes: int | None = Field(default=None, ge=1)
     memory_scope_version: Literal["workspace-path-v1"] | None = None
     settings: CapturedRuntimeSettings
+    context_limit_policy: Literal["configured-min-v1"] | None = None
+    effective_max_context_tokens: int | None = Field(default=None, ge=0)
     ollama_num_ctx: int | None = None
     ollama_think: bool | None = None
     scope_note: str = (
@@ -149,6 +151,8 @@ def capture_execution_profile(
         settings=CapturedRuntimeSettings.model_validate(
             {name: getattr(settings, name) for name in CapturedRuntimeSettings.model_fields}
         ),
+        context_limit_policy="configured-min-v1",
+        effective_max_context_tokens=settings.context_limit_for(provider),
         ollama_num_ctx=settings.ollama_num_ctx if provider == "ollama" else None,
         ollama_think=settings.ollama_think if provider == "ollama" else None,
     )

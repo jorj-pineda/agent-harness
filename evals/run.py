@@ -271,6 +271,8 @@ def _build_live_provider(name: str, settings: Settings) -> ChatProvider:
                 model=settings.ollama_model,
                 embed_model=settings.ollama_embed_model,
                 timeout_seconds=timeout,
+                num_ctx=settings.ollama_num_ctx,
+                think=settings.ollama_think,
             )
         case "anthropic":
             if not settings.anthropic_api_key:
@@ -404,6 +406,8 @@ async def _run_one(
             "max_completion_tokens_per_turn": settings.max_completion_tokens_per_turn,
             "max_total_tokens_per_turn": settings.max_total_tokens_per_turn,
             "max_context_tokens": settings.max_context_tokens,
+            "context_limit_policy": "configured-min-v1",
+            "effective_max_context_tokens": settings.context_limit_for(provider_name),
             "prompt_estimate_bytes_per_token": settings.prompt_estimate_bytes_per_token,
             "min_request_output_tokens": settings.min_request_output_tokens,
             "max_identical_tool_calls": settings.max_identical_tool_calls,
