@@ -64,6 +64,17 @@
       (note.workspace_root === null || typeof note.workspace_root === "string");
   }
 
+  function normalizedReplacement(text) {
+    // Match the server's str.strip whitespace set; retain internal newlines and FEFF.
+    const whitespace = "[\\u0009-\\u000d\\u001c-\\u0020\\u0085\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000]";
+    return text.replace(new RegExp(`^${whitespace}+|${whitespace}+$`, "gu"), "");
+  }
+
+  async function textHash(text) {
+    const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+    return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
+  }
+
   function mutationControls() {
     namespace.disabled = mutating;
     workspace.disabled = mutating || namespace.value !== "workspace";
@@ -72,6 +83,9 @@
     for (const button of results.querySelectorAll("[data-memory-detail]")) {
       button.disabled = mutating || button.dataset.loading === "true";
     }
+    for (const button of results.querySelectorAll("[data-memory-copy]")) {
+      button.disabled = mutating || mutationNeedsReview || button.dataset.available !== "true";
+    }
     for (const group of results.querySelectorAll(".memory-action")) {
       const ack = group.querySelector('input[type="checkbox"]');
       const destination = group.querySelector("[data-scope-destination]");
@@ -79,29 +93,43 @@
       const locked = mutating || mutationNeedsReview;
       for (const input of group.querySelectorAll("input, select, textarea")) input.disabled = locked;
       if (root) root.disabled = locked || destination.value !== "workspace";
-      const ready = !destination || destination.value === "global" ||
+      const replacement = group.querySelector("[data-memory-replacement]");
+      const bytes = replacement ? new TextEncoder().encode(normalizedReplacement(replacement.value)).length : 0;
+      const ready = replacement ? bytes > 0 && bytes <= 4096 :
+        !destination || destination.value === "global" ||
         (destination.value === "workspace" && root.value.length > 0);
-      group.querySelector("button").disabled = locked || !ack.checked || !ready;
+      if (replacement) group.querySelector("[data-replacement-size]").textContent = `${bytes}/4,096 UTF-8 bytes after trimming`;
+      group.querySelector("[data-memory-submit]").disabled = locked || !ack.checked || !ready;
     }
   }
 
   async function mutateNote(note, version, action, target = null) {
     if (mutating || mutationNeedsReview || version !== generation) return;
+    if (action === "correct") {
+      target = normalizedReplacement(target);
+      if (!target || new TextEncoder().encode(target).length > 4096) return;
+    }
     mutating = true;
     detailEpoch += 1;
     for (const controller of controllers) controller.abort();
     controllers.clear();
     for (const button of results.querySelectorAll("[data-memory-detail]")) button.dataset.loading = "false";
+    for (const button of results.querySelectorAll("[data-memory-copy]")) button.dataset.available = "false";
     for (const host of results.querySelectorAll(".memory-detail-result")) host.replaceChildren();
     mutationControls();
-    const label = action === "delete" ? "Deletion" : "Reclassification";
+    const label = action === "delete" ? "Deletion" : action === "correct" ? "Correction" : "Reclassification";
     status.textContent = `${label} of whole note ${note.id} pending…`;
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 30000);
     try {
-      const payload = { user_id: userId, expected_fact_sha256: note.fact_sha256 };
+      const payload = { user_id: userId, expected_fact_sha256: note.fact_sha256,
+        expected_workspace_root: note.workspace_root };
+      let replacementHash = null;
+      if (action === "correct") {
+        payload.replacement = target;
+        replacementHash = await textHash(target);
+      }
       if (action === "scope") {
-        payload.expected_workspace_root = note.workspace_root;
         payload.workspace_root = target;
       }
       const response = await fetch(`/memory/${note.id}${action === "scope" ? "/scope" : ""}`, {
@@ -113,6 +141,13 @@
       const data = await response.json();
       if (action === "delete") {
         if (data.status !== "deleted" || data.fact_id !== note.id) throw new Error("delete-mismatch");
+      } else if (action === "correct") {
+        if (data.status !== "corrected" || !validNote(data.note) || data.note.id !== note.id ||
+            data.note.workspace_root !== note.workspace_root || data.note.fact_sha256 !== replacementHash ||
+            data.note.fact_bytes !== new TextEncoder().encode(target).length ||
+            data.note.source_turn_id !== null || typeof data.note.updated_at !== "string") {
+          throw new Error("correction-mismatch");
+        }
       } else if (data.status !== "reclassified" || !validNote(data.note) ||
           data.note.id !== note.id || data.note.fact_sha256 !== note.fact_sha256 ||
           data.note.workspace_root !== target) {
@@ -143,9 +178,13 @@
     const button = node("button", "Inspect complete note");
     button.dataset.memoryDetail = "";
     const detail = node("div", null, "memory-detail-result");
+    let reviewedText = null;
     button.addEventListener("click", async () => {
       if (mutating || version !== generation || button.disabled) return;
       const epoch = detailEpoch;
+      reviewedText = null;
+      copy.dataset.available = "false";
+      copy.disabled = true;
       button.dataset.loading = "true";
       button.disabled = true;
       detail.replaceChildren(node("p", "Reading complete note…"));
@@ -166,6 +205,9 @@
           detail.replaceChildren(node("p", "Note changed since this preview. Refresh notes before further review."));
         } else {
           detail.replaceChildren(node("pre", data.text), node("p", data.scope_note, "review-note"));
+          reviewedText = data.text;
+          copy.dataset.available = "true";
+          mutationControls();
         }
       } catch (error) {
         if (version === generation && epoch === detailEpoch) {
@@ -187,6 +229,7 @@
     ack.type = "checkbox";
     label.append(ack, document.createTextNode(` Delete whole note ${note.id}, including text omitted from the preview, from future recall. Saved history remains.`));
     const submit = node("button", "Delete reviewed note");
+    submit.dataset.memorySubmit = "";
     submit.disabled = true;
     ack.addEventListener("change", mutationControls);
     submit.addEventListener("click", () => { if (ack.checked) mutateNote(note, version, "delete"); });
@@ -208,6 +251,7 @@
     const scopeAck = node("input"); scopeAck.type = "checkbox";
     scopeAckLabel.append(scopeAck, document.createTextNode(` Reclassify whole note ${note.id} from the displayed scope. Global notes can appear in all my workspaces; text and saved history stay unchanged.`));
     const move = node("button", "Reclassify reviewed note"); move.disabled = true;
+    move.dataset.memorySubmit = "";
     for (const control of [destination, root, scopeAck]) control.addEventListener("input", mutationControls);
     destination.addEventListener("change", mutationControls);
     scopeAck.addEventListener("change", mutationControls);
@@ -216,7 +260,35 @@
       mutateNote(note, version, "scope", destination.value === "global" ? null : root.value);
     });
     scope.append(destinationLabel, rootLabel, scopeAckLabel, move);
-    item.append(button, detail, remove, scope);
+    const correction = node("details", null, "memory-correct memory-action");
+    correction.appendChild(node("summary", "Correct this whole note"));
+    correction.appendChild(node("p", "Enter the complete replacement, including text omitted from the preview. Outer whitespace is trimmed; internal newlines stay. Drafts are not saved on reload.", "review-note"));
+    const copy = node("button", "Use inspected complete text");
+    copy.dataset.memoryCopy = ""; copy.dataset.available = "false"; copy.disabled = true;
+    const replacementLabel = node("label", "Whole-note replacement");
+    const replacement = node("textarea"); replacement.rows = 4; replacement.maxLength = 8192;
+    replacement.dataset.memoryReplacement = ""; replacement.autocomplete = "off";
+    replacementLabel.appendChild(replacement);
+    const size = node("p", "0/4,096 UTF-8 bytes after trimming", "review-note");
+    size.dataset.replacementSize = "";
+    const correctAckLabel = node("label");
+    const correctAck = node("input"); correctAck.type = "checkbox";
+    correctAckLabel.append(correctAck, document.createTextNode(` Replace whole note ${note.id}. Original source-turn attribution will be cleared; saved history stays unchanged.`));
+    const save = node("button", "Correct reviewed note"); save.dataset.memorySubmit = ""; save.disabled = true;
+    copy.addEventListener("click", () => {
+      if (copy.disabled || reviewedText === null) return;
+      replacement.value = reviewedText;
+      correctAck.checked = false;
+      mutationControls();
+    });
+    replacement.addEventListener("input", mutationControls);
+    correctAck.addEventListener("change", mutationControls);
+    save.addEventListener("click", () => {
+      if (!correctAck.checked || save.disabled) return;
+      mutateNote(note, version, "correct", replacement.value);
+    });
+    correction.append(copy, replacementLabel, size, correctAckLabel, save);
+    item.append(button, detail, remove, scope, correction);
     return item;
   }
 

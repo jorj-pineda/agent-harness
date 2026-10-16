@@ -505,3 +505,5 @@ button:disabled {
 
 .memory-action { margin-top: 12px; }
 #memory-review .memory-action input[type="checkbox"] { width: auto; margin-right: 6px; }
+
+#memory-review .memory-correct textarea { width: 100%; resize: vertical; }
