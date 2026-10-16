@@ -670,6 +670,38 @@ def checkpoint(
 
 
 @app.command()
+def check_suggestions(
+    session_id: str = typer.Argument(...),
+    base_url: str = typer.Option("http://localhost:8000", "--base-url"),
+    user_id: str = typer.Option("cli-user", "--user-id"),
+    raw: bool = typer.Option(False, "--json"),
+) -> None:
+    """Inspect static project-check hints; never runs or configures a command."""
+    try:
+        review = AgentClient(base_url).check_suggestions(user_id, session_id)
+    except Exception as exc:
+        typer.echo(
+            f"Check suggestions unavailable ({type(exc).__name__}). No automatic retry.", err=True
+        )
+        raise typer.Exit(code=1) from exc
+    if raw:
+        typer.echo(json.dumps(review, indent=2))
+        return
+    typer.echo(f"check_suggestions={review['status']} (read-only static hints)")
+    typer.echo("No command ran and no configuration changed. Inspect setup before execution.")
+    for suggestion in review["suggestions"]:
+        typer.echo(f"argv={json.dumps(suggestion['argv'])}")
+        typer.echo(f"evidence={json.dumps(suggestion['evidence'])}")
+    if not review["suggestions"]:
+        typer.echo("No suggestions returned within the supported root-manifest scope.")
+    for issue in review["issues"]:
+        typer.echo(f"issue={json.dumps(issue['path'])}: {json.dumps(issue['code'])}")
+    if review.get("reason"):
+        typer.echo(json.dumps(review["reason"]))
+    typer.echo(json.dumps(review["scope_note"]))
+
+
+@app.command()
 def workspace_review(
     session_id: str = typer.Argument(...),
     base_url: str = typer.Option("http://localhost:8000", "--base-url"),
