@@ -300,3 +300,46 @@ def test_runtime_injection_is_workspace_scoped_across_restart(tmp_path):
         client.post("/chat", json={"user_id": "dev", "session_id": sid, "message": "Explain"})
         assert "A convention" not in restarted.calls[0][0][0].content
         assert "Global preference" in restarted.calls[0][0][0].content
+
+
+def test_namespace_review_filters_before_paging_and_survives_restart(tmp_path):
+    provider = ScriptedProvider()
+    with TestClient(make_app(tmp_path, provider)) as client:
+
+        def seed():
+            store = client.app.state.components.fact_store
+            store.add("dev", "global")
+            store.add("dev", "older A", workspace_root="/project/a")
+            store.add("dev", "B", workspace_root="/project/b")
+            store.add("dev", "newer A", workspace_root="/project/a")
+            store.add("other", "private A", workspace_root="/project/a")
+
+        client.portal.call(seed)
+    with TestClient(make_app(tmp_path, provider)) as client:
+        params = {
+            "user_id": "dev",
+            "namespace": "workspace",
+            "workspace_root": "/project/a",
+            "limit": 1,
+        }
+        first = client.get("/memory", params=params).json()
+        assert [n["preview"] for n in first["notes"]] == ["newer A"]
+        second = client.get(
+            "/memory", params={**params, "before_id": first["next_before_id"]}
+        ).json()
+        assert [n["preview"] for n in second["notes"]] == ["older A"]
+        assert second["next_before_id"] is None
+        global_page = client.get("/memory", params={"user_id": "dev", "namespace": "global"}).json()
+        assert [n["preview"] for n in global_page["notes"]] == ["global"]
+        assert len(client.get("/memory", params={"user_id": "dev"}).json()["notes"]) == 4
+        for extra in [
+            {"namespace": "invalid"},
+            {"namespace": "workspace"},
+            {"namespace": "workspace", "workspace_root": "relative"},
+            {"namespace": "workspace", "workspace_root": "/project/../a"},
+            {"namespace": "global", "workspace_root": "/project/a"},
+            {"workspace_root": "/project/a"},
+        ]:
+            assert client.get("/memory", params={"user_id": "dev", **extra}).status_code == 422
+        assert client.get("/runs", params={"user_id": "dev"}).json() == []
+    assert provider.calls == []

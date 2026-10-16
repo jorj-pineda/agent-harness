@@ -88,7 +88,12 @@ context fit. The harness's request budgets still govern subsequent inference.
 Owner-facing `GET /memory?user_id=...&limit=20&before_id=...` lists newest-first
 notes with 1,024-byte UTF-8 previews, explicit truncation, full note byte counts
 and SHA-256 hashes, timestamps and recorded source-turn IDs (which may be null).
-Pages accept 1–50 notes; `next_before_id` supplies the next cursor. These are
+Pages accept 1–50 notes; `next_before_id` supplies the next cursor. Optional
+`namespace=global` selects only user-wide notes; `namespace=workspace` requires
+a canonical absolute `workspace_root` and selects only that exact namespace
+(without global notes). The default `namespace=all` preserves owner-wide listing.
+Keep the same filters when following a cursor. Other namespace/root combinations
+return 422. Filtering is read-only and does not classify or move notes. These are
 user-owned global or workspace-path notes, not Git/revision identity or an authenticated
 account system. Legacy oversized notes remain inspectable through bounded previews;
 SQLite read/allocation work is not bounded by the preview limit.

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+from typing import Literal
 
 from pydantic import BaseModel
 
@@ -49,11 +50,25 @@ class MemoryPage(BaseModel):
 
 
 def review_notes(
-    store: FactStore, user_id: str, *, limit: int = 20, before_id: int | None = None
+    store: FactStore,
+    user_id: str,
+    *,
+    limit: int = 20,
+    before_id: int | None = None,
+    namespace: Literal["all", "global", "workspace"] = "all",
+    workspace_root: str | None = None,
 ) -> MemoryPage:
     if not 1 <= limit <= 50:
         raise ValueError("limit must be between 1 and 50")
-    facts = store.list(user_id, limit=limit + 1, before_id=before_id)
+    if namespace != "workspace" and workspace_root is not None:
+        raise ValueError("workspace_root requires namespace=workspace")
+    facts = store.list(
+        user_id,
+        limit=limit + 1,
+        before_id=before_id,
+        namespace=namespace,
+        workspace_root=workspace_root,
+    )
     selected = facts[:limit]
     return MemoryPage(
         notes=[preview_note(fact) for fact in selected],
