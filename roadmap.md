@@ -1354,10 +1354,25 @@ acceptance. The six newly reconciled boxes are supported by:
 - [ ] Align tool, provider, turn, and client timeouts so a reported timeout has a defined effect.
 - [ ] Use disposable execution environments for evaluations. Provide an explicit local workspace mode for trusted projects and an isolated mode before running unfamiliar repository code.
 - [ ] Keep model-provider credentials in the orchestrator; expose only explicitly configured environment variables and mounts to repository commands.
-- [ ] Configure project check commands explicitly. Detect likely commands as suggestions; do not guess that every project uses pytest.
+- [x] Configure project check commands explicitly. Detect likely commands as suggestions; do not guess that every project uses pytest. Root-only static hints are available in API/CLI/panel; relevance and setup remain explicit.
 - [x] Fix CLI handling of nullable confidence and other response states that are already valid in the API.
 
 **Done when:** regressions cover single-file search, large/empty reads, ambiguous edits, stale edits, command timeouts, cancellation, command-created file changes, and preservation of pre-existing user edits. No command continues after its run is reported cancelled or terminated.
+
+**2026-10-16 — Read-only panel project-check hints:** explicit saved-session review
+sends one GET and displays current-root status, argv, source filenames, issues and
+limits with text rendering. Session/invariant/shape inconsistencies and private
+errors produce unavailable review; duplicate clicks lock, stale selection replies
+cannot repaint, and timeout requires explicit inspection. No run/apply action,
+automatic lookup/retry or browser persistence/replay. Native browser checks used a
+temporary real API session (unchanged archive and zero runs), plus 13 simulated
+status/race/error inspections. Markup stayed literal; desktop rendering was inspected;
+reload fetched only static assets. Temporary resources stopped with zero model calls.
+Validation: 17 focused tests and 1,056 offline tests (five live deselected),
+Ruff/format/mypy and JS syntax passed. The narrow check-configuration/suggestion item
+is complete for the supported root markers; recursive discovery, relevance, tool
+installation and wider milestones remain open. No evaluation behavior changes,
+model-quality claim or Duodoro edits.
 
 **2026-10-16 — Read-only CLI project-check hints:** `check-suggestions SESSION_ID`
 uses one owner-scoped GET, with human and JSON output. Status, source filenames,
