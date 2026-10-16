@@ -18,6 +18,12 @@ from memory.review import MemoryNotePreview
 
 
 class DeleteMemoryRequest(BaseModel):
+    expected_workspace_root: str | None = Field(
+        default=None,
+        max_length=4096,
+        description="Optional reviewed scope: omit for legacy content-only guard, null for global, "
+        "or exact canonical workspace path. Scope is checked in the final mutation predicate.",
+    )
     user_id: str = Field(min_length=1)
     expected_fact_sha256: str = Field(min_length=64, max_length=64, pattern=r"^[0-9a-f]{64}$")
 

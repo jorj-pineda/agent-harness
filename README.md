@@ -151,6 +151,13 @@ reports an uncertain outcome and asks for memory inspection before retrying. No
 automatic retry, lookup, model turn or session creation occurs. Human previews are
 JSON-quoted to escape terminal control characters.
 
+Correction and deletion also accept optional `expected_workspace_root` to pin the
+reviewed scope in the final SQL mutation predicate. Send JSON null for global or
+the exact canonical workspace path. A scope mismatch returns 409 even if the text
+hash is unchanged; no corrected text or deletion is applied. Omit the field to
+retain the legacy content-only precondition. This is a current-state guard, not a
+scope-change audit or a workspace lock.
+
 `PUT /memory/{fact_id}/scope` explicitly reclassifies one reviewed note. Supply
 `user_id`, `expected_fact_sha256`, required `expected_workspace_root` and required
 `workspace_root` (JSON null means global; otherwise a canonical absolute path).

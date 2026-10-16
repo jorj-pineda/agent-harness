@@ -29,6 +29,7 @@ from __future__ import annotations
 import hashlib
 import logging
 import sqlite3
+from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 from types import TracebackType
@@ -57,6 +58,10 @@ _TABLE_SQL = {
         "find": "SELECT id FROM memory_facts WHERE user_id = ? AND fact = ?",
         "insert": "INSERT INTO memory_facts (id, user_id, fact, source_turn_id, created_at) "
         "VALUES (?, ?, ?, ?, ?)",
+        "delete_scoped": "DELETE FROM memory_facts WHERE user_id = ? AND id = ? "
+        "AND fact = ? AND ? IS NULL",
+        "correct_scoped": "UPDATE memory_facts SET fact = ?, source_turn_id = NULL, updated_at = ? "
+        "WHERE user_id = ? AND id = ? AND fact = ? AND ? IS NULL",
         "delete": "DELETE FROM memory_facts WHERE user_id = ? AND id = ? AND fact = ?",
         "correct": "UPDATE memory_facts SET fact = ?, source_turn_id = NULL, updated_at = ? "
         "WHERE user_id = ? AND id = ? AND fact = ?",
@@ -72,6 +77,10 @@ _TABLE_SQL = {
         "insert": "INSERT INTO workspace_memory_facts "
         "(id, user_id, fact, source_turn_id, created_at, workspace_root) "
         "VALUES (?, ?, ?, ?, ?, ?)",
+        "delete_scoped": "DELETE FROM workspace_memory_facts WHERE user_id = ? AND id = ? "
+        "AND fact = ? AND workspace_root = ?",
+        "correct_scoped": "UPDATE workspace_memory_facts SET fact = ?, source_turn_id = NULL, "
+        "updated_at = ? WHERE user_id = ? AND id = ? AND fact = ? AND workspace_root = ?",
         "delete": "DELETE FROM workspace_memory_facts WHERE user_id = ? AND id = ? AND fact = ?",
         "correct": "UPDATE workspace_memory_facts SET fact = ?, source_turn_id = NULL, "
         "updated_at = ? WHERE user_id = ? AND id = ? AND fact = ?",
@@ -109,6 +118,13 @@ class Fact(BaseModel):
     created_at: str = Field(..., description="ISO-8601 UTC timestamp")
     updated_at: str | None = None
     workspace_root: str | None = None
+
+
+@dataclass(frozen=True)
+class MemoryScopePrecondition:
+    """Explicit reviewed scope. None inside this value means global, not omitted."""
+
+    workspace_root: str | None
 
 
 class FactConflictError(ValueError):
@@ -283,7 +299,14 @@ class FactStore:
             raise FactConflictError("Ambiguous memory ID from unsupported writes; inspect storage.")
         return (rows[0]["storage"], rows[0]["fact"]) if rows else None
 
-    def delete(self, user_id: str, fact_id: int, expected_fact_sha256: str) -> bool:
+    def delete(
+        self,
+        user_id: str,
+        fact_id: int,
+        expected_fact_sha256: str,
+        *,
+        expected_scope: MemoryScopePrecondition | None = None,
+    ) -> bool:
         """Delete only this owner's exact reviewed content; missing IDs return False.
 
         The final SQL content predicate detects a concurrent edit after the read.
@@ -291,6 +314,7 @@ class FactStore:
         """
         if not user_id or fact_id < 1:
             raise ValueError("user_id must not be empty and fact_id must be positive")
+        root = _workspace_key(expected_scope.workspace_root) if expected_scope is not None else None
         found = self._lookup(user_id, fact_id)
         if found is None:
             return False
@@ -299,15 +323,23 @@ class FactStore:
             raise FactConflictError("Stored note differs from the reviewed content; inspect again.")
         with self._conn:
             cursor = self._conn.execute(
-                _TABLE_SQL[table]["delete"],
-                (user_id, fact_id, fact),
+                _TABLE_SQL[table]["delete_scoped" if expected_scope is not None else "delete"],
+                (user_id, fact_id, fact, root)
+                if expected_scope is not None
+                else (user_id, fact_id, fact),
             )
             if cursor.rowcount != 1:
                 raise FactConflictError("Stored note changed during deletion; inspect again.")
         return True
 
     def correct(
-        self, user_id: str, fact_id: int, expected_fact_sha256: str, replacement: str
+        self,
+        user_id: str,
+        fact_id: int,
+        expected_fact_sha256: str,
+        replacement: str,
+        *,
+        expected_scope: MemoryScopePrecondition | None = None,
     ) -> Fact | None:
         """Replace reviewed content atomically, preserving creation/ID ordering.
 
@@ -317,6 +349,7 @@ class FactStore:
         if not user_id or fact_id < 1:
             raise ValueError("user_id must not be empty and fact_id must be positive")
         normalized = normalize_fact(replacement)
+        root = _workspace_key(expected_scope.workspace_root) if expected_scope is not None else None
         found = self._lookup(user_id, fact_id)
         if found is None:
             return None
@@ -325,8 +358,10 @@ class FactStore:
             raise FactConflictError("Stored note differs from the reviewed content; inspect again.")
         with self._conn:
             cursor = self._conn.execute(
-                _TABLE_SQL[table]["correct"],
-                (normalized, datetime.now(UTC).isoformat(), user_id, fact_id, fact),
+                _TABLE_SQL[table]["correct_scoped" if expected_scope is not None else "correct"],
+                (normalized, datetime.now(UTC).isoformat(), user_id, fact_id, fact, root)
+                if expected_scope is not None
+                else (normalized, datetime.now(UTC).isoformat(), user_id, fact_id, fact),
             )
             if cursor.rowcount != 1:
                 raise FactConflictError("Stored note changed during correction; inspect again.")
