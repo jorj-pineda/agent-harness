@@ -1379,6 +1379,17 @@ scripted 90/90 matrices with labels/limits inspected.
 - [ ] Bound search and command output while retaining a way to retrieve omitted details.
 - [ ] Separate repository conventions from global user preferences. Add provenance, correction/deletion, and injection limits for remembered facts.
 
+**2026-10-16 — Explicit panel note deletion:** per-note acknowledgment gates one
+hash-guarded whole-note DELETE. Pending controls lock; response identity is checked.
+Success clears review, and uncertain/failing outcomes require fresh explicit review
+before another deletion. No automatic retry/lookup or reload replay. Native-browser
+checks against temporary real API storage covered legacy whole-note deletion and
+stale-hash preservation; simulations covered duplicate clicks, mismatched responses,
+private failures and timeout/no-retry. Zero coding runs. Validation: 16 focused,
+1,012 offline tests (five live deselected), Ruff/format/mypy and JS syntax passed.
+Panel correction/reclassification and wider context milestones remain open. No model
+calls, evaluation changes or Duodoro edits; historical archives remain intact.
+
 **2026-10-15 — Read-only panel memory review:** explicit owner-scoped refresh,
 namespace filters, cursor paging and bounded complete text use existing APIs.
 Filter changes clear results/cancel waits and stale replies cannot repaint them;
