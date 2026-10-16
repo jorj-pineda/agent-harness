@@ -109,6 +109,16 @@ Large text is omitted by SQL before rows reach Python, without promising bounded
 SQLite internal work. Full legacy-text export and CLI/panel detail controls remain
 separate work.
 
+The panel's **Owner memory** section offers explicit refresh, all/global/exact
+workspace filters, older-page review and bounded complete-note inspection. It uses
+the visible panel owner ID; its workspace filter is separate from the chat workspace.
+It loads nothing on open/reload, stores no note text locally, and sends only memory
+GET requests. Filters clear old results and invalidate in-flight lookups. Preview
+text is rendered as text; complete text must match the returned hash and preview
+identity. Changed notes ask for refresh; oversized legacy notes retain previews.
+Lookup failures offer explicit retry without polling or submitting work. Panel
+correction/deletion and note reclassification remain separate work.
+
 `DELETE /memory/{fact_id}` requires JSON `user_id` and `expected_fact_sha256`.
 The hash identifies the entire stored note even when the preview is truncated.
 A stale hash/content change returns 409; missing/other-owner IDs return 404.
