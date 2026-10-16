@@ -29,6 +29,7 @@ class ProfileComparison(BaseModel):
 class ContextReview(BaseModel):
     status: Literal["estimated_fit", "blocked", "unbounded_context", "not_checked"]
     estimated_prompt_tokens: int | None = None
+    prompt_estimate_bytes_per_token: float | None = None
     includes_proposed_message: bool = False
     max_context_tokens: int | None = None
     request_output_allowance: int | None = None
@@ -153,6 +154,7 @@ def review_configuration(
         max_total=settings.max_total_tokens_per_turn,
         max_context=settings.max_context_tokens,
         min_request_output=settings.min_request_output_tokens,
+        bytes_per_token=settings.prompt_estimate_bytes_per_token,
     )
     allowance = budget.request_allowance(detached.messages, specs)
     review.context = ContextReview(
@@ -162,6 +164,7 @@ def review_configuration(
         if settings.max_context_tokens > 0
         else "unbounded_context",
         estimated_prompt_tokens=budget.estimate_prompt(detached.messages, specs),
+        prompt_estimate_bytes_per_token=budget.bytes_per_token,
         includes_proposed_message=bool(message),
         max_context_tokens=settings.max_context_tokens,
         request_output_allowance=None if isinstance(allowance, BudgetStop) else allowance,

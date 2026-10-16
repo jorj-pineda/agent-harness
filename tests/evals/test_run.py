@@ -212,6 +212,7 @@ async def test_live_smoke_uses_shared_prompt_memory_and_threshold(
             _env_file=None,
             require_verification_before_finish=True,
             confidence_escalation_threshold=0.73,
+            prompt_estimate_bytes_per_token=4.5,
             default_workspace_root=tmp_path / "must-not-be-used",
         ),
     )
@@ -221,6 +222,7 @@ async def test_live_smoke_uses_shared_prompt_memory_and_threshold(
     assert result.evaluation_mode == runner.LIVE_SIMULATED_MODE
     assert result.prompt_version == PROMPT_VERSION
     assert result.runtime_config["confidence_escalation_threshold"] == 0.73
+    assert result.runtime_config["prompt_estimate_bytes_per_token"] == 4.5
     messages, specs = provider.calls[0]
     assert messages[0].content.startswith(BASE_SYSTEM_PROMPT)
     assert "Use focused changes" in messages[0].content

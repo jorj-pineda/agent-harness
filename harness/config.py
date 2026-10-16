@@ -114,6 +114,13 @@ class Settings(BaseSettings):
         le=10_000_000,
         description="Model context window; estimated prompt + output must fit (0 disables).",
     )
+    prompt_estimate_bytes_per_token: float = Field(
+        default=3,
+        ge=1,
+        le=8,
+        allow_inf_nan=False,
+        description="Prompt UTF-8 byte heuristic ratio; not a tokenizer or automatic calibration.",
+    )
     min_request_output_tokens: int = Field(
         default=256,
         ge=1,

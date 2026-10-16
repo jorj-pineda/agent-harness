@@ -34,6 +34,7 @@ def test_profile_is_durable_before_inference_and_survives_finalization_and_resta
     )
     settings = {
         "max_context_tokens": 16000,
+        "prompt_estimate_bytes_per_token": 4.5,
         "max_tool_calls_per_turn": 12,
         "coding_toolset": "whole_file",
         "coding_prompt_profile": prompt_profile,
