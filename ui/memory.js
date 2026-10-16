@@ -14,6 +14,7 @@
   let generation = 0;
   let nextCursor = null;
   let deleting = false;
+  let detailEpoch = 0;
   let deletionNeedsReview = false;
   const controllers = new Set();
 
@@ -68,6 +69,9 @@
     workspace.disabled = deleting || namespace.value !== "workspace";
     refresh.disabled = deleting;
     older.disabled = deleting || nextCursor === null;
+    for (const button of results.querySelectorAll("[data-memory-detail]")) {
+      button.disabled = deleting || button.dataset.loading === "true";
+    }
     for (const group of results.querySelectorAll(".memory-delete")) {
       const ack = group.querySelector("input");
       ack.disabled = deleting || deletionNeedsReview;
@@ -78,6 +82,11 @@
   async function deleteNote(note, version) {
     if (deleting || deletionNeedsReview || version !== generation) return;
     deleting = true;
+    detailEpoch += 1;
+    for (const controller of controllers) controller.abort();
+    controllers.clear();
+    for (const button of results.querySelectorAll("[data-memory-detail]")) button.dataset.loading = "false";
+    for (const host of results.querySelectorAll(".memory-detail-result")) host.replaceChildren();
     deletionControls();
     status.textContent = `Deleting whole note ${note.id}…`;
     const controller = new AbortController();
@@ -114,22 +123,25 @@
     item.appendChild(node("p", `Created: ${note.created_at ?? "unrecorded"}; corrected: ${note.updated_at ?? "unrecorded"}; source turn: ${note.source_turn_id ?? "unrecorded"}`));
     item.appendChild(node("pre", note.preview));
     const button = node("button", "Inspect complete note");
-    const detail = node("div");
+    button.dataset.memoryDetail = "";
+    const detail = node("div", null, "memory-detail-result");
     button.addEventListener("click", async () => {
-      if (version !== generation || button.disabled) return;
+      if (deleting || version !== generation || button.disabled) return;
+      const epoch = detailEpoch;
+      button.dataset.loading = "true";
       button.disabled = true;
       detail.replaceChildren(node("p", "Reading complete note…"));
       try {
         const query = new URLSearchParams({ user_id: userId });
         const data = await read(`/memory/${note.id}?${query}`);
-        if (version !== generation) return;
+        if (version !== generation || epoch !== detailEpoch) return;
         if (!validNote(data.note) || data.note.id !== note.id ||
             typeof data.text !== "string" || new TextEncoder().encode(data.text).length > 4096 ||
             new TextEncoder().encode(data.text).length !== data.note.fact_bytes) {
           throw new Error("invalid-detail");
         }
         const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(data.text));
-        if (version !== generation) return;
+        if (version !== generation || epoch !== detailEpoch) return;
         const hash = Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
         if (hash !== data.note.fact_sha256) throw new Error("invalid-detail-hash");
         if (data.note.fact_sha256 !== note.fact_sha256 || data.note.workspace_root !== note.workspace_root) {
@@ -138,13 +150,16 @@
           detail.replaceChildren(node("pre", data.text), node("p", data.scope_note, "review-note"));
         }
       } catch (error) {
-        if (version === generation) {
+        if (version === generation && epoch === detailEpoch) {
           detail.replaceChildren(node("p", error.message === "legacy-overflow"
             ? "Legacy note exceeds the complete-text limit. Use the bounded preview above."
             : "Complete note unavailable. No work submitted; retry this lookup explicitly."));
         }
       } finally {
-        if (version === generation) button.disabled = false;
+        if (version === generation && epoch === detailEpoch) {
+          button.dataset.loading = "false";
+          button.disabled = deleting;
+        }
       }
     });
     const remove = node("details", null, "memory-delete");

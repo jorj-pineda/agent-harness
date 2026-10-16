@@ -1381,6 +1381,8 @@ scripted 90/90 matrices with labels/limits inspected.
 
 **2026-10-16 — Explicit panel note deletion:** per-note acknowledgment gates one
 hash-guarded whole-note DELETE. Pending controls lock; response identity is checked.
+Detail reads are cancelled/invalidated at deletion start, preventing stale repaint
+even when a reply ignores abort; pending lookups cannot be re-enabled by acknowledgment.
 Success clears review, and uncertain/failing outcomes require fresh explicit review
 before another deletion. No automatic retry/lookup or reload replay. Native-browser
 checks against temporary real API storage covered legacy whole-note deletion and
