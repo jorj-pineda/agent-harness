@@ -157,6 +157,19 @@ Future recall/injection follows the new scope; saved history and sent prompts st
 unchanged. Scope changes have no audit trail. Path keys are not Git identity or
 workspace access permission. This owner action is unavailable to model tools.
 
+The CLI exposes the same explicit scope action:
+
+```sh
+agent-harness memory-scope 123 --user-id jorge --expected-sha256 'COPY_REVIEWED_64_CHARACTER_HASH' \
+  --from-global --to-workspace /absolute/project
+# To make a workspace note user-wide, select --from-workspace /absolute/project --to-global.
+```
+
+Exactly one source and one destination are required. The client sends one PUT,
+checks returned ID/hash/destination and reports uncertain failures with inspection
+guidance. No automatic retry, lookup or model submission follows. Canonical path
+checks and concurrency guards remain server enforced.
+
 `PUT /memory/{fact_id}` accepts `user_id`, `expected_fact_sha256` and
 `replacement` for an atomic owner correction. Replacements must fit 4,096 UTF-8
 bytes after trimming; the API also caps raw input at 8,192 characters. Stale

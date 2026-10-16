@@ -1269,6 +1269,15 @@ Relevant implementation: `harness/loop.py`, `harness/outcome.py`, `harness/groun
   or Duodoro edits. Validation: 60 focused, 1,015 offline tests (five live
   deselected), Ruff/format/mypy passed.
 
+- **2026-10-16 — CLI owner memory reclassification:** explicit source/destination
+  global/path flags and reviewed content hash gate one PUT to the scope API. Response
+  ID/hash/destination checks reject mismatches; errors retain uncertainty and require
+  owner inspection without automatic retry or lookup. Restart and stale-source tests
+  preserve creation/source metadata and zero coding runs. Panel classification, scope
+  audit and broader context/profile milestones remain open. No model calls, evaluation
+  changes or Duodoro edits. Validation: 19 focused and 1,022 offline tests (five
+  live deselected), Ruff/format/mypy passed.
+
 - **2026-10-15 — CLI memory namespace review:** thin CLI filters select all,
   global or one exact workspace namespace. Root/filter combinations reject locally;
   canonical path validation remains server enforced. Human cursor output reminds
