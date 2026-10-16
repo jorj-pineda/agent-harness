@@ -503,5 +503,5 @@ button:disabled {
 .memory-note pre { white-space: pre-wrap; max-height: 200px; overflow: auto; }
 #memory-owner, #memory-status { overflow-wrap: anywhere; }
 
-.memory-delete { margin-top: 12px; }
-#memory-review .memory-delete input { width: auto; margin-right: 6px; }
+.memory-action { margin-top: 12px; }
+#memory-review .memory-action input[type="checkbox"] { width: auto; margin-right: 6px; }

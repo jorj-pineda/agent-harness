@@ -126,7 +126,13 @@ while waiting and checks response identity. Success clears the old review; any
 unconfirmed outcome blocks further deletion until explicit refresh/inspection.
 No automatic retry or lookup follows deletion, and reload replays no action.
 Deletion includes omitted preview text and affects future memory only, not saved
-history or secure erasure. Panel correction and reclassification remain separate.
+history or secure erasure. Each note also has a separate scope action: choose global or an exact workspace
+path, acknowledge the change, then explicitly submit. The request pins the displayed
+source scope and full hash. Global promotion makes the note eligible across your
+workspaces. Deletion and reclassification share pending locks, detail invalidation
+and uncertain-outcome recovery; success clears review and asks for fresh inspection.
+No scope or note mutation is saved/replayed by the browser. Panel correction remains
+separate work.
 
 `DELETE /memory/{fact_id}` requires JSON `user_id` and `expected_fact_sha256`.
 The hash identifies the entire stored note even when the preview is truncated.
