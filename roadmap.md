@@ -1525,6 +1525,19 @@ milestones remain open; no Duodoro edits or model-quality claim. Validation: 59
 focused, 1,000 offline tests (five live deselected), Ruff/format/mypy passed.
 Evaluation behavior unchanged; scripted matrices were not rerun.
 
+**2026-10-16 — Separate per-request output cap:** explicit
+MAX_REQUEST_OUTPUT_TOKENS (default 0 unchanged) participates in the shared minimum
+request allowance without replacing cumulative turn budgets. Each request resets
+the cap; usable responses with unreported output usage or reported overruns stop
+before tools/final completion. Exact-cap responses can continue; provider length
+still means incomplete. Review/capture/normalized stops/evaluation metadata record
+the cap, with known old absence mapped to zero and nondefault continuation drift.
+Explicit caps may be below the context/total-room minimum. Validation: 146 focused
+and 1,108 offline tests (five live deselected), Ruff/format/mypy and both scripted
+90/90 matrices with contract labels/metric limits inspected. No inference, quality
+claim or Duodoro edits. Backend enforcement/billing, named profiles, generation/
+capability settings and broader Milestone 4 remain open.
+
 **2026-10-16 — Client context-budget explanation:** CLI configuration review and
 panel estimates distinguish effective/context-policy evidence, the raw harness cap,
 requested Ollama window and manual byte/token calibration. Unknown/legacy policy

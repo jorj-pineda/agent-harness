@@ -692,6 +692,21 @@ this validates reported values, not backend billing or tokenizer accuracy.
 Existing invalid negative archive values fail validation rather than being
 silently repaired; historical files are not rewritten.
 
+`MAX_REQUEST_OUTPUT_TOKENS` is an explicit output cap on each model request
+(default 0 disables this cap). The request sends the smallest applicable allowance
+from this cap, remaining turn output/total budgets and estimated context room.
+The cap resets per request; `MAX_COMPLETION_TOKENS_PER_TURN` still counts output
+across the whole turn. Enabled request caps require reported output usage before
+tools/final completion: absent usage returns `incomplete`, and a reported overrun
+returns `budget_exhausted`. Exact-cap output can continue if other gates allow it;
+provider `length` remains incomplete. The backend can ignore a requested cap, so
+this is not a billing guarantee. Explicit caps can be below
+`MIN_REQUEST_OUTPUT_TOKENS`, whose floor applies to remaining context/total room.
+Runtime review exposes the configured cap and resulting allowance; durable settings,
+normalized stop traces and evaluation metadata record it. Older records default to
+0 (no such cap); changed values cause continuation configuration drift. Model profile
+selection and capability checks remain separate work.
+
 `MAX_CONTEXT_TOKENS` and `MAX_TOTAL_TOKENS_PER_TURN` use estimated prompt size
 before each model request. Zero disables the corresponding configured harness cap;
 for Ollama, explicit `OLLAMA_NUM_CTX` still supplies a context cap. The effective

@@ -63,7 +63,9 @@ collects this only when a caller supplies a trace list; application API payloads
 and model context are unchanged. Each record carries a zero-based iteration:
 
 - `request`: message count, estimated prompt tokens (not a tokenizer count), and
-  requested output allowance (`null` means no harness cap). The first request
+  requested output allowance (`null` means no harness cap). The allowance also
+  respects `runtime_config.max_request_output_tokens` when enabled, separately
+  from the cumulative turn output budget. Old runtimes had no per-request cap. The first request
   includes a deep copy of the initial normalized messages, including system
   instructions; subsequent requests do not duplicate history. Tool schemas
   remain in `runtime_config.tool_specs`. New records also include a metadata-only
