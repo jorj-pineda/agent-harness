@@ -499,7 +499,17 @@ relevance or grant permission to execute repository code. Inspect project setup,
 then explicitly set `PROJECT_CHECK_ARGV` yourself. The endpoint holds process-local
 admission until its owned file reader settles, even after disconnect. Byte bounds
 are not filesystem-latency bounds, atomic snapshots or process isolation. Saved
-history and model execution are unchanged; CLI/panel access is a separate follow-up.
+history and model execution are unchanged. CLI access uses one owner-scoped read:
+
+```sh
+uv run agent-harness check-suggestions SESSION_ID --user-id YOUR_OWNER_ID
+uv run agent-harness check-suggestions SESSION_ID --user-id YOUR_OWNER_ID --json
+```
+
+The CLI reports partial/empty/busy/unavailable inspection explicitly, escapes terminal
+controls in human output and rejects mismatched session/read-only response metadata.
+It never retries automatically, applies suggestions or starts a turn. Panel access
+is a separate follow-up.
 
 For trusted npm projects, the command tool accepts only
 `npm [--prefix <repo-relative-directory>] run test:run [-- <test arguments>]`.

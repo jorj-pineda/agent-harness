@@ -1359,6 +1359,16 @@ acceptance. The six newly reconciled boxes are supported by:
 
 **Done when:** regressions cover single-file search, large/empty reads, ambiguous edits, stale edits, command timeouts, cancellation, command-created file changes, and preservation of pre-existing user edits. No command continues after its run is reported cancelled or terminated.
 
+**2026-10-16 — Read-only CLI project-check hints:** `check-suggestions SESSION_ID`
+uses one owner-scoped GET, with human and JSON output. Status, source filenames,
+manifest issues and limits remain visible; human text escapes terminal controls.
+Session/invariant/shape mismatches fail before output, and private transport errors
+are suppressed without retries. Restart/ownership/busy checks preserve manifests,
+archives and explicit PROJECT_CHECK_ARGV; no coding run or inference is created.
+Validation: 17 focused and 1,056 offline tests (five live deselected), Ruff/format/mypy
+passed. Panel access and the broader project-check item remain open. No evaluation
+behavior change, model-quality claim or Duodoro edits.
+
 **2026-10-16 — Static project-check suggestions API:** owner-scoped session review
 inspects three fixed root manifests with 64 KiB+sentinel reads, regular/no-follow
 file descriptors and explicit parse/overflow/change issues. Only explicit pytest
