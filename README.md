@@ -323,7 +323,8 @@ captures current scoped bytes/modes and requires an exact match with the latest
 saved turn-after checkpoint and original root identity. It requires aligned finished
 turn/response history, valid tool-call/result structure, matching known captured
 configuration, and positive bounded estimated context fit for the proposed message.
-Ollama must explicitly configure `OLLAMA_NUM_CTX >= MAX_CONTEXT_TOKENS`. Older
+Ollama must explicitly configure `OLLAMA_NUM_CTX`; the effective context cap is
+the smaller positive configured harness/Ollama limit. Older
 sessions without these records cannot continue. Source advancement and newer
 running/failed/interrupted work on related sessions or an archived identical workspace
 root block execution. Active overlapping roots are rejected by admission.
@@ -691,8 +692,11 @@ this validates reported values, not backend billing or tokenizer accuracy.
 Existing invalid negative archive values fail validation rather than being
 silently repaired; historical files are not rewritten.
 
-`MAX_CONTEXT_TOKENS` and `MAX_TOTAL_TOKENS_PER_TURN` (both `0` = disabled) are
-checked before each model request using an estimated prompt size. The estimate
+`MAX_CONTEXT_TOKENS` and `MAX_TOTAL_TOKENS_PER_TURN` use estimated prompt size
+before each model request. Zero disables the corresponding configured harness cap;
+for Ollama, explicit `OLLAMA_NUM_CTX` still supplies a context cap. The effective
+window is the smaller positive harness/Ollama limit. Other providers use only the
+harness cap, and unset Ollama context leaves backend defaults unknown. The estimate
 is the larger of a UTF-8 byte heuristic over the whole prompt and the previous
 request's reported prompt tokens plus the heuristic for newer messages. If the
 estimated prompt leaves fewer than `MIN_REQUEST_OUTPUT_TOKENS` of room, the turn
@@ -703,9 +707,18 @@ never see their results. The total budget fails closed when prompt or output
 usage is unreported, and a provider response that exceeds it is reported as
 such. Estimates are approximate: on one first request with local `gemma4:12b`
 and the default coding tools, the estimate was 2,950 tokens against 1,781
-reported. The harness does not set the model server's context length, so set
-`MAX_CONTEXT_TOKENS` to the value the server actually uses. Exhausting the
-context stops the turn; compaction is not implemented.
+reported. Configure `OLLAMA_NUM_CTX` to request an explicit server window; the
+harness cannot attest that the backend honored it. For other backends, configure
+`MAX_CONTEXT_TOKENS` from their known limits. Exhausting estimated context stops
+the turn; compaction is not implemented.
+
+Configured execution and review record policy `configured-min-v1`, the effective
+context cap, raw harness cap and selected Ollama option. Old profiles with no policy
+stay unknown and cannot silently authorize guarded continuation under the new rule;
+historical archives/results are not rewritten. Real-task and live simulated-tool
+metadata retain configured and effective limits separately. Low-level scripted
+contracts keep their historical explicit limits. Constructor overrides, backend
+server defaults and real tokenizer fit are outside this configuration evidence.
 
 **Local agent panel.** A Typer CLI (`agent-harness serve`/`chat`) and a zero-build static panel (`ui/`) make the envelope legible — tool cards stream in live over SSE (`GET /chat/stream`). Both are thin HTTP clients; the ReAct loop is never duplicated in the frontend.
 

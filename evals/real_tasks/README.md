@@ -72,7 +72,11 @@ and model context are unchanged. Each record carries a zero-based iteration:
   heuristic UTF-8 bytes (ties use ascending message index). The message estimate
   includes overhead; message + schema + anchor adjustment equals the gate estimate.
   `prompt_estimate_bytes_per_token` records the configured ratio (default 3);
-  older footprints used the fixed ratio 3. New `runtime_config` records it too.
+  older footprints used the fixed ratio 3. New `runtime_config` records it too,
+  along with `context_limit_policy` and `effective_max_context_tokens`; configured
+  `max_context_tokens` remains separate. `configured-min-v1` caps Ollama by its
+  explicit requested window even if the harness cap is zero. Historical reports
+  retain their original runtime behavior; backend compliance is not attested.
   Payload size is not provider tokenization or wire size. Rankings contain message
   index, role and tool name, excluding raw content, arguments, paths and call IDs.
   Older request records parse with `footprint=null`; no footprint is invented.
