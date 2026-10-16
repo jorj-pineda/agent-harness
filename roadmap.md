@@ -1259,6 +1259,16 @@ Relevant implementation: `harness/loop.py`, `harness/outcome.py`, `harness/groun
   not Git identity/isolation, and owner classification/panel controls, broader
   context/model profiles and Milestones 4–6 remain open.
 
+- **2026-10-16 — Guarded owner note reclassification:** explicit API scope moves
+  validate the whole-content hash and reviewed source path/null under one SQLite
+  write transaction. Duplicate destinations/failures roll back; identity, text and
+  creation/correction/source metadata survive global/workspace moves. Same-scope
+  requests validate without mutation; future prompt selection changes without archive
+  rewrites. No scope audit or Git identity is implied. CLI/panel classification and
+  broader context/profile work remain separate; no model/evaluation behavior change
+  or Duodoro edits. Validation: 60 focused, 1,015 offline tests (five live
+  deselected), Ruff/format/mypy passed.
+
 - **2026-10-15 — CLI memory namespace review:** thin CLI filters select all,
   global or one exact workspace namespace. Root/filter combinations reject locally;
   canonical path validation remains server enforced. Human cursor output reminds

@@ -146,6 +146,17 @@ reports an uncertain outcome and asks for memory inspection before retrying. No
 automatic retry, lookup, model turn or session creation occurs. Human previews are
 JSON-quoted to escape terminal control characters.
 
+`PUT /memory/{fact_id}/scope` explicitly reclassifies one reviewed note. Supply
+`user_id`, `expected_fact_sha256`, required `expected_workspace_root` and required
+`workspace_root` (JSON null means global; otherwise a canonical absolute path).
+The transaction checks current content and source scope before moving. Stale review
+or destination duplicates return 409 and preserve the original; missing/other-owner
+IDs return 404. A same-scope request validates the review and makes no change.
+ID, text, creation/correction timestamps and source-turn metadata stay intact.
+Future recall/injection follows the new scope; saved history and sent prompts stay
+unchanged. Scope changes have no audit trail. Path keys are not Git identity or
+workspace access permission. This owner action is unavailable to model tools.
+
 `PUT /memory/{fact_id}` accepts `user_id`, `expected_fact_sha256` and
 `replacement` for an atomic owner correction. Replacements must fit 4,096 UTF-8
 bytes after trimming; the API also caps raw input at 8,192 characters. Stale

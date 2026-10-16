@@ -52,6 +52,8 @@ FACTS_HEADING = "Engineering memory for this developer (persists across sessions
 
 _TABLE_SQL = {
     "memory_facts": {
+        "move_insert": "INSERT INTO memory_facts "
+        "(id, user_id, fact, source_turn_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
         "find": "SELECT id FROM memory_facts WHERE user_id = ? AND fact = ?",
         "insert": "INSERT INTO memory_facts (id, user_id, fact, source_turn_id, created_at) "
         "VALUES (?, ?, ?, ?, ?)",
@@ -62,6 +64,9 @@ _TABLE_SQL = {
         "NULL AS workspace_root FROM memory_facts WHERE user_id = ? AND id = ?",
     },
     "workspace_memory_facts": {
+        "move_insert": "INSERT INTO workspace_memory_facts "
+        "(id, user_id, fact, source_turn_id, created_at, updated_at, workspace_root) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?)",
         "find": "SELECT id FROM workspace_memory_facts WHERE user_id = ? AND fact = ? "
         "AND workspace_root = ?",
         "insert": "INSERT INTO workspace_memory_facts "
@@ -330,6 +335,49 @@ class FactStore:
                 (user_id, fact_id),
             ).fetchone()
             return Fact(**dict(result))
+
+    def reclassify(
+        self,
+        user_id: str,
+        fact_id: int,
+        expected_fact_sha256: str,
+        expected_workspace_root: str | None,
+        workspace_root: str | None,
+    ) -> Fact | None:
+        """Move exact reviewed content/scope atomically; preserve identity/provenance.
+
+        BEGIN IMMEDIATE serializes competing supported SQLite writes. No text,
+        correction timestamp, ID counter or archived prompt is rewritten.
+        """
+        if not user_id or fact_id < 1:
+            raise ValueError("user_id must not be empty and fact_id must be positive")
+        expected_workspace_root = _workspace_key(expected_workspace_root)
+        workspace_root = _workspace_key(workspace_root)
+        with self._conn:
+            self._conn.execute("BEGIN IMMEDIATE")
+            found = self._lookup(user_id, fact_id)
+            if found is None:
+                return None
+            table, text = found
+            row = self._conn.execute(_TABLE_SQL[table]["get"], (user_id, fact_id)).fetchone()
+            note = Fact(**dict(row))
+            if (
+                hashlib.sha256(text.encode("utf-8")).hexdigest() != expected_fact_sha256
+                or note.workspace_root != expected_workspace_root
+            ):
+                raise FactConflictError("Note content or namespace changed; inspect again.")
+            if workspace_root == note.workspace_root:
+                return note
+            deleted = self._conn.execute(_TABLE_SQL[table]["delete"], (user_id, fact_id, text))
+            if deleted.rowcount != 1:
+                raise FactConflictError("Note changed during reclassification; inspect again.")
+            destination = "memory_facts" if workspace_root is None else "workspace_memory_facts"
+            values = (note.id, user_id, text, note.source_turn_id, note.created_at, note.updated_at)
+            self._conn.execute(
+                _TABLE_SQL[destination]["move_insert"],
+                (*values, workspace_root) if workspace_root is not None else values,
+            )
+            return note.model_copy(update={"workspace_root": workspace_root})
 
     def format_for_system_prompt(
         self,

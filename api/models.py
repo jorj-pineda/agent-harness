@@ -42,6 +42,20 @@ class CorrectMemoryResponse(BaseModel):
     )
 
 
+class ReclassifyMemoryRequest(DeleteMemoryRequest):
+    expected_workspace_root: str | None = Field(..., max_length=4096)
+    workspace_root: str | None = Field(..., max_length=4096)
+
+
+class ReclassifyMemoryResponse(BaseModel):
+    status: Literal["reclassified"] = "reclassified"
+    note: MemoryNotePreview
+    scope_note: str = (
+        "Future memory scope only; text, creation/correction metadata, saved history and "
+        "already sent prompts are unchanged. No scope-change audit trail is recorded."
+    )
+
+
 class CreateSessionRequest(BaseModel):
     user_id: str = Field(..., min_length=1, description="Stable per-user identifier.")
     checkpoint_turns: bool = Field(
@@ -146,6 +160,8 @@ __all__ = [
     "CreateSessionResponse",
     "DeleteMemoryRequest",
     "DeleteMemoryResponse",
+    "ReclassifyMemoryRequest",
+    "ReclassifyMemoryResponse",
     "RevertFileRequest",
     "SubmitRunRequest",
 ]
