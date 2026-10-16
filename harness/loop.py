@@ -97,6 +97,7 @@ async def run_turn(
     max_total_tokens_per_turn: int = 0,
     max_context_tokens: int = 0,
     min_request_output_tokens: int = 1,
+    prompt_estimate_bytes_per_token: float = 3,
     max_identical_tool_calls: int = 0,
     max_completion_retries: int = 0,
     required_check: list[str] | None = None,
@@ -146,6 +147,7 @@ async def run_turn(
         max_total=max_total_tokens_per_turn,
         max_context=max_context_tokens,
         min_request_output=min_request_output_tokens,
+        bytes_per_token=prompt_estimate_bytes_per_token,
     )
     deadline = (
         (wall_started_at if wall_started_at is not None else asyncio.get_running_loop().time())

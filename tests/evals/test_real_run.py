@@ -75,7 +75,7 @@ async def test_real_tool_edit_is_scored_from_final_files(tmp_path: Path) -> None
     result = await run_task(
         task,
         provider=provider,
-        settings=Settings(_env_file=None),
+        settings=Settings(_env_file=None, prompt_estimate_bytes_per_token=4.5),
         mode="harness",
     )
     assert result.passed is True
@@ -97,6 +97,8 @@ async def test_real_tool_edit_is_scored_from_final_files(tmp_path: Path) -> None
     tool_results = [r for r in result.turn_trace if r["kind"] == "tool_result"]
     assert [r["message"]["tool_call_id"] for r in tool_results] == ["read", "edit", "check"]
     assert result.prompt_version == PROMPT_VERSION
+    assert result.runtime_config["prompt_estimate_bytes_per_token"] == 4.5
+    assert result.turn_trace[0]["footprint"]["prompt_estimate_bytes_per_token"] == 4.5
     assert result.runtime_config["max_workspace_diff_bytes"] == 64_000
     assert result.runtime_config["max_diff_snapshot_bytes"] == 2_000_000
     assert len(result.source_revision) == 64

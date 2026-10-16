@@ -1525,6 +1525,18 @@ milestones remain open; no Duodoro edits or model-quality claim. Validation: 59
 focused, 1,000 offline tests (five live deselected), Ruff/format/mypy passed.
 Evaluation behavior unchanged; scripted matrices were not rerun.
 
+**2026-10-16 — Explicit prompt estimate calibration:** a finite 1–8 byte/token
+ratio (default 3 unchanged) now shares budget, review and footprint math across
+application and real-task execution. Reported anchors remain lower bounds, output
+usage handling is unchanged, and larger ratios can underestimate requests. Durable
+allowlisted configuration and evaluation metadata record the choice; known old
+records retain ratio 3, while changed ratios cause continuation configuration drift.
+No automatic tuning, selected named profiles, tokenizer guarantee or compaction.
+Offline gates and both scripted matrices validate mechanics only; no inference,
+quality comparison or Duodoro edits. Validation: 130 focused and 1,069 offline tests
+(five live deselected), Ruff/format/mypy and both 90/90 scripted matrices with
+contract labels/metric limits inspected. Broader Milestone 4 stays incomplete.
+
 ## Milestone 5 — Make daily use recoverable and comfortable
 
 **Outcome:** Jorge can use the harness on an actual project without treating every run as a disposable demo.
@@ -1637,7 +1649,7 @@ enters the queue when a real task or evaluation shows the limitation matters.
 
 | Limitation | Proposed fix |
 |---|---|
-| The byte heuristic overestimated one `gemma4:12b` first request by about 66% (2,950 versus 1,781 tokens), so a context limit stops turns early. | Add a per-model-profile bytes-per-token ratio, calibrated from recorded first-request usage in real evaluations. Keep the conservative default for unprofiled models. |
+| The byte heuristic overestimated one `gemma4:12b` first request by about 66% (2,950 versus 1,781 tokens), so a context limit stops turns early. | An explicit configured byte/token ratio is available (default 3 retained); calibrate manually from recorded usage. Named model profiles and demonstrated calibration gains remain open. |
 | The harness does not set the model server's context length. A harness limit larger than the server's window still allows silent server-side truncation. | Put the context length in the Milestone 4 model profile, and have the Ollama adapter send it as the request's context option so both sides agree. |
 | Exhausting the context stops the turn instead of continuing. | Add Milestone 4 compaction that keeps the objective, current diff, relevant file spans, unresolved failures, and recent actions. Keep raw traces outside the model context. |
 | The total budget is estimate-gated. One request can overshoot it when the provider's count exceeds the estimate. The overshoot is reported, not prevented. | Profile calibration narrows the error. A stricter variant can reserve a safety margin proportional to the observed estimate error. |

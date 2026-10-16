@@ -235,6 +235,7 @@ async def run_configured_turn(
             max_total_tokens_per_turn=settings.max_total_tokens_per_turn,
             max_context_tokens=settings.max_context_tokens,
             min_request_output_tokens=settings.min_request_output_tokens,
+            prompt_estimate_bytes_per_token=settings.prompt_estimate_bytes_per_token,
             max_identical_tool_calls=settings.max_identical_tool_calls,
             max_completion_retries=settings.max_completion_retries,
             required_check=settings.project_check_argv,

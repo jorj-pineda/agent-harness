@@ -71,6 +71,8 @@ and model context are unchanged. Each record carries a zero-based iteration:
   previous reported prompt anchor, and the ten largest message payloads by
   heuristic UTF-8 bytes (ties use ascending message index). The message estimate
   includes overhead; message + schema + anchor adjustment equals the gate estimate.
+  `prompt_estimate_bytes_per_token` records the configured ratio (default 3);
+  older footprints used the fixed ratio 3. New `runtime_config` records it too.
   Payload size is not provider tokenization or wire size. Rankings contain message
   index, role and tool name, excluding raw content, arguments, paths and call IDs.
   Older request records parse with `footprint=null`; no footprint is invented.

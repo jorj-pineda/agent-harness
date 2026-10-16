@@ -32,6 +32,8 @@ class CapturedRuntimeSettings(BaseModel):
     max_total_tokens_per_turn: int
     max_context_tokens: int
     min_request_output_tokens: int
+    # Before this field existed, the implementation always used three bytes per token.
+    prompt_estimate_bytes_per_token: float = Field(default=3, ge=1, le=8, allow_inf_nan=False)
     max_identical_tool_calls: int
     max_completion_retries: int
     request_timeout_seconds: int

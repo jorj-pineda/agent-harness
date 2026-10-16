@@ -457,6 +457,20 @@ temporary file; there is no fsync/power-loss guarantee, checkpoint or revert.
 File-tool edit metadata includes either operation. These mechanics have offline
 regression coverage; model-level success still requires real coding evaluations.
 
+**Prompt estimate calibration.** `PROMPT_ESTIMATE_BYTES_PER_TOKEN` defaults to 3
+and accepts finite values from 1 through 8. It divides the UTF-8 message/schema
+payload estimate; per-message overhead and the larger reported-prompt anchor remain.
+Higher ratios estimate fewer tokens, potentially admitting requests that do not
+actually fit. Choose a ratio from recorded observations for the selected model;
+there is no automatic tuning, tokenizer guarantee or named model-profile selection.
+The same setting governs API execution, read-only context review and real-task
+execution. Durable configuration, trace footprints and new evaluation metadata
+record it; old configured records/footprints used the known fixed ratio of 3.
+Nondefault changes count as configuration drift for guarded continuation. Reported
+usage still governs post-response checks, and a request can overshoot an estimate.
+Default behavior and historical evaluation results remain unchanged. No improvement
+in coding quality is established by configuring this heuristic.
+
 **Managed commands and disposable copies.** Code-tool commands now run as async
 processes with bounded output. Timeouts and cancellation terminate their process
 group on POSIX. Command results report when stdout or stderr was truncated.

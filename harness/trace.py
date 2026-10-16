@@ -32,6 +32,8 @@ class MessageFootprint(BaseModel):
 class PromptFootprint(BaseModel):
     """Estimator metadata only; no content, arguments, paths or call IDs."""
 
+    # Legacy footprints used the fixed ratio of 3.
+    prompt_estimate_bytes_per_token: float = Field(default=3, ge=1, le=8, allow_inf_nan=False)
     message_estimate_tokens: int
     tool_schema_estimate_tokens: int
     heuristic_prompt_tokens: int
@@ -45,8 +47,8 @@ class PromptFootprint(BaseModel):
 def prompt_footprint(
     messages: list[ChatMessage], tools: list[ToolSpec], budget: TokenBudget
 ) -> PromptFootprint:
-    message_tokens = estimate_message_tokens(messages)
-    tool_tokens = estimate_tool_tokens(tools)
+    message_tokens = estimate_message_tokens(messages, bytes_per_token=budget.bytes_per_token)
+    tool_tokens = estimate_tool_tokens(tools, bytes_per_token=budget.bytes_per_token)
     heuristic = message_tokens + tool_tokens
     estimated = budget.estimate_prompt(messages, tools)
     rows = [
@@ -60,6 +62,7 @@ def prompt_footprint(
     ]
     rows.sort(key=lambda row: (-row.payload_bytes, row.message_index))
     return PromptFootprint(
+        prompt_estimate_bytes_per_token=budget.bytes_per_token,
         message_estimate_tokens=message_tokens,
         tool_schema_estimate_tokens=tool_tokens,
         heuristic_prompt_tokens=heuristic,

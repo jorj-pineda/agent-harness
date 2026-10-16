@@ -3,8 +3,8 @@
 Prompt size is estimated, not tokenized: providers use different tokenizers, and
 the harness does not load one per model. The estimate takes the larger of:
 
-- a byte heuristic over the whole prompt (UTF-8 bytes / 3, plus per-message
-  overhead), which is conservative for English and code; and
+- a byte heuristic over the whole prompt (UTF-8 bytes / configured ratio, default 3,
+  plus per-message overhead), a heuristic rather than a tokenizer guarantee; and
 - the previous request's reported prompt tokens plus the heuristic for messages
   appended since (including the reply), which tracks the provider's own count.
   Reported output tokens are not reused: they can include hidden reasoning that
@@ -30,8 +30,8 @@ BYTES_PER_TOKEN = 3
 MESSAGE_OVERHEAD_TOKENS = 4
 
 
-def _tokens_for_bytes(size: int) -> int:
-    return math.ceil(size / BYTES_PER_TOKEN)
+def _tokens_for_bytes(size: int, bytes_per_token: float) -> int:
+    return math.ceil(size / bytes_per_token)
 
 
 def message_size_bytes(message: ChatMessage) -> int:
@@ -44,15 +44,21 @@ def message_size_bytes(message: ChatMessage) -> int:
     return size
 
 
-def estimate_message_tokens(messages: Sequence[ChatMessage]) -> int:
+def estimate_message_tokens(
+    messages: Sequence[ChatMessage], *, bytes_per_token: float = BYTES_PER_TOKEN
+) -> int:
     size = sum(message_size_bytes(message) for message in messages)
-    return _tokens_for_bytes(size) + MESSAGE_OVERHEAD_TOKENS * len(messages)
+    return _tokens_for_bytes(size, bytes_per_token) + MESSAGE_OVERHEAD_TOKENS * len(messages)
 
 
-def estimate_tool_tokens(tools: Sequence[ToolSpec]) -> int:
+def estimate_tool_tokens(
+    tools: Sequence[ToolSpec], *, bytes_per_token: float = BYTES_PER_TOKEN
+) -> int:
     if not tools:
         return 0
-    return _tokens_for_bytes(len(json.dumps([tool.model_dump() for tool in tools]).encode()))
+    return _tokens_for_bytes(
+        len(json.dumps([tool.model_dump() for tool in tools]).encode()), bytes_per_token
+    )
 
 
 @dataclass(frozen=True)
@@ -69,16 +75,25 @@ class TokenBudget:
     max_total: int = 0
     max_context: int = 0
     min_request_output: int = 1
+    bytes_per_token: float = BYTES_PER_TOKEN
     prompt_used: int | None = 0
     completion_used: int | None = 0
     _anchor_count: int = 0
     _anchor_tokens: int | None = None
 
+    def __post_init__(self) -> None:
+        if not math.isfinite(self.bytes_per_token) or not 1 <= self.bytes_per_token <= 8:
+            raise ValueError("Estimate bytes per token must be finite and between 1 and 8")
+
     def estimate_prompt(self, messages: Sequence[ChatMessage], tools: Sequence[ToolSpec]) -> int:
-        heuristic = estimate_message_tokens(messages) + estimate_tool_tokens(tools)
+        heuristic = estimate_message_tokens(
+            messages, bytes_per_token=self.bytes_per_token
+        ) + estimate_tool_tokens(tools, bytes_per_token=self.bytes_per_token)
         if self._anchor_tokens is None:
             return heuristic
-        anchored = self._anchor_tokens + estimate_message_tokens(messages[self._anchor_count :])
+        anchored = self._anchor_tokens + estimate_message_tokens(
+            messages[self._anchor_count :], bytes_per_token=self.bytes_per_token
+        )
         return max(heuristic, anchored)
 
     def request_allowance(

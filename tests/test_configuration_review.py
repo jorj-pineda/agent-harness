@@ -44,9 +44,15 @@ def archive_with_profile(settings: Settings, registry: ToolRegistry) -> SessionA
 
 
 @pytest.mark.parametrize("prompt_profile", ["legacy", "compact"])
-def test_matching_configuration_does_not_grant_resume_permission(tmp_path: Path, prompt_profile):
+@pytest.mark.parametrize("ratio", [3, 4.5])
+def test_matching_configuration_does_not_grant_resume_permission(
+    tmp_path: Path, prompt_profile, ratio
+):
     settings = Settings(
-        _env_file=None, max_context_tokens=16000, coding_prompt_profile=prompt_profile
+        _env_file=None,
+        max_context_tokens=16000,
+        coding_prompt_profile=prompt_profile,
+        prompt_estimate_bytes_per_token=ratio,
     )
     registry = ToolRegistry()
     registry.register(_echo_tool())
@@ -78,7 +84,9 @@ def test_matching_configuration_does_not_grant_resume_permission(tmp_path: Path,
         assert len(store.list("dev")) == 20
         detached.messages.append(ChatMessage(role="user", content="proposed task"))
         budget = TokenBudget(
-            max_context=16000, min_request_output=settings.min_request_output_tokens
+            max_context=16000,
+            min_request_output=settings.min_request_output_tokens,
+            bytes_per_token=ratio,
         )
         assert result.context.estimated_prompt_tokens == budget.estimate_prompt(
             detached.messages, registry.as_tool_specs()
