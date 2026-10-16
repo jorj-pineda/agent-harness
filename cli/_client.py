@@ -326,6 +326,42 @@ class AgentClient:
         data = resp.json()
         return dict(data) if data is not None else None
 
+    def check_suggestions(self, user_id: str, session_id: str) -> dict[str, Any]:
+        resp = httpx.get(
+            f"{self._base}/sessions/{session_id}/check-suggestions",
+            params={"user_id": user_id},
+            timeout=30,
+        )
+        resp.raise_for_status()
+        record = dict(resp.json())
+        if (
+            record.get("session_id") != session_id
+            or record.get("status")
+            not in {"inspected", "partial", "unavailable", "busy", "no_workspace"}
+            or record.get("read_only") is not True
+            or record.get("commands_executed") is not False
+            or record.get("configuration_changed") is not False
+            or not isinstance(record.get("suggestions"), list)
+            or not isinstance(record.get("issues"), list)
+            or not isinstance(record.get("scope_note"), str)
+            or (record.get("reason") is not None and not isinstance(record["reason"], str))
+        ):
+            raise ValueError("Inconsistent check suggestions response")
+        for suggestion in record["suggestions"]:
+            if not isinstance(suggestion, dict) or any(
+                not isinstance(suggestion.get(key), list)
+                or not suggestion[key]
+                or not all(isinstance(value, str) for value in suggestion[key])
+                for key in ("argv", "evidence")
+            ):
+                raise ValueError("Invalid check suggestion")
+        for issue in record["issues"]:
+            if not isinstance(issue, dict) or any(
+                not isinstance(issue.get(key), str) for key in ("path", "code")
+            ):
+                raise ValueError("Invalid manifest issue")
+        return record
+
     def configuration_review(
         self, user_id: str, session_id: str, *, provider: str | None = None, message: str = ""
     ) -> dict[str, Any]:
