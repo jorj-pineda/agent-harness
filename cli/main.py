@@ -236,6 +236,38 @@ def show_turn(result: TurnSummary) -> None:
     typer.echo()
 
 
+def show_context_limits(context: dict[str, Any]) -> None:
+    """Render server evidence; never derive or apply a budget in the client."""
+
+    def value(name: str) -> str:
+        item = context.get(name)
+        return "unrecorded" if item is None else json.dumps(item)
+
+    if context.get("context_limit_policy") == "configured-min-v1":
+        typer.echo(
+            f"effective_context_limit={value('max_context_tokens')} (0 = uncapped by harness)"
+        )
+    else:
+        typer.echo(
+            "effective_context_limit=unknown (policy unrecorded or unsupported); "
+            f"reported_context_limit={value('max_context_tokens')}"
+        )
+    typer.echo(
+        f"configured_harness_context_limit={value('configured_max_context_tokens')} "
+        "(0 disables only this cap)"
+    )
+    typer.echo(
+        f"ollama_requested_context_limit={value('ollama_num_ctx')} "
+        "(unrecorded: unset, not applicable or unknown)"
+    )
+    typer.echo(f"context_limit_policy={value('context_limit_policy')}")
+    typer.echo(f"prompt_estimate_bytes_per_token={value('prompt_estimate_bytes_per_token')}")
+    typer.echo(
+        "Manual byte heuristic; higher ratios estimate fewer tokens. "
+        "Estimated fit is not backend-attested/tokenizer fit or permission to continue."
+    )
+
+
 def show_run(record: dict) -> None:
     typer.echo(f"run_id={record['run_id']} status={record['status']}")
     if record.get("before_checkpoint_id") or record.get("after_checkpoint_id"):
@@ -262,9 +294,19 @@ def show_run(record: dict) -> None:
             f"toolset={limits['coding_toolset']} tools={len(profile['tool_names'])}"
         )
         typer.echo(
-            f"  context_limit={limits['max_context_tokens']} "
+            f"  configured_context_limit={limits['max_context_tokens']} "
             f"output_budget={limits['max_completion_tokens_per_turn']} "
-            f"tool_budget={limits['max_tool_calls_per_turn']} (0 disables token limits)"
+            f"tool_budget={limits['max_tool_calls_per_turn']} "
+            "(0 disables the corresponding configured cap)"
+        )
+        show_context_limits(
+            {
+                "max_context_tokens": profile.get("effective_max_context_tokens"),
+                "configured_max_context_tokens": limits.get("max_context_tokens"),
+                "ollama_num_ctx": profile.get("ollama_num_ctx"),
+                "context_limit_policy": profile.get("context_limit_policy"),
+                "prompt_estimate_bytes_per_token": limits.get("prompt_estimate_bytes_per_token"),
+            }
         )
         typer.echo("  Configured settings only; inspect --json for hashes and full limits.")
     if record.get("error"):
@@ -765,7 +807,10 @@ def configuration_review(
             user_id, session_id, provider=provider, message=message
         )
     except Exception as exc:
-        typer.echo(f"Configuration review failed: {exc}", err=True)
+        typer.echo(
+            f"Configuration review unavailable ({type(exc).__name__}). No automatic retry.",
+            err=True,
+        )
         raise typer.Exit(code=1) from exc
     typer.echo(f"review={review['status']} provider={review.get('provider')}")
     if review.get("reason"):
@@ -787,12 +832,18 @@ def configuration_review(
             f"estimated_prompt_tokens={context['estimated_prompt_tokens']} "
             f"includes_proposed_message={context['includes_proposed_message']}"
         )
-        typer.echo(
-            f"harness_context_limit={context.get('max_context_tokens')} "
-            f"request_output_allowance={context.get('request_output_allowance')}"
+        show_context_limits(context)
+        allowance = context.get("request_output_allowance")
+        label = (
+            json.dumps(allowance)
+            if allowance is not None
+            else "uncapped_by_harness"
+            if context.get("status") in {"estimated_fit", "unbounded_context"}
+            else "unavailable"
         )
+        typer.echo(f"request_output_allowance={label}")
         if context.get("reason"):
-            typer.echo(context["reason"])
+            typer.echo(json.dumps(context["reason"]))
     typer.echo(review["scope_note"])
 
 

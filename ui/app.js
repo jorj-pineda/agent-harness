@@ -709,7 +709,18 @@ function sessionReviewCard(kind, data, input = {}) {
     card.appendChild(el("p", null, `Context: ${context?.status || "not checked"}`));
     if (context) {
       card.appendChild(el("p", null, `Estimate includes proposed input: ${context.includes_proposed_message == null ? "unknown" : context.includes_proposed_message ? "yes" : "no"}`));
-      card.appendChild(el("p", null, `Estimated prompt tokens: ${context.estimated_prompt_tokens ?? "unknown"}; harness context limit: ${context.max_context_tokens === 0 ? "disabled" : context.max_context_tokens ?? "unknown"}; request output allowance: ${context.request_output_allowance ?? (["estimated_fit", "unbounded_context"].includes(context.status) ? "unbounded" : "unavailable")}`));
+      card.appendChild(el("p", null, `Estimated prompt tokens: ${context.estimated_prompt_tokens ?? "unknown"}`));
+      if (context.context_limit_policy === "configured-min-v1") {
+        card.appendChild(el("p", null, `Effective context limit: ${context.max_context_tokens ?? "unknown"} (0 = uncapped by harness)`));
+        card.appendChild(el("p", "review-note", "Context policy: smaller positive configured limits."));
+      } else {
+        card.appendChild(el("p", null, `Effective context limit: unknown (policy unrecorded or unsupported). Reported limit: ${context.max_context_tokens ?? "unknown"}`));
+      }
+      card.appendChild(el("p", null, `Configured harness context cap: ${context.configured_max_context_tokens ?? "unrecorded"} (0 disables only this cap)`));
+      card.appendChild(el("p", null, `Ollama requested window: ${context.ollama_num_ctx ?? "unrecorded (unset, not applicable or unknown)"}`));
+      card.appendChild(el("p", null, `Prompt estimate bytes per token: ${context.prompt_estimate_bytes_per_token ?? "unrecorded"}`));
+      card.appendChild(el("p", "review-note", "Manual byte heuristic; higher ratios estimate fewer tokens. Estimated fit is not backend-attested/tokenizer fit or permission to continue."));
+      card.appendChild(el("p", null, `Request output allowance: ${context.request_output_allowance ?? (["estimated_fit", "unbounded_context"].includes(context.status) ? "uncapped by harness" : "unavailable")}`));
       if (context.reason) card.appendChild(el("p", null, context.reason));
       card.appendChild(el("p", null, `Saved transcript: ${data.transcript?.status || "not checked"}`));
     }
