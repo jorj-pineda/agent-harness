@@ -1,4 +1,4 @@
-// Owner memory review and explicit hash-guarded deletion. Shares only panel owner
+// Owner memory review and explicit reviewed mutations. Shares only panel owner
 // identity; no session creation, chat submission, polling or local note storage.
 "use strict";
 
@@ -13,9 +13,9 @@
   byId("memory-owner").textContent = `Owner: ${userId}`;
   let generation = 0;
   let nextCursor = null;
-  let deleting = false;
+  let mutating = false;
   let detailEpoch = 0;
-  let deletionNeedsReview = false;
+  let mutationNeedsReview = false;
   const controllers = new Set();
 
   function node(tag, text, className) {
@@ -26,7 +26,7 @@
   }
 
   function clearReview() {
-    if (deleting) return;
+    if (mutating) return;
     generation += 1;
     for (const controller of controllers) controller.abort();
     controllers.clear();
@@ -64,53 +64,71 @@
       (note.workspace_root === null || typeof note.workspace_root === "string");
   }
 
-  function deletionControls() {
-    namespace.disabled = deleting;
-    workspace.disabled = deleting || namespace.value !== "workspace";
-    refresh.disabled = deleting;
-    older.disabled = deleting || nextCursor === null;
+  function mutationControls() {
+    namespace.disabled = mutating;
+    workspace.disabled = mutating || namespace.value !== "workspace";
+    refresh.disabled = mutating;
+    older.disabled = mutating || nextCursor === null;
     for (const button of results.querySelectorAll("[data-memory-detail]")) {
-      button.disabled = deleting || button.dataset.loading === "true";
+      button.disabled = mutating || button.dataset.loading === "true";
     }
-    for (const group of results.querySelectorAll(".memory-delete")) {
-      const ack = group.querySelector("input");
-      ack.disabled = deleting || deletionNeedsReview;
-      group.querySelector("button").disabled = deleting || deletionNeedsReview || !ack.checked;
+    for (const group of results.querySelectorAll(".memory-action")) {
+      const ack = group.querySelector('input[type="checkbox"]');
+      const destination = group.querySelector("[data-scope-destination]");
+      const root = group.querySelector("[data-scope-root]");
+      const locked = mutating || mutationNeedsReview;
+      for (const input of group.querySelectorAll("input, select, textarea")) input.disabled = locked;
+      if (root) root.disabled = locked || destination.value !== "workspace";
+      const ready = !destination || destination.value === "global" ||
+        (destination.value === "workspace" && root.value.length > 0);
+      group.querySelector("button").disabled = locked || !ack.checked || !ready;
     }
   }
 
-  async function deleteNote(note, version) {
-    if (deleting || deletionNeedsReview || version !== generation) return;
-    deleting = true;
+  async function mutateNote(note, version, action, target = null) {
+    if (mutating || mutationNeedsReview || version !== generation) return;
+    mutating = true;
     detailEpoch += 1;
     for (const controller of controllers) controller.abort();
     controllers.clear();
     for (const button of results.querySelectorAll("[data-memory-detail]")) button.dataset.loading = "false";
     for (const host of results.querySelectorAll(".memory-detail-result")) host.replaceChildren();
-    deletionControls();
-    status.textContent = `Deleting whole note ${note.id}…`;
+    mutationControls();
+    const label = action === "delete" ? "Deletion" : "Reclassification";
+    status.textContent = `${label} of whole note ${note.id} pending…`;
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 30000);
     try {
-      const response = await fetch(`/memory/${note.id}`, {
-        method: "DELETE", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: userId, expected_fact_sha256: note.fact_sha256 }),
-        signal: controller.signal,
+      const payload = { user_id: userId, expected_fact_sha256: note.fact_sha256 };
+      if (action === "scope") {
+        payload.expected_workspace_root = note.workspace_root;
+        payload.workspace_root = target;
+      }
+      const response = await fetch(`/memory/${note.id}${action === "scope" ? "/scope" : ""}`, {
+        method: action === "delete" ? "DELETE" : "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload), signal: controller.signal,
       });
-      if (!response.ok) throw new Error("delete-unconfirmed");
+      if (!response.ok) throw new Error("mutation-unconfirmed");
       const data = await response.json();
-      if (data.status !== "deleted" || data.fact_id !== note.id) throw new Error("delete-mismatch");
-      deleting = false;
+      if (action === "delete") {
+        if (data.status !== "deleted" || data.fact_id !== note.id) throw new Error("delete-mismatch");
+      } else if (data.status !== "reclassified" || !validNote(data.note) ||
+          data.note.id !== note.id || data.note.fact_sha256 !== note.fact_sha256 ||
+          data.note.workspace_root !== target) {
+        throw new Error("scope-mismatch");
+      }
+      mutating = false;
       clearReview();
-      status.textContent = `Deleted whole note ${note.id} from future memory use. Saved history and already sent prompts remain. Refresh to inspect current notes.`;
+      status.textContent = `${label} of whole note ${note.id} confirmed. Future memory use changed; saved history and sent prompts remain. Refresh to inspect current notes.`;
     } catch (_) {
-      deletionNeedsReview = true;
-      for (const ack of results.querySelectorAll(".memory-delete input")) ack.checked = false;
-      status.textContent = `Deletion of note ${note.id} was not confirmed; the outcome may be unknown. Refresh and inspect current notes before another attempt. No automatic retry.`;
+      mutationNeedsReview = true;
+      for (const ack of results.querySelectorAll('.memory-action input[type="checkbox"]')) ack.checked = false;
+      status.textContent = `${label} of note ${note.id} was not confirmed; the outcome may be unknown. Refresh and inspect current notes before another mutation. No automatic retry.`;
     } finally {
       clearTimeout(timer);
-      deleting = false;
-      deletionControls();
+      mutating = false;
+      mutationControls();
     }
   }
 
@@ -126,7 +144,7 @@
     button.dataset.memoryDetail = "";
     const detail = node("div", null, "memory-detail-result");
     button.addEventListener("click", async () => {
-      if (deleting || version !== generation || button.disabled) return;
+      if (mutating || version !== generation || button.disabled) return;
       const epoch = detailEpoch;
       button.dataset.loading = "true";
       button.disabled = true;
@@ -158,11 +176,11 @@
       } finally {
         if (version === generation && epoch === detailEpoch) {
           button.dataset.loading = "false";
-          button.disabled = deleting;
+          button.disabled = mutating;
         }
       }
     });
-    const remove = node("details", null, "memory-delete");
+    const remove = node("details", null, "memory-delete memory-action");
     remove.appendChild(node("summary", "Delete this whole note"));
     const label = node("label");
     const ack = node("input");
@@ -170,15 +188,40 @@
     label.append(ack, document.createTextNode(` Delete whole note ${note.id}, including text omitted from the preview, from future recall. Saved history remains.`));
     const submit = node("button", "Delete reviewed note");
     submit.disabled = true;
-    ack.addEventListener("change", deletionControls);
-    submit.addEventListener("click", () => { if (ack.checked) deleteNote(note, version); });
+    ack.addEventListener("change", mutationControls);
+    submit.addEventListener("click", () => { if (ack.checked) mutateNote(note, version, "delete"); });
     remove.append(label, submit);
-    item.append(button, detail, remove);
+    const scope = node("details", null, "memory-scope memory-action");
+    scope.appendChild(node("summary", "Change this note's scope"));
+    const destinationLabel = node("label", "Destination namespace");
+    const destination = node("select");
+    destination.dataset.scopeDestination = "";
+    for (const [value, text] of [["", "Choose a destination"], ["global", "Global preference"], ["workspace", "Exact workspace convention"]]) {
+      const option = node("option", text); option.value = value; destination.appendChild(option);
+    }
+    destinationLabel.appendChild(destination);
+    const rootLabel = node("label", "Destination workspace path");
+    const root = node("input"); root.type = "text"; root.maxLength = 4096;
+    root.dataset.scopeRoot = ""; root.placeholder = "/absolute/project"; root.disabled = true;
+    rootLabel.appendChild(root);
+    const scopeAckLabel = node("label");
+    const scopeAck = node("input"); scopeAck.type = "checkbox";
+    scopeAckLabel.append(scopeAck, document.createTextNode(` Reclassify whole note ${note.id} from the displayed scope. Global notes can appear in all my workspaces; text and saved history stay unchanged.`));
+    const move = node("button", "Reclassify reviewed note"); move.disabled = true;
+    for (const control of [destination, root, scopeAck]) control.addEventListener("input", mutationControls);
+    destination.addEventListener("change", mutationControls);
+    scopeAck.addEventListener("change", mutationControls);
+    move.addEventListener("click", () => {
+      if (!scopeAck.checked || move.disabled) return;
+      mutateNote(note, version, "scope", destination.value === "global" ? null : root.value);
+    });
+    scope.append(destinationLabel, rootLabel, scopeAckLabel, move);
+    item.append(button, detail, remove, scope);
     return item;
   }
 
   async function load(beforeId = null) {
-    if (deleting) return;
+    if (mutating) return;
     clearReview();
     const version = generation;
     const scope = namespace.value;
@@ -202,7 +245,7 @@
             (scope === "workspace" && note.workspace_root !== root))) {
         throw new Error("invalid-page");
       }
-      deletionNeedsReview = false;
+      mutationNeedsReview = false;
       for (const note of page.notes) results.appendChild(card(note, version));
       nextCursor = page.next_before_id;
       older.disabled = nextCursor === null;
