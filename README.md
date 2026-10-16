@@ -508,8 +508,13 @@ uv run agent-harness check-suggestions SESSION_ID --user-id YOUR_OWNER_ID --json
 
 The CLI reports partial/empty/busy/unavailable inspection explicitly, escapes terminal
 controls in human output and rejects mismatched session/read-only response metadata.
-It never retries automatically, applies suggestions or starts a turn. Panel access
-is a separate follow-up.
+It never retries automatically, applies suggestions or starts a turn. In the panel,
+select a saved run and choose **Inspect check suggestions** in Saved session review.
+This inspects the selected session's current root, regardless of the run's age.
+Status, issues, argv, evidence filenames and limits use text rendering. Results are
+not stored in the browser or replayed on reload; stale selection replies are ignored.
+Timeout/failure requires another explicit inspection and may leave the server reader
+settling. There is no run/apply button; inspect setup and configure checks yourself.
 
 For trusted npm projects, the command tool accepts only
 `npm [--prefix <repo-relative-directory>] run test:run [-- <test arguments>]`.
