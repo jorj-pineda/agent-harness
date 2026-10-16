@@ -502,3 +502,6 @@ button:disabled {
 .memory-note { border-top: 1px solid var(--border); padding-top: 8px; margin-top: 12px; overflow-wrap: anywhere; font-size: 12px; }
 .memory-note pre { white-space: pre-wrap; max-height: 200px; overflow: auto; }
 #memory-owner, #memory-status { overflow-wrap: anywhere; }
+
+.memory-delete { margin-top: 12px; }
+#memory-review .memory-delete input { width: auto; margin-right: 6px; }
