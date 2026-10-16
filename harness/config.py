@@ -102,6 +102,12 @@ class Settings(BaseSettings):
     max_tool_calls_per_turn: int = Field(default=24, ge=1, le=256)
     max_turn_wall_seconds: float = Field(default=0, ge=0, le=3600)
     max_completion_tokens_per_turn: int = Field(default=0, ge=0, le=1000000)
+    max_request_output_tokens: int = Field(
+        default=0,
+        ge=0,
+        le=1_000_000,
+        description="Output-token cap sent on every model request; 0 disables this cap.",
+    )
     max_total_tokens_per_turn: int = Field(
         default=0,
         ge=0,

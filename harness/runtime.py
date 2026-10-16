@@ -232,6 +232,7 @@ async def run_configured_turn(
             max_turn_wall_seconds=settings.max_turn_wall_seconds,
             wall_started_at=wall_started_at,
             max_completion_tokens_per_turn=settings.max_completion_tokens_per_turn,
+            max_request_output_tokens=settings.max_request_output_tokens,
             max_total_tokens_per_turn=settings.max_total_tokens_per_turn,
             max_context_tokens=settings.context_limit_for(provider.name),
             min_request_output_tokens=settings.min_request_output_tokens,

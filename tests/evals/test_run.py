@@ -222,6 +222,7 @@ async def test_live_smoke_uses_shared_prompt_memory_and_threshold(
     assert result.evaluation_mode == runner.LIVE_SIMULATED_MODE
     assert result.prompt_version == PROMPT_VERSION
     assert result.runtime_config["confidence_escalation_threshold"] == 0.73
+    assert result.runtime_config["max_request_output_tokens"] == 0
     assert result.runtime_config["effective_max_context_tokens"] == 0
     assert result.runtime_config["context_limit_policy"] == "configured-min-v1"
     assert result.runtime_config["prompt_estimate_bytes_per_token"] == 4.5

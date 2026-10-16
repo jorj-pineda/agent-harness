@@ -89,6 +89,7 @@ class BudgetStopTrace(BaseModel):
     max_context_tokens: int
     max_total_tokens: int
     max_completion_tokens: int
+    max_request_output_tokens: int = 0
     min_request_output_tokens: int
 
 

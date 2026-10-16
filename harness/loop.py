@@ -94,6 +94,7 @@ async def run_turn(
     max_turn_wall_seconds: float = 0,
     wall_started_at: float | None = None,
     max_completion_tokens_per_turn: int = 0,
+    max_request_output_tokens: int = 0,
     max_total_tokens_per_turn: int = 0,
     max_context_tokens: int = 0,
     min_request_output_tokens: int = 1,
@@ -144,6 +145,7 @@ async def run_turn(
     completion_retries = 0
     budget = TokenBudget(
         max_output=max_completion_tokens_per_turn,
+        max_request_output=max_request_output_tokens,
         max_total=max_total_tokens_per_turn,
         max_context=max_context_tokens,
         min_request_output=min_request_output_tokens,
@@ -179,6 +181,7 @@ async def run_turn(
                         max_context_tokens=budget.max_context,
                         max_total_tokens=budget.max_total,
                         max_completion_tokens=budget.max_output,
+                        max_request_output_tokens=budget.max_request_output,
                         min_request_output_tokens=budget.min_request_output,
                     )
                 )
@@ -323,6 +326,7 @@ async def run_turn(
                     max_context_tokens=budget.max_context,
                     max_total_tokens=budget.max_total,
                     max_completion_tokens=budget.max_output,
+                    max_request_output_tokens=budget.max_request_output,
                     min_request_output_tokens=budget.min_request_output,
                 )
             )

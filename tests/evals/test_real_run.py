@@ -97,6 +97,7 @@ async def test_real_tool_edit_is_scored_from_final_files(tmp_path: Path) -> None
     tool_results = [r for r in result.turn_trace if r["kind"] == "tool_result"]
     assert [r["message"]["tool_call_id"] for r in tool_results] == ["read", "edit", "check"]
     assert result.prompt_version == PROMPT_VERSION
+    assert result.runtime_config["max_request_output_tokens"] == 0
     assert result.runtime_config["effective_max_context_tokens"] == 0
     assert result.runtime_config["context_limit_policy"] == "configured-min-v1"
     assert result.runtime_config["prompt_estimate_bytes_per_token"] == 4.5

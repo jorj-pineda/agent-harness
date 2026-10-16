@@ -36,6 +36,7 @@ class ContextReview(BaseModel):
     ollama_num_ctx: int | None = None
     context_limit_policy: Literal["configured-min-v1"] | None = None
     request_output_allowance: int | None = None
+    configured_request_output_cap: int | None = None
     reason: str | None = None
 
 
@@ -156,6 +157,7 @@ def review_configuration(
     specs = registry.as_tool_specs()
     budget = TokenBudget(
         max_output=settings.max_completion_tokens_per_turn,
+        max_request_output=settings.max_request_output_tokens,
         max_total=settings.max_total_tokens_per_turn,
         max_context=settings.context_limit_for(provider),
         min_request_output=settings.min_request_output_tokens,
@@ -176,6 +178,7 @@ def review_configuration(
         ollama_num_ctx=settings.ollama_num_ctx if provider == "ollama" else None,
         context_limit_policy="configured-min-v1",
         request_output_allowance=None if isinstance(allowance, BudgetStop) else allowance,
+        configured_request_output_cap=settings.max_request_output_tokens,
         reason=allowance.reason if isinstance(allowance, BudgetStop) else None,
     )
     return review
