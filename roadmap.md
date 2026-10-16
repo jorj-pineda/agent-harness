@@ -1525,6 +1525,21 @@ milestones remain open; no Duodoro edits or model-quality claim. Validation: 59
 focused, 1,000 offline tests (five live deselected), Ruff/format/mypy passed.
 Evaluation behavior unchanged; scripted matrices were not rerun.
 
+**2026-10-16 — Client context-budget explanation:** CLI configuration review and
+panel estimates distinguish effective/context-policy evidence, the raw harness cap,
+requested Ollama window and manual byte/token calibration. Unknown/legacy policy
+cannot become a claimed effective limit; blocked/not-checked null allowances stay
+unavailable, while completed uncapped computations are labeled as harness-uncapped.
+CLI saved-run inspection separates configured/effective caps too. Clients render
+server fields without recomputing/applying budgets or submitting coding work.
+Validation: 59 focused and 1,098 offline tests (five live deselected), Ruff/format/mypy
+and both JS syntax checks passed. Native browser used temporary real API review
+(unchanged archive, zero coding runs), plus eight simulated cap/status/legacy/markup/
+race cases. Desktop inspected; reload fetched static assets only. Temporary server/tab
+stopped with zero provider calls. No evaluation behavior changes, model-quality
+claim or Duodoro edits. Named model profiles, demonstrated calibration gains and
+context compaction remain open; broader Milestone 4 is not complete.
+
 **2026-10-16 — Configured Ollama context alignment:** application, review and
 real-task execution now use the smaller positive harness/explicit Ollama window.
 An explicit Ollama window caps requests even with harness context zero; other
