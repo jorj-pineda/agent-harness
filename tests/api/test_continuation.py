@@ -15,7 +15,7 @@ def known_provider():
     return provider
 
 
-def source(tmp_path, *, known=True):
+def source(tmp_path, *, known=True, settings=None):
     root = tmp_path / "repo"
     root.mkdir()
     (root / "a.py").write_text("user = 1\n")
@@ -32,7 +32,7 @@ def source(tmp_path, *, known=True):
         ),
         make_response(content="Done"),
     )
-    with TestClient(make_app(tmp_path, provider, **SETTINGS)) as client:
+    with TestClient(make_app(tmp_path, provider, **(settings or SETTINGS))) as client:
         sid = client.post(
             "/sessions",
             json={"user_id": "dev", "workspace_root": str(root), "checkpoint_turns": True},
@@ -294,7 +294,8 @@ def test_invalid_provider_creates_no_fork_or_run(tmp_path):
 
 
 @pytest.mark.parametrize(
-    "corruption", ["transcript", "missing-checkpoint", "unrecorded-memory-boundary"]
+    "corruption",
+    ["transcript", "missing-checkpoint", "unrecorded-memory-boundary", "unrecorded-context-policy"],
 )
 def test_damaged_saved_evidence_cannot_grant_continuation(tmp_path, corruption):
     import json
@@ -305,14 +306,20 @@ def test_damaged_saved_evidence_cannot_grant_continuation(tmp_path, corruption):
 
         def damage():
             store = client.app.state.components.session_store
-            if corruption in {"transcript", "unrecorded-memory-boundary"}:
+            if corruption in {
+                "transcript",
+                "unrecorded-memory-boundary",
+                "unrecorded-context-policy",
+            }:
                 damaged = dict(archived)
                 if corruption == "transcript":
                     damaged["session"]["messages"].append(
                         {"role": "tool", "content": "unmatched", "tool_call_id": "missing"}
                     )
-                else:
+                elif corruption == "unrecorded-memory-boundary":
                     damaged["responses"][-1]["execution_profile"].pop("memory_prompt_max_bytes")
+                else:
+                    damaged["responses"][-1]["execution_profile"].pop("context_limit_policy")
                 with store._conn:
                     store._conn.execute(
                         "UPDATE sessions SET archive=? WHERE session_id=?",
@@ -358,3 +365,20 @@ def test_failed_related_fork_blocks_another_fork_from_original_source(tmp_path):
         assert second["response"]["completion_status"] == "blocked", second
         assert second["before_checkpoint_id"] is None
         assert len(provider.calls) == 1
+
+
+@pytest.mark.parametrize("harness_cap", [0, 16384])
+def test_continuation_uses_bounded_explicit_ollama_context(tmp_path, harness_cap):
+    settings = {**SETTINGS, "max_context_tokens": harness_cap}
+    root, sid, archived = source(tmp_path, settings=settings)
+    provider = known_provider()
+    provider.script(make_response(content="Reviewed"))
+    before = (root / "a.py").read_bytes()
+    with TestClient(make_app(tmp_path, provider, **settings)) as client:
+        run = submit_and_finish(client, sid, body(archived))
+        assert run["response"]["completion_status"] == "completed", run
+        assert run["execution_profile"]["effective_max_context_tokens"] == 8192
+        assert run["execution_profile"]["settings"]["max_context_tokens"] == harness_cap
+        assert client.get(f"/sessions/{sid}", params={"user_id": "dev"}).json() == archived
+    assert len(provider.calls) == 1
+    assert (root / "a.py").read_bytes() == before

@@ -345,6 +345,8 @@ async def run_task(
                 "max_completion_tokens_per_turn": settings.max_completion_tokens_per_turn,
                 "max_total_tokens_per_turn": settings.max_total_tokens_per_turn,
                 "max_context_tokens": settings.max_context_tokens,
+                "context_limit_policy": "configured-min-v1",
+                "effective_max_context_tokens": settings.context_limit_for(provider.name),
                 "prompt_estimate_bytes_per_token": settings.prompt_estimate_bytes_per_token,
                 "min_request_output_tokens": settings.min_request_output_tokens,
                 "max_identical_tool_calls": settings.max_identical_tool_calls,

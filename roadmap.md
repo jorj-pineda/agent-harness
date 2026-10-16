@@ -1525,6 +1525,21 @@ milestones remain open; no Duodoro edits or model-quality claim. Validation: 59
 focused, 1,000 offline tests (five live deselected), Ruff/format/mypy passed.
 Evaluation behavior unchanged; scripted matrices were not rerun.
 
+**2026-10-16 — Configured Ollama context alignment:** application, review and
+real-task execution now use the smaller positive harness/explicit Ollama window.
+An explicit Ollama window caps requests even with harness context zero; other
+providers keep the harness cap. Missing backend settings remain unknown. Durable
+`configured-min-v1` policy and effective-cap metadata distinguish the new rule from
+old archives; missing policy cannot authorize continuation. Matching new history may
+continue under an explicit bounded Ollama window even when the raw harness cap is
+zero/larger. Existing workspace/transcript/configuration guards remain. Simulated
+live Ollama construction now forwards configured context/thinking options too.
+Validation: 144 focused and 1,089 offline tests (five live deselected), Ruff/format/mypy,
+both 90/90 scripted matrices with labels/limits inspected. Restart review preserves
+archives and creates no runs; pre-request stops dispatch no provider calls. No live
+inference, quality claim or Duodoro edits. Backend compliance/tokenizer fit, named
+profiles, client explanation and broader milestones remain incomplete.
+
 **2026-10-16 — Explicit prompt estimate calibration:** a finite 1–8 byte/token
 ratio (default 3 unchanged) now shares budget, review and footprint math across
 application and real-task execution. Reported anchors remain lower bounds, output
@@ -1650,7 +1665,7 @@ enters the queue when a real task or evaluation shows the limitation matters.
 | Limitation | Proposed fix |
 |---|---|
 | The byte heuristic overestimated one `gemma4:12b` first request by about 66% (2,950 versus 1,781 tokens), so a context limit stops turns early. | An explicit configured byte/token ratio is available (default 3 retained); calibrate manually from recorded usage. Named model profiles and demonstrated calibration gains remain open. |
-| The harness does not set the model server's context length. A harness limit larger than the server's window still allows silent server-side truncation. | Put the context length in the Milestone 4 model profile, and have the Ollama adapter send it as the request's context option so both sides agree. |
+| Unset Ollama context leaves the server default unknown; other backend limits are manually configured. | Explicit OLLAMA_NUM_CTX is sent per request and bounds the effective harness cap; named profiles and backend-compliance checks remain open. |
 | Exhausting the context stops the turn instead of continuing. | Add Milestone 4 compaction that keeps the objective, current diff, relevant file spans, unresolved failures, and recent actions. Keep raw traces outside the model context. |
 | The total budget is estimate-gated. One request can overshoot it when the provider's count exceeds the estimate. The overshoot is reported, not prevented. | Profile calibration narrows the error. A stricter variant can reserve a safety margin proportional to the observed estimate error. |
 | Some backends can omit cached prompt tokens from reported usage, so the total budget may undercount work. This was not observed in the one local check. | Record the per-request estimate beside reported usage in real-eval traces, and flag requests where the reported prompt count is far below the estimate. |

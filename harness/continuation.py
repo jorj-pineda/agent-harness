@@ -55,9 +55,7 @@ def check_continuation(
         )
     if review.context is None or review.context.status != "estimated_fit":
         raise ContinuationBlocked("Proposed continuation lacks bounded estimated context fit.")
-    if provider == "ollama" and (
-        settings.ollama_num_ctx is None or settings.ollama_num_ctx < settings.max_context_tokens
-    ):
+    if provider == "ollama" and settings.ollama_num_ctx is None:
         raise ContinuationBlocked(
-            "Configure Ollama context at least as large as the harness context limit."
+            "Configure an explicit Ollama context window before continuation."
         )
