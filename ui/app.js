@@ -29,6 +29,7 @@ const els = {
   reviewWorkspace: document.getElementById("review-workspace"),
   reviewTranscript: document.getElementById("review-transcript"),
   reviewConfiguration: document.getElementById("review-configuration"),
+  checkSuggestions: document.getElementById("check-suggestions"),
   reviewProvider: document.getElementById("review-provider"),
   reviewMessage: document.getElementById("review-message"),
   reviewResults: document.getElementById("session-review-results"),
@@ -122,7 +123,7 @@ function setBusy(value) {
     reviewTarget == null || !continuationTurnId || !els.continuationAck.checked ||
     !els.continuationMessage.value.trim();
   els.prepareContinuation.disabled = busy || reviewInFlight || reviewTarget == null;
-  for (const button of [els.reviewWorkspace, els.reviewTranscript, els.reviewConfiguration, els.inspectToolProgress]) {
+  for (const button of [els.reviewWorkspace, els.reviewTranscript, els.reviewConfiguration, els.checkSuggestions, els.inspectToolProgress]) {
     button.disabled = busy || reviewInFlight || reviewTarget == null;
   }
   els.reversal.hidden = reviewTarget == null && pendingReversal == null && !reversalRecoveryBlocked;
@@ -644,6 +645,33 @@ function toolProgressCard(data) {
   return card;
 }
 
+function checkSuggestionsCard(data, sessionId) {
+  const statuses = ["inspected", "partial", "unavailable", "busy", "no_workspace"];
+  const strings = value => Array.isArray(value) && value.length > 0 && value.every(item => typeof item === "string");
+  if (!data || data.session_id !== sessionId || !statuses.includes(data.status) ||
+      data.read_only !== true || data.commands_executed !== false || data.configuration_changed !== false ||
+      !Array.isArray(data.suggestions) || !Array.isArray(data.issues) || typeof data.scope_note !== "string" ||
+      (data.reason != null && typeof data.reason !== "string") ||
+      !data.suggestions.every(item => item && strings(item.argv) && strings(item.evidence)) ||
+      !data.issues.every(item => item && typeof item.path === "string" && typeof item.code === "string")) {
+    throw new Error("Inconsistent check suggestions response");
+  }
+  const card = el("section", "session-review-card");
+  card.appendChild(el("h3", null, `Check suggestions: ${data.status}`));
+  card.appendChild(el("p", "review-note", "Read-only static hints for the current workspace. No command ran and no configuration changed. Inspect setup before execution."));
+  if (data.reason) card.appendChild(el("p", null, data.reason));
+  for (const suggestion of data.suggestions) {
+    card.appendChild(el("pre", null, JSON.stringify(suggestion.argv)));
+    card.appendChild(el("p", "review-note", `Evidence: ${suggestion.evidence.join(", ")}`));
+  }
+  if (!data.suggestions.length) {
+    card.appendChild(el("p", null, "No suggestions returned within the supported root-manifest scope."));
+  }
+  for (const issue of data.issues) card.appendChild(el("p", null, `${issue.path}: ${issue.code}`));
+  card.appendChild(el("p", "review-note", data.scope_note));
+  return card;
+}
+
 function sessionReviewCard(kind, data, input = {}) {
   const card = el("section", "session-review-card");
   card.appendChild(el("h3", null, `${kind}: ${data.status || "unknown"}`));
@@ -710,7 +738,7 @@ async function requestSessionReview(kind) {
   try {
     const path = kind === "tool-progress"
       ? `/runs/${encodeURIComponent(target.runId)}/tool-progress`
-      : `/sessions/${encodeURIComponent(target.sessionId)}/${kind}-review`;
+      : `/sessions/${encodeURIComponent(target.sessionId)}/${kind === "check-suggestions" ? kind : kind + "-review"}`;
     const response = kind === "configuration"
       ? await fetch(path, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input), signal: controller.signal })
       : await fetch(`${path}?${new URLSearchParams({ user_id: userId })}`, { signal: controller.signal });
@@ -721,9 +749,17 @@ async function requestSessionReview(kind) {
     }
     if (reviewTarget === target) {
       slot.replaceChildren(kind === "tool-progress"
-        ? toolProgressCard(data) : sessionReviewCard(kind, data, input));
+        ? toolProgressCard(data) : kind === "check-suggestions"
+          ? checkSuggestionsCard(data, target.sessionId) : sessionReviewCard(kind, data, input));
     }
   } catch (error) {
+    if (kind === "check-suggestions") {
+      if (reviewTarget === target) slot.replaceChildren(el("p", "review-note",
+        controller.signal.aborted
+          ? "Check suggestions wait timed out; the server reader may still be settling. No command ran or configuration changed. No automatic retry; inspect again explicitly."
+          : "Check suggestions unavailable or inconsistent. No command ran or configuration changed. No automatic retry; inspect again explicitly."));
+      return;
+    }
     const reason = controller.signal.aborted
       ? kind === "tool-progress" ? "Tool progress lookup timed out"
         : "Review wait timed out; server comparison may still be settling" : String(error);
@@ -1089,6 +1125,7 @@ els.inspectToolProgress.addEventListener("click", () => requestSessionReview("to
 els.reviewWorkspace.addEventListener("click", () => requestSessionReview("workspace"));
 els.reviewTranscript.addEventListener("click", () => requestSessionReview("transcript"));
 els.reviewConfiguration.addEventListener("click", () => requestSessionReview("configuration"));
+els.checkSuggestions.addEventListener("click", () => requestSessionReview("check-suggestions"));
 els.refreshRuns.addEventListener("click", () => { historyOffset = 0; loadHistory(); });
 els.previousRuns.addEventListener("click", () => { historyOffset = Math.max(0, historyOffset - 20); loadHistory(); });
 els.nextRuns.addEventListener("click", () => { historyOffset += 20; loadHistory(); });
