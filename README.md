@@ -106,8 +106,12 @@ unsupported IDs return 409. SQLite lookup failure returns a generic 503. This is
 read-only, uses the same trusted-local owner convention and submits no model turn.
 The detail text is current at lookup time; later changes can invalidate its hash.
 Large text is omitted by SQL before rows reach Python, without promising bounded
-SQLite internal work. Full legacy-text export and CLI/panel detail controls remain
-separate work.
+SQLite internal work. Use `agent-harness memory-note 123 --user-id jorge` to inspect the complete text,
+or add `--json` for its API record. Human text is JSON-quoted to escape terminal
+controls. The CLI checks the returned ID, UTF-8 byte count and full-text hash before
+printing, sends one GET and never automatically retries. Oversized legacy notes
+still require bounded list previews. Full legacy export and panel detail controls
+remain separate work.
 
 `DELETE /memory/{fact_id}` requires JSON `user_id` and `expected_fact_sha256`.
 The hash identifies the entire stored note even when the preview is truncated.

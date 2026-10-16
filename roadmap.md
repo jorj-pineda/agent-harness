@@ -1383,6 +1383,15 @@ scripted 90/90 matrices with labels/limits inspected.
 
 **Done when:** repeated benchmark runs show which changes help the selected models, and a longer task can cross the context-management threshold without losing its objective, diff, or unresolved failures. Retain only demonstrated improvements or changes needed for basic correctness.
 
+**2026-10-15 — CLI complete-note review:** a read-only memory-note command fetches
+one bounded detail record. ID/byte-count/full-text hash inconsistencies fail before
+text is printed; human output escapes terminal controls and JSON retains metadata.
+Restart, owner separation and transport failures are covered without writes, retries
+or inference. Legacy overflow remains preview-only; panel controls, reclassification
+and broader context/profile milestones remain open. Validation: 19 focused and
+1,010 offline tests (five live deselected), Ruff/format/mypy passed. Client-only
+change; evaluation behavior unchanged.
+
 **2026-10-15 — Bounded complete memory inspection:** owner API detail reads expose
 whole notes up to 4,096 UTF-8 bytes with matching preview/hash/provenance metadata,
 without model calls or writes. SQL omits oversized legacy text before returning
