@@ -262,6 +262,8 @@ def _build_provider(name: str, scenario: dict[str, Any]) -> FakeProvider:
 
 
 def _build_live_provider(name: str, settings: Settings) -> ChatProvider:
+    if settings.selected_profile is not None and name != settings.selected_profile.provider:
+        raise ValueError("Selected model profile does not permit this live provider")
     timeout = float(settings.request_timeout_seconds)
     match name:
         case "ollama":
@@ -297,6 +299,10 @@ def _build_live_provider(name: str, settings: Settings) -> ChatProvider:
 
 
 def _validate_live_providers(providers: list[str], settings: Settings) -> None:
+    if settings.selected_profile is not None and any(
+        name != settings.selected_profile.provider for name in providers
+    ):
+        raise SystemExit("Selected model profile restricts live providers")
     for name in providers:
         match name:
             case "ollama":
@@ -398,6 +404,9 @@ async def _run_one(
         else None,
         runtime_config={
             "coding_toolset": settings.coding_toolset,
+            "model_profile": identity.model_dump()
+            if (identity := settings.profile_identity()) is not None
+            else None,
             "coding_prompt_profile": settings.coding_prompt_profile,
             "openai_compatible_transport": settings.openai_compatible_transport,
             "max_tool_iterations": settings.max_tool_iterations,

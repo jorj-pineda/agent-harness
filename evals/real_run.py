@@ -336,6 +336,9 @@ async def run_task(
             turn_trace=[record.model_dump(mode="json") for record in turn_trace],
             runtime_config={
                 "coding_toolset": settings.coding_toolset,
+                "model_profile": identity.model_dump()
+                if (identity := settings.profile_identity()) is not None
+                else None,
                 "coding_prompt_profile": settings.coding_prompt_profile,
                 "openai_compatible_transport": settings.openai_compatible_transport,
                 "tool_specs": [spec.model_dump(mode="json") for spec in registry.as_tool_specs()],
