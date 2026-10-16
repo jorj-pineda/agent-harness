@@ -1405,7 +1405,24 @@ scripted 90/90 matrices with labels/limits inspected.
 - [ ] Preserve the user's objective, current diff, relevant file spans, unresolved failures, and recent actions when compacting context.
 - [ ] Keep complete raw traces outside the model context so compaction does not destroy debugging evidence.
 - [ ] Bound search and command output while retaining a way to retrieve omitted details.
-- [ ] Separate repository conventions from global user preferences. Add provenance, correction/deletion, and injection limits for remembered facts.
+- [x] Separate repository conventions from global user preferences. Add provenance, correction/deletion, and injection limits for remembered facts.
+
+**2026-10-16 — Guarded panel whole-note correction:** blank replacement editors
+never inherit truncated previews. Explicit full-text copy requires verified detail;
+normalized UTF-8 limits, whole-note acknowledgment and one scope/hash-pinned PUT
+share the mutation locks and fresh-review recovery. Response ID/scope/replacement
+hash/bytes and cleared source/correction metadata are checked. Panel deletion also
+adopts the optional scope guard. Drafts are not saved or replayed. Validation: 19
+focused and 1,028 offline tests (five live deselected), Ruff/format/mypy and JS syntax.
+Native browser real API checks covered full copy, exact/overflow bytes, Unicode
+trimming including FEFF retention, correction, stale scopes and existing scope/delete
+actions. Simulations covered mismatched hash, locks, delayed reads, timeout/no retry;
+reload sends nothing and zero coding runs were created. Desktop inspected; temporary
+resources stopped. The narrow memory checkbox now covers path-scoped/global selection,
+creation metadata, owner correction/deletion/classification and bounded injection.
+Paths are not Git identity, source links are not truth, old notes remain global until
+classified, and full audit/quotas/secure erasure remain open. No model calls, evaluation
+changes, quality claim or Duodoro edits; Milestone 4 remains incomplete.
 
 **2026-10-16 — Explicit panel note reclassification:** choose/acknowledge a target
 namespace and send one scope PUT with the reviewed source and hash. Global promotion

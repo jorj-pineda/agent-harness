@@ -131,8 +131,14 @@ path, acknowledge the change, then explicitly submit. The request pins the displ
 source scope and full hash. Global promotion makes the note eligible across your
 workspaces. Deletion and reclassification share pending locks, detail invalidation
 and uncertain-outcome recovery; success clears review and asks for fresh inspection.
-No scope or note mutation is saved/replayed by the browser. Panel correction remains
-separate work.
+No scope or note mutation is saved/replayed by the browser. Panel correction is a separate whole-note form: enter the full replacement or
+explicitly copy text after complete-note inspection has validated it. A truncated
+preview is never copied into the editor. Outer whitespace is trimmed consistently
+with the server, internal newlines remain, and the normalized text must fit 4,096
+UTF-8 bytes. Acknowledge replacement before one PUT. Returned ID/scope, replacement
+hash/bytes and correction/source metadata are checked; drafts are not stored or
+replayed on reload. All panel mutations now pin the displayed scope as well as the
+content hash. Scope audit and authenticated accounts remain outside this workflow.
 
 `DELETE /memory/{fact_id}` requires JSON `user_id` and `expected_fact_sha256`.
 The hash identifies the entire stored note even when the preview is truncated.
