@@ -1398,6 +1398,18 @@ scripted 90/90 matrices with labels/limits inspected.
 - [ ] Bound search and command output while retaining a way to retrieve omitted details.
 - [ ] Separate repository conventions from global user preferences. Add provenance, correction/deletion, and injection limits for remembered facts.
 
+**2026-10-16 — Explicit panel note reclassification:** choose/acknowledge a target
+namespace and send one scope PUT with the reviewed source and hash. Global promotion
+is explicit. Shared owner mutation controls lock all actions/lookups, invalidate
+pending detail replies, clear successful review and require fresh review after any
+unconfirmed outcome. No automatic retry, lookup or browser replay. Validation: 16
+focused and 1,022 offline tests (five live deselected), Ruff/format/mypy and JS syntax.
+Native browser checks used temporary real API moves/global promotion and stale-scope
+preservation, plus duplicate-click, mismatch, private error/timeout simulations and
+legacy deletion regression. Zero coding runs; desktop controls inspected. Panel
+correction, scope audit and broader context/profile milestones remain open. No model
+calls, evaluation changes or Duodoro edits.
+
 **2026-10-16 — Explicit panel note deletion:** per-note acknowledgment gates one
 hash-guarded whole-note DELETE. Pending controls lock; response identity is checked.
 Detail reads are cancelled/invalidated at deletion start, preventing stale repaint
