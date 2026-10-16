@@ -1359,6 +1359,20 @@ acceptance. The six newly reconciled boxes are supported by:
 
 **Done when:** regressions cover single-file search, large/empty reads, ambiguous edits, stale edits, command timeouts, cancellation, command-created file changes, and preservation of pre-existing user edits. No command continues after its run is reported cancelled or terminated.
 
+**2026-10-16 — Static project-check suggestions API:** owner-scoped session review
+inspects three fixed root manifests with 64 KiB+sentinel reads, regular/no-follow
+file descriptors and explicit parse/overflow/change issues. Only explicit pytest
+configuration or nonempty npm test:run yields constant argv candidates; source
+contents/scripts are not returned, scripts are never executed and settings
+stay unchanged. No recursive discovery or relevance/availability guarantee. App-owned
+reads hold process-local admission through disconnect/settlement. Saved-session inspection works after API
+restart without rewriting archives or creating runs. CLI/panel follow-ups remain
+separate; the broad project-check item remains open. No inference, evaluation change
+or Duodoro edits. Byte bounds are not isolation, atomic snapshots or hard deadlines.
+Validation: 16 focused and 1,041 offline tests (five live deselected), Ruff/format/mypy
+passed. The initial new ownership assertion was corrected to the existing session
+403 contract before the successful full gate.
+
 ## Milestone 3 — Enforce honest completion and bounded recovery
 
 **Outcome:** the runtime helps a model finish the task instead of only annotating its final answer.

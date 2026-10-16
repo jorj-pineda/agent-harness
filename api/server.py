@@ -45,6 +45,7 @@ from fastapi.staticfiles import StaticFiles
 
 from harness.admission import turn_admission
 from harness.cancellation import TurnCancellation
+from harness.check_suggestions import CheckSuggestions, suggest_project_checks
 from harness.checkpoints import CheckpointRecord, CheckpointSummary, capture_checkpoint
 from harness.configuration_review import ConfigurationReview, review_configuration
 from harness.continuation import ContinuationBlocked, check_continuation
@@ -687,6 +688,27 @@ def _register_routes(app: FastAPI) -> None:
                     provider=provider.name,
                     reason=f"Configuration review unavailable ({type(exc).__name__}).",
                 )
+
+    @app.get("/sessions/{session_id}/check-suggestions", response_model=CheckSuggestions)
+    async def inspect_check_suggestions(
+        session_id: str, request: Request, user_id: str = Query(min_length=1)
+    ) -> CheckSuggestions:
+        """Read static project markers; never run or configure suggested commands."""
+        components: Components = request.app.state.components
+        archive = _lookup_archive(components, session_id, user_id)
+
+        async def inspect_owned() -> CheckSuggestions:
+            with turn_admission.claim(session_id, archive.session.workspace_root) as busy:
+                if busy is not None:
+                    return CheckSuggestions(status="busy", session_id=session_id, reason=busy)
+                result = await asyncio.to_thread(
+                    suggest_project_checks, archive.session.workspace_root
+                )
+                return result.model_copy(update={"session_id": session_id})
+
+        task = asyncio.create_task(inspect_owned())
+        _own_task(components, task)
+        return await asyncio.shield(task)
 
     @app.get("/sessions/{session_id}/workspace-review", response_model=WorkspaceReview)
     async def inspect_workspace(
