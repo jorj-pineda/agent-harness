@@ -496,8 +496,8 @@ runtime values remain captured separately. Rename/change/selection drift blocks
 guarded continuation; restart restores review evidence, not execution permission.
 These are configured bindings, not backend/model revision attestation, discovered
 tool capabilities, safe model switching or measured profile quality. There are no
-built-in recommended profiles or additional model calls. Owner review/client profile
-visibility follows separately; the broader model-profile milestone remains open.
+built-in recommended profiles or additional model calls. Owner review and client
+visibility are described below; the broader model-profile milestone remains open.
 
 **Prompt estimate calibration.** `PROMPT_ESTIMATE_BYTES_PER_TOKEN` defaults to 3
 and accepts finite values from 1 through 8. It divides the UTF-8 message/schema
@@ -1230,6 +1230,22 @@ broader workspace coverage, compatibility enforcement, crash repair, checkpoints
 revert remain separate work. The panel now exposes these read-only reviews (see
 [Saved session review in the panel](#saved-session-review-in-the-panel)). No model-quality improvement is
 claimed from these deterministic review checks.
+
+The existing owner review response also includes `current_model_profile`: selected
+identity (name/provider/model/definition hash), or explicit `direct_settings` with
+no named selection. Busy/unavailable computations and older replies can omit/null
+this field, which clients label not checked/legacy rather than inventing a selection.
+Status/identity inconsistencies or unsupported identity schemas remain unknown.
+Only the current operator selection is exposed; unused catalog entries, endpoints
+and credentials are excluded. Saved runs retain their original profile evidence,
+so a renamed current profile is visible without relabeling history.
+
+CLI `configuration-review` and the panel show this selection and the configured
+per-request output cap beside the computed allowance. The panel collapses the
+selected definition hash; CLI text escapes terminal controls and panel text stays
+literal. This review has no switching/apply control, additional inference, settings
+write, automatic retry or browser persistence/reload replay. Selection is configured
+evidence, not served-model/capability attestation or continuation permission.
 
 CLI review and the panel's **Estimate configuration/context** show these limits
 separately. A zero configured harness cap does not disable an explicit Ollama cap.
