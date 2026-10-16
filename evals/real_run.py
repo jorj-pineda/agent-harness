@@ -343,6 +343,7 @@ async def run_task(
                 "max_tool_calls_per_turn": settings.max_tool_calls_per_turn,
                 "max_turn_wall_seconds": settings.max_turn_wall_seconds,
                 "max_completion_tokens_per_turn": settings.max_completion_tokens_per_turn,
+                "max_request_output_tokens": settings.max_request_output_tokens,
                 "max_total_tokens_per_turn": settings.max_total_tokens_per_turn,
                 "max_context_tokens": settings.max_context_tokens,
                 "context_limit_policy": "configured-min-v1",

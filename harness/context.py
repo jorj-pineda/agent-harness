@@ -72,12 +72,14 @@ class TokenBudget:
     """Output, total, and context-window budgets for one turn; 0 disables each."""
 
     max_output: int = 0
+    max_request_output: int = 0
     max_total: int = 0
     max_context: int = 0
     min_request_output: int = 1
     bytes_per_token: float = BYTES_PER_TOKEN
     prompt_used: int | None = 0
     completion_used: int | None = 0
+    _last_completion_tokens: int | None = None
     _anchor_count: int = 0
     _anchor_tokens: int | None = None
 
@@ -101,6 +103,8 @@ class TokenBudget:
     ) -> int | None | BudgetStop:
         """Return `max_tokens` for the next request, None for no cap, or why to stop first."""
         allowances: list[int] = []
+        if self.max_request_output > 0:
+            allowances.append(self.max_request_output)
         if self.max_output > 0 and self.completion_used is not None:
             if self.completion_used >= self.max_output:
                 return BudgetStop("budget_exhausted", "Model output-token budget reached.")
@@ -132,6 +136,7 @@ class TokenBudget:
     def record(self, usage: TokenUsage, prompt_message_count: int) -> None:
         """Add reported usage for a request that sent `prompt_message_count` messages."""
         prompt, completion = usage.prompt_tokens, usage.completion_tokens
+        self._last_completion_tokens = completion
         self.prompt_used = (
             self.prompt_used + prompt
             if self.prompt_used is not None and prompt is not None
@@ -152,9 +157,20 @@ class TokenBudget:
         self.prompt_used = None
         self.completion_used = None
         self._anchor_tokens = None
+        self._last_completion_tokens = None
 
     def after_response(self, *, wants_tools: bool) -> BudgetStop | None:
         """Decide whether reported usage stops the turn before tools or a final answer."""
+        if self.max_request_output > 0:
+            if self._last_completion_tokens is None:
+                return BudgetStop(
+                    "incomplete",
+                    "Provider did not report output-token usage; request cap cannot be checked.",
+                )
+            if self._last_completion_tokens > self.max_request_output:
+                return BudgetStop(
+                    "budget_exhausted", "Provider exceeded the per-request output-token cap."
+                )
         if self.max_output > 0:
             if self.completion_used is None:
                 return BudgetStop(

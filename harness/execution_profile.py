@@ -29,6 +29,8 @@ class CapturedRuntimeSettings(BaseModel):
     max_tool_calls_per_turn: int
     max_turn_wall_seconds: float
     max_completion_tokens_per_turn: int
+    # Older configured runtimes did not have a per-request cap.
+    max_request_output_tokens: int = Field(default=0, ge=0, le=1_000_000)
     max_total_tokens_per_turn: int
     max_context_tokens: int
     min_request_output_tokens: int
