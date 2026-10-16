@@ -63,8 +63,8 @@ from harness.tool_progress import SavedToolEvent, ToolProgress
 from harness.transcript import TranscriptReview, inspect_transcript
 from harness.workspace_review import WorkspaceReview, WorkspaceReviewBaseline, compare_workspace
 from memory import FactStore
-from memory.review import MemoryPage, preview_note, review_notes
-from memory.store import FactConflictError
+from memory.review import MemoryNoteDetail, MemoryPage, preview_note, review_notes
+from memory.store import FactConflictError, FactTooLargeError
 from providers import create_embedder
 from providers.base import ChatProvider, Embedder
 from tools import ToolRegistry
@@ -418,6 +418,27 @@ def _register_routes(app: FastAPI) -> None:
             )
         except ValueError as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+    @app.get("/memory/{fact_id}", response_model=MemoryNoteDetail)
+    async def inspect_memory_note(
+        fact_id: int, request: Request, user_id: str = Query(min_length=1)
+    ) -> MemoryNoteDetail:
+        """Read one complete owned note; oversized legacy notes retain previews only."""
+        if fact_id < 1:
+            raise HTTPException(status_code=422, detail="fact_id must be positive")
+        try:
+            fact = request.app.state.components.fact_store.get_for_review(user_id, fact_id)
+        except FactTooLargeError as exc:
+            raise HTTPException(status_code=413, detail=str(exc)) from exc
+        except FactConflictError as exc:
+            raise HTTPException(
+                status_code=409, detail="Ambiguous note ID; inspect storage."
+            ) from exc
+        except sqlite3.Error as exc:
+            raise HTTPException(status_code=503, detail="Memory lookup unavailable.") from exc
+        if fact is None:
+            raise HTTPException(status_code=404, detail="Memory note not found")
+        return MemoryNoteDetail(note=preview_note(fact), text=fact.fact)
 
     @app.delete("/memory/{fact_id}", response_model=DeleteMemoryResponse)
     async def delete_memory(

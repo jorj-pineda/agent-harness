@@ -98,6 +98,17 @@ user-owned global or workspace-path notes, not Git/revision identity or an authe
 account system. Legacy oversized notes remain inspectable through bounded previews;
 SQLite read/allocation work is not bounded by the preview limit.
 
+`GET /memory/{fact_id}?user_id=...` reads one complete note up to 4,096 UTF-8
+bytes, including its bounded preview/hash/provenance metadata. This allows review
+before replacing a note whose list preview is truncated. Missing/other-owner IDs
+return 404; oversized legacy text returns 413 with preview guidance; ambiguous
+unsupported IDs return 409. SQLite lookup failure returns a generic 503. This is
+read-only, uses the same trusted-local owner convention and submits no model turn.
+The detail text is current at lookup time; later changes can invalidate its hash.
+Large text is omitted by SQL before rows reach Python, without promising bounded
+SQLite internal work. Full legacy-text export and CLI/panel detail controls remain
+separate work.
+
 `DELETE /memory/{fact_id}` requires JSON `user_id` and `expected_fact_sha256`.
 The hash identifies the entire stored note even when the preview is truncated.
 A stale hash/content change returns 409; missing/other-owner IDs return 404.
