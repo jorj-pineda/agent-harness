@@ -84,6 +84,8 @@ from .models import (
     CreateSessionResponse,
     DeleteMemoryRequest,
     DeleteMemoryResponse,
+    ReclassifyMemoryRequest,
+    ReclassifyMemoryResponse,
     RevertFileRequest,
     SubmitRunRequest,
 )
@@ -486,6 +488,35 @@ def _register_routes(app: FastAPI) -> None:
         if note is None:
             raise HTTPException(status_code=404, detail="No matching owner-scoped note.")
         return CorrectMemoryResponse(note=preview_note(note))
+
+    @app.put("/memory/{fact_id}/scope", response_model=ReclassifyMemoryResponse)
+    async def reclassify_memory(
+        fact_id: int, req: ReclassifyMemoryRequest, request: Request
+    ) -> ReclassifyMemoryResponse:
+        """Explicitly move one owned note using reviewed content and source scope."""
+        if fact_id < 1:
+            raise HTTPException(status_code=422, detail="fact_id must be positive")
+        try:
+            note = request.app.state.components.fact_store.reclassify(
+                req.user_id,
+                fact_id,
+                req.expected_fact_sha256,
+                req.expected_workspace_root,
+                req.workspace_root,
+            )
+        except (FactConflictError, sqlite3.IntegrityError) as exc:
+            raise HTTPException(
+                status_code=409, detail="Note changed or destination duplicate; inspect again."
+            ) from exc
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+        except sqlite3.Error as exc:
+            raise HTTPException(
+                status_code=503, detail="Memory reclassification failed; inspect before retrying."
+            ) from exc
+        if note is None:
+            raise HTTPException(status_code=404, detail="No matching owner-scoped note.")
+        return ReclassifyMemoryResponse(note=preview_note(note))
 
     @app.post("/sessions", response_model=CreateSessionResponse)
     async def create_session(req: CreateSessionRequest, request: Request) -> CreateSessionResponse:
