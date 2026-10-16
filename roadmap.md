@@ -1259,6 +1259,15 @@ Relevant implementation: `harness/loop.py`, `harness/outcome.py`, `harness/groun
   not Git identity/isolation, and owner classification/panel controls, broader
   context/model profiles and Milestones 4–6 remain open.
 
+- **2026-10-16 — Optional reviewed-scope mutation guards:** correction/deletion
+  accept an explicit reviewed workspace path/null in addition to the content hash.
+  The final SQL predicate rejects changed scope, including another connection moving
+  unchanged text after lookup. Omitted scope preserves legacy clients' content-only
+  behavior. This does not add an audit or workspace lock. Panel adoption and correction/
+  classification controls remain separate, as do broader context/profile milestones.
+  No model calls, evaluation changes or Duodoro edits. Validation: 66 focused and
+  1,028 offline tests (five live deselected), Ruff/format/mypy passed.
+
 - **2026-10-16 — Guarded owner note reclassification:** explicit API scope moves
   validate the whole-content hash and reviewed source path/null under one SQLite
   write transaction. Duplicate destinations/failures roll back; identity, text and
