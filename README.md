@@ -116,12 +116,17 @@ remain separate work.
 The panel's **Owner memory** section offers explicit refresh, all/global/exact
 workspace filters, older-page review and bounded complete-note inspection. It uses
 the visible panel owner ID; its workspace filter is separate from the chat workspace.
-It loads nothing on open/reload, stores no note text locally, and sends only memory
-GET requests. Filters clear old results and invalidate in-flight lookups. Preview
+It loads nothing on open/reload and stores no note text locally. Review actions
+send only memory GET requests; deletion is a separate explicit action. Filters clear old results and invalidate in-flight lookups. Preview
 text is rendered as text; complete text must match the returned hash and preview
 identity. Changed notes ask for refresh; oversized legacy notes retain previews.
-Lookup failures offer explicit retry without polling or submitting work. Panel
-correction/deletion and note reclassification remain separate work.
+Lookup failures offer explicit retry without polling or submitting work. Each note has a collapsed whole-note deletion action with required acknowledgment.
+It sends one DELETE with the displayed note ID/full hash, locks memory controls
+while waiting and checks response identity. Success clears the old review; any
+unconfirmed outcome blocks further deletion until explicit refresh/inspection.
+No automatic retry or lookup follows deletion, and reload replays no action.
+Deletion includes omitted preview text and affects future memory only, not saved
+history or secure erasure. Panel correction and reclassification remain separate.
 
 `DELETE /memory/{fact_id}` requires JSON `user_id` and `expected_fact_sha256`.
 The hash identifies the entire stored note even when the preview is truncated.
