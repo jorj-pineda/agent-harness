@@ -493,3 +493,12 @@ button:disabled {
 #reversal-path { width: 100%; }
 #file-reversal button { margin-top: 8px; }
 #reversal-target, #reversal-request { overflow-wrap: anywhere; }
+
+
+#memory-review { border: 1px solid var(--border); padding: 10px; margin-bottom: 16px; }
+#memory-review label { display: block; font-size: 12px; margin: 10px 0 4px; }
+#memory-review input, #memory-review select { width: 100%; margin-bottom: 10px; }
+#memory-review summary { cursor: pointer; }
+.memory-note { border-top: 1px solid var(--border); padding-top: 8px; margin-top: 12px; overflow-wrap: anywhere; font-size: 12px; }
+.memory-note pre { white-space: pre-wrap; max-height: 200px; overflow: auto; }
+#memory-owner, #memory-status { overflow-wrap: anywhere; }

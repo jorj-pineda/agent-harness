@@ -1379,6 +1379,19 @@ scripted 90/90 matrices with labels/limits inspected.
 - [ ] Bound search and command output while retaining a way to retrieve omitted details.
 - [ ] Separate repository conventions from global user preferences. Add provenance, correction/deletion, and injection limits for remembered facts.
 
+**2026-10-15 — Read-only panel memory review:** explicit owner-scoped refresh,
+namespace filters, cursor paging and bounded complete text use existing APIs.
+Filter changes clear results/cancel waits and stale replies cannot repaint them;
+complete text validates identity/bytes/hash and changed previews request refresh.
+Stored markup uses text rendering; private errors/legacy overflow stay explicit.
+Reload sends nothing and note text is not persisted locally. Panel correction/
+deletion, reclassification, broader context/profiles and milestone completion remain
+open. Validation: 16 focused and 1,003 offline tests (five live deselected),
+Ruff/format/mypy and both JavaScript syntax checks passed. Native-browser checks
+used real temporary API storage plus failure/race simulations, with zero coding
+runs. Desktop rendering inspected. No inference, quality claim or Duodoro edits;
+client-only behavior leaves evaluation unchanged.
+
 **Experiment order:** compact prompt → clearer tool errors → smaller toolset → targeted recovery → context management → profile-specific examples. Change one major variable at a time. Start with deterministic state extraction before adding model-generated summaries.
 
 **Done when:** repeated benchmark runs show which changes help the selected models, and a longer task can cross the context-management threshold without losing its objective, diff, or unresolved failures. Retain only demonstrated improvements or changes needed for basic correctness.
