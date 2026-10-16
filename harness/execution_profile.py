@@ -14,6 +14,7 @@ from providers import compatible_transport_options
 from tools import ToolRegistry
 
 from .config import CodingToolset, Settings
+from .model_profiles import ModelProfileIdentity
 from .prompts import coding_prompt, coding_prompt_version
 from .providers import configured_model, provider_endpoint
 
@@ -56,6 +57,7 @@ class ExecutionProfile(BaseModel):
     source: Literal["configured_settings"] = "configured_settings"
     provider: str
     configured_model: str | None
+    model_profile: ModelProfileIdentity | None = None
     endpoint_sha256: str | None
     prompt_version: str | None
     base_prompt_sha256: str
@@ -127,6 +129,7 @@ def capture_execution_profile(
     return ExecutionProfile(
         provider=provider,
         configured_model=model,
+        model_profile=settings.profile_identity(),
         endpoint_sha256=_endpoint_digest(provider, settings, model),
         prompt_version=coding_prompt_version(
             settings.coding_toolset, settings.coding_prompt_profile

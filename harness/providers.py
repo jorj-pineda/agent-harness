@@ -16,7 +16,8 @@ def configured_provider_names(settings: Settings) -> tuple[str, ...]:
         names.append("openai")
     if settings.openai_compatible_base_url:
         names.append("openai_compatible")
-    return tuple(names)
+    profile = settings.selected_profile
+    return tuple(name for name in names if profile is None or name == profile.provider)
 
 
 def build_configured_provider(name: str, settings: Settings) -> ChatProvider:

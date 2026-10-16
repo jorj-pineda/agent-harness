@@ -144,3 +144,10 @@ limits, recovery and acceptance scoring are unchanged. Metadata excludes payload
 other trace entries still contain sensitive source and are not credential-redacted.
 Trace computation consumes processing time under existing dispatch deadlines.
 No compaction, profile calibration or model-quality improvement is established.
+
+Named startup profiles use the same `Settings` binding as the API. The evaluator's
+explicit provider must match the selected profile; no fallback/selection occurs.
+`runtime_config.model_profile` records only the selected name/provider/model and
+canonical definition hash (null means no selected profile), alongside resolved
+budgets/options. Historical reports are not rewritten. Profiles do not attest the
+served model revision, tooling capabilities, tokenizer fit or coding quality.

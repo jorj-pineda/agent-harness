@@ -154,6 +154,15 @@ async def run_configured_turn(
     The optional execution-profile callback runs inside admission before prompt
     refresh or snapshots. Its failure prevents inference and tool dispatch.
     """
+    profile = settings.selected_profile
+    if profile is not None and provider.name != profile.provider:
+        return TurnResponse(
+            answer="Selected model profile does not permit this provider.",
+            completion_status="blocked",
+            completion_reason="Selected model profile/provider mismatch; no work started.",
+            provider="policy",
+            latency_ms=0.0,
+        )
     if is_out_of_scope_request(message):
         return out_of_scope_response()
     with turn_admission.claim(session.session_id, session.workspace_root) as busy:

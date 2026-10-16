@@ -7,9 +7,10 @@ from pathlib import Path
 from typing import Literal
 from urllib.parse import urlsplit
 
-from pydantic import Field, ValidationInfo, field_validator
+from pydantic import Field, TypeAdapter, ValidationInfo, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from .model_profiles import ModelProfile, ModelProfileIdentity, ProfileName
 from .outcome import is_verification_command
 
 CodingToolset = Literal["full", "whole_file"]
@@ -21,7 +22,54 @@ class Settings(BaseSettings):
         env_file=".env",
         env_file_encoding="utf-8",
         extra="ignore",
+        hide_input_in_errors=True,
     )
+
+    # Startup-only profile selection; the selected definition wins over individual settings.
+    model_profiles: dict[ProfileName, ModelProfile] = Field(default_factory=dict, max_length=16)
+    model_profile: ProfileName | None = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def apply_model_profile(cls, values: object) -> object:
+        if not isinstance(values, dict) or values.get("model_profile") is None:
+            return values
+        if values.get("model_profile") == "":
+            return {**values, "model_profile": None}
+        name = TypeAdapter(ProfileName).validate_python(values["model_profile"])
+        profiles = TypeAdapter(dict[ProfileName, ModelProfile]).validate_python(
+            values.get("model_profiles", {})
+        )
+        if len(profiles) > 16:
+            raise ValueError("At most 16 model profiles may be configured")
+        profile = profiles.get(name)
+        if profile is None:
+            raise ValueError("Selected model profile is not configured")
+        return {**values, **profile.settings_overrides(), "model_profiles": profiles}
+
+    @model_validator(mode="after")
+    def validate_profile_credentials(self) -> Settings:
+        profile = self.selected_profile
+        if profile is not None and (
+            (profile.provider == "anthropic" and not self.anthropic_api_key)
+            or (profile.provider == "openai" and not self.openai_api_key)
+        ):
+            raise ValueError("Selected model profile requires configured provider credentials")
+        return self
+
+    @property
+    def selected_profile(self) -> ModelProfile | None:
+        return (
+            self.model_profiles.get(self.model_profile) if self.model_profile is not None else None
+        )
+
+    def profile_identity(self) -> ModelProfileIdentity | None:
+        profile = self.selected_profile
+        return (
+            profile.identity(self.model_profile)
+            if profile is not None and self.model_profile
+            else None
+        )
 
     # Providers
     anthropic_api_key: str | None = None
