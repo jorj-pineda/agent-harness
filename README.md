@@ -1145,7 +1145,8 @@ saved provider/model identity, and reports:
 - Transcript: the existing structural review of committed history. Invalid
   structure or inconsistent archive evidence prevents context estimation.
 - Context: `estimated_fit`, `blocked`, `unbounded_context`, or `not_checked`,
-  estimated prompt tokens, current harness context limit, and optional next
+  estimated prompt tokens, effective context limit, configured harness cap, requested
+  Ollama window, manual byte/token ratio, recorded policy, and optional next
   request output allowance. A detached copy receives the current coding prompt,
   project check, owner-scoped facts, current tool schemas, and proposed message,
   using the same refresh and first-request budget math as configured execution.
@@ -1172,6 +1173,18 @@ broader workspace coverage, compatibility enforcement, crash repair, checkpoints
 revert remain separate work. The panel now exposes these read-only reviews (see
 [Saved session review in the panel](#saved-session-review-in-the-panel)). No model-quality improvement is
 claimed from these deterministic review checks.
+
+CLI review and the panel's **Estimate configuration/context** show these limits
+separately. A zero configured harness cap does not disable an explicit Ollama cap.
+Missing/unsupported policy is labeled unknown; clients do not invent effective
+limits or calibration for old replies. Null allowance is unavailable for blocked/
+not-checked estimates, or uncapped by the harness for a completed fit computation;
+it does not establish a backend's limit. CLI saved-run inspection also separates
+configured and recorded effective caps. The clients render server evidence without
+recomputing budgets, applying settings, or submitting a coding turn. Higher byte/token
+ratios estimate fewer tokens; estimated fit does not attest tokenizer/backend fit
+or grant continuation permission. CLI calibration metadata escapes terminal controls,
+and review transport failures use private class-only errors without automatic retry.
 
 ### Eval honesty
 
