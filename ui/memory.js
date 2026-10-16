@@ -1,5 +1,5 @@
-// Read-only owner memory client. Shares only the existing panel owner identity;
-// no session creation, chat submission, mutation, polling or local note storage.
+// Owner memory review and explicit hash-guarded deletion. Shares only panel owner
+// identity; no session creation, chat submission, polling or local note storage.
 "use strict";
 
 (() => {
@@ -13,6 +13,8 @@
   byId("memory-owner").textContent = `Owner: ${userId}`;
   let generation = 0;
   let nextCursor = null;
+  let deleting = false;
+  let deletionNeedsReview = false;
   const controllers = new Set();
 
   function node(tag, text, className) {
@@ -23,6 +25,7 @@
   }
 
   function clearReview() {
+    if (deleting) return;
     generation += 1;
     for (const controller of controllers) controller.abort();
     controllers.clear();
@@ -58,6 +61,48 @@
       Number.isSafeInteger(note.fact_bytes) && note.fact_bytes >= 0 &&
       /^[0-9a-f]{64}$/.test(note.fact_sha256) &&
       (note.workspace_root === null || typeof note.workspace_root === "string");
+  }
+
+  function deletionControls() {
+    namespace.disabled = deleting;
+    workspace.disabled = deleting || namespace.value !== "workspace";
+    refresh.disabled = deleting;
+    older.disabled = deleting || nextCursor === null;
+    for (const group of results.querySelectorAll(".memory-delete")) {
+      const ack = group.querySelector("input");
+      ack.disabled = deleting || deletionNeedsReview;
+      group.querySelector("button").disabled = deleting || deletionNeedsReview || !ack.checked;
+    }
+  }
+
+  async function deleteNote(note, version) {
+    if (deleting || deletionNeedsReview || version !== generation) return;
+    deleting = true;
+    deletionControls();
+    status.textContent = `Deleting whole note ${note.id}…`;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 30000);
+    try {
+      const response = await fetch(`/memory/${note.id}`, {
+        method: "DELETE", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: userId, expected_fact_sha256: note.fact_sha256 }),
+        signal: controller.signal,
+      });
+      if (!response.ok) throw new Error("delete-unconfirmed");
+      const data = await response.json();
+      if (data.status !== "deleted" || data.fact_id !== note.id) throw new Error("delete-mismatch");
+      deleting = false;
+      clearReview();
+      status.textContent = `Deleted whole note ${note.id} from future memory use. Saved history and already sent prompts remain. Refresh to inspect current notes.`;
+    } catch (_) {
+      deletionNeedsReview = true;
+      for (const ack of results.querySelectorAll(".memory-delete input")) ack.checked = false;
+      status.textContent = `Deletion of note ${note.id} was not confirmed; the outcome may be unknown. Refresh and inspect current notes before another attempt. No automatic retry.`;
+    } finally {
+      clearTimeout(timer);
+      deleting = false;
+      deletionControls();
+    }
   }
 
   function card(note, version) {
@@ -102,11 +147,23 @@
         if (version === generation) button.disabled = false;
       }
     });
-    item.append(button, detail);
+    const remove = node("details", null, "memory-delete");
+    remove.appendChild(node("summary", "Delete this whole note"));
+    const label = node("label");
+    const ack = node("input");
+    ack.type = "checkbox";
+    label.append(ack, document.createTextNode(` Delete whole note ${note.id}, including text omitted from the preview, from future recall. Saved history remains.`));
+    const submit = node("button", "Delete reviewed note");
+    submit.disabled = true;
+    ack.addEventListener("change", deletionControls);
+    submit.addEventListener("click", () => { if (ack.checked) deleteNote(note, version); });
+    remove.append(label, submit);
+    item.append(button, detail, remove);
     return item;
   }
 
   async function load(beforeId = null) {
+    if (deleting) return;
     clearReview();
     const version = generation;
     const scope = namespace.value;
@@ -130,6 +187,7 @@
             (scope === "workspace" && note.workspace_root !== root))) {
         throw new Error("invalid-page");
       }
+      deletionNeedsReview = false;
       for (const note of page.notes) results.appendChild(card(note, version));
       nextCursor = page.next_before_id;
       older.disabled = nextCursor === null;
