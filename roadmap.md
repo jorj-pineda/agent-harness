@@ -1192,6 +1192,16 @@ Relevant implementation: `harness/loop.py`, `harness/outcome.py`, `harness/groun
   full audit/secure erasure and broader context/profile work remain open; this is
   not completion of Milestones 4–6.
 
+- **2026-10-15 — CLI multiline memory correction:** explicit replacement-file input
+  avoids shell quoting for owner corrections while preserving internal newlines,
+  existing reviewed-hash guards and one PUT. Exactly one input is required; regular
+  UTF-8 file reads cap raw bytes at 8,192 before dispatch, with generic read errors.
+  Server normalization/4,096-byte limits remain authoritative. No inference, model-
+  quality claim or Duodoro edits. Panel memory controls, reclassification and broader
+  context/model-profile milestones remain open. Validation: nine focused and 999
+  offline tests (five live deselected), Ruff/format/mypy passed. Evaluation behavior
+  unchanged; scripted matrices were not rerun.
+
 - **2026-10-14 — Checklist/format audit:** six previously unchecked narrow items
   are now marked complete based on merged implementation/tests: bounded ranged
   reads, exact stale/unique edits, nullable CLI review, observed check distinctions,

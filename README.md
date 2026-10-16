@@ -134,6 +134,13 @@ agent-harness memory-correct 123 'Correct convention' --user-id jorge \
   --expected-sha256 'COPY_REVIEWED_64_CHARACTER_HASH'
 ```
 
+For multiline replacements, use `memory-correct 123 --replacement-file note.txt`
+with the same owner/hash flags. Supply either the positional replacement or the
+file option. Files must be regular UTF-8 files of at most 8,192 raw bytes;
+invalid/missing/oversized files fail before HTTP dispatch. The server still enforces
+4,096 UTF-8 bytes after trimming. File input preserves internal newlines and is
+not printed. No stdin, editor launch or automatic retry is provided.
+
 Correction replaces the entire note even when its preview was truncated. The CLI
 sends one PUT and reports transport/identity errors with inspection guidance,
 without automatic retries or model runs. Archives and already sent prompts remain

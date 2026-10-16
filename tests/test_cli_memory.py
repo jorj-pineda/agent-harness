@@ -194,3 +194,67 @@ def test_cli_correction_timeout_never_retries_and_bad_hash_never_dispatches():
         get.assert_not_called()
         invalid = runner.invoke(app, ["memory-correct", "1", "new", "--expected-sha256", "bad"])
         assert invalid.exit_code != 0 and put.call_count == 1
+
+
+def test_cli_file_correction_preserves_multiline_input_and_hash_guard(tmp_path):
+    provider = ScriptedProvider()
+    source = tmp_path / "note.txt"
+    source.write_bytes("  First convention\r\nSecond: é\n  ".encode())
+    with TestClient(make_app(tmp_path, provider)) as api:
+        api.portal.call(lambda: api.app.state.components.fact_store.add("dev", "old"))
+        note = api.get("/memory", params={"user_id": "dev"}).json()["notes"][0]
+
+        def request(method, url, **kwargs):
+            return api.request(
+                method, url.removeprefix("http://localhost:8000"), json=kwargs["json"]
+            )
+
+        with patch("httpx.request", side_effect=request) as put, patch("httpx.get") as get:
+            result = runner.invoke(
+                app,
+                [
+                    "memory-correct",
+                    str(note["id"]),
+                    "--replacement-file",
+                    str(source),
+                    "--user-id",
+                    "dev",
+                    "--expected-sha256",
+                    note["fact_sha256"],
+                ],
+            )
+            assert result.exit_code == 0, result.output
+            assert put.call_count == 1
+            assert put.call_args.kwargs["json"]["replacement"] == source.read_bytes().decode()
+            get.assert_not_called()
+    with TestClient(make_app(tmp_path, provider)) as api:
+        changed = api.get("/memory", params={"user_id": "dev"}).json()["notes"][0]
+        assert changed["preview"] == "First convention\r\nSecond: é"
+        assert changed["source_turn_id"] is None
+    assert provider.calls == []
+
+
+def test_cli_invalid_replacement_files_never_dispatch(tmp_path):
+    invalid = tmp_path / "invalid"
+    invalid.write_bytes(b"\xffprivate-marker")
+    big = tmp_path / "big"
+    big.write_bytes(b"x" * 8193)
+    exact = tmp_path / "exact"
+    exact.write_bytes(b"x" * 8192)
+    common = ["memory-correct", "1", "--expected-sha256", "a" * 64]
+    with patch("httpx.request", side_effect=httpx.ReadTimeout("private-marker")) as put:
+        for args in [
+            [],
+            ["text", "--replacement-file", str(exact)],
+            *[
+                ["--replacement-file", str(p)]
+                for p in [invalid, big, tmp_path / "missing", tmp_path]
+            ],
+        ]:
+            result = runner.invoke(app, [*common, *args])
+            assert result.exit_code != 0
+            assert "private-marker" not in result.output
+        put.assert_not_called()
+        result = runner.invoke(app, [*common, "--replacement-file", str(exact)])
+        assert result.exit_code == 1 and "Outcome may be unknown" in result.output
+        assert put.call_count == 1

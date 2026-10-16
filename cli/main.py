@@ -9,9 +9,12 @@ chat    Interactive REPL against a running server.
 from __future__ import annotations
 
 import json
+import os
 import re
+import stat
 import sys
 import uuid
+from pathlib import Path
 from typing import Any
 
 import typer
@@ -334,7 +337,8 @@ def memory_delete(
 @app.command()
 def memory_correct(
     fact_id: int = typer.Argument(..., min=1),
-    replacement: str = typer.Argument(...),
+    replacement: str | None = typer.Argument(None),
+    replacement_file: Path | None = typer.Option(None, "--replacement-file"),
     expected_sha256: str = typer.Option(..., "--expected-sha256"),
     base_url: str = typer.Option("http://localhost:8000", "--base-url"),
     user_id: str = typer.Option("cli-user", "--user-id"),
@@ -342,6 +346,23 @@ def memory_correct(
     """Replace a whole reviewed note; server enforces UTF-8 size/conflict guards."""
     if re.fullmatch(r"[0-9a-f]{64}", expected_sha256) is None:
         raise typer.BadParameter("Use the 64-character lowercase hash from memory inspection.")
+    if (replacement is None) == (replacement_file is None):
+        raise typer.BadParameter("Supply exactly one replacement argument or --replacement-file.")
+    if replacement_file is not None:
+        try:
+            fd = os.open(replacement_file, os.O_RDONLY | os.O_NONBLOCK)
+            with os.fdopen(fd, "rb") as source:
+                if not stat.S_ISREG(os.fstat(source.fileno()).st_mode):
+                    raise ValueError("Replacement input must be a regular file.")
+                raw = source.read(8193)
+            if len(raw) > 8192:
+                raise ValueError("Replacement file exceeds 8,192 bytes.")
+            replacement = raw.decode("utf-8")
+        except (OSError, UnicodeError, ValueError) as exc:
+            raise typer.BadParameter(
+                "Cannot read replacement file: use a regular UTF-8 file of at most 8,192 bytes."
+            ) from exc
+    assert replacement is not None
     try:
         record = AgentClient(base_url).correct_memory(
             user_id, fact_id, expected_sha256, replacement
