@@ -120,6 +120,8 @@ owner action. Thin CLI commands use the same endpoints:
 ```sh
 agent-harness memory --user-id jorge --limit 20
 agent-harness memory --user-id jorge --before-id 123 --json
+agent-harness memory --user-id jorge --namespace global
+agent-harness memory --user-id jorge --namespace workspace --workspace-root /absolute/project
 # Replace 123 and the quoted placeholder with the inspected note's ID/hash.
 agent-harness memory-delete 123 --user-id jorge --expected-sha256 'COPY_REVIEWED_64_CHARACTER_HASH'
 ```

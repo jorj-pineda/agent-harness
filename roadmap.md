@@ -1259,6 +1259,15 @@ Relevant implementation: `harness/loop.py`, `harness/outcome.py`, `harness/groun
   not Git identity/isolation, and owner classification/panel controls, broader
   context/model profiles and Milestones 4–6 remain open.
 
+- **2026-10-15 — CLI memory namespace review:** thin CLI filters select all,
+  global or one exact workspace namespace. Root/filter combinations reject locally;
+  canonical path validation remains server enforced. Human cursor output reminds
+  callers to retain filters; JSON preserves the API page. Restart regression covers
+  interleaved scopes and owner separation without inference or writes. Panel controls,
+  reclassification and broader context/profile milestones remain open. Validation:
+  20 focused, 1,005 offline tests (five live deselected), Ruff/format/mypy passed.
+  Client-only change; no model calls or evaluation changes.
+
 - **2026-10-15 — Filtered owner memory review:** optional exact global/workspace
   namespace filters apply before bounded pagination, preserving the default all-scope
   owner view. Invalid namespace/root combinations reject without inference or writes.
