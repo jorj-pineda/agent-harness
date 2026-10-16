@@ -55,6 +55,27 @@
       </section>
 
       <aside class="rail" aria-label="Response envelope">
+        <details id="memory-review">
+          <summary>Owner memory</summary>
+          <p id="memory-owner" class="review-note"></p>
+          <p class="review-note">Read-only remembered notes, not instructions or proof of correctness.
+            This uses the panel's local owner ID, not authenticated accounts. Changing
+            filters submits no work. Global notes are excluded from exact workspace review.</p>
+          <label for="memory-namespace">Namespace</label>
+          <select id="memory-namespace">
+            <option value="all">All owned notes</option>
+            <option value="global">Global only</option>
+            <option value="workspace">Exact workspace only</option>
+          </select>
+          <label for="memory-workspace">Memory workspace path (separate from chat)</label>
+          <input id="memory-workspace" type="text" maxlength="4096" placeholder="/absolute/project" disabled />
+          <div class="review-actions">
+            <button id="refresh-memory">Refresh notes</button>
+            <button id="older-memory" disabled>Older notes</button>
+          </div>
+          <p id="memory-status" class="review-note" aria-live="polite">Refresh to inspect notes; nothing is loaded automatically.</p>
+          <div id="memory-results"></div>
+        </details>
         <h2>Saved runs</h2>
         <button id="refresh-runs">Refresh history</button>
         <div id="run-history" aria-live="polite"></div>
@@ -135,5 +156,6 @@
     </main>
 
     <script src="/app.js"></script>
+    <script src="/memory.js"></script>
   </body>
 </html>
