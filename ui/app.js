@@ -672,6 +672,30 @@ function checkSuggestionsCard(data, sessionId) {
   return card;
 }
 
+function currentProfileSection(selection) {
+  const section = el("div", "current-profile-review");
+  const identity = selection?.identity;
+  const valid = selection?.status === "selected" && identity?.schema_version === 1 &&
+    ["name", "provider", "model", "definition_sha256"].every(key => typeof identity[key] === "string") &&
+    /^[a-f0-9]{64}$/.test(identity.definition_sha256);
+  if (selection == null) {
+    section.appendChild(el("p", null, "Current model profile: not checked or legacy response."));
+  } else if (selection.status === "direct_settings" && selection.identity == null) {
+    section.appendChild(el("p", null, "Current model profile: direct settings (no named profile selected)."));
+  } else if (valid) {
+    section.appendChild(el("p", null, `Current model profile: ${identity.name}`));
+    section.appendChild(el("p", null, `Configured target: ${identity.provider} / ${identity.model}`));
+    const details = el("details");
+    details.appendChild(el("summary", null, "Selected definition identity"));
+    details.appendChild(el("pre", null, identity.definition_sha256));
+    section.appendChild(details);
+  } else {
+    section.appendChild(el("p", null, "Current model profile: unknown or inconsistent."));
+  }
+  section.appendChild(el("p", "review-note", "Current operator configuration only; no switching, inference or settings changes. Not backend/capability evidence or continuation permission."));
+  return section;
+}
+
 function sessionReviewCard(kind, data, input = {}) {
   const card = el("section", "session-review-card");
   card.appendChild(el("h3", null, `${kind}: ${data.status || "unknown"}`));
@@ -693,6 +717,7 @@ function sessionReviewCard(kind, data, input = {}) {
     if (data.issues_truncated) card.appendChild(el("p", null, "Issue list truncated; count covers the full transcript."));
   } else {
     card.appendChild(el("p", null, `Provider: ${data.provider || input.provider || "server default"}`));
+    card.appendChild(currentProfileSection(data.current_model_profile));
     card.appendChild(el("p", "review-note", `Requested input: ${input.message ? "supplied for estimation only" : "omitted; history-only request"}. Estimates do not establish the model server's actual context fit.`));
     if (input.message) {
       const details = el("details");
@@ -718,6 +743,7 @@ function sessionReviewCard(kind, data, input = {}) {
       }
       card.appendChild(el("p", null, `Configured harness context cap: ${context.configured_max_context_tokens ?? "unrecorded"} (0 disables only this cap)`));
       card.appendChild(el("p", null, `Ollama requested window: ${context.ollama_num_ctx ?? "unrecorded (unset, not applicable or unknown)"}`));
+      card.appendChild(el("p", null, `Configured per-request output cap: ${context.configured_request_output_cap ?? "unrecorded"} (0 disables only this cap)`));
       card.appendChild(el("p", null, `Prompt estimate bytes per token: ${context.prompt_estimate_bytes_per_token ?? "unrecorded"}`));
       card.appendChild(el("p", "review-note", "Manual byte heuristic; higher ratios estimate fewer tokens. Estimated fit is not backend-attested/tokenizer fit or permission to continue."));
       card.appendChild(el("p", null, `Request output allowance: ${context.request_output_allowance ?? (["estimated_fit", "unbounded_context"].includes(context.status) ? "uncapped by harness" : "unavailable")}`));

@@ -236,6 +236,42 @@ def show_turn(result: TurnSummary) -> None:
     typer.echo()
 
 
+def show_profile_selection(selection: object) -> None:
+    """Current server selection only, including explicit direct/unknown distinctions."""
+    if selection is None:
+        typer.echo("current_model_profile=not_checked_or_legacy_response")
+    elif (
+        isinstance(selection, dict)
+        and selection.get("status") == "direct_settings"
+        and selection.get("identity") is None
+    ):
+        typer.echo("current_model_profile=direct_settings (no named profile selected)")
+    else:
+        identity = selection.get("identity") if isinstance(selection, dict) else None
+        valid = (
+            isinstance(selection, dict)
+            and selection.get("status") == "selected"
+            and isinstance(identity, dict)
+            and identity.get("schema_version") == 1
+            and all(
+                isinstance(identity.get(key), str)
+                for key in ("name", "provider", "model", "definition_sha256")
+            )
+            and len(identity["definition_sha256"]) == 64
+            and all(char in "0123456789abcdef" for char in identity["definition_sha256"])
+        )
+        if valid:
+            typer.echo("current_model_profile=selected")
+            for key in ("name", "provider", "model", "definition_sha256"):
+                typer.echo(f"  {key}={json.dumps(identity[key])}")
+        else:
+            typer.echo("current_model_profile=unknown_or_inconsistent")
+    typer.echo(
+        "Current operator configuration only; no switching, inference or settings changes. "
+        "Not backend/capability evidence or continuation permission."
+    )
+
+
 def show_context_limits(context: dict[str, Any]) -> None:
     """Render server evidence; never derive or apply a budget in the client."""
 
@@ -259,6 +295,10 @@ def show_context_limits(context: dict[str, Any]) -> None:
     typer.echo(
         f"ollama_requested_context_limit={value('ollama_num_ctx')} "
         "(unrecorded: unset, not applicable or unknown)"
+    )
+    typer.echo(
+        f"configured_request_output_cap={value('configured_request_output_cap')} "
+        "(0 disables only this cap)"
     )
     typer.echo(f"context_limit_policy={value('context_limit_policy')}")
     typer.echo(f"prompt_estimate_bytes_per_token={value('prompt_estimate_bytes_per_token')}")
@@ -306,6 +346,7 @@ def show_run(record: dict) -> None:
                 "ollama_num_ctx": profile.get("ollama_num_ctx"),
                 "context_limit_policy": profile.get("context_limit_policy"),
                 "prompt_estimate_bytes_per_token": limits.get("prompt_estimate_bytes_per_token"),
+                "configured_request_output_cap": limits.get("max_request_output_tokens"),
             }
         )
         typer.echo("  Configured settings only; inspect --json for hashes and full limits.")
@@ -813,6 +854,7 @@ def configuration_review(
         )
         raise typer.Exit(code=1) from exc
     typer.echo(f"review={review['status']} provider={review.get('provider')}")
+    show_profile_selection(review.get("current_model_profile"))
     if review.get("reason"):
         typer.echo(review["reason"])
     if review.get("configuration"):

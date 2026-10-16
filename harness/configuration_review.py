@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 from memory import FactStore
 from providers.base import ChatMessage
@@ -13,6 +13,7 @@ from tools import ToolRegistry
 from .config import Settings
 from .context import BudgetStop, TokenBudget
 from .execution_profile import ExecutionProfile, capture_execution_profile
+from .model_profiles import ModelProfileIdentity
 from .prompts import coding_prompt
 from .runtime import refresh_system_message
 from .session_store import SessionArchive
@@ -40,10 +41,28 @@ class ContextReview(BaseModel):
     reason: str | None = None
 
 
+class CurrentModelProfileReview(BaseModel):
+    status: Literal["selected", "direct_settings"]
+    identity: ModelProfileIdentity | None = None
+    scope_note: str = (
+        "Current operator selection, not the selected run's historical profile. "
+        "Only selected identity is shown; catalog entries, credentials and endpoints are excluded. "
+        "No switching, inference or settings change. Not backend/capability evidence or "
+        "continuation permission."
+    )
+
+    @model_validator(mode="after")
+    def check_identity(self) -> CurrentModelProfileReview:
+        if (self.status == "selected") != (self.identity is not None):
+            raise ValueError("Profile selection status and identity are inconsistent")
+        return self
+
+
 class ConfigurationReview(BaseModel):
     status: Literal["reviewed", "busy", "unavailable"] = "reviewed"
     turn_id: str | None = None
     provider: str | None = None
+    current_model_profile: CurrentModelProfileReview | None = None
     configuration: ProfileComparison | None = None
     transcript: TranscriptReview | None = None
     context: ContextReview | None = None
@@ -112,7 +131,15 @@ def review_configuration(
     turn_id = turns[-1].turn_id if turns else None
     transcript = inspect_transcript(archive.session.messages)
     transcript.turn_id = turn_id
-    review = ConfigurationReview(turn_id=turn_id, provider=provider, transcript=transcript)
+    selected = settings.profile_identity()
+    review = ConfigurationReview(
+        turn_id=turn_id,
+        provider=provider,
+        transcript=transcript,
+        current_model_profile=CurrentModelProfileReview(
+            status="selected" if selected is not None else "direct_settings", identity=selected
+        ),
+    )
     turn_ids = [turn.turn_id for turn in turns]
     if (
         turn_ids != [item.turn_id for item in archive.responses]

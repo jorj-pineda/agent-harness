@@ -1525,6 +1525,21 @@ milestones remain open; no Duodoro edits or model-quality claim. Validation: 59
 focused, 1,000 offline tests (five live deselected), Ruff/format/mypy passed.
 Evaluation behavior unchanged; scripted matrices were not rerun.
 
+**2026-10-16 — Owner/client model-profile review:** existing read-only configuration
+review exposes current selected identity or explicit direct settings. Busy/unavailable/
+legacy absence stays not checked; typed status/identity consistency and client schema/
+shape checks avoid invented selection. CLI/panel render selected-only fields and the
+configured per-request cap separately from computed allowance, with terminal escaping,
+literal DOM text and a collapsed definition hash. Current selection does not relabel
+saved run evidence; no catalog/credential/endpoint disclosure, switching or settings
+write. Validation: 69 focused and 1,140 offline tests (five live deselected),
+Ruff/format/mypy and both JS syntax checks passed. Native browser used temporary real
+API review (unchanged archive, zero coding runs), plus ten direct/legacy/inconsistent/
+busy/unavailable/markup/race cases. Desktop inspected; reload fetched static assets
+only. Temporary server/tab stopped with zero provider calls. No evaluation behavior
+changes, model-quality claim or Duodoro edits. Broader profile capabilities/generation,
+measured calibration, context compaction and Milestone 4 remain open.
+
 **2026-10-16 — Named startup model bindings:** optional bounded MODEL_PROFILES JSON
 and explicit MODEL_PROFILE selection share Settings validation across app/evaluator.
 Selected provider/model/context/request cap override individual settings; optional
