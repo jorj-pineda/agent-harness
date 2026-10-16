@@ -484,6 +484,23 @@ same setting applies to the API and real-task evaluator. Without an explicit
 project check, the previous recognized-command heuristic remains in use; a
 a passing unrelated command can be reported as a passed observed check.
 
+Owner-scoped `GET /sessions/{session_id}/check-suggestions?user_id=...` offers
+read-only setup hints for that saved session's current workspace. It inspects only
+root `pytest.ini`, `pyproject.toml` pytest configuration and a nonempty `package.json`
+`test:run` script. Each regular UTF-8 file is capped at 65,536 bytes plus one byte
+for overflow detection; links/special files, invalid manifests and observed changes
+produce explicit issues. No recursive package discovery or script contents are
+returned. Partial inspection is labeled; an empty result does not establish that
+no project checks exist. Current argv candidates are `python -m pytest` and
+`npm run test:run`, deduplicated with evidence filenames.
+
+Suggestions do not run commands, install dependencies, configure settings, prove
+relevance or grant permission to execute repository code. Inspect project setup,
+then explicitly set `PROJECT_CHECK_ARGV` yourself. The endpoint holds process-local
+admission until its owned file reader settles, even after disconnect. Byte bounds
+are not filesystem-latency bounds, atomic snapshots or process isolation. Saved
+history and model execution are unchanged; CLI/panel access is a separate follow-up.
+
 For trusted npm projects, the command tool accepts only
 `npm [--prefix <repo-relative-directory>] run test:run [-- <test arguments>]`.
 For example, Duodoro's client command from its repository root is:
