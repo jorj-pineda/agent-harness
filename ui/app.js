@@ -606,6 +606,7 @@ function selectReviewTarget(record) {
   if (reviewTarget) {
     els.progressTarget.textContent = `Run: ${reviewTarget.runId}; lifecycle when selected: ${record.status || "unknown"}`;
     els.reviewTarget.textContent = `Session: ${reviewTarget.sessionId}; selected run: ${reviewTarget.runId}`;
+    els.reviewResults.appendChild(repositoryInstructionsSection(record.execution_profile?.repository_instructions, true));
   }
 }
 
@@ -672,6 +673,42 @@ function checkSuggestionsCard(data, sessionId) {
   return card;
 }
 
+function repositoryInstructionsSection(evidence, saved = false) {
+  const section = el("section", "repository-instructions-review session-review-card");
+  const title = saved ? "Selected run repository instructions" : "Current root repository instructions";
+  section.appendChild(el("h4", null, title));
+  const status = evidence?.status;
+  const loaded = status === "loaded";
+  const issueValid = status === "unavailable"
+    ? ["unsafe_or_unreadable", "too_large", "changed", "invalid_utf8"].includes(evidence?.issue)
+    : evidence?.issue == null;
+  const valid = evidence && !Array.isArray(evidence) &&
+    evidence.policy === "root-agents-v1" && evidence.path === "AGENTS.md" && evidence.max_bytes === 8192 &&
+    ["disabled", "no_workspace", "missing", "loaded", "unavailable"].includes(status) && issueValid &&
+    (loaded
+      ? Number.isInteger(evidence.content_bytes) && evidence.content_bytes >= 0 && evidence.content_bytes <= 8192 &&
+        typeof evidence.content_sha256 === "string" && /^[a-f0-9]{64}$/.test(evidence.content_sha256)
+      : evidence.content_bytes == null && evidence.content_sha256 == null);
+  if (evidence == null) {
+    section.appendChild(el("p", null, saved ? "Unrecorded in selected run." : "Not checked or legacy response."));
+  } else if (!valid) {
+    section.appendChild(el("p", null, "Unknown or inconsistent instruction metadata."));
+  } else {
+    section.appendChild(el("p", null, `Status: ${status}; path: AGENTS.md; policy: root-agents-v1; limit: 8192 UTF-8 bytes.`));
+    if (loaded) {
+      section.appendChild(el("p", null, `Complete content bytes: ${evidence.content_bytes}`));
+      const details = el("details");
+      details.appendChild(el("summary", null, "Instruction content identity"));
+      details.appendChild(el("pre", null, evidence.content_sha256));
+      section.appendChild(details);
+    } else if (status === "unavailable") {
+      section.appendChild(el("p", null, `Issue: ${evidence.issue}; complete instructions unavailable.`));
+    }
+  }
+  section.appendChild(el("p", "review-note", `${saved ? "Captured run metadata" : "Current root review"} only; no parent/nested discovery, instruction contents or settings changes. No commands, inference or continuation permission. Enabled runs retain injected text in transcripts/traces.`));
+  return section;
+}
+
 function currentProfileSection(selection) {
   const section = el("div", "current-profile-review");
   const identity = selection?.identity;
@@ -718,6 +755,7 @@ function sessionReviewCard(kind, data, input = {}) {
   } else {
     card.appendChild(el("p", null, `Provider: ${data.provider || input.provider || "server default"}`));
     card.appendChild(currentProfileSection(data.current_model_profile));
+    card.appendChild(repositoryInstructionsSection(data.repository_instructions));
     card.appendChild(el("p", "review-note", `Requested input: ${input.message ? "supplied for estimation only" : "omitted; history-only request"}. Estimates do not establish the model server's actual context fit.`));
     if (input.message) {
       const details = el("details");
