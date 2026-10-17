@@ -17,6 +17,7 @@ from .config import CodingToolset, Settings
 from .model_profiles import ModelProfileIdentity
 from .prompts import coding_prompt, coding_prompt_version
 from .providers import configured_model, provider_endpoint
+from .repository_instructions import RepositoryInstructionReview
 
 
 class CapturedRuntimeSettings(BaseModel):
@@ -25,6 +26,7 @@ class CapturedRuntimeSettings(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     coding_toolset: CodingToolset
+    load_root_agents: bool = False
     enable_support_tools: bool
     max_tool_iterations: int
     max_tool_calls_per_turn: int
@@ -58,6 +60,7 @@ class ExecutionProfile(BaseModel):
     provider: str
     configured_model: str | None
     model_profile: ModelProfileIdentity | None = None
+    repository_instructions: RepositoryInstructionReview | None = None
     endpoint_sha256: str | None
     prompt_version: str | None
     base_prompt_sha256: str
@@ -119,6 +122,7 @@ def capture_execution_profile(
     registry: ToolRegistry,
     *,
     system_prompt: str | None = None,
+    repository_instructions: RepositoryInstructionReview | None = None,
 ) -> ExecutionProfile:
     """Capture settings and exposed schemas; never serialize the full Settings object."""
     try:
@@ -130,6 +134,7 @@ def capture_execution_profile(
         provider=provider,
         configured_model=model,
         model_profile=settings.profile_identity(),
+        repository_instructions=repository_instructions,
         endpoint_sha256=_endpoint_digest(provider, settings, model),
         prompt_version=coding_prompt_version(
             settings.coding_toolset, settings.coding_prompt_profile
