@@ -1434,6 +1434,21 @@ scripted 90/90 matrices with labels/limits inspected.
 
 **Outcome:** each model gets a small, coherent interface and enough relevant context to make the next coding decision.
 
+**2026-10-17 — Panel root-instruction review:** selected-run metadata stays separate
+from current configuration review; status/size/issues use fixed supported values
+and hashes are collapsed details. Unsupported/inconsistent shapes remain unknown,
+legacy/busy absence stays unrecorded/not checked, and unknown strings/contents are
+omitted. Existing explicit review and selection controls add no fetch, settings
+action, browser persistence or coding submission. Validation: 41 focused and 1,180
+offline tests (five live deselected), Ruff/format/mypy and both JS syntax checks
+passed. Native browser used temporary real API review (unchanged archive and zero
+runs), eleven simulated metadata states plus duplicate/stale/historical/timeout
+cases. Hash disclosure and desktop layout were inspected; reload fetched static
+assets only. Temporary server/tab stopped with zero provider calls. No evaluation
+behavior change, model-quality claim or Duodoro edits. Root-only opt-in loading
+and client review are complete; parent/nested discovery, compaction and broader
+Milestone 4 stay open.
+
 **2026-10-17 — CLI root-instruction review:** configuration review renders current
 root status/size/hash/issues; saved-run inspection labels captured metadata as
 historical. Unsupported/inconsistent shapes cannot become loaded evidence, missing
