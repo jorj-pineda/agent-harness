@@ -525,7 +525,12 @@ Legacy profiles retain known disabled behavior. Application and real-task evalua
 share the loader; evaluations record the explicit option and captured identity.
 Descriptor reads are bounded in bytes, not a hard deadline or atomic filesystem
 snapshot. External writers and parent path races remain outside coordination.
-CLI/panel instruction summaries are separate follow-ups.
+CLI `configuration-review SESSION_ID` shows current instruction status, size,
+hash and issues; `run RUN_ID` shows captured historical instruction metadata.
+Neither fetches contents, changes settings or starts work. Absent legacy/busy
+evidence remains unrecorded/not checked; unsupported or inconsistent metadata
+cannot claim a successful load. Only fixed policy/path/status and validated
+hash/size/issue values are rendered. Panel summaries remain a separate follow-up.
 
 **Prompt estimate calibration.** `PROMPT_ESTIMATE_BYTES_PER_TOKEN` defaults to 3
 and accepts finite values from 1 through 8. It divides the UTF-8 message/schema
