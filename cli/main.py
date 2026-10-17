@@ -272,6 +272,67 @@ def show_profile_selection(selection: object) -> None:
     )
 
 
+def show_repository_instructions(evidence: object, *, saved: bool = False) -> None:
+    """Render only known instruction metadata; contents and policy stay server-owned."""
+    prefix = "saved" if saved else "current"
+    label = f"{prefix}_repository_instructions"
+    if evidence is None:
+        typer.echo(f"{label}={'unrecorded' if saved else 'not_checked_or_legacy_response'}")
+    else:
+        status = evidence.get("status") if isinstance(evidence, dict) else None
+        valid = (
+            isinstance(evidence, dict)
+            and evidence.get("policy") == "root-agents-v1"
+            and evidence.get("path") == "AGENTS.md"
+            and evidence.get("max_bytes") == 8192
+            and isinstance(status, str)
+            and status in {"disabled", "no_workspace", "missing", "loaded", "unavailable"}
+        )
+        if valid:
+            assert isinstance(evidence, dict)
+            size = evidence.get("content_bytes")
+            digest = evidence.get("content_sha256")
+            issue = evidence.get("issue")
+            if status == "loaded":
+                valid = (
+                    type(size) is int
+                    and 0 <= size <= 8192
+                    and isinstance(digest, str)
+                    and re.fullmatch(r"[a-f0-9]{64}", digest) is not None
+                    and issue is None
+                )
+            else:
+                valid = (
+                    size is None
+                    and digest is None
+                    and (
+                        isinstance(issue, str)
+                        and issue
+                        in {"unsafe_or_unreadable", "too_large", "changed", "invalid_utf8"}
+                        if status == "unavailable"
+                        else issue is None
+                    )
+                )
+        if valid:
+            assert isinstance(evidence, dict)
+            typer.echo(f"{label}={status} path=AGENTS.md policy=root-agents-v1 max_bytes=8192")
+            if status == "loaded":
+                typer.echo(
+                    f"  content_bytes={evidence['content_bytes']} "
+                    f"content_sha256={evidence['content_sha256']}"
+                )
+            elif status == "unavailable":
+                typer.echo(f"  issue={evidence['issue']}")
+        else:
+            typer.echo(f"{label}=unknown_or_inconsistent")
+    typer.echo(
+        f"{'Saved run evidence' if saved else 'Current root review'} only; "
+        "no parent/nested discovery, instruction contents or settings changes. "
+        "No commands, inference or continuation permission. "
+        "Enabled runs retain injected text in transcripts/traces."
+    )
+
+
 def show_context_limits(context: dict[str, Any]) -> None:
     """Render server evidence; never derive or apply a budget in the client."""
 
@@ -328,6 +389,7 @@ def show_run(record: dict) -> None:
         typer.echo("execution_profile=unrecorded (configuration not captured in this record)")
     else:
         limits = profile["settings"]
+        show_repository_instructions(profile.get("repository_instructions"), saved=True)
         typer.echo(
             f"execution_profile=v{profile['schema_version']} "
             f"prompt={profile.get('prompt_version') or 'custom'} "
@@ -855,6 +917,7 @@ def configuration_review(
         raise typer.Exit(code=1) from exc
     typer.echo(f"review={review['status']} provider={review.get('provider')}")
     show_profile_selection(review.get("current_model_profile"))
+    show_repository_instructions(review.get("repository_instructions"))
     if review.get("reason"):
         typer.echo(review["reason"])
     if review.get("configuration"):
