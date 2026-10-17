@@ -408,6 +408,7 @@ async def _run_one(
             if (identity := settings.profile_identity()) is not None
             else None,
             "coding_prompt_profile": settings.coding_prompt_profile,
+            "load_root_agents": settings.load_root_agents,
             "openai_compatible_transport": settings.openai_compatible_transport,
             "max_tool_iterations": settings.max_tool_iterations,
             "max_tool_calls_per_turn": settings.max_tool_calls_per_turn,

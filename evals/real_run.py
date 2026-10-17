@@ -25,6 +25,7 @@ from typing import Any, Literal
 import yaml
 
 from harness.config import Settings, get_settings
+from harness.execution_profile import ExecutionProfile
 from harness.loop import MAX_ITERATIONS_STUB
 from harness.prompts import coding_prompt_version
 from harness.providers import (
@@ -244,6 +245,7 @@ async def run_task(
     attempt: int = 1,
 ) -> RealTaskResult:
     turn_trace: list[TurnTraceRecord] = []
+    profiles: list[ExecutionProfile] = []
     observed = ObservedProvider(provider)
     with disposable_workspace(task.fixture) as copy:
         with tempfile.TemporaryDirectory(prefix="agent_harness_eval_memory_") as memory_dir:  # noqa: SIM117 — workspace must outlive memory for grading
@@ -274,6 +276,7 @@ async def run_task(
                         registry=registry,
                         system_prompt=MINIMAL_PROMPT if mode == "minimal" else None,
                         trace=turn_trace,
+                        on_execution_profile=profiles.append,
                     )
                     answer = response.answer
                     completion_status = response.completion_status
@@ -340,6 +343,10 @@ async def run_task(
                 if (identity := settings.profile_identity()) is not None
                 else None,
                 "coding_prompt_profile": settings.coding_prompt_profile,
+                "load_root_agents": settings.load_root_agents,
+                "repository_instructions": profiles[-1].repository_instructions.model_dump()
+                if profiles and profiles[-1].repository_instructions is not None
+                else None,
                 "openai_compatible_transport": settings.openai_compatible_transport,
                 "tool_specs": [spec.model_dump(mode="json") for spec in registry.as_tool_specs()],
                 "max_tool_iterations": settings.max_tool_iterations,

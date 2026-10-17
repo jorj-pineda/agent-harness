@@ -31,6 +31,7 @@ from .grounding import Grounder
 from .loop import run_turn
 from .policy import is_out_of_scope_request
 from .prompts import BASE_SYSTEM_PROMPT, coding_prompt
+from .repository_instructions import RepositoryInstructions, load_repository_instructions
 from .state import Session, TurnResponse, WorkspaceChangeReport, WorkspaceFileDiff
 from .stream import EventCallback
 from .trace import TurnTraceRecord
@@ -90,8 +91,13 @@ def refresh_system_message(
     *,
     system_prompt: str = BASE_SYSTEM_PROMPT,
     project_check_argv: list[str] | None = None,
+    repository_instructions: RepositoryInstructions | None = None,
 ) -> None:
     blocks = [system_prompt]
+    if repository_instructions is not None:
+        instruction_block = repository_instructions.prompt_block()
+        if instruction_block is not None:
+            blocks.append(instruction_block)
     if project_check_argv is not None:
         blocks.append(
             "After editing, run this project check with run_command argv: "
@@ -200,10 +206,27 @@ async def run_configured_turn(
         workspace_review_ms = 0.0
         if on_checkpoint is not None:
             await on_checkpoint("before")
+        instructions = load_repository_instructions(
+            session.workspace_root, enabled=settings.load_root_agents
+        )
+        if instructions.review.status == "unavailable":
+            return TurnResponse(
+                answer="Root AGENTS.md could not be loaded completely; no work started.",
+                completion_status="blocked",
+                completion_reason=f"Root AGENTS.md: {instructions.review.issue}.",
+                provider="policy",
+                latency_ms=0.0,
+            )
         if on_execution_profile is not None:
             on_execution_profile(
                 capture_execution_profile(
-                    settings, provider.name, registry, system_prompt=system_prompt
+                    settings,
+                    provider.name,
+                    registry,
+                    system_prompt=system_prompt,
+                    repository_instructions=instructions.review
+                    if settings.load_root_agents
+                    else None,
                 )
             )
         refresh_system_message(
@@ -214,6 +237,7 @@ async def run_configured_turn(
             if system_prompt is not None
             else coding_prompt(settings.coding_toolset, settings.coding_prompt_profile),
             project_check_argv=settings.project_check_argv,
+            repository_instructions=instructions,
         )
         tracked_root = (
             Path(session.workspace_root)

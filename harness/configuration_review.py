@@ -15,6 +15,7 @@ from .context import BudgetStop, TokenBudget
 from .execution_profile import ExecutionProfile, capture_execution_profile
 from .model_profiles import ModelProfileIdentity
 from .prompts import coding_prompt
+from .repository_instructions import RepositoryInstructionReview, load_repository_instructions
 from .runtime import refresh_system_message
 from .session_store import SessionArchive
 from .transcript import TranscriptReview, inspect_transcript
@@ -63,6 +64,7 @@ class ConfigurationReview(BaseModel):
     turn_id: str | None = None
     provider: str | None = None
     current_model_profile: CurrentModelProfileReview | None = None
+    repository_instructions: RepositoryInstructionReview | None = None
     configuration: ProfileComparison | None = None
     transcript: TranscriptReview | None = None
     context: ContextReview | None = None
@@ -166,8 +168,20 @@ def review_configuration(
         )
         review.context = ContextReview(status="not_checked", reason="Inconsistent archive.")
         return review
-    current = capture_execution_profile(settings, provider, registry)
+    instructions = load_repository_instructions(
+        archive.session.workspace_root, enabled=settings.load_root_agents
+    )
+    review.repository_instructions = instructions.review
+    current = capture_execution_profile(
+        settings,
+        provider,
+        registry,
+        repository_instructions=instructions.review if settings.load_root_agents else None,
+    )
     review.configuration = compare_profiles(profile, current)
+    if instructions.review.status == "unavailable":
+        review.context = ContextReview(status="not_checked", reason="Root AGENTS.md unavailable.")
+        return review
     if transcript.status == "invalid":
         review.context = ContextReview(status="not_checked", reason="Saved transcript is invalid.")
         return review
@@ -178,6 +192,7 @@ def review_configuration(
         user_id,
         project_check_argv=settings.project_check_argv,
         system_prompt=coding_prompt(settings.coding_toolset, settings.coding_prompt_profile),
+        repository_instructions=instructions,
     )
     if message:
         detached.messages.append(ChatMessage(role="user", content=message))

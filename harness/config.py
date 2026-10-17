@@ -146,6 +146,10 @@ class Settings(BaseSettings):
     session_db_path: Path = Path("data/sessions.db")
 
     # Harness budgets
+    load_root_agents: bool = Field(
+        default=False,
+        description="Opt-in complete root AGENTS.md injection, limited to 8 KiB UTF-8.",
+    )
     max_tool_iterations: int = Field(default=8, ge=1, le=32)
     max_tool_calls_per_turn: int = Field(default=24, ge=1, le=256)
     max_turn_wall_seconds: float = Field(default=0, ge=0, le=3600)
