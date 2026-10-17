@@ -1434,6 +1434,23 @@ scripted 90/90 matrices with labels/limits inspected.
 
 **Outcome:** each model gets a small, coherent interface and enough relevant context to make the next coding decision.
 
+**2026-10-17 — Opt-in bounded root instructions:** `LOAD_ROOT_AGENTS` defaults off.
+Enabled configured turns and detached configuration review use one complete root
+`AGENTS.md` UTF-8 read, limited to 8 KiB plus sentinel, regular/no-follow descriptors
+and explicit unavailable states. Unsafe/oversized/changed inputs stop before
+inference/tools; nothing is silently truncated. Prompt guidance gives harness/user
+requests precedence over repository conventions, then remembered/source/output data;
+permissions remain code-enforced, with no model-compliance/isolation claim. Injected
+text counts toward context and remains in saved transcripts/traces. Review exposes
+only status/hash/size/policy, captures participate in continuation drift, and legacy
+absence keeps known disabled semantics. Shared real-task execution records option/
+identity; a scripted disposable-file regression rejects its unchanged artifact via
+independent acceptance. Root-only loading does not resolve parent/nested precedence,
+compaction, CLI/panel summaries or broader Milestone 4. No inference, model-quality
+claim or Duodoro changes. Validation: 67 focused and 1,160 offline tests (five live
+deselected), Ruff/format/mypy passed. Both scripted matrices passed 90/90 escalation
+decisions; scripted-contract labels and metric limits were inspected.
+
 - [x] Move the runtime prompt into a versioned module or template used by both application and evaluations.
 - [ ] Start with a concise coding contract: inspect relevant files, make focused changes, use actual check results, repair actionable failures, and report uncertainty honestly.
 - [ ] Remove support-demo instructions, duplicate memory aliases, and unavailable semantic-search tools from the default coding toolset.

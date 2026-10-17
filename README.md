@@ -499,6 +499,34 @@ tool capabilities, safe model switching or measured profile quality. There are n
 built-in recommended profiles or additional model calls. Owner review and client
 visibility are described below; the broader model-profile milestone remains open.
 
+**Root repository instructions.** `LOAD_ROOT_AGENTS=true` explicitly enables
+whole-file loading of the workspace root's `AGENTS.md` before each configured turn.
+The default is false, preserving existing prompts and comparisons. Only this one
+file is considered; parent and nested instruction discovery remain manual. The
+limit is 8,192 UTF-8 bytes. Empty/missing files and sessions without workspaces are
+explicit states; symlinks, non-regular files, invalid UTF-8, detected changes and
+oversized/unreadable files block inference and tools instead of injecting partial
+rules. The file is not executed, and no settings or permissions are derived from it.
+
+The prompt states the precedence: harness constraints and explicit user requests,
+then applicable repository conventions, then remembered observations and source/
+command data. This describes model guidance, not prompt-injection isolation or a
+guarantee of model compliance; tool permissions remain enforced in code. Loading
+adds context, not compaction. Normal request budgets include the injected block.
+Enabled text becomes part of persisted transcripts and evaluation request traces;
+do not put secrets in repository instructions. Review/profile metadata exposes only
+the fixed filename, status, byte count, hash, policy and bounded issue code.
+
+Owner configuration review loads the same current file for its estimate, without
+rewriting saved history, executing commands or submitting a run. Failed loads leave
+context not checked. Captured settings/content identity participate in continuation
+drift checks; unchanged instructions never bypass workspace/transcript guards.
+Legacy profiles retain known disabled behavior. Application and real-task evaluation
+share the loader; evaluations record the explicit option and captured identity.
+Descriptor reads are bounded in bytes, not a hard deadline or atomic filesystem
+snapshot. External writers and parent path races remain outside coordination.
+CLI/panel instruction summaries are separate follow-ups.
+
 **Prompt estimate calibration.** `PROMPT_ESTIMATE_BYTES_PER_TOKEN` defaults to 3
 and accepts finite values from 1 through 8. It divides the UTF-8 message/schema
 payload estimate; per-message overhead and the larger reported-prompt anchor remain.
