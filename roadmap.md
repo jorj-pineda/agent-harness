@@ -1434,6 +1434,18 @@ scripted 90/90 matrices with labels/limits inspected.
 
 **Outcome:** each model gets a small, coherent interface and enough relevant context to make the next coding decision.
 
+**2026-10-17 — CLI root-instruction review:** configuration review renders current
+root status/size/hash/issues; saved-run inspection labels captured metadata as
+historical. Unsupported/inconsistent shapes cannot become loaded evidence, missing
+legacy/busy fields stay not checked/unrecorded, and contents/control characters
+from unknown fields are not rendered. One explicit review request or saved-run GET
+does not fetch instruction contents, create runs or change settings/history.
+Restart tests preserve archives with zero inference; historical hashes remain
+unchanged after user edits. Panel summaries and parent/nested discovery remain
+open, with no model-quality claim or Duodoro edits. Validation: 78 focused and
+1,180 offline tests (five live deselected), Ruff/format/mypy passed. Evaluation
+behavior unchanged; scripted matrices were not rerun.
+
 **2026-10-17 — Opt-in bounded root instructions:** `LOAD_ROOT_AGENTS` defaults off.
 Enabled configured turns and detached configuration review use one complete root
 `AGENTS.md` UTF-8 read, limited to 8 KiB plus sentinel, regular/no-follow descriptors
