@@ -530,7 +530,11 @@ hash and issues; `run RUN_ID` shows captured historical instruction metadata.
 Neither fetches contents, changes settings or starts work. Absent legacy/busy
 evidence remains unrecorded/not checked; unsupported or inconsistent metadata
 cannot claim a successful load. Only fixed policy/path/status and validated
-hash/size/issue values are rendered. Panel summaries remain a separate follow-up.
+hash/size/issue values are rendered. Panel saved-run selection displays captured
+instruction metadata separately from the current root review returned by the
+explicit **Estimate configuration/context** action. Hashes are collapsed details;
+missing/unsupported/inconsistent evidence stays explicit. These summaries do not
+fetch instruction contents, alter settings, persist review drafts or start work.
 
 **Prompt estimate calibration.** `PROMPT_ESTIMATE_BYTES_PER_TOKEN` defaults to 3
 and accepts finite values from 1 through 8. It divides the UTF-8 message/schema
