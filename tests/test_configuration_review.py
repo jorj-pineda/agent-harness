@@ -142,7 +142,7 @@ def test_equal_unknown_identity_is_not_matching():
 def test_old_whole_file_prompt_label_is_drift_without_rewriting_history():
     settings = Settings(_env_file=None, coding_toolset="whole_file")
     current = capture_execution_profile(settings, "ollama", ToolRegistry())
-    assert current.prompt_version == "coding-v2-whole-file-memory-scope-v1"
+    assert current.prompt_version == "coding-v2-whole-file-canonical-memory-v1"
     saved = current.model_copy(update={"prompt_version": "coding-v2"})
     original = saved.model_dump_json()
     review = compare_profiles(saved, current)

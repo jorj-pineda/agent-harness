@@ -167,9 +167,9 @@ async def test_minimal_baseline_uses_same_tools_and_budget(toolset: str, profile
         )
     else:
         assert harness.prompt_version == (
-            "coding-v2-whole-file-memory-scope-v1"
+            "coding-v2-whole-file-canonical-memory-v1"
             if toolset == "whole_file"
-            else "coding-v2-memory-scope-v1"
+            else "coding-v2-canonical-memory-v1"
         )
 
 
@@ -476,7 +476,9 @@ async def test_real_task_runtime_records_active_memory_source(monkeypatch) -> No
     provider.script(
         make_response(
             tool_calls=[
-                ToolCall(id="remember", name="remember", arguments={"note": "fixture convention"})
+                ToolCall(
+                    id="remember", name="remember_fact", arguments={"fact": "fixture convention"}
+                )
             ]
         ),
         make_response(content="Inspected"),

@@ -1654,3 +1654,21 @@ are `coding-v2-memory-scope-v1` / `coding-v2-whole-file-memory-scope-v1`; compac
 prompt text/version is unchanged, but exposed memory schemas change for both.
 Old archives/reports retain their original prompts/scopes. These are path namespaces,
 not isolation, Git identity, secure storage or evidence of model-quality improvement.
+
+### Canonical configured memory tools
+
+New API sessions, real-task evaluations and live simulated-tool smoke runs expose
+one memory write name, `remember_fact(fact, scope?)`, and one read name,
+`recall_facts(max_results?, scope?)`. They share the existing owner/workspace
+scope, note/recall byte limits, creation metadata and automatic injection. Duplicate
+`remember`/`recall` aliases are no longer advertised or callable in this configured
+registry. The low-level memory factory and historical scripted-contract runner
+retain aliases for their existing direct contracts.
+
+Legacy coding prompts now use `coding-v2-canonical-memory-v1` (or
+`coding-v2-whole-file-canonical-memory-v1`). Compact text/version is unchanged;
+its exposed tool schemas change too. Saved histories/reports retain old names and
+versions. Tool-name/schema and legacy prompt drift block guarded continuation
+under the existing configuration checks; old history remains reviewable, without
+automatic rewriting or alias substitution. This removes duplicate choices and
+schema payload, without claiming model-quality or tokenizer-count improvement.

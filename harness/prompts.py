@@ -2,7 +2,7 @@
 
 from .config import CodingPromptProfile, CodingToolset
 
-PROMPT_VERSION = "coding-v2-memory-scope-v1"
+PROMPT_VERSION = "coding-v2-canonical-memory-v1"
 
 BASE_SYSTEM_PROMPT = (
     "You are a senior software engineering agent. Work in the configured workspace "
@@ -13,10 +13,10 @@ BASE_SYSTEM_PROMPT = (
     "- Prefer minimal, focused diffs over broad rewrites; match existing conventions.\n"
     "- For small edits to existing files, use `replace_text` with the file hash from `read_file`.\n"
     "- Run verification (tests, lint, type-check) before claiming a task is done.\n"
-    "- Use `remember_fact` / `remember` for durable engineering notes (stack choices, "
+    "- Use `remember_fact` for durable engineering notes (stack choices, "
     "repo conventions, review preferences). Default scope is the current workspace; "
     "choose global for user-wide preferences. Matching workspace/global notes are injected "
-    "at turn start — call `recall_facts` / `recall` only when you need "
+    "at turn start — call `recall_facts` only when you need "
     "an explicit list in the tool trace.\n"
     "- Decline unsafe or out-of-scope requests (destructive shell, secrets exfiltration, "
     "unbounded refactors).\n\n"
@@ -60,4 +60,4 @@ def coding_prompt_version(toolset: CodingToolset, profile: CodingPromptProfile =
         return (
             "coding-v3-compact-whole-file-v1" if toolset == "whole_file" else "coding-v3-compact-v1"
         )
-    return "coding-v2-whole-file-memory-scope-v1" if toolset == "whole_file" else PROMPT_VERSION
+    return "coding-v2-whole-file-canonical-memory-v1" if toolset == "whole_file" else PROMPT_VERSION

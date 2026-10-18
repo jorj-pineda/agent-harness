@@ -75,6 +75,7 @@ def build_memory_tools(
     *,
     source_turn_id: Callable[[], str | None] | None = None,
     workspace_root: str | None = None,
+    include_aliases: bool = True,
 ) -> list[Tool]:
     """Build memory Tool instances bound to a specific user."""
     if not user_id:
@@ -154,7 +155,7 @@ def build_memory_tools(
         "reduce max_results on overflow. No notes are silently dropped from a recall result."
     )
 
-    return [
+    tools = [
         Tool(
             name="remember_fact",
             description=remember_description,
@@ -180,6 +181,11 @@ def build_memory_tools(
             fn=recall,
         ),
     ]
+    return (
+        tools
+        if include_aliases
+        else [t for t in tools if t.name in {"remember_fact", "recall_facts"}]
+    )
 
 
 def register_memory_tools(
@@ -189,9 +195,14 @@ def register_memory_tools(
     user_id: str,
     source_turn_id: Callable[[], str | None] | None = None,
     workspace_root: str | None = None,
+    include_aliases: bool = True,
 ) -> None:
     """Register memory tools on the given registry for the given user."""
     for tool in build_memory_tools(
-        store, user_id, source_turn_id=source_turn_id, workspace_root=workspace_root
+        store,
+        user_id,
+        source_turn_id=source_turn_id,
+        workspace_root=workspace_root,
+        include_aliases=include_aliases,
     ):
         registry.register(tool)

@@ -72,6 +72,7 @@ def build_registry(
         user_id=user_id,
         source_turn_id=memory_source_turn,
         workspace_root=str(Path(workspace_root).resolve()) if workspace_root else None,
+        include_aliases=False,
     )
     if workspace_root is not None:
         code_registry = ToolRegistry()

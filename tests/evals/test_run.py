@@ -272,7 +272,7 @@ async def test_live_smoke_obeys_iteration_limit(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     provider = ScriptedProvider()
-    provider.script(make_response(tool_calls=[ToolCall(id="a", name="recall", arguments={})]))
+    provider.script(make_response(tool_calls=[ToolCall(id="a", name="recall_facts", arguments={})]))
     monkeypatch.setattr(runner, "_build_live_provider", lambda *_: provider)
     scenario = {"id": "budget", "category": "explore_only", "user_input": "Recall preferences"}
     results = await run_matrix(
