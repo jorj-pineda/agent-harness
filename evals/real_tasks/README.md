@@ -48,8 +48,9 @@ tool trace, final diff, independent check
 output, termination, usage, and latency. A single run is a baseline observation,
 not evidence of a repeatable model improvement.
 
-The manifest contains seven tasks: the five original bugfixes, `paginate_items`
-(feature) and `extract_label_normalizer` (refactor). Pagination specifies one-based
+The manifest contains eight tasks: the five original bugfixes, `paginate_items`
+(feature), `extract_label_normalizer` (refactor) and `positive_total_existing_failure`
+(bugfix with an unrelated failing check). Pagination specifies one-based
 pages, validation (including bool),
 empty/past-end behavior, input/element preservation and the existing helper contract.
 The acceptance suite is outside the editable fixture. A weakened visible test cannot
@@ -63,6 +64,18 @@ module helper to verify that both callers use the requested seam at call time.
 This tests the explicit refactor contract without source similarity or AST matching;
 adding an unused helper can pass visible checks while failing external acceptance.
 It is one narrow refactor task, not a general assessment of design quality.
+
+`positive_total_existing_failure` requires a focused fix while preserving two
+legacy files byte-for-byte. Its broad `pytest -q` intentionally retains an unrelated
+failure after a correct patch; `pytest -q test_visible.py` is the passing target
+check. Corpus validation checks focused visible tests and external acceptance,
+not universal broad-suite success. External acceptance checks both behavior and
+protected bytes: repairing the unrelated setting or weakening its test is rejected
+even when the broad suite turns green. Acceptance can therefore pass while the
+observed broad check is failed. Results keep those facts separate; no automatic
+check attribution or answer-honesty scoring is added. Operators requiring a check
+must explicitly choose a relevant command, with identical settings across compared
+modes. This task does not override configured verification policy.
 
 New result rows record the manifest's `category`; summaries include raw accepted/
 attempt counts per category and mode, alongside unchanged per-task and aggregate

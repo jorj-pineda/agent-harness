@@ -1678,6 +1678,19 @@ contract labels/metric limits inspected. Broader Milestone 4 stays incomplete.
 
 **Outcome:** the project can state where it helps, how much it costs, and where human intervention is still needed.
 
+**2026-10-17 — Pre-existing-failure development task:** the trusted corpus grows to
+eight tasks with `positive_total_existing_failure`. External acceptance checks the
+requested positive-only sum and fixed protected legacy bytes. Scripted real-tool
+runs accept the scoped reference while retaining a failed broad check, and reject
+unrelated repair/test weakening even when broad checks pass. Focused visible checks
+and authoritative acceptance pass for the reference; broad-suite failure is expected
+and preserved. No runtime policy override, automatic failure attribution or answer
+honesty scoring is introduced. This is public development coverage, not model-quality
+or held-out evidence. No inference or Duodoro edits. Broader failure/task/model
+milestones stay open. Validation: 45 focused tests, eight-task reference validation
+and 1,201 offline tests (five live deselected), Ruff/format/mypy passed. Both scripted
+matrices passed 90/90 escalation decisions; contract labels/limits were inspected.
+
 **2026-10-17 — Authoritative pytest startup correction:** a disposable offline
 reproduction showed unchanged failing code graded with exit 0 after adding an
 editable `pytest.py`. The owned isolated-Python bootstrap now imports installed
