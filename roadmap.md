@@ -1678,6 +1678,23 @@ contract labels/metric limits inspected. Broader Milestone 4 stays incomplete.
 
 **Outcome:** the project can state where it helps, how much it costs, and where human intervention is still needed.
 
+**2026-10-17 — Authoritative pytest startup correction:** a disposable offline
+reproduction showed unchanged failing code graded with exit 0 after adding an
+editable `pytest.py`. The owned isolated-Python bootstrap now imports installed
+pytest before workspace modules, pins external configuration, disables conftest/
+plugin autoload/cache, and rejects acceptance paths inside the editable workspace.
+Visible checks remain project-controlled observations. New result rows identify
+`owned-pytest-v1`; historical reports retain unknown/original policy and are not
+rewritten or claimed affected. Shadow module/package, configuration/hook and
+false-visible-pass regressions preserve external rejection; seven references
+still pass. Imported implementation code retains host permissions: this is not
+process isolation or a hostile-code security guarantee. The pre-existing-failure
+fixture remains a separate follow-up; task/model/held-out milestones remain open.
+No inference, model-quality claim or Duodoro source edits. Validation: 47 focused,
+seven-task reference validation and 1,197 offline tests (five live deselected)
+passed, plus Ruff/format/mypy. Both scripted matrices passed 90/90 escalation
+decisions; scripted-contract labels and metric limits were inspected.
+
 **2026-10-17 — Refactor development coverage:** `extract_label_normalizer` expands
 the trusted corpus to seven tasks. Its explicit extraction contract is checked by
 behavior and runtime helper substitution, not source/AST resemblance; existing
