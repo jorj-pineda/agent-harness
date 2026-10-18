@@ -43,16 +43,34 @@ class AgentClient:
         self._base = base_url.rstrip("/")
 
     def create_session(
-        self, user_id: str, workspace_root: str | None = None, *, checkpoint_turns: bool = False
+        self,
+        user_id: str,
+        workspace_root: str | None = None,
+        *,
+        checkpoint_turns: bool = False,
+        inspection_only: bool = False,
     ) -> str:
         payload: dict[str, str | bool] = {"user_id": user_id}
         if workspace_root is not None:
             payload["workspace_root"] = workspace_root
         if checkpoint_turns:
             payload["checkpoint_turns"] = True
+        if inspection_only:
+            payload["inspection_only"] = True
         resp = httpx.post(f"{self._base}/sessions", json=payload, timeout=30)
         resp.raise_for_status()
-        return str(resp.json()["session_id"])
+        data = resp.json()
+        if inspection_only and (
+            not isinstance(data, dict)
+            or data.get("inspection_only") is not True
+            or not isinstance(data.get("session_id"), str)
+            or not data["session_id"].strip()
+        ):
+            raise ValueError(
+                "Server did not acknowledge an inspection-only session. No chat was sent; "
+                "use a server supporting this policy. No automatic retry."
+            )
+        return str(data["session_id"])
 
     def continue_session(
         self,
