@@ -1,15 +1,30 @@
 - id: divide_zero
+  category: bugfix
   fixture: divide_zero
   request: Fix divide so it performs real division and preserves Python's zero-division error.
 - id: slugify
+  category: bugfix
   fixture: slugify
   request: Fix slugify so punctuation and repeated whitespace produce clean lowercase ASCII slugs.
 - id: stable_dedupe
+  category: bugfix
   fixture: stable_dedupe
   request: Fix dedupe so it removes repeated values without changing the order of first appearances.
 - id: decimal_total
+  category: bugfix
   fixture: decimal_total
   request: Fix total_cents for decimal price strings, including half-up cent rounding.
 - id: parse_flags
+  category: bugfix
   fixture: parse_flags
   request: Fix parse_flags to skip blank/comment lines, strip surrounding whitespace, and keep equals signs inside values.
+- id: paginate_items
+  fixture: paginate_items
+  category: feature
+  request: >-
+    Add page_items(values, page, page_size) in pagination.py. Accept a list of arbitrary
+    objects and positive integer page/page_size arguments (bool is invalid); invalid
+    arguments raise ValueError, even for empty input. Pages are one-based. Return a
+    new list containing that page, or [] when past the end, without mutating the input
+    or copying its elements. Preserve first_page's existing behavior. Run the visible
+    checks and report the observed outcome.

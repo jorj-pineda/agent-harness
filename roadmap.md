@@ -1678,6 +1678,21 @@ contract labels/metric limits inspected. Broader Milestone 4 stays incomplete.
 
 **Outcome:** the project can state where it helps, how much it costs, and where human intervention is still needed.
 
+**2026-10-17 — Feature coverage and category reporting:** the trusted development
+corpus grows from five unchanged bugfix fixtures to six tasks with `paginate_items`.
+Its external acceptance checks cover one-based boundaries, invalid/empty inputs,
+input/element preservation and legacy helper behavior. Reference validation proves
+initial failure and reference success; scripted real-tool runs distinguish valid
+artifacts from incorrect code despite a passing weakened visible test. New rows and
+mode summaries record explicit task categories and raw accepted/attempt counts;
+missing custom/project labels remain unclassified. Old reports and their original
+five-task results remain unchanged. These are public development tasks, not held-out
+evidence or model-quality observations. The 20–30 task target, repeated model/category
+measurements and broader Milestone 6 remain open. No inference or Duodoro edits.
+Validation: 37 focused tests, six-task offline reference validation and 1,187
+offline tests (five live deselected) passed, with Ruff/format/mypy. Both scripted
+matrices passed 90/90 escalation decisions; contract labels/limits inspected.
+
 - [ ] Expand to 20–30 tasks spanning bugfixes, small features, focused refactors, and repository questions.
 - [ ] Include failure cases: ambiguous requirements, malformed tool calls, misleading search results, pre-existing failing tests, context pressure, and interruption.
 - [ ] Include a held-out task set that is not used to tune prompts.

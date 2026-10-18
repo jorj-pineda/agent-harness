@@ -1,6 +1,6 @@
-# Five trusted coding tasks
+# Trusted coding task development corpus
 
-These small Python bugfixes are the first real-tool evaluation corpus. Each task
+These small Python coding tasks form a development corpus, not a held-out set. Each task
 has a starting fixture with a failing visible test, a reference fix, and
 authoritative acceptance tests outside the agent's editable copy. The runner
 checks that the original fails and the reference passes before every model run.
@@ -12,7 +12,7 @@ Validate the corpus without making a model request:
 uv run python -m evals.real_run --validate-only
 ```
 
-Run one configured model against all five tasks, then repeat with the same model
+Run one configured model against the task manifest, then repeat with the same model
 in minimal-prompt mode. Use separate report paths:
 
 ```sh
@@ -31,6 +31,23 @@ starting revision hash, provider/model, prompt version, runtime configuration,
 tool trace, final diff, independent check
 output, termination, usage, and latency. A single run is a baseline observation,
 not evidence of a repeatable model improvement.
+
+The manifest now contains the five original bugfixes and `paginate_items`, a small
+feature task. Its request specifies one-based pages, validation (including bool),
+empty/past-end behavior, input/element preservation and the existing helper contract.
+The acceptance suite is outside the editable fixture. A weakened visible test cannot
+replace those checks. Reference validation establishes a solvable fixture, not that
+any model can solve it. New tasks are public development tasks and must not be used
+as held-out evidence after tuning on them.
+
+New result rows record the manifest's `category`; summaries include raw accepted/
+attempt counts per category and mode, alongside unchanged per-task and aggregate
+counts. These labels describe task intent, not a model-derived score. Supported
+labels are `bugfix`, `feature`, `refactor` and `unclassified`. The original five
+manifest entries are explicitly bugfixes. Missing custom/project metadata stays
+unclassified; it is never guessed from a task name or answer. Old reports remain
+unchanged, and old summaries without categories remain renderable. Compare equivalent
+task sets, revisions and budgets; expanding the corpus does not improve old results.
 
 A failed, timed-out or cancelled in-flight evaluation request makes aggregate
 prompt/completion usage `null`: the backend may have consumed unreported tokens.

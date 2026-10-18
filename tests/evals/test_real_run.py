@@ -16,13 +16,7 @@ from tests.api.conftest import ScriptedProvider, make_response
 
 @pytest.mark.parametrize(
     "task_id",
-    [
-        "divide_zero",
-        "slugify",
-        "stable_dedupe",
-        "decimal_total",
-        "parse_flags",
-    ],
+    [task.id for task in load_tasks()],
 )
 async def test_each_task_fails_initially_and_reference_passes(task_id: str) -> None:
     task = next(task for task in load_tasks() if task.id == task_id)
