@@ -557,7 +557,7 @@ group on POSIX. Command results report when stdout or stderr was truncated.
 `workspace.disposable_workspace` copies a trusted fixture and compares filesystem
 snapshots to find edits, new files, and deletions, including changes made by tests.
 It excludes `.env` files, and commands receive a small default environment rather
-than provider API keys. The five-task real evaluator uses this copy with actual
+than provider API keys. The real-task evaluator uses this copy with actual
 coding tools and external acceptance checks. A copy is not a security boundary:
 executed code can still access the host filesystem and network. Do not run
 unfamiliar repository code with this helper until an isolated execution mode exists.
@@ -1330,7 +1330,7 @@ compatibility should be checked with a real model before relying on it.
 
 Reports identify these modes and explain the proxy metrics: expected-path recall
 is not patch correctness, and a scripted verification flag is not a passing test
-suite. The separate [five-task real evaluator](evals/real_tasks/README.md) runs
+suite. The separate [real-task evaluator](evals/real_tasks/README.md) runs
 the shared application runtime with real tools on trusted disposable fixtures,
 then grades the final files with external acceptance tests. It has a same-model
 minimal-prompt mode. In the first local smoke comparison, `gemma4:12b` passed
