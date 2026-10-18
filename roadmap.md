@@ -1421,8 +1421,10 @@ Keep the loop flexible: inspect → edit → verify → repair is a useful defau
 
 **2026-10-18 — Panel inspection sessions:** a new-session-only selector requests
 server-enforced inspection and requires explicit true acknowledgment before chat.
-The active policy is separate from the selector; failed creation clears the active
-identity and disables chat rather than falling back to an earlier editing session.
+The active policy is separate from the selector; creation clears the active
+identity, previous conversation and turn review immediately, and disables chat
+until acknowledgment rather than falling back to an earlier editing session.
+Unsubmitted drafts and durable history are preserved.
 Standard creation stays compatible with missing older-server policy metadata.
 Selected saved runs show captured policy, with missing/malformed values unknown;
 reload/pending recovery remains review-only and cannot upgrade permissions. Owner
@@ -1434,9 +1436,11 @@ creation and selector changes, standard legacy compatibility, seven saved metada
 states, real API scripted-provider read completion and blocked write, unchanged
 archive/file evidence, captures, pending reload and keyed review. Desktop layouts
 were inspected at 1,280 and 960 CSS pixels without horizontal overflow. Temporary
-server/tab stopped after three fake-provider responses; no real inference, paid
-calls, model-quality claim or Duodoro edits. Broader task-state, compaction and real
-workflow validation targets remain open.
+server/tab stopped after three fake-provider responses. A review follow-up checked
+eight failed-creation cases and delayed/duplicate success with prior conversation,
+turn review and selection cleared, draft retained and zero extra model calls.
+No real inference, paid calls, model-quality claim or Duodoro edits. Broader task
+state, compaction and real workflow validation targets remain open.
 
 **2026-10-18 — CLI inspection sessions:** `chat --inspection-only` selects a fresh
 server-enforced inspection session and refuses missing/false/malformed creation

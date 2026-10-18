@@ -1734,9 +1734,11 @@ The selector applies only to creation; changing it never changes the active
 session's policy. The status line shows the server-acknowledged active policy,
 separately from the next-session selection. Inspection requires a literal true
 acknowledgment and a usable session ID. A failed, malformed or unsupported creation
-disables chat and clears the active identity instead of falling back to a prior
-editing session; no chat or automatic retry is sent. Standard creation remains
-compatible with older servers, whose missing policy acknowledgment stays unrecorded.
+disables chat and clears the active identity, previous conversation and turn review
+instead of falling back to a prior editing session. Unsubmitted input is preserved,
+and saved history remains available; no chat or automatic retry is sent. Standard
+creation remains compatible with older servers, whose missing policy acknowledgment
+stays unrecorded.
 
 Saved-run review shows the captured tool policy, with missing/malformed values
 unknown and no new permission to continue. Pending recovery after reload starts

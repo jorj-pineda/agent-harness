@@ -376,6 +376,9 @@ async function createSession() {
   if (inspectionOnly) body.inspection_only = true;
 
   // A failed creation must not fall back to an earlier editing session.
+  selectReviewTarget(null);
+  els.messages.replaceChildren();
+  els.envelope.replaceChildren(el("p", "muted", "No turn in this session."));
   sessionId = null;
   sessionUsable = false;
   els.sessionPill.textContent = "no session";
@@ -400,7 +403,6 @@ async function createSession() {
       addErrorMessage("Server did not acknowledge the requested session tool policy and identity. No chat was sent. Create a new session with a supporting server; no automatic retry.");
       return;
     }
-    selectReviewTarget(null);
     sessionId = data.session_id;
     sessionUsable = true;
     uncertain = false;
@@ -413,7 +415,6 @@ async function createSession() {
       : data.inspection_only === false
         ? "Active tool policy: standard (server acknowledged). Selection changes apply to the next new session only."
         : "Active tool policy: unrecorded by this server. Inspection was not requested. Selection changes apply to the next new session only.";
-    els.messages.replaceChildren();
     els.input.focus();
   } catch (err) {
     addErrorMessage(`Network error creating session: ${err}`);
