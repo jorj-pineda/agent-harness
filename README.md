@@ -1705,5 +1705,26 @@ This is a model-tool permission boundary, not host process isolation or a seal o
 the repository. Other processes and explicit owner operations can still change
 files. Archive/checkpoint storage and opt-in turn captures keep their existing
 behavior; ordinary admission, budget and path limits still apply. Restored history
-remaining transport-read-only is a separate restriction. CLI and panel selection
-of this new policy are follow-up slices; no model-quality gain is established.
+remaining transport-read-only is a separate restriction. The CLI supports this policy
+as described below; panel selection remains a follow-up slice. No model-quality
+gain is established.
+
+
+Start a fresh inspection session with:
+
+```sh
+uv run agent-harness chat --workspace /absolute/path/to/repo --inspection-only
+```
+
+The thin CLI requires an explicit `inspection_only: true` creation acknowledgment
+and a usable session ID before entering chat. Missing, false or malformed policy
+acknowledgment (including an older server ignoring the flag) exits without sending
+a chat request or retrying automatically. `--checkpoints` may still be selected;
+this captures bounded plaintext under the existing storage rules. Omitting the
+inspection flag preserves the ordinary request shape and session behavior.
+
+The live announcement describes model tools and allows checks to remain `not_run`.
+`run <id>` shows captured `saved_tool_policy` as inspection-only, standard, or
+unrecorded/unsupported for missing/malformed evidence, alongside existing completion,
+check and diff review. Raw JSON retains server evidence. Historical policy grants
+no continuation permission, and this flag cannot upgrade a saved session or fork.

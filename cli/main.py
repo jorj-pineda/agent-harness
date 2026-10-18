@@ -62,6 +62,11 @@ def chat(
     checkpoints: bool = typer.Option(
         False, "--checkpoints", help="Save bounded plaintext workspace captures before/after turns."
     ),
+    inspection_only: bool = typer.Option(
+        False,
+        "--inspection-only",
+        help="Restrict model tools to file inspection and memory recall.",
+    ),
     workspace: str | None = typer.Option(
         None, "--workspace", help="Absolute path to repo root (sets workspace_root on session)."
     ),
@@ -74,16 +79,22 @@ def chat(
     """Interactive REPL — connect to a running agent-harness server and chat."""
     client = AgentClient(base_url)
     try:
-        session_id = (
-            client.create_session(user_id, workspace, checkpoint_turns=True)
-            if checkpoints
-            else client.create_session(user_id, workspace)
-        )
+        options = {}
+        if checkpoints:
+            options["checkpoint_turns"] = True
+        if inspection_only:
+            options["inspection_only"] = True
+        session_id = client.create_session(user_id, workspace, **options)
     except Exception as exc:
         typer.echo(f"Error: could not create session — {exc}", err=True)
         raise typer.Exit(code=1) from exc
 
     typer.echo(f"Connected  session={session_id}")
+    if inspection_only:
+        typer.echo(
+            "Tool policy: inspection only (server acknowledged). No model commands, file edits "
+            "or memory writes. Not host process isolation; checks may remain not_run."
+        )
     typer.echo(
         "Type your message and press Enter. /check and /retry recover a lost response; "
         "/quit exits.\n"
@@ -385,6 +396,7 @@ def show_run(record: dict) -> None:
         f"provider={record['provider']} model={record.get('configured_model') or 'unrecorded'}"
     )
     profile = record.get("execution_profile")
+    show_tool_policy(profile.get("inspection_only") if isinstance(profile, dict) else None)
     if profile is None:
         typer.echo("execution_profile=unrecorded (configuration not captured in this record)")
     else:
@@ -418,6 +430,20 @@ def show_run(record: dict) -> None:
         show_turn(summarize(record["response"]))
     else:
         typer.echo("No saved final response. Workspace edits may exist; inspect before new work.")
+
+
+def show_tool_policy(value: object) -> None:
+    """Render captured policy without interpreting missing or malformed legacy evidence."""
+    if value is True:
+        typer.echo(
+            "saved_tool_policy=inspection_only (model file inspection and recall; "
+            "no commands, file edits or memory writes)"
+        )
+    elif value is False:
+        typer.echo("saved_tool_policy=standard")
+    else:
+        typer.echo("saved_tool_policy=unrecorded_or_unsupported")
+    typer.echo("Historical tool policy only; not host isolation or permission to continue.")
 
 
 @app.command()

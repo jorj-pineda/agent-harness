@@ -1419,6 +1419,19 @@ Keep the loop flexible: inspect → edit → verify → repair is a useful defau
 
 **Done when:** tests prove that an unrelated read cannot certify a fix, `pytest --version` cannot certify verification, a later edit invalidates earlier checks, a later failure is not hidden by an earlier pass, and early completion produces bounded corrective feedback.
 
+**2026-10-18 — CLI inspection sessions:** `chat --inspection-only` selects a fresh
+server-enforced inspection session and refuses missing/false/malformed creation
+acknowledgment before any chat submission. The ordinary request shape and existing
+checkpoint opt-in stay compatible. Live output explains the tool boundary and
+not_run checks; saved-run review renders captured policy with missing/malformed
+values unknown, without granting continuation permission or echoing unknown strings.
+Real API regressions cover reads, rejected writes, combined captures and restart
+review with unchanged user content; older-server simulations dispatch creation only.
+Panel selection follows separately. No inference, model-quality claim or Duodoro
+edits; broader roadmap targets remain open. Validation: 86 focused and 1,256 offline
+tests (five live deselected), Ruff/format/mypy and CLI help passed. Evaluation
+behavior is unchanged; no new model comparison was run.
+
 **2026-10-18 — Inspection-only session policy:** new API sessions may select a
 strict, immutable inspection flag. The shared registry and loop allow only file
 reads/search/listing and memory recall, rejecting an entire mixed batch before
