@@ -73,6 +73,7 @@ async def test_real_tool_edit_is_scored_from_final_files(tmp_path: Path) -> None
         mode="harness",
     )
     assert result.passed is True
+    assert result.acceptance_output_truncated is False
     assert result.termination == "accepted"
     assert result.modified == ("calc.py",)
     assert result.added == ()
