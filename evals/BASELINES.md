@@ -1668,3 +1668,125 @@ trusted references remain solvable; shadow/configuration regressions are offline
 mechanics evidence only. Old reports keep their original grading limitations and
 are not regraded. This is not process isolation: imported implementation code
 retains host access. No model-quality improvement, Duodoro edits or paid calls.
+
+## 2026-10-17 — Bounded Gemma development-task envelope
+
+Six live real-tool attempts used three public trusted fixtures at clean harness
+revision `8e6e454c93bfa40ef0af6541de01feb71d18da66`: one refactor, one bugfix
+with a protected pre-existing failure, and one two-module feature. This is a
+small development observation, not a held-out evaluation or a measured gain.
+No runtime, prompt or default setting was changed following these attempts.
+
+Evidence:
+
+- [Raw results, normalized traces and bounded final diffs](results/2026-10-17-gemma4-12b-development-envelope.json)
+- [Frozen settings, order, file hashes and cleanup](results/2026-10-17-gemma4-12b-development-envelope.metadata.json)
+- [Observed loaded-model metadata](results/2026-10-17-gemma4-12b-development-envelope.active-model.json)
+- [Frozen inference recipe](results/2026-10-17-gemma4-12b-development-envelope-reproduce.py)
+- [Post-hoc saved-diff replay audit](results/2026-10-17-gemma4-12b-development-envelope.replay-audit.json)
+- Extended replay diagnostics: [compact](results/2026-10-17-gemma4-12b-development-envelope.replay-harness-failure.txt), [minimal](results/2026-10-17-gemma4-12b-development-envelope.replay-minimal-failure.txt)
+
+The exact model was local `gemma4:12b`, digest
+`4eb23ef187e2c5462566d6a1d3bbbc2f1346d0b4327cbb66d58fffbcc9b2b05c`,
+Ollama 0.33.2, on an Apple M1 Pro with 16 GiB RAM. Requests explicitly used
+16,384 context and thinking off; the active-model observation also reported
+16,384. This observation does not attest every request's backend compliance.
+Sampling temperature was 0. The shared application runtime used the full toolset
+and compact `coding-v3-compact-v1` versus `minimal-v1`. All six attempts used
+`owned-pytest-v1` independent acceptance outside disposable editable workspaces.
+Trusted task code still runs with host permissions; copies are not a sandbox.
+
+Each attempt had eight model iterations, 24 tools, a 180-second dispatch wall
+budget, 60-second request timeout, 8,192 reported output tokens per turn,
+2,048 requested output tokens per request, 64,000 total tokens, 16,384 effective
+context and 256 minimum output tokens. Prompt estimation used 3 bytes/token.
+One completion recovery and two identical calls were allowed, with four touched
+files. Plan/check requirements, root instruction loading and support tools were
+off; no project check argv was configured. Thus observed check status uses the
+recognized-command heuristic, not a task-specific acceptance command. Settings
+came from explicit defaults plus frozen overrides, with dotenv disabled and
+isolated unseeded fact stores. Token gates remain estimate-based and the dispatch
+wall limit is not a hard end-to-end latency bound.
+
+There was one attempt per task/mode, in the table's order. All planned attempts
+are retained, with no model reruns, prompt tuning or manual patch repairs.
+
+| Task | Prompt | Artifact accepted | Completion | Observed check | Seconds | Tools | Prompt / output tokens |
+|---|---|---|---|---|---:|---:|---:|
+| `extract_label_normalizer` | compact | yes | iteration limit | passed | 90.7 | 7 | 22,810 / 688 |
+| `extract_label_normalizer` | minimal | yes | completed | passed | 77.8 | 6 | 20,319 / 630 |
+| `positive_total_existing_failure` | minimal | yes | iteration limit | stale | 56.6 | 7 | 20,667 / 311 |
+| `positive_total_existing_failure` | compact | yes | iteration limit | passed | 73.3 | 8 | 23,021 / 481 |
+| `retry_after_seconds` | compact | no | iteration limit | passed | 118.9 | 8 | 24,301 / 883 |
+| `retry_after_seconds` | minimal | no | iteration limit | not run | 89.2 | 7 | 20,850 / 724 |
+
+Both prompts produced accepted final artifacts on **2/3** tasks. Only the minimal
+refactor reached a completed answer: completed-and-accepted workflows were
+**compact 0/3, minimal 1/3**. Five attempts exhausted iterations; none ended on
+provider/request failures, length, context, total-token, output-token or wall
+limits. All six had reported usage. The aggregate false-completion count is zero
+because the sole completed attempt passed acceptance; this is not a general
+correctness guarantee for passing check states. Median latency was 90.7 versus
+77.8 seconds, median tools 8 versus 7, and median total tokens 23,502 versus
+20,978 (compact versus minimal). One sample per cell, fixed order, a cold first
+compact request and shared host conditions prevent a reliable latency or prompt
+quality comparison. These counts do not establish improvement over older runs.
+
+Trace review explains the practical limits:
+
+- Both refactors satisfied independent helper-substitution and preserved-behavior
+  checks. The compact attempt recovered from one exact-text mismatch, wrote a
+  valid artifact and ran a passing visible check, but never produced a final
+  answer within eight iterations.
+- Both positive-total patches passed acceptance and preserved protected legacy
+  bytes. Each recovered from an escaped-newline edit mismatch. Minimal ran a
+  failing focused check before the final write and did not recheck, leaving stale
+  evidence. Compact saw the known broad failure before editing, then passed only
+  the focused check afterward; it neither reran the broad suite nor finished an
+  answer. A passed latest focused check does not erase the known broad failure.
+- Both feature patches updated both modules but failed four independent cases:
+  very long leading-zero inputs (Python's integer-string conversion limit) and
+  non-ASCII decimal digits accepted by `isdigit()`. Compact passed the visible
+  check despite these defects; minimal ran no check. File count and visible
+  check success do not demonstrate task acceptance.
+- Four normalized blank final replies triggered recovery across the six traces.
+  This is observed reply/recovery behavior, not evidence about hidden reasoning
+  or its backend cause. Five attempts emitted a plan despite the gate being off;
+  bookkeeping consumed tools/iterations, without proving a causal remedy.
+
+Post-hoc replay applied each saved diff unchanged to a fresh copy of its original
+fixture and reproduced all six acceptance exit codes. Original source, criteria,
+references and raw results remained unchanged. The two feature diagnostics only
+raised bounded output capture from 12,000 to 200,000 bytes, using the same owned
+bootstrap and criteria: each reports 4 failed, 24 passed. This exposes failure
+summaries obscured by long parameter IDs in the original bounded output; it is
+not new inference, a model retry, a repaired patch or a changed score.
+
+To reproduce inference, extract the frozen recipe to an absolute temporary path,
+prepare an isolated **clean** checkout of the pinned harness revision and its
+normal dependencies, and install the exact model digest on local Ollama. From
+that checkout run (substitute the extracted recipe path):
+
+```sh
+uv run python -c 'import runpy; runpy.run_path("/absolute/tmp/reproduce.py", run_name="__main__")' --report /absolute/new-directory/report.json
+```
+
+The archived recipe is Python-AST-equivalent to the executed script, with only
+formatting/comments changed. It refuses a changed/dirty harness, a different
+model digest or an existing report/metadata path. The PR's newer checkout is
+intentionally rejected. Backend/hardware nondeterminism can still change results.
+For artifact-only replay, copy the fixture, apply its row's unified `diff` with
+`git apply`, then use `evals.real_run.acceptance_check` on that disposable copy;
+no model is required.
+
+The model was initially unloaded and explicitly unloaded afterward; a subsequent
+`ollama ps` was empty. The pre-existing Ollama server remained running. No paid
+calls, additional models, Duodoro edits or manual rescues occurred. Larger repeated
+and held-out comparisons, repository questions and ten real-project workflows
+remain open; this six-attempt development run does not complete Milestone 6.
+
+Validation of the archival PR: 99 focused tests and 1,205 offline tests passed
+(five live tests deselected), plus Ruff, formatting and mypy. Both scripted matrices
+passed 90/90 escalation decisions; `scripted-contract` labels and metric limits
+were inspected. The existing Chroma deprecation warning remains. These offline
+checks validate mechanics and packaging, separately from the six live observations.

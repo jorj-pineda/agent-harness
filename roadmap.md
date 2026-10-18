@@ -1678,6 +1678,24 @@ contract labels/metric limits inspected. Broader Milestone 4 stays incomplete.
 
 **Outcome:** the project can state where it helps, how much it costs, and where human intervention is still needed.
 
+
+**2026-10-17 — Bounded local development comparison recorded:** six real-tool
+`gemma4:12b` attempts on the new refactor, protected pre-existing-failure bugfix and
+two-module feature used clean revision `8e6e454`, compact/minimal prompts and the
+same recorded limits. Both prompts yielded 2/3 accepted artifacts; only minimal's
+refactor completed an answer (compact 0/3, minimal 1/3 completed-and-accepted).
+Five attempts hit the iteration limit. Both feature patches failed independent
+long-leading-zero and non-ASCII cases, despite compact's passing visible check.
+All saved diffs reproduced their acceptance outcomes without repairs; source,
+criteria and references stayed unchanged. Raw traces, recipe, settings, cleanup
+and limits are in `evals/BASELINES.md`. One sample per cell on public development
+tasks establishes no prompt-quality gain. No paid calls, new models, runtime
+tuning or Duodoro edits; the model was unloaded. Repeated/held-out comparisons,
+20–30 tasks, repository questions and ten real-project workflows remain open.
+Validation: 99 focused and 1,205 offline tests (five live deselected), Ruff,
+formatting and mypy passed; both scripted matrices passed 90/90 with labels
+and metric limits inspected.
+
 **2026-10-17 — Two-module feature coverage:** `retry_after_seconds` grows the
 trusted public development corpus to nine tasks. Its reference updates parser and
 client modules; acceptance checks both public behaviors, not filename overlap or

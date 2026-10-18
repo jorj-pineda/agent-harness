@@ -1,0 +1,55 @@
+{
+  "scope": "Post-hoc unchanged saved-diff replay; no inference or patch repair. Same owned grader and criteria. Failed-artifact diagnostics only raise output capture from 12000 to 200000 bytes.",
+  "report_sha256": "22acac744e51be71d6ee242611333c6ef6aa9462317127468c18a17fd52e287a",
+  "source_files_unchanged": true,
+  "rows": [
+    {
+      "task_id": "extract_label_normalizer",
+      "mode": "harness",
+      "diff_sha256": "eb3460c2338fb852ce3389e159da4e79df78b9071ebe6316ba22e323ebbf64bb",
+      "original_exit_code": 0,
+      "replay_exit_code": 0
+    },
+    {
+      "task_id": "extract_label_normalizer",
+      "mode": "minimal",
+      "diff_sha256": "7b6b99fec55df1e9a0b6f5e4e79230163b4a4b7a8b1d993882dfdc2f0f2ab7b4",
+      "original_exit_code": 0,
+      "replay_exit_code": 0
+    },
+    {
+      "task_id": "positive_total_existing_failure",
+      "mode": "minimal",
+      "diff_sha256": "d13901285e5438a414de63d494525e0ae325ee2ff83fdc5173f078daa74637f7",
+      "original_exit_code": 0,
+      "replay_exit_code": 0
+    },
+    {
+      "task_id": "positive_total_existing_failure",
+      "mode": "harness",
+      "diff_sha256": "d13901285e5438a414de63d494525e0ae325ee2ff83fdc5173f078daa74637f7",
+      "original_exit_code": 0,
+      "replay_exit_code": 0
+    },
+    {
+      "task_id": "retry_after_seconds",
+      "mode": "harness",
+      "diff_sha256": "f3ffc031637a1735bc1b4ca4155e0ca115c83a78d087a35f6506eece6f0e6bf2",
+      "original_exit_code": 1,
+      "replay_exit_code": 1,
+      "extended_output_truncated": false,
+      "extended_output_sha256": "04ccde73e3df115db6c44aed235167801baf9e17860be0f1f03705ba8528cd52",
+      "pytest_summary": "4 failed, 24 passed in 0.03s"
+    },
+    {
+      "task_id": "retry_after_seconds",
+      "mode": "minimal",
+      "diff_sha256": "afa311944cadf987a218895efaa42c61755194cc977523aea540e72fca248c01",
+      "original_exit_code": 1,
+      "replay_exit_code": 1,
+      "extended_output_truncated": false,
+      "extended_output_sha256": "c814324fe5c7e69f6170b57ca644ef7de5dd57fbf71f67c259fa3be65208fc2c",
+      "pytest_summary": "4 failed, 24 passed in 0.04s"
+    }
+  ]
+}
