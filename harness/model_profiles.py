@@ -33,6 +33,7 @@ class ModelProfile(BaseModel):
     )
     ollama_think: bool | None = None
     max_completion_retries: int | None = Field(default=None, ge=0, le=3)
+    max_tool_iterations: int | None = Field(default=None, ge=1, le=32, strict=True)
 
     @model_validator(mode="after")
     def check_binding(self) -> ModelProfile:
@@ -51,7 +52,12 @@ class ModelProfile(BaseModel):
         }
         if self.provider == "ollama":
             overrides["ollama_num_ctx"] = self.max_context_tokens
-        for name in ("prompt_estimate_bytes_per_token", "ollama_think", "max_completion_retries"):
+        for name in (
+            "prompt_estimate_bytes_per_token",
+            "ollama_think",
+            "max_completion_retries",
+            "max_tool_iterations",
+        ):
             value = getattr(self, name)
             if value is not None:
                 overrides[name] = value

@@ -1435,6 +1435,22 @@ scripted 90/90 matrices with labels/limits inspected.
 **Outcome:** each model gets a small, coherent interface and enough relevant context to make the next coding decision.
 
 
+**2026-10-18 — Optional named-profile iteration budgets:** a strict optional
+1–32 integer binds the existing model-loop iteration cap when the profile is
+selected. Missing/null values inherit the individual setting; unselected profiles
+stay inert and the global default remains eight. Omitted fields preserve old
+profile hashes, while explicit changes participate in selected identity and existing
+execution-setting drift guards. Scripted real-file evaluation covers an accepted
+patch at one iteration versus a completed accepted result at two; restart tests
+block changed limits before inference and preserve source history/user files.
+Other budgets and completion/check semantics remain unchanged. This enables an
+explicit budget choice, without a model-quality claim or automatic tuning. No
+inference, paid calls or Duodoro edits; the bounded Gemma comparison is separate
+and broader profile/context/validation targets remain open. Validation: 78 focused
+and 1,226 offline tests (five live deselected), Ruff/format/mypy passed. Both
+scripted matrices passed 90/90 with contract labels/metric limits inspected.
+
+
 **2026-10-18 — Canonical configured memory tools:** shared application, real-task
 and simulated-tool runtime now expose only remember_fact/recall_facts, retaining
 scope, bounds and provenance. Low-level memory factories and historical scripted
