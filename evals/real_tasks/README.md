@@ -1,7 +1,7 @@
 # Trusted coding task development corpus
 
 These small Python coding tasks form a development corpus, not a held-out set. Each task
-has a starting fixture with a failing visible test, a reference fix, and
+has a starting fixture with a failing visible test, a reference solution, and
 authoritative acceptance tests outside the agent's editable copy. The runner
 checks that the original fails and the reference passes before every model run.
 It grades the final files, regardless of the agent's answer or the visible tests.
@@ -32,13 +32,21 @@ tool trace, final diff, independent check
 output, termination, usage, and latency. A single run is a baseline observation,
 not evidence of a repeatable model improvement.
 
-The manifest now contains the five original bugfixes and `paginate_items`, a small
-feature task. Its request specifies one-based pages, validation (including bool),
+The manifest contains seven tasks: the five original bugfixes, `paginate_items`
+(feature) and `extract_label_normalizer` (refactor). Pagination specifies one-based
+pages, validation (including bool),
 empty/past-end behavior, input/element preservation and the existing helper contract.
 The acceptance suite is outside the editable fixture. A weakened visible test cannot
 replace those checks. Reference validation establishes a solvable fixture, not that
 any model can solve it. New tasks are public development tasks and must not be used
 as held-out evidence after tuning on them.
+
+The refactor task extracts a shared `strip().lower()` helper from two callers.
+Acceptance checks Unicode/error/duplicate/iteration behavior and replaces the
+module helper to verify that both callers use the requested seam at call time.
+This tests the explicit refactor contract without source similarity or AST matching;
+adding an unused helper can pass visible checks while failing external acceptance.
+It is one narrow refactor task, not a general assessment of design quality.
 
 New result rows record the manifest's `category`; summaries include raw accepted/
 attempt counts per category and mode, alongside unchanged per-task and aggregate

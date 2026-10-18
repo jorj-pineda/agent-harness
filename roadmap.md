@@ -1678,6 +1678,20 @@ contract labels/metric limits inspected. Broader Milestone 4 stays incomplete.
 
 **Outcome:** the project can state where it helps, how much it costs, and where human intervention is still needed.
 
+**2026-10-17 — Refactor development coverage:** `extract_label_normalizer` expands
+the trusted corpus to seven tasks. Its explicit extraction contract is checked by
+behavior and runtime helper substitution, not source/AST resemblance; existing
+Unicode, errors, duplicate/order and iterable behavior stay protected. A scripted
+real-tool regression accepts the reference and rejects an unused helper despite
+passing visible tests, recording refactor counts in the serialized report. Source
+fixtures remain unchanged; all seven initial-fail/reference-pass validations pass.
+These are public development checks, with no inference, model-quality claim or
+Duodoro edits. Pre-existing-failure coverage is a separate next PR; 20–30 tasks,
+held-out sets and repeated model/category comparisons remain open. Validation:
+34 focused and 1,190 offline tests (five live deselected), Ruff/format/mypy passed.
+Both scripted matrices passed 90/90 escalation decisions; contract labels and
+metric limits were inspected.
+
 **2026-10-17 — Feature coverage and category reporting:** the trusted development
 corpus grows from five unchanged bugfix fixtures to six tasks with `paginate_items`.
 Its external acceptance checks cover one-based boundaries, invalid/empty inputs,
