@@ -393,6 +393,16 @@ async def run_task(
         )
 
 
+def _acceptance_counts(rows: list[RealTaskResult]) -> dict[str, int]:
+    return {
+        "accepted": sum(r.passed for r in rows),
+        "completed_and_accepted": sum(
+            r.passed and r.completion_status == "completed" for r in rows
+        ),
+        "attempts": len(rows),
+    }
+
+
 def summarize(results: list[RealTaskResult]) -> dict[str, Any]:
     """Aggregate raw counts per mode; percentages are left to the reader."""
     summary: dict[str, Any] = {}
@@ -406,20 +416,13 @@ def summarize(results: list[RealTaskResult]) -> dict[str, Any]:
             if r.prompt_tokens is not None and r.completion_tokens is not None
         ]
         summary[mode] = {
-            "accepted": sum(r.passed for r in rows),
-            "attempts": len(rows),
+            **_acceptance_counts(rows),
             "per_task": {
-                task_id: {
-                    "accepted": sum(r.passed for r in rows if r.task_id == task_id),
-                    "attempts": sum(r.task_id == task_id for r in rows),
-                }
+                task_id: _acceptance_counts([r for r in rows if r.task_id == task_id])
                 for task_id in sorted({r.task_id for r in rows})
             },
             "per_category": {
-                category: {
-                    "accepted": sum(r.passed for r in rows if r.category == category),
-                    "attempts": sum(r.category == category for r in rows),
-                }
+                category: _acceptance_counts([r for r in rows if r.category == category])
                 for category in sorted({r.category for r in rows})
             },
             "terminations": dict(sorted(Counter(r.termination for r in rows).items())),
@@ -437,7 +440,12 @@ def summarize(results: list[RealTaskResult]) -> dict[str, Any]:
 def summary_markdown(summary: dict[str, Any]) -> str:
     modes = list(summary)
     task_ids = sorted({task for mode in modes for task in summary[mode]["per_task"]})
-    lines = ["| Task | " + " | ".join(modes) + " |", "|---|" + "---|" * len(modes)]
+    lines = [
+        "Artifact acceptance (independent final-state checks):",
+        "",
+        "| Task | " + " | ".join(modes) + " |",
+        "|---|" + "---|" * len(modes),
+    ]
     for task_id in task_ids:
         cells = [
             "{accepted}/{attempts}".format(
@@ -468,6 +476,24 @@ def summary_markdown(summary: dict[str, Any]) -> str:
                 for mode in modes
             ]
             lines.append(f"| {category} | " + " | ".join(cells) + " |")
+    lines.extend(
+        [
+            "",
+            "Completed and accepted requires both completion_status=completed and artifact "
+            "acceptance; it does not require an observed passing check or grade answer claims.",
+            "",
+            "| Workflow | " + " | ".join(modes) + " |",
+            "|---|" + "---|" * len(modes),
+            "| Completed and accepted | "
+            + " | ".join(
+                f"{summary[m]['completed_and_accepted']}/{summary[m]['attempts']}"
+                if "completed_and_accepted" in summary[m]
+                else "unknown"
+                for m in modes
+            )
+            + " |",
+        ]
+    )
     return "\n".join(lines)
 
 
@@ -569,7 +595,9 @@ def main(argv: list[str] | None = None) -> int:
     write_report(args.report, started, results)
     summary = summarize(results)
     print(summary_markdown(summary))
-    print(f"Wrote {args.report} ({sum(r.passed for r in results)}/{len(results)} accepted)")
+    print(
+        f"Wrote {args.report} ({sum(r.passed for r in results)}/{len(results)} artifacts accepted)"
+    )
     return 0
 
 

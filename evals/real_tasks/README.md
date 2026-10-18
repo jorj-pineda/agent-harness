@@ -215,3 +215,13 @@ explicit provider must match the selected profile; no fallback/selection occurs.
 canonical definition hash (null means no selected profile), alongside resolved
 budgets/options. Historical reports are not rewritten. Profiles do not attest the
 served model revision, tooling capabilities, tokenizer fit or coding quality.
+
+Summary `accepted` counts refer to final artifacts passing independent acceptance.
+New summaries separately record `completed_and_accepted` per mode, task and category:
+only accepted artifacts with `completion_status="completed"` count. An accepted
+patch that exhausted its budget stays accepted but is not a completed workflow.
+This metric does not require a model-run passing check, nor assess answer claims;
+inspect `verification_status`, raw checks and final answers separately. Human output
+labels artifact acceptance and shows completed-and-accepted totals. Rendering an old
+summary without the new field says `unknown`, never inferring it from acceptance.
+Historical reports and their original summaries are not rewritten.

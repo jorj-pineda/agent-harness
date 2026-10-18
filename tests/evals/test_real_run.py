@@ -230,7 +230,10 @@ async def test_summary_counts_acceptance_false_completion_and_terminations() -> 
     harness = summary["harness"]
     assert harness["accepted"] == 1
     assert harness["attempts"] == 2
-    assert harness["per_task"] == {"divide_zero": {"accepted": 1, "attempts": 2}}
+    assert harness["per_task"] == {
+        "divide_zero": {"accepted": 1, "completed_and_accepted": 1, "attempts": 2}
+    }
+    assert harness["completed_and_accepted"] == 1
     assert harness["terminations"] == {"acceptance_failed": 1, "accepted": 1}
     assert harness["false_completion"] == 1
     assert harness["median_total_tokens"] == 40
@@ -484,3 +487,44 @@ async def test_real_task_runtime_records_active_memory_source(monkeypatch) -> No
     assert len(captured) == 1 and captured[0][0] == "eval"
     assert captured[0][1] is not None
     UUID(captured[0][1])
+
+
+async def test_accepted_iteration_stop_stays_separate_from_completed_workflow(tmp_path):
+    task = load_tasks()[0]
+    provider = ScriptedProvider()
+    provider.script(
+        make_response(
+            tool_calls=[
+                ToolCall(
+                    id="edit",
+                    name="write_file",
+                    arguments={
+                        "path": "calc.py",
+                        "content": (task.reference / "calc.py").read_text(),
+                    },
+                )
+            ]
+        )
+    )
+    result = await run_task(
+        task,
+        provider=provider,
+        settings=Settings(_env_file=None, max_tool_iterations=1),
+        mode="minimal",
+    )
+    assert result.passed and result.completion_status == "budget_exhausted"
+    assert result.verification_status == "not_run"
+    counts = {"accepted": 1, "completed_and_accepted": 0, "attempts": 1}
+    summary = summarize([result])
+    assert summary["minimal"]["per_task"][task.id] == counts
+    assert summary["minimal"]["per_category"]["bugfix"] == counts
+    assert summary["minimal"]["completed_and_accepted"] == 0
+    rendered = summary_markdown(summary)
+    assert "Artifact acceptance (independent final-state checks)" in rendered
+    assert "| divide_zero | 1/1 |" in rendered
+    assert "| Completed and accepted | 0/1 |" in rendered
+    report = tmp_path / "report.json"
+    real_run.write_report(report, "fixture-start", [result])
+    saved = json.loads(report.read_text())
+    assert saved["summary"] == summary
+    assert saved["results"][0]["completion_status"] == "budget_exhausted"
