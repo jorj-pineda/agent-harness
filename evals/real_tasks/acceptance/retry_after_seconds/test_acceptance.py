@@ -6,6 +6,7 @@ from retry_client import retry_delay
 @pytest.mark.parametrize(
     "value,expected",
     [("0", 0), (" 002 \t", 2), ("86400", 86400), ("0" * 5000, 0), ("0" * 5000 + "1", 1)],
+    ids=["zero", "padded-two", "upper-bound", "leading-zeros-5000", "leading-zeros-5000-plus-one"],
 )
 def test_numeric_boundaries_and_leading_zeros(value, expected):
     parsed = parse_retry_after(value)
@@ -33,6 +34,24 @@ def test_numeric_boundaries_and_leading_zeros(value, expected):
         "Wed, 21 Oct 2015 07:28:00 GMT",
         "86401",
         "9" * 5000,
+    ],
+    ids=[
+        "none",
+        "integer",
+        "boolean",
+        "list",
+        "empty",
+        "whitespace",
+        "negative",
+        "signed",
+        "fraction",
+        "exponent",
+        "underscore",
+        "arabic-indic-digits",
+        "fullwidth-digits",
+        "http-date",
+        "over-bound",
+        "oversized-digits-5000",
     ],
 )
 def test_unsupported_inputs_fall_back_without_exceptions(value):
