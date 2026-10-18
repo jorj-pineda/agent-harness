@@ -1650,3 +1650,21 @@ This fixes the reporting limitation seen in the retired context trial: its faile
 first request showed zero tokens because the wrapper had no response. That did not
 prove no backend work. Historical raw reports are left intact with their existing
 notes; this change affects new evaluations. No model comparison or quality claim.
+
+## 2026-10-17 — Acceptance bootstrap correction (offline)
+
+A disposable unchanged `divide_zero` fixture returned acceptance exit 1 normally,
+then exit 0 after adding `pytest.py` containing `raise SystemExit(0)`. The old
+`python -m pytest` invocation selected the editable module before the external
+acceptance suite ran. No inference was used, and this reproduction does not show
+that any historical model attempt used that path.
+
+New evaluations record `acceptance_policy: owned-pytest-v1`: Python `-I -B` starts
+an external bootstrap, installed pytest loads before task imports, configuration
+is pinned outside the workspace, conftest/plugin autoload and cache are disabled,
+and an acceptance path inside the editable workspace is rejected. A passing
+model-invoked check can still be rejected by authoritative acceptance. Seven
+trusted references remain solvable; shadow/configuration regressions are offline
+mechanics evidence only. Old reports keep their original grading limitations and
+are not regraded. This is not process isolation: imported implementation code
+retains host access. No model-quality improvement, Duodoro edits or paid calls.

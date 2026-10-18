@@ -6,6 +6,22 @@ authoritative acceptance tests outside the agent's editable copy. The runner
 checks that the original fails and the reference passes before every model run.
 It grades the final files, regardless of the agent's answer or the visible tests.
 
+Authoritative pytest uses an owned bootstrap launched with Python `-I -B`. It
+imports installed pytest before adding workspace imports, pins an external empty
+pytest configuration, disables conftest/plugin autoload and the cache provider,
+and rejects an acceptance directory inside the editable workspace. Workspace
+`pytest.py`/packages cannot select the grader. Ordinary visible/model-invoked checks
+retain project behavior and can therefore report a pass that acceptance rejects.
+This corrects a reproduced offline false acceptance from an editable `pytest.py`;
+it does not establish that historical model attempts encountered that issue.
+
+New result rows record `acceptance_policy: owned-pytest-v1`. Old absence is unknown;
+historical results are not rewritten or regraded, and their original grading
+boundary remains part of their limitations. Compare policy versions as well as
+task revisions/settings. This controls grader startup/configuration, not hostile
+implementation execution: imported task code still runs on the host with its
+permissions. Use trusted fixtures; the bootstrap is not process isolation.
+
 Validate the corpus without making a model request:
 
 ```sh
