@@ -1434,6 +1434,21 @@ scripted 90/90 matrices with labels/limits inspected.
 
 **Outcome:** each model gets a small, coherent interface and enough relevant context to make the next coding decision.
 
+
+**2026-10-18 — Canonical configured memory tools:** shared application, real-task
+and simulated-tool runtime now expose only remember_fact/recall_facts, retaining
+scope, bounds and provenance. Low-level memory factories and historical scripted
+contracts retain aliases. Legacy prompt text/version reflects the actual namespace;
+compact text stays unchanged. Saved names/schemas/prompts remain historical and
+existing configuration drift guards reject incompatible continuation without
+rewriting archives. Regressions exercise canonical writes/recall, rejected aliases,
+legacy direct compatibility and namespace/schema drift. This reduces duplicate
+choices and schema payload, without a measured model-quality gain. No inference,
+paid calls or Duodoro edits; broader context/profile/validation work stays open.
+Validation: 237 focused tests plus 29 runtime tests (including the added namespace
+regression), 1,216 offline tests (five live deselected), Ruff/format/mypy passed.
+Both scripted matrices passed 90/90 with contract labels/metric limits inspected.
+
 **2026-10-17 — Panel root-instruction review:** selected-run metadata stays separate
 from current configuration review; status/size/issues use fixed supported values
 and hashes are collapsed details. Unsupported/inconsistent shapes remain unknown,
