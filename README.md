@@ -1672,3 +1672,15 @@ versions. Tool-name/schema and legacy prompt drift block guarded continuation
 under the existing configuration checks; old history remains reviewable, without
 automatic rewriting or alias substitution. This removes duplicate choices and
 schema payload, without claiming model-quality or tokenizer-count improvement.
+
+Named startup model profiles may optionally include `max_tool_iterations`, a JSON
+integer from 1 through 32. Explicit selection overrides the individual setting;
+omission or null inherits it. An unselected profile has no effect, and the global
+default remains eight. This caps model-loop requests, not the number of tools in
+a response; tool-call, time and token budgets still apply independently.
+
+An explicit iteration value participates in the selected definition hash and the
+existing captured execution settings. Changing it causes configuration drift and
+blocks guarded continuation of mismatched history. Profiles that omit it retain
+their previous definition hashes. There is no automatic tuning or claim that a
+higher cap improves task acceptance; compare bounded runs before choosing one.
