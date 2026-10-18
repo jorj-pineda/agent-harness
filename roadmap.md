@@ -1679,6 +1679,21 @@ contract labels/metric limits inspected. Broader Milestone 4 stays incomplete.
 **Outcome:** the project can state where it helps, how much it costs, and where human intervention is still needed.
 
 
+**2026-10-18 — Explicit completed-and-accepted summaries:** new real-task reports
+keep artifact acceptance counts and add separate completed-and-accepted counts
+per mode, task and category. Human output labels artifact acceptance and shows
+workflow totals; historical summaries lacking the field render unknown instead
+of inferring completion from a passing artifact. The count requires completed
+status plus independent acceptance, without asserting observed check success or
+answer-claim correctness. A real-file scripted regression accepts a patch stopped
+at the iteration limit while retaining zero completed workflows. Historical raw
+reports/criteria and runtime defaults stay unchanged. No inference, paid calls,
+Duodoro edits or model-quality claim; repeated/held-out/project targets and the
+broader milestone remain open.
+Validation: 100 focused and 1,206 offline tests (five live deselected), Ruff,
+formatting and mypy passed. Both scripted matrices passed 90/90 escalation
+decisions; contract labels and metric limits were inspected.
+
 **2026-10-17 — Bounded local development comparison recorded:** six real-tool
 `gemma4:12b` attempts on the new refactor, protected pre-existing-failure bugfix and
 two-module feature used clean revision `8e6e454`, compact/minimal prompts and the

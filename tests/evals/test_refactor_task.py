@@ -48,6 +48,6 @@ async def test_refactor_acceptance_requires_extraction_and_behavior(tmp_path, wi
     evidence = json.loads(report.read_text())
     assert evidence["results"][0]["category"] == "refactor"
     assert evidence["summary"]["harness"]["per_category"] == {
-        "refactor": {"accepted": int(wired), "attempts": 1}
+        "refactor": {"accepted": int(wired), "completed_and_accepted": int(wired), "attempts": 1}
     }
     assert (task.fixture / "labels.py").read_text() == original

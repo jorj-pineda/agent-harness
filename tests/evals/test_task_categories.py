@@ -55,7 +55,7 @@ async def test_feature_acceptance_and_category_survive_visible_test_weakening(so
     assert result.acceptance_exit_code == (0 if solved else 1)
     summary = summarize([result])
     assert summary["harness"]["per_category"] == {
-        "feature": {"accepted": int(solved), "attempts": 1}
+        "feature": {"accepted": int(solved), "completed_and_accepted": int(solved), "attempts": 1}
     }
     assert summary["harness"]["false_completion"] == int(not solved)
     assert f"| feature | {int(solved)}/1 |" in summary_markdown(summary)
@@ -75,10 +75,12 @@ async def test_existing_bugfix_category_and_mixed_mode_counts_are_independent():
     other_mode = replace(feature, mode="minimal", passed=False)
     summary = summarize([result, feature, other_mode])
     assert summary["harness"]["per_category"] == {
-        "bugfix": {"accepted": 0, "attempts": 1},
-        "feature": {"accepted": 1, "attempts": 1},
+        "bugfix": {"accepted": 0, "completed_and_accepted": 0, "attempts": 1},
+        "feature": {"accepted": 1, "completed_and_accepted": 1, "attempts": 1},
     }
-    assert summary["minimal"]["per_category"] == {"feature": {"accepted": 0, "attempts": 1}}
+    assert summary["minimal"]["per_category"] == {
+        "feature": {"accepted": 0, "completed_and_accepted": 0, "attempts": 1}
+    }
     assert "| bugfix | 0/1 | 0/0 |" in summary_markdown(summary)
 
 
@@ -92,6 +94,7 @@ def test_legacy_summary_without_categories_remains_renderable():
     }
     assert "| old | 1/1 |" in summary_markdown(summary)
     assert "| Category |" not in summary_markdown(summary)
+    assert "| Completed and accepted | unknown |" in summary_markdown(summary)
 
 
 def test_unsupported_category_is_rejected_before_execution(tmp_path):
