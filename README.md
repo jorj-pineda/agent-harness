@@ -1705,9 +1705,8 @@ This is a model-tool permission boundary, not host process isolation or a seal o
 the repository. Other processes and explicit owner operations can still change
 files. Archive/checkpoint storage and opt-in turn captures keep their existing
 behavior; ordinary admission, budget and path limits still apply. Restored history
-remaining transport-read-only is a separate restriction. The CLI supports this policy
-as described below; panel selection remains a follow-up slice. No model-quality
-gain is established.
+remaining transport-read-only is a separate restriction. The CLI and panel support this policy
+as described below. No model-quality gain is established.
 
 
 Start a fresh inspection session with:
@@ -1728,3 +1727,23 @@ The live announcement describes model tools and allows checks to remain `not_run
 unrecorded/unsupported for missing/malformed evidence, alongside existing completion,
 check and diff review. Raw JSON retains server evidence. Historical policy grants
 no continuation permission, and this flag cannot upgrade a saved session or fork.
+
+
+In the panel, select **Inspection only (new session)** before **New session**.
+The selector applies only to creation; changing it never changes the active
+session's policy. The status line shows the server-acknowledged active policy,
+separately from the next-session selection. Inspection requires a literal true
+acknowledgment and a usable session ID. A failed, malformed or unsupported creation
+disables chat and clears the active identity, previous conversation and turn review
+instead of falling back to a prior editing session. Unsubmitted input is preserved,
+and saved history remains available; no chat or automatic retry is sent. Standard
+creation remains compatible with older servers, whose missing policy acknowledgment
+stays unrecorded.
+
+Saved-run review shows the captured tool policy, with missing/malformed values
+unknown and no new permission to continue. Pending recovery after reload starts
+with policy unconfirmed and chat disabled; **Check run** reads saved evidence.
+Existing keyed retry, guarded continuation, explicit owner memory operations and
+single-file reversal keep their existing server rules. Inspection restricts model
+tools, not those explicit owner actions or other processes. Selecting captures
+still opts into bounded plaintext storage. No model-quality improvement is claimed.
