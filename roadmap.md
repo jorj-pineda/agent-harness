@@ -1419,6 +1419,25 @@ Keep the loop flexible: inspect → edit → verify → repair is a useful defau
 
 **Done when:** tests prove that an unrelated read cannot certify a fix, `pytest --version` cannot certify verification, a later edit invalidates earlier checks, a later failure is not hidden by an earlier pass, and early completion produces bounded corrective feedback.
 
+**2026-10-18 — Panel inspection sessions:** a new-session-only selector requests
+server-enforced inspection and requires explicit true acknowledgment before chat.
+The active policy is separate from the selector; failed creation clears the active
+identity and disables chat rather than falling back to an earlier editing session.
+Standard creation stays compatible with missing older-server policy metadata.
+Selected saved runs show captured policy, with missing/malformed values unknown;
+reload/pending recovery remains review-only and cannot upgrade permissions. Owner
+operations and opt-in captures retain their existing limits; this is model-tool
+gating, not host isolation. Validation: 25 focused and 1,256 offline tests (five live
+deselected), Ruff/format/mypy and both JS syntax checks passed. Native browser covered
+ten malformed/missing acknowledgment shapes, HTTP/network failure, duplicate/delayed
+creation and selector changes, standard legacy compatibility, seven saved metadata
+states, real API scripted-provider read completion and blocked write, unchanged
+archive/file evidence, captures, pending reload and keyed review. Desktop layouts
+were inspected at 1,280 and 960 CSS pixels without horizontal overflow. Temporary
+server/tab stopped after three fake-provider responses; no real inference, paid
+calls, model-quality claim or Duodoro edits. Broader task-state, compaction and real
+workflow validation targets remain open.
+
 **2026-10-18 — CLI inspection sessions:** `chat --inspection-only` selects a fresh
 server-enforced inspection session and refuses missing/false/malformed creation
 acknowledgment before any chat submission. The ordinary request shape and existing
