@@ -8,6 +8,8 @@ const els = {
   workspace: document.getElementById("workspace"),
   provider: document.getElementById("provider"),
   checkpointTurns: document.getElementById("checkpoint-turns"),
+  inspectionOnly: document.getElementById("inspection-only"),
+  sessionPolicy: document.getElementById("session-policy"),
   cancelTurn: document.getElementById("cancel-turn"),
   newSession: document.getElementById("new-session"),
   sessionPill: document.getElementById("session-pill"),
@@ -111,6 +113,7 @@ function setBusy(value) {
   els.cancelTurn.disabled = !!pendingReversal || !cancellationTarget || !(busy || uncertain) || cancelRequested;
   els.cancelTurn.textContent = cancelRequested ? "Cancelling…" : "Cancel turn";
   els.newSession.disabled = busy || pendingRequest != null || pendingReversal != null || reversalRecoveryBlocked;
+  els.inspectionOnly.disabled = busy;
   els.refreshRuns.disabled = busy;
   els.previousRuns.disabled = busy || historyOffset === 0;
   els.nextRuns.disabled = busy || !els.nextRuns.dataset.more;
@@ -365,11 +368,20 @@ function renderEnvelope(data, includeRunId = true) {
 
 async function createSession() {
   if (busy || pendingRequest != null || pendingReversal != null || reversalRecoveryBlocked) return;
+  const inspectionOnly = els.inspectionOnly.checked;
   const body = { user_id: userId };
   const workspace = els.workspace.value.trim();
   if (workspace) body.workspace_root = workspace;
   if (els.checkpointTurns.checked) body.checkpoint_turns = true;
+  if (inspectionOnly) body.inspection_only = true;
 
+  // A failed creation must not fall back to an earlier editing session.
+  sessionId = null;
+  sessionUsable = false;
+  els.sessionPill.textContent = "no session";
+  els.sessionPill.title = "";
+  els.sessionPill.classList.add("muted");
+  els.sessionPolicy.textContent = "No active session. Creation has not been acknowledged.";
   setBusy(true);
   try {
     const resp = await fetch("/sessions", {
@@ -383,6 +395,11 @@ async function createSession() {
       return;
     }
     const data = await resp.json();
+    if (typeof data?.session_id !== "string" || !data.session_id.trim() ||
+        (inspectionOnly && data.inspection_only !== true)) {
+      addErrorMessage("Server did not acknowledge the requested session tool policy and identity. No chat was sent. Create a new session with a supporting server; no automatic retry.");
+      return;
+    }
     selectReviewTarget(null);
     sessionId = data.session_id;
     sessionUsable = true;
@@ -391,6 +408,11 @@ async function createSession() {
     els.sessionPill.title = sessionId;
     els.sessionPill.textContent = sessionId.slice(0, 8);
     els.sessionPill.classList.remove("muted");
+    els.sessionPolicy.textContent = data.inspection_only === true
+      ? "Active tool policy: inspection only (server acknowledged). File inspection and recall; no model commands, edits or memory writes. Not host isolation; checks may remain not_run."
+      : data.inspection_only === false
+        ? "Active tool policy: standard (server acknowledged). Selection changes apply to the next new session only."
+        : "Active tool policy: unrecorded by this server. Inspection was not requested. Selection changes apply to the next new session only.";
     els.messages.replaceChildren();
     els.input.focus();
   } catch (err) {
@@ -607,7 +629,17 @@ function selectReviewTarget(record) {
     els.progressTarget.textContent = `Run: ${reviewTarget.runId}; lifecycle when selected: ${record.status || "unknown"}`;
     els.reviewTarget.textContent = `Session: ${reviewTarget.sessionId}; selected run: ${reviewTarget.runId}`;
     els.reviewResults.appendChild(repositoryInstructionsSection(record.execution_profile?.repository_instructions, true));
+    els.reviewResults.appendChild(toolPolicySection(record.execution_profile?.inspection_only));
   }
+}
+
+function toolPolicySection(value) {
+  const card = el("section", "session-review-card");
+  const policy = value === true ? "inspection only" : value === false ? "standard" : "unrecorded or unsupported";
+  card.appendChild(el("h3", null, `Saved tool policy: ${policy}`));
+  if (value === true) card.appendChild(el("p", "review-note", "Model file inspection and recall only; no commands, edits or memory writes. Checks may remain not_run."));
+  card.appendChild(el("p", "review-note", "Historical policy only; not host isolation or permission to continue. Guarded forks retain the source session policy."));
+  return card;
 }
 
 function toolProgressCard(data) {
@@ -1074,6 +1106,7 @@ function showRun(record) {
   }
   sessionId = record.request.session_id;
   sessionUsable = false;
+  els.sessionPolicy.textContent = "Saved run review only. See captured tool policy below; creating a session is a separate action.";
   els.sessionPill.textContent = `review ${sessionId.slice(0, 8)}`;
   els.sessionPill.title = sessionId;
   els.messages.replaceChildren();
@@ -1161,6 +1194,7 @@ function restorePending() {
     sessionId = request.fork_session_id || request.session_id;
     uncertain = true;
     sessionUsable = false;
+    els.sessionPolicy.textContent = "Retained submission review only. Tool policy is unconfirmed here; reload submits no work.";
     els.sessionPill.textContent = `review ${sessionId.slice(0, 8)}`;
     addUserMessage(request.message);
     addErrorMessage("Retained submission restored for review. Check run reads saved state; nothing has been submitted on reload.");

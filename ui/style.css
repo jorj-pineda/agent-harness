@@ -73,6 +73,14 @@ body {
   flex-wrap: wrap;
 }
 
+.session-policy {
+  margin: 0;
+  padding: 0.4rem 1rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+}
+
 input,
 select,
 textarea,
