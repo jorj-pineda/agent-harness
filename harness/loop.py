@@ -29,6 +29,7 @@ from typing import Any
 from providers.base import ChatMessage, ChatProvider, ProviderResponse, TokenUsage, ToolCall
 from tools import ToolError, ToolRegistry
 
+from .access import INSPECTION_BLOCK_REASON, INSPECTION_TOOL_NAMES, execution_registry
 from .cancellation import TurnCancellation, TurnCancelled
 from .context import BudgetStop, TokenBudget
 from .grounding import Grounder
@@ -136,6 +137,7 @@ async def run_turn(
     session.turns.append(turn)
     session.messages.append(ChatMessage(role="user", content=user_input))
 
+    registry = execution_registry(registry, inspection_only=session.inspection_only)
     tool_specs = registry.as_tool_specs()
     start = _now_ms()
     final_answer = ""
@@ -295,6 +297,14 @@ async def run_turn(
             final_answer = "(model returned an invalid tool-call batch; no tools dispatched)"
             completion_status = "incomplete"
             completion_reason = f"Tool-call integrity check failed ({batch_issue})."
+            break
+        if session.inspection_only and any(
+            call.name not in INSPECTION_TOOL_NAMES for call in usable_calls
+        ):
+            final_answer = INSPECTION_BLOCK_REASON
+            completion_status = "blocked"
+            completion_reason = INSPECTION_BLOCK_REASON
+            session.messages.append(ChatMessage(role="assistant", content=final_answer))
             break
         session.messages.append(
             ChatMessage(

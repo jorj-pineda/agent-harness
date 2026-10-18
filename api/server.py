@@ -545,6 +545,7 @@ def _register_routes(app: FastAPI) -> None:
             user_id=req.user_id,
             workspace_root=workspace_root,
             checkpoint_turns=req.checkpoint_turns,
+            inspection_only=req.inspection_only,
         )
         _session_store(components).save(session)
         components.sessions[session.session_id] = session
@@ -554,7 +555,9 @@ def _register_routes(app: FastAPI) -> None:
             session.session_id,
             workspace_root,
         )
-        return CreateSessionResponse(session_id=session.session_id)
+        return CreateSessionResponse(
+            session_id=session.session_id, inspection_only=session.inspection_only
+        )
 
     @app.get("/sessions", response_model=list[SessionSummary])
     async def list_sessions(
@@ -1119,6 +1122,7 @@ def _build_turn_registry(
         support_tools=support_registry,
         coding_toolset=settings.coding_toolset,
         memory_session=session,
+        inspection_only=session.inspection_only,
     )
 
 

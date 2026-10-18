@@ -10,6 +10,7 @@ from memory import FactStore
 from providers.base import ChatMessage
 from tools import ToolRegistry
 
+from .access import execution_registry
 from .config import Settings
 from .context import BudgetStop, TokenBudget
 from .execution_profile import ExecutionProfile, capture_execution_profile
@@ -172,11 +173,13 @@ def review_configuration(
         archive.session.workspace_root, enabled=settings.load_root_agents
     )
     review.repository_instructions = instructions.review
+    registry = execution_registry(registry, inspection_only=archive.session.inspection_only)
     current = capture_execution_profile(
         settings,
         provider,
         registry,
         repository_instructions=instructions.review if settings.load_root_agents else None,
+        inspection_only=archive.session.inspection_only,
     )
     review.configuration = compare_profiles(profile, current)
     if instructions.review.status == "unavailable":

@@ -60,6 +60,8 @@ class ExecutionProfile(BaseModel):
     provider: str
     configured_model: str | None
     model_profile: ModelProfileIdentity | None = None
+    # Before inspection sessions existed, configured sessions used the standard policy.
+    inspection_only: bool = False
     repository_instructions: RepositoryInstructionReview | None = None
     endpoint_sha256: str | None
     prompt_version: str | None
@@ -123,6 +125,7 @@ def capture_execution_profile(
     *,
     system_prompt: str | None = None,
     repository_instructions: RepositoryInstructionReview | None = None,
+    inspection_only: bool = False,
 ) -> ExecutionProfile:
     """Capture settings and exposed schemas; never serialize the full Settings object."""
     try:
@@ -134,6 +137,7 @@ def capture_execution_profile(
         provider=provider,
         configured_model=model,
         model_profile=settings.profile_identity(),
+        inspection_only=inspection_only,
         repository_instructions=repository_instructions,
         endpoint_sha256=_endpoint_digest(provider, settings, model),
         prompt_version=coding_prompt_version(

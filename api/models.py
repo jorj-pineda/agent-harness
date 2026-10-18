@@ -64,6 +64,12 @@ class ReclassifyMemoryResponse(BaseModel):
 
 class CreateSessionRequest(BaseModel):
     user_id: str = Field(..., min_length=1, description="Stable per-user identifier.")
+    inspection_only: bool = Field(
+        default=False,
+        strict=True,
+        description="Restrict model tools to file inspection and memory recall. No commands, "
+        "file edits or memory writes; not host process isolation. Fixed for this session.",
+    )
     checkpoint_turns: bool = Field(
         default=False,
         description="Opt in to bounded plaintext workspace captures before/after admitted turns.",
@@ -80,6 +86,7 @@ class CreateSessionRequest(BaseModel):
 
 class CreateSessionResponse(BaseModel):
     session_id: str
+    inspection_only: bool = False
 
 
 class CreateCheckpointRequest(BaseModel):
