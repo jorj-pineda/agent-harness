@@ -50,3 +50,18 @@
     test_legacy_contract.py byte-for-byte unchanged; do not repair or suppress it.
     After fixing totals.py, run pytest -q test_visible.py and pytest -q, and report
     the target result separately from the known remaining broad-suite failure.
+- id: retry_after_seconds
+  fixture: retry_after_seconds
+  category: feature
+  request: >-
+    Implement retry_after.parse_retry_after(value) and connect it to
+    retry_client.retry_delay(headers, default_seconds=5). The parser accepts only
+    strings of unsigned ASCII decimal seconds with optional surrounding whitespace
+    and leading zeros, returning an integer from 0 through 86400 inclusive. Return
+    None for other inputs, including non-strings, empty strings, signs, fractions,
+    non-ASCII digits, HTTP dates and oversized values. The client recognizes exactly
+    Retry-After and retry-after header spellings; the canonical spelling takes
+    precedence when present, even when invalid. Use a valid parsed delay including
+    zero, otherwise return the supplied default unchanged. Preserve headers without
+    mutation and existing no-header behavior. Run the visible checks and report the
+    observed outcome. This is numeric-only support, not full HTTP-date parsing.
