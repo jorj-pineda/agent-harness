@@ -1,4 +1,4 @@
-"""Real-tool coding evaluation on five trusted Python fixtures.
+"""Real-tool coding evaluation on trusted Python fixtures.
 
 The agent edits a disposable copy. Acceptance tests and reference solutions
 stay outside that copy. This is a correctness benchmark, not process isolation.
@@ -23,6 +23,7 @@ from pathlib import Path
 from typing import Any, Literal
 
 import yaml
+from pydantic import TypeAdapter
 
 from harness.config import Settings, get_settings
 from harness.execution_profile import ExecutionProfile
@@ -53,6 +54,7 @@ MINIMAL_PROMPT = (
     "You are a coding assistant. Complete the user's request using the available tools."
 )
 Mode = Literal["harness", "minimal"]
+TaskCategory = Literal["unclassified", "bugfix", "feature", "refactor"]
 MODES: tuple[Mode, ...] = ("harness", "minimal")
 
 
@@ -63,6 +65,7 @@ class Task:
     fixture: Path
     acceptance: Path
     reference: Path
+    category: TaskCategory = "unclassified"
 
 
 @dataclass
@@ -93,6 +96,7 @@ class RealTaskResult:
     tool_trace: list[dict[str, Any]]
     runtime_config: dict[str, Any]
     turn_trace: list[dict[str, Any]] = field(default_factory=list)
+    category: TaskCategory = "unclassified"
 
 
 class ObservedProvider:
@@ -157,7 +161,8 @@ def load_tasks(path: Path = TASKS_ROOT / "tasks.yaml") -> list[Task]:
         reference = TASKS_ROOT / "reference" / task_id
         if not fixture.is_dir() or not acceptance.is_dir() or not reference.is_dir():
             raise ValueError(f"Incomplete task: {task_id}")
-        tasks.append(Task(task_id, str(row["request"]), fixture, acceptance, reference))
+        category = TypeAdapter(TaskCategory).validate_python(row.get("category", "unclassified"))
+        tasks.append(Task(task_id, str(row["request"]), fixture, acceptance, reference, category))
     if len({task.id for task in tasks}) != len(tasks):
         raise ValueError("Duplicate task IDs")
     return tasks
@@ -304,6 +309,7 @@ async def run_task(
         )
         return RealTaskResult(
             task_id=task.id,
+            category=task.category,
             mode=mode,
             attempt=attempt,
             provider=provider.name,
@@ -401,6 +407,13 @@ def summarize(results: list[RealTaskResult]) -> dict[str, Any]:
                 }
                 for task_id in sorted({r.task_id for r in rows})
             },
+            "per_category": {
+                category: {
+                    "accepted": sum(r.passed for r in rows if r.category == category),
+                    "attempts": sum(r.category == category for r in rows),
+                }
+                for category in sorted({r.category for r in rows})
+            },
             "terminations": dict(sorted(Counter(r.termination for r in rows).items())),
             "false_completion": sum(
                 r.completion_status == "completed" and not r.passed for r in rows
@@ -430,6 +443,23 @@ def summary_markdown(summary: dict[str, Any]) -> str:
         + " | ".join(f"**{summary[m]['accepted']}/{summary[m]['attempts']}**" for m in modes)
         + " |"
     )
+    categories = sorted(
+        {category for mode in modes for category in summary[mode].get("per_category", {})}
+    )
+    if categories:
+        lines.extend(
+            ["", "| Category | " + " | ".join(modes) + " |", "|---|" + "---|" * len(modes)]
+        )
+        for category in categories:
+            cells = [
+                "{accepted}/{attempts}".format(
+                    **summary[mode]
+                    .get("per_category", {})
+                    .get(category, {"accepted": 0, "attempts": 0})
+                )
+                for mode in modes
+            ]
+            lines.append(f"| {category} | " + " | ".join(cells) + " |")
     return "\n".join(lines)
 
 
@@ -515,7 +545,7 @@ def main(argv: list[str] | None = None) -> int:
         choices=("ollama", "anthropic", "openai", "openai_compatible"),
         default="ollama",
     )
-    parser.add_argument("--task", help="Run one task ID; default runs all five")
+    parser.add_argument("--task", help="Run one task ID; default runs the whole task manifest")
     parser.add_argument("--mode", choices=("harness", "minimal", "both"), default="harness")
     parser.add_argument("--repeats", type=int, default=1, help="Attempts per task and mode")
     parser.add_argument("--validate-only", action="store_true")
