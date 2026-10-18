@@ -1,0 +1,255 @@
+{
+  "harness_revision": "f25c7e0eb7755effa017f09c15910dd7730cd31c",
+  "started_at": "2026-10-18T20:22:24+00:00",
+  "model": "gemma4:12b",
+  "model_digest": "4eb23ef187e2c5462566d6a1d3bbbc2f1346d0b4327cbb66d58fffbcc9b2b05c",
+  "ollama_version": "0.33.2",
+  "model_initially_loaded": false,
+  "fixed_overrides": {
+    "ollama_host": "http://127.0.0.1:11434",
+    "ollama_model": "gemma4:12b",
+    "ollama_num_ctx": 16384,
+    "ollama_think": false,
+    "coding_prompt_profile": "compact",
+    "coding_toolset": "full",
+    "max_tool_calls_per_turn": 24,
+    "max_turn_wall_seconds": 180,
+    "request_timeout_seconds": 60,
+    "max_completion_tokens_per_turn": 8192,
+    "max_request_output_tokens": 2048,
+    "max_total_tokens_per_turn": 64000,
+    "max_context_tokens": 16384,
+    "min_request_output_tokens": 256,
+    "prompt_estimate_bytes_per_token": 3,
+    "max_completion_retries": 1,
+    "max_identical_tool_calls": 2,
+    "max_files_touched_per_turn": 4,
+    "require_plan_before_edit": false,
+    "require_verification_before_finish": false,
+    "project_check_argv": null,
+    "load_root_agents": false,
+    "enable_support_tools": false
+  },
+  "selected_profiles": {
+    "8": {
+      "provider": "ollama",
+      "model": "gemma4:12b",
+      "max_context_tokens": 16384,
+      "max_request_output_tokens": 2048,
+      "ollama_think": false,
+      "max_tool_iterations": 8
+    },
+    "12": {
+      "provider": "ollama",
+      "model": "gemma4:12b",
+      "max_context_tokens": 16384,
+      "max_request_output_tokens": 2048,
+      "ollama_think": false,
+      "max_tool_iterations": 12
+    }
+  },
+  "mode": "harness",
+  "repeats": 1,
+  "planned_attempts": 6,
+  "manual_patch_repairs": 0,
+  "pinned_file_sha256": {
+    "tasks.yaml": "06ffb16b6f7cbdeed5db04192e69e78d7765daed3437decdb894b44d9f738e15",
+    "extract_label_normalizer/fixture/labels.py": "566902ce831964ce20ae77297ff833b7f347aa7cb55bb4678a1e9c703da9a604",
+    "extract_label_normalizer/fixture/test_visible.py": "3e1c3e2912340e90c2a932903d023f74422f3ca4540abd03f8860860df943185",
+    "extract_label_normalizer/acceptance/test_acceptance.py": "7615ff2aa555f43a4770ec23b4080f467dc67768c1095e06c47c02261cfd85d5",
+    "extract_label_normalizer/reference/labels.py": "b95bcdc8cb1665dd02c0e6ddea4b687ab94245d2b6e9c9f78bed8797db4bf7cb",
+    "positive_total_existing_failure/fixture/legacy_settings.py": "81bfab3e7478d13181866d5a7b1b22c671023702fb58312d187aa6bbe4f6ef4e",
+    "positive_total_existing_failure/fixture/test_legacy_contract.py": "959461515e2a43044bb0cac0b50bcbc66e435855085839f57b03cd40ed32e0fc",
+    "positive_total_existing_failure/fixture/test_visible.py": "8d25653e4e9363e91d1e9f9f1bed453913c5bedfaa960b3e36d68b83719a80b0",
+    "positive_total_existing_failure/fixture/totals.py": "d63e8ceab3e6d96ce78e490e7b44b7b7bd5db2c77b6901c33b70ed3dd2eccdb6",
+    "positive_total_existing_failure/acceptance/test_acceptance.py": "f54df5271ceb425fa577103a59523d8585ad4337599fbae8dbfd8435f5d940c7",
+    "positive_total_existing_failure/reference/totals.py": "108970df4d2c44842b614ef5f1021cc32c3f8f8edab81906f07a7f3f65bbd978",
+    "retry_after_seconds/fixture/retry_after.py": "84843c968403a19abf770a2d9ee0784f17c1b72e4daeb30abea21141a775ca34",
+    "retry_after_seconds/fixture/retry_client.py": "44359723adf8aec06109e8cc3636af41f073b351c43771897da1bbd223c9c392",
+    "retry_after_seconds/fixture/test_visible.py": "d97b3c3f441b5374e660f89e97936a38dc7cba350f73b460be93773cf1103a73",
+    "retry_after_seconds/acceptance/test_acceptance.py": "90fcc573d2e8be619cf32f48a4be8cbdd2c767341390b66ed034723ddfaef323",
+    "retry_after_seconds/reference/retry_after.py": "6a5d3129a4ccb6766f74313f8637120971653b9dabf89fbbb50940700f3f0c5f",
+    "retry_after_seconds/reference/retry_client.py": "5d2842b01e6605beb7540d8bc7adb5c2b715a4f7deaa23e167d4054fdc91bdc6"
+  },
+  "order": [
+    {
+      "task": "extract_label_normalizer",
+      "limits": [
+        8,
+        12
+      ]
+    },
+    {
+      "task": "positive_total_existing_failure",
+      "limits": [
+        12,
+        8
+      ]
+    },
+    {
+      "task": "retry_after_seconds",
+      "limits": [
+        8,
+        12
+      ]
+    }
+  ],
+  "active_model_observations": [
+    {
+      "task": "extract_label_normalizer",
+      "limit": 8,
+      "models": [
+        {
+          "name": "gemma4:12b",
+          "model": "gemma4:12b",
+          "size": 8083252181,
+          "digest": "4eb23ef187e2c5462566d6a1d3bbbc2f1346d0b4327cbb66d58fffbcc9b2b05c",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "gemma4",
+            "families": [
+              "gemma4"
+            ],
+            "parameter_size": "11.9B",
+            "quantization_level": "Q4_K_M"
+          },
+          "expires_at": "2026-10-18T15:29:18.620804-05:00",
+          "size_vram": 8083252181,
+          "context_length": 16384
+        }
+      ]
+    },
+    {
+      "task": "extract_label_normalizer",
+      "limit": 12,
+      "models": [
+        {
+          "name": "gemma4:12b",
+          "model": "gemma4:12b",
+          "size": 8083252181,
+          "digest": "4eb23ef187e2c5462566d6a1d3bbbc2f1346d0b4327cbb66d58fffbcc9b2b05c",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "gemma4",
+            "families": [
+              "gemma4"
+            ],
+            "parameter_size": "11.9B",
+            "quantization_level": "Q4_K_M"
+          },
+          "expires_at": "2026-10-18T15:31:07.915999-05:00",
+          "size_vram": 8083252181,
+          "context_length": 16384
+        }
+      ]
+    },
+    {
+      "task": "positive_total_existing_failure",
+      "limit": 12,
+      "models": [
+        {
+          "name": "gemma4:12b",
+          "model": "gemma4:12b",
+          "size": 8083252181,
+          "digest": "4eb23ef187e2c5462566d6a1d3bbbc2f1346d0b4327cbb66d58fffbcc9b2b05c",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "gemma4",
+            "families": [
+              "gemma4"
+            ],
+            "parameter_size": "11.9B",
+            "quantization_level": "Q4_K_M"
+          },
+          "expires_at": "2026-10-18T15:32:55.004605-05:00",
+          "size_vram": 8083252181,
+          "context_length": 16384
+        }
+      ]
+    },
+    {
+      "task": "positive_total_existing_failure",
+      "limit": 8,
+      "models": [
+        {
+          "name": "gemma4:12b",
+          "model": "gemma4:12b",
+          "size": 8083252181,
+          "digest": "4eb23ef187e2c5462566d6a1d3bbbc2f1346d0b4327cbb66d58fffbcc9b2b05c",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "gemma4",
+            "families": [
+              "gemma4"
+            ],
+            "parameter_size": "11.9B",
+            "quantization_level": "Q4_K_M"
+          },
+          "expires_at": "2026-10-18T15:34:10.641463-05:00",
+          "size_vram": 8083252181,
+          "context_length": 16384
+        }
+      ]
+    },
+    {
+      "task": "retry_after_seconds",
+      "limit": 8,
+      "models": [
+        {
+          "name": "gemma4:12b",
+          "model": "gemma4:12b",
+          "size": 8083252181,
+          "digest": "4eb23ef187e2c5462566d6a1d3bbbc2f1346d0b4327cbb66d58fffbcc9b2b05c",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "gemma4",
+            "families": [
+              "gemma4"
+            ],
+            "parameter_size": "11.9B",
+            "quantization_level": "Q4_K_M"
+          },
+          "expires_at": "2026-10-18T15:36:35.523597-05:00",
+          "size_vram": 8083252181,
+          "context_length": 16384
+        }
+      ]
+    },
+    {
+      "task": "retry_after_seconds",
+      "limit": 12,
+      "models": [
+        {
+          "name": "gemma4:12b",
+          "model": "gemma4:12b",
+          "size": 8083252181,
+          "digest": "4eb23ef187e2c5462566d6a1d3bbbc2f1346d0b4327cbb66d58fffbcc9b2b05c",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "gemma4",
+            "families": [
+              "gemma4"
+            ],
+            "parameter_size": "11.9B",
+            "quantization_level": "Q4_K_M"
+          },
+          "expires_at": "2026-10-18T15:39:36.314989-05:00",
+          "size_vram": 8083252181,
+          "context_length": 16384
+        }
+      ]
+    }
+  ],
+  "cleanup": "unloaded_experiment_model",
+  "scope": "Public trusted development fixtures; one attempt per task/limit, no held-out or causal quality claim. Reports remain separate by limit.",
+  "model_loaded_after_cleanup": false,
+  "pinned_files_unchanged": true,
+  "finished_attempts": 6,
+  "finished_at": "2026-10-18T20:34:37+00:00"
+}

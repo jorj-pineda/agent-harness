@@ -1710,6 +1710,23 @@ contract labels/metric limits inspected. Broader Milestone 4 stays incomplete.
 **Outcome:** the project can state where it helps, how much it costs, and where human intervention is still needed.
 
 
+**2026-10-18 — Bounded iteration-budget comparison recorded:** six local Gemma
+attempts on three public tasks used clean revision `f25c7e0`, canonical full tools,
+compact prompt and explicit eight/twelve-iteration profiles. Both caps accepted
+2/3 artifacts; completed-and-accepted was 0/3 versus 2/3. The twelve-cap refactor
+finished within eight responses, so its difference cannot be credited to extra
+iterations. The bugfix used eleven responses to recheck/report the preserved broad
+failure. Both feature artifacts failed long-leading-zero cases despite passing
+visible checks; twelve hit the wall deadline with unknown final-request usage.
+All six saved diffs reproduced acceptance unchanged. Raw traces, profiles, recipe,
+usage/latency caveats and cleanup are in `evals/BASELINES.md`. No attempt reruns, patch rescue,
+paid calls, new models, Duodoro edits or default increase; model unloaded. One
+sample per task/cap gives no repeatable coding-quality gain. Repeated/held-out,
+20–30-task and ten-project-workflow targets remain open. Validation: 141 focused
+and 1,226 offline tests (five live deselected), Ruff/format/mypy passed; both
+scripted matrices passed 90/90 with contract labels/metric limits inspected.
+
+
 **2026-10-18 — Readable long-input acceptance diagnostics:** retry-header pytest
 parameters now have short explicit IDs. Values, expected results and assertions
 are unchanged; only criterion-source labels/hash change. Offline regressions apply

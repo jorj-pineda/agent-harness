@@ -1,0 +1,64 @@
+{
+  "scope": "Offline unchanged saved-diff replay; no inference, repair or criterion changes. Same owned grader and normal output caps.",
+  "reports": {
+    "8": "9f5232fe3ff2f21246f082ea5ea8817a1f8e54b19e3455785b2b1492d42d4e32",
+    "12": "368d2a2f34e87cc84717c4dc615e088003e0103c175a432d3d5abc60d7fb3dcd"
+  },
+  "rows": [
+    {
+      "task_id": "extract_label_normalizer",
+      "iteration_limit": 8,
+      "diff_sha256": "eb3460c2338fb852ce3389e159da4e79df78b9071ebe6316ba22e323ebbf64bb",
+      "original_exit_code": 0,
+      "replay_exit_code": 0,
+      "output_truncated": false,
+      "pytest_summary": "14 passed in 0.01s"
+    },
+    {
+      "task_id": "positive_total_existing_failure",
+      "iteration_limit": 8,
+      "diff_sha256": "d13901285e5438a414de63d494525e0ae325ee2ff83fdc5173f078daa74637f7",
+      "original_exit_code": 0,
+      "replay_exit_code": 0,
+      "output_truncated": false,
+      "pytest_summary": "6 passed in 0.01s"
+    },
+    {
+      "task_id": "retry_after_seconds",
+      "iteration_limit": 8,
+      "diff_sha256": "b7b647aa54bfa4032e09896531d56093f98a301c327c1df79e255680dab792ec",
+      "original_exit_code": 1,
+      "replay_exit_code": 1,
+      "output_truncated": false,
+      "pytest_summary": "2 failed, 26 passed in 0.03s"
+    },
+    {
+      "task_id": "extract_label_normalizer",
+      "iteration_limit": 12,
+      "diff_sha256": "eb3460c2338fb852ce3389e159da4e79df78b9071ebe6316ba22e323ebbf64bb",
+      "original_exit_code": 0,
+      "replay_exit_code": 0,
+      "output_truncated": false,
+      "pytest_summary": "14 passed in 0.01s"
+    },
+    {
+      "task_id": "positive_total_existing_failure",
+      "iteration_limit": 12,
+      "diff_sha256": "d13901285e5438a414de63d494525e0ae325ee2ff83fdc5173f078daa74637f7",
+      "original_exit_code": 0,
+      "replay_exit_code": 0,
+      "output_truncated": false,
+      "pytest_summary": "6 passed in 0.01s"
+    },
+    {
+      "task_id": "retry_after_seconds",
+      "iteration_limit": 12,
+      "diff_sha256": "c99ef35fed867cedbc2c13cf3e426a093de24686f9a98d234b60d0ccd7ffda49",
+      "original_exit_code": 1,
+      "replay_exit_code": 1,
+      "output_truncated": false,
+      "pytest_summary": "2 failed, 26 passed in 0.03s"
+    }
+  ],
+  "source_files_unchanged": true
+}
