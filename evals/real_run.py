@@ -56,6 +56,7 @@ MINIMAL_PROMPT = (
 Mode = Literal["harness", "minimal"]
 TaskCategory = Literal["unclassified", "bugfix", "feature", "refactor"]
 MODES: tuple[Mode, ...] = ("harness", "minimal")
+ACCEPTANCE_POLICY: Literal["owned-pytest-v1"] = "owned-pytest-v1"
 
 
 @dataclass(frozen=True)
@@ -97,6 +98,7 @@ class RealTaskResult:
     runtime_config: dict[str, Any]
     turn_trace: list[dict[str, Any]] = field(default_factory=list)
     category: TaskCategory = "unclassified"
+    acceptance_policy: Literal["owned-pytest-v1"] | None = None
 
 
 class ObservedProvider:
@@ -183,14 +185,19 @@ def _reference_files(task: Task, root: Path) -> None:
 
 async def acceptance_check(task: Task, root: Path) -> ProcessResult:
     return await run_process(
-        [sys.executable, "-m", "pytest", "-q", str(task.acceptance)],
+        [
+            sys.executable,
+            "-I",
+            "-B",
+            str(Path(__file__).with_name("acceptance_runner.py")),
+            str(root),
+            str(task.acceptance),
+        ],
         cwd=root,
         timeout_seconds=30,
         output_limit=12_000,
         env={
-            "PYTHONPATH": str(root),
             "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
-            "PYTHONDONTWRITEBYTECODE": "1",
         },
     )
 
@@ -309,6 +316,7 @@ async def run_task(
         )
         return RealTaskResult(
             task_id=task.id,
+            acceptance_policy=ACCEPTANCE_POLICY,
             category=task.category,
             mode=mode,
             attempt=attempt,

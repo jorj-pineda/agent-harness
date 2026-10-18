@@ -1,0 +1,93 @@
+import json
+from dataclasses import replace
+
+import pytest
+
+from evals.real_run import acceptance_check, load_tasks, run_task, write_report
+from harness.config import Settings
+from providers.base import ToolCall
+from tests.api.conftest import ScriptedProvider, make_response
+from workspace import disposable_workspace
+
+
+@pytest.mark.parametrize("injection", ["module", "package", "conftest", "pytest_ini", "pyproject"])
+async def test_workspace_cannot_select_pytest_or_grader_configuration(injection):
+    task = load_tasks()[0]
+    with disposable_workspace(task.fixture) as copy:
+        root = copy.workspace.root
+        if injection == "module":
+            (root / "pytest.py").write_text("raise SystemExit(0)\n")
+        elif injection == "package":
+            (root / "pytest").mkdir()
+            (root / "pytest" / "__init__.py").write_text("raise SystemExit(0)\n")
+            (root / "pytest" / "__main__.py").write_text("raise SystemExit(0)\n")
+        elif injection == "conftest":
+            (root / "conftest.py").write_text("raise RuntimeError('workspace-hook-loaded')\n")
+        elif injection == "pytest_ini":
+            (root / "pytest.ini").write_text(
+                "[pytest]\naddopts = --workspace-option-must-not-load\n"
+            )
+        else:
+            (root / "pyproject.toml").write_text(
+                '[tool.pytest.ini_options]\naddopts = "--workspace-option-must-not-load"\n'
+            )
+        broken = await acceptance_check(task, root)
+        assert broken.exit_code == 1, broken.stdout + broken.stderr
+        assert "test_division" in broken.stdout
+        (root / "calc.py").write_bytes((task.reference / "calc.py").read_bytes())
+        solved = await acceptance_check(task, root)
+        assert solved.exit_code == 0, solved.stdout + solved.stderr
+        assert "2 passed" in solved.stdout
+        assert (
+            "workspace-hook-loaded"
+            not in broken.stdout + broken.stderr + solved.stdout + solved.stderr
+        )
+        assert not (root / ".pytest_cache").exists()
+
+
+async def test_acceptance_inside_editable_workspace_is_rejected():
+    task = load_tasks()[0]
+    with disposable_workspace(task.fixture) as copy:
+        result = await acceptance_check(
+            replace(task, acceptance=copy.workspace.root), copy.workspace.root
+        )
+    assert result.exit_code != 0
+    assert "Authoritative acceptance must be outside" in result.stderr
+
+
+async def test_scripted_false_visible_pass_cannot_replace_external_acceptance(tmp_path):
+    task = load_tasks()[0]
+    original = (task.fixture / "calc.py").read_bytes()
+    provider = ScriptedProvider()
+    provider.script(
+        make_response(
+            tool_calls=[
+                ToolCall(
+                    id="shadow",
+                    name="write_file",
+                    arguments={"path": "pytest.py", "content": "raise SystemExit(0)\n"},
+                )
+            ]
+        ),
+        make_response(
+            tool_calls=[
+                ToolCall(
+                    id="check",
+                    name="run_command",
+                    arguments={"argv": ["python", "-m", "pytest", "-q"]},
+                )
+            ]
+        ),
+        make_response(content="Claimed complete"),
+    )
+    result = await run_task(
+        task, provider=provider, settings=Settings(_env_file=None), mode="harness"
+    )
+    assert result.verification_status == "passed"
+    assert not result.passed and result.acceptance_exit_code == 1
+    assert "test_division" in result.acceptance_output
+    assert result.acceptance_policy == "owned-pytest-v1"
+    report = tmp_path / "report.json"
+    write_report(report, "offline boundary validation", [result])
+    assert json.loads(report.read_text())["results"][0]["acceptance_policy"] == "owned-pytest-v1"
+    assert (task.fixture / "calc.py").read_bytes() == original
