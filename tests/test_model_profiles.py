@@ -244,8 +244,8 @@ def test_profile_optional_values_are_validated_and_frozen():
         profile.model = "changed"
 
 
-@pytest.mark.parametrize("rename", [False, True])
-def test_profile_continuation_identity_survives_restart_and_blocks_rename(tmp_path, rename):
+@pytest.mark.parametrize("change", ["none", "rename", "iterations"])
+def test_profile_continuation_identity_survives_restart_and_blocks_changes(tmp_path, change):
     from tests.api.test_continuation import body, known_provider, submit_and_finish
 
     root = tmp_path / "repo"
@@ -269,13 +269,20 @@ def test_profile_continuation_identity_survives_restart_and_blocks_rename(tmp_pa
         saved = api.get(f"/sessions/{sid}", params={"user_id": "dev"}).json()
     later = known_provider()
     later.script(make_response(content="Reviewed again", prompt_tokens=12, completion_tokens=5))
-    if rename:
+    if change == "rename":
         settings = {"model_profiles": {"renamed": definition}, "model_profile": "renamed"}
+    elif change == "iterations":
+        settings = {
+            "model_profiles": {"local": {**definition, "max_tool_iterations": 12}},
+            "model_profile": "local",
+        }
     with TestClient(make_app(tmp_path, later, **settings)) as api:
         run = submit_and_finish(api, sid, body(saved))
-        assert run["response"]["completion_status"] == ("blocked" if rename else "completed"), run
+        assert run["response"]["completion_status"] == (
+            "completed" if change == "none" else "blocked"
+        ), run
         assert api.get(f"/sessions/{sid}", params={"user_id": "dev"}).json() == saved
-    assert len(later.calls) == (0 if rename else 1)
+    assert len(later.calls) == (1 if change == "none" else 0)
     assert (root / "user.py").read_text() == "user_edit = 1\n"
 
 
@@ -302,3 +309,93 @@ async def test_real_evaluator_uses_selected_profile_identity_and_bound_request()
     assert result.runtime_config["effective_max_context_tokens"] == 8192
     assert len(provider.calls) == 1
     assert not result.passed  # Independent acceptance rejects the unchanged fixture.
+
+
+def test_optional_iteration_limit_inherits_and_preserves_old_profile_identity():
+    import hashlib
+
+    inherited = ModelProfile(**PROFILE)
+    old_identity = hashlib.sha256(
+        json.dumps(PROFILE, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+    assert inherited.identity("local").definition_sha256 == old_identity
+    assert (
+        ModelProfile(**PROFILE, max_tool_iterations=32).settings_overrides()["max_tool_iterations"]
+        == 32
+    )
+    assert ModelProfile(**PROFILE, max_tool_iterations=None).identity(
+        "local"
+    ) == inherited.identity("local")
+    settings = Settings(
+        _env_file=None,
+        model_profiles={"local": PROFILE},
+        model_profile="local",
+        max_tool_iterations=5,
+    )
+    assert settings.max_tool_iterations == 5
+    catalog = {"local": {**PROFILE, "max_tool_iterations": 12}}
+    selected = Settings(
+        _env_file=None, model_profiles=catalog, model_profile="local", max_tool_iterations=3
+    )
+    assert selected.max_tool_iterations == 12
+    assert (
+        Settings(_env_file=None, model_profiles=catalog, max_tool_iterations=3).max_tool_iterations
+        == 3
+    )
+    assert selected.profile_identity() != settings.profile_identity()
+    assert Settings(_env_file=None).max_tool_iterations == 8
+
+
+@pytest.mark.parametrize("limit", [0, -1, 33, True, 1.5, "12"])
+def test_profile_iteration_limit_rejects_invalid_values_before_provider_construction(limit):
+    with patch("harness.providers.create_chat_provider") as factory, pytest.raises(ValidationError):
+        Settings(
+            _env_file=None,
+            model_profiles={"local": {**PROFILE, "max_tool_iterations": limit}},
+            model_profile="local",
+        )
+    factory.assert_not_called()
+
+
+@pytest.mark.parametrize("limit", [1, 2])
+async def test_profile_iteration_limit_is_enforced_and_recorded_in_real_runtime(limit):
+    from evals.real_run import load_tasks, run_task
+    from providers.base import ToolCall
+
+    class LocalProvider(ScriptedProvider):
+        name = "ollama"
+
+    task = load_tasks()[0]
+    provider = LocalProvider()
+    provider.script(
+        make_response(
+            tool_calls=[
+                ToolCall(
+                    id="edit",
+                    name="write_file",
+                    arguments={
+                        "path": "calc.py",
+                        "content": (task.reference / "calc.py").read_text(),
+                    },
+                )
+            ],
+            prompt_tokens=10,
+            completion_tokens=5,
+        ),
+        make_response(content="Fixed", prompt_tokens=10, completion_tokens=5),
+    )
+    settings = Settings(
+        _env_file=None,
+        model_profiles={
+            "local": {**PROFILE, "max_context_tokens": 8192, "max_tool_iterations": limit}
+        },
+        model_profile="local",
+        max_tool_iterations=9,
+    )
+    result = await run_task(task, provider=provider, settings=settings, mode="harness")
+    assert result.passed
+    assert len(provider.calls) == limit
+    assert result.completion_status == ("completed" if limit == 2 else "budget_exhausted")
+    assert result.runtime_config["max_tool_iterations"] == limit
+    assert result.runtime_config["model_profile"] == settings.profile_identity().model_dump()
+    assert result.verification_status == "not_run"
