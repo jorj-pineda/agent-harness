@@ -1684,3 +1684,26 @@ existing captured execution settings. Changing it causes configuration drift and
 blocks guarded continuation of mismatched history. Profiles that omit it retain
 their previous definition hashes. There is no automatic tuning or claim that a
 higher cap improves task acceptance; compare bounded runs before choosing one.
+
+New API sessions may opt into `inspection_only: true` when posting to `/sessions`.
+The creation response echoes the actual `inspection_only` policy; clients requesting
+inspection must require an explicit `true` acknowledgment before submitting chat
+(an older server may ignore unknown request fields). Omission preserves the standard
+session policy. The flag is strict, fixed for the session, saved across restart,
+and retained by guarded continuation; a fork cannot upgrade it to editing access.
+Saved turn execution profiles also record the policy and exposed tool schemas.
+
+Inspection exposes only `read_file`, `grep_repo`, `list_dir`, `tree` and
+`recall_facts`, where available. The shared loop rejects an entire model tool batch
+before dispatch if any requested name is outside that allowlist, even when a
+caller supplies an unrestricted registry. Commands (including Git commands), file
+edits, memory writes, plans and support/custom tools are unavailable. A read-and-answer
+turn can complete with checks `not_run`; it need not manufacture a project check.
+A rejected request returns `blocked`, with no fabricated tool execution evidence.
+
+This is a model-tool permission boundary, not host process isolation or a seal on
+the repository. Other processes and explicit owner operations can still change
+files. Archive/checkpoint storage and opt-in turn captures keep their existing
+behavior; ordinary admission, budget and path limits still apply. Restored history
+remaining transport-read-only is a separate restriction. CLI and panel selection
+of this new policy are follow-up slices; no model-quality gain is established.
