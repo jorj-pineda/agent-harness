@@ -1678,6 +1678,19 @@ contract labels/metric limits inspected. Broader Milestone 4 stays incomplete.
 
 **Outcome:** the project can state where it helps, how much it costs, and where human intervention is still needed.
 
+**2026-10-17 — Two-module feature coverage:** `retry_after_seconds` grows the
+trusted public development corpus to nine tasks. Its reference updates parser and
+client modules; acceptance checks both public behaviors, not filename overlap or
+file-count heuristics. Requirements include numeric bounds, zero/leading zeros,
+invalid/large inputs, header precedence, fallback and input preservation. Scripted
+real-tool regressions reject either partial reference and accept the pair while
+preserving source fixtures. This narrow numeric exercise is not full HTTP-date
+or provider-retry support. No inference, model-quality claim or Duodoro edits;
+held-out sets, larger task counts and model comparisons remain open. Validation:
+49 focused tests, nine-task reference validation and 1,205 offline tests (five live
+deselected), Ruff/format/mypy passed. Both scripted matrices passed 90/90 escalation
+decisions; scripted-contract labels and metric limits were inspected.
+
 **2026-10-17 — Pre-existing-failure development task:** the trusted corpus grows to
 eight tasks with `positive_total_existing_failure`. External acceptance checks the
 requested positive-only sum and fixed protected legacy bytes. Scripted real-tool

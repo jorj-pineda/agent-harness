@@ -48,9 +48,10 @@ tool trace, final diff, independent check
 output, termination, usage, and latency. A single run is a baseline observation,
 not evidence of a repeatable model improvement.
 
-The manifest contains eight tasks: the five original bugfixes, `paginate_items`
+The manifest contains nine tasks: the five original bugfixes, `paginate_items`
 (feature), `extract_label_normalizer` (refactor) and `positive_total_existing_failure`
-(bugfix with an unrelated failing check). Pagination specifies one-based
+(bugfix with an unrelated failing check), plus `retry_after_seconds` (feature).
+Pagination specifies one-based
 pages, validation (including bool),
 empty/past-end behavior, input/element preservation and the existing helper contract.
 The acceptance suite is outside the editable fixture. A weakened visible test cannot
@@ -64,6 +65,15 @@ module helper to verify that both callers use the requested seam at call time.
 This tests the explicit refactor contract without source similarity or AST matching;
 adding an unused helper can pass visible checks while failing external acceptance.
 It is one narrow refactor task, not a general assessment of design quality.
+
+`retry_after_seconds` exercises a feature across parser and client interfaces. The
+reference updates both modules; authoritative acceptance checks behavior at both
+interfaces instead of counting changed files. Numeric boundaries, zero/leading
+zeros, invalid/large inputs, canonical-header precedence, fallback identity and
+header preservation are explicit requirements. Parser-only/client-only reference
+changes fail acceptance. This deliberately supports two header spellings and
+numeric seconds only, not general HTTP Retry-After/date compliance or provider
+retry behavior.
 
 `positive_total_existing_failure` requires a focused fix while preserving two
 legacy files byte-for-byte. Its broad `pytest -q` intentionally retains an unrelated
