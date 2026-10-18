@@ -28,3 +28,14 @@
     new list containing that page, or [] when past the end, without mutating the input
     or copying its elements. Preserve first_page's existing behavior. Run the visible
     checks and report the observed outcome.
+- id: extract_label_normalizer
+  fixture: extract_label_normalizer
+  category: refactor
+  request: >-
+    Refactor labels.py to extract the duplicated strip().lower() operation into
+    normalize_label(value). Route label_for and every index_labels element through
+    this module-level helper at call time, so replacing labels.normalize_label also
+    affects both callers. Preserve existing formatting, last-index-wins duplicate
+    handling, empty/Unicode strings, iterable input order and error behavior without
+    mutating input collections. Keep the existing public functions and add the helper.
+    Run the visible checks and report the observed outcome.
