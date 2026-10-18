@@ -1679,6 +1679,19 @@ contract labels/metric limits inspected. Broader Milestone 4 stays incomplete.
 **Outcome:** the project can state where it helps, how much it costs, and where human intervention is still needed.
 
 
+**2026-10-18 — Explicit grader-output coverage:** new real-task result rows record
+whether either bounded grader stream or the combined report prefix was clipped.
+Missing legacy/custom metadata stays unknown; historical raw reports are unchanged.
+Exit-code acceptance, the owned bootstrap, output bounds and runtime defaults stay
+unchanged. Scripted stream/report boundaries and a real noisy external pytest failure
+preserve rejection and explicit incomplete diagnostics. This responds to the long
+parameter-ID output seen in the last Gemma run; readable task labels remain a
+separate follow-up. No inference, paid calls, Duodoro edits or model-quality claim;
+broader evaluation/release milestones remain open. Validation: 43 focused and
+1,213 offline tests (five live deselected), Ruff/format/mypy passed. Both scripted
+matrices passed 90/90 escalation decisions; contract labels/limits inspected.
+
+
 **2026-10-18 — Explicit completed-and-accepted summaries:** new real-task reports
 keep artifact acceptance counts and add separate completed-and-accepted counts
 per mode, task and category. Human output labels artifact acceptance and shows

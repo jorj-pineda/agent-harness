@@ -91,3 +91,60 @@ async def test_scripted_false_visible_pass_cannot_replace_external_acceptance(tm
     write_report(report, "offline boundary validation", [result])
     assert json.loads(report.read_text())["results"][0]["acceptance_policy"] == "owned-pytest-v1"
     assert (task.fixture / "calc.py").read_bytes() == original
+
+
+@pytest.mark.parametrize(
+    "stdout,stderr,stdout_truncated,stderr_truncated,truncated",
+    [
+        ("", "", False, False, False),
+        ("x" * 12_000, "", False, False, False),
+        ("x" * 12_001, "", False, False, True),
+        ("x" * 7_000, "y" * 5_001, False, False, True),
+        ("prefix", "", True, False, True),
+        ("", "prefix", False, True, True),
+    ],
+    ids=["empty", "exact-report-cap", "over-report-cap", "combined-overflow", "stdout", "stderr"],
+)
+async def test_report_retains_acceptance_output_coverage(
+    monkeypatch, tmp_path, stdout, stderr, stdout_truncated, stderr_truncated, truncated
+):
+    from evals import real_run
+    from tools.process import ProcessResult
+
+    async def scripted_grader(task, root):
+        return ProcessResult([], 1, stdout, stderr, stdout_truncated, stderr_truncated)
+
+    monkeypatch.setattr(real_run, "acceptance_check", scripted_grader)
+    provider = ScriptedProvider()
+    provider.script(make_response(content="No patch"))
+    result = await run_task(
+        load_tasks()[0], provider=provider, settings=Settings(_env_file=None), mode="harness"
+    )
+    assert result.acceptance_output == (stdout + stderr)[:12_000]
+    assert result.acceptance_output_truncated is truncated
+    assert result.acceptance_exit_code == 1 and not result.passed
+    path = tmp_path / "report.json"
+    write_report(path, "scripted output coverage", [result])
+    row = json.loads(path.read_text())["results"][0]
+    assert row["acceptance_output_truncated"] is truncated
+    # Legacy/custom rows do not acquire an invented complete-output assertion.
+    row.pop("acceptance_output_truncated")
+    assert real_run.RealTaskResult(**row).acceptance_output_truncated is None
+
+
+async def test_real_noisy_grader_retains_rejection_and_explicit_incomplete_output(tmp_path):
+    acceptance = tmp_path / "acceptance"
+    acceptance.mkdir()
+    (acceptance / "test_acceptance.py").write_text(
+        'def test_noisy_failure():\n    print("x" * 16000)\n    assert False\n'
+    )
+    task = replace(load_tasks()[0], acceptance=acceptance)
+    provider = ScriptedProvider()
+    provider.script(make_response(content="No patch"))
+    result = await run_task(
+        task, provider=provider, settings=Settings(_env_file=None), mode="harness"
+    )
+    assert not result.passed and result.acceptance_exit_code == 1
+    assert result.acceptance_output_truncated is True
+    assert len(result.acceptance_output) <= 12_000
+    assert "test_noisy_failure" in result.acceptance_output

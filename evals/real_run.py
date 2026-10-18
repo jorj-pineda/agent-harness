@@ -99,6 +99,7 @@ class RealTaskResult:
     turn_trace: list[dict[str, Any]] = field(default_factory=list)
     category: TaskCategory = "unclassified"
     acceptance_policy: Literal["owned-pytest-v1"] | None = None
+    acceptance_output_truncated: bool | None = None
 
 
 class ObservedProvider:
@@ -299,6 +300,7 @@ async def run_task(
                 latency_ms = (time.perf_counter() - start) * 1000
                 trace: list[ToolCallRecord] = session.turns[-1].tool_calls if session.turns else []
         acceptance = await acceptance_check(task, copy.workspace.root)
+        acceptance_output = acceptance.stdout + acceptance.stderr
         changes = copy.changes()
         paths = tuple(sorted((*changes.added, *changes.modified, *changes.deleted)))
         termination = (
@@ -345,7 +347,12 @@ async def run_task(
             deleted=changes.deleted,
             diff=_diff(task, copy, paths),
             acceptance_exit_code=acceptance.exit_code,
-            acceptance_output=(acceptance.stdout + acceptance.stderr)[:12_000],
+            acceptance_output=acceptance_output[:12_000],
+            acceptance_output_truncated=(
+                acceptance.stdout_truncated
+                or acceptance.stderr_truncated
+                or len(acceptance_output) > 12_000
+            ),
             prompt_tokens=observed.prompt_tokens,
             completion_tokens=observed.completion_tokens,
             latency_ms=latency_ms,

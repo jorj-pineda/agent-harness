@@ -225,3 +225,12 @@ inspect `verification_status`, raw checks and final answers separately. Human ou
 labels artifact acceptance and shows completed-and-accepted totals. Rendering an old
 summary without the new field says `unknown`, never inferring it from acceptance.
 Historical reports and their original summaries are not rewritten.
+
+New real-task rows include `acceptance_output_truncated`: true if either grader
+stream exceeded its 12,000-byte capture cap, or if concatenated stdout/stderr
+exceeded the existing 12,000-character report prefix. False means neither capture
+nor report clipping occurred; it does not certify task correctness or complete
+process logging. Old/custom rows default to null (coverage unknown). Exit-code
+acceptance is unchanged. A clipped prefix can omit failure names or pytest totals;
+inspect this flag before treating the diagnostic text as a full explanation.
+Historical reports retain their original output and coverage limitations.
