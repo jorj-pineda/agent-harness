@@ -1419,6 +1419,21 @@ Keep the loop flexible: inspect → edit → verify → repair is a useful defau
 
 **Done when:** tests prove that an unrelated read cannot certify a fix, `pytest --version` cannot certify verification, a later edit invalidates earlier checks, a later failure is not hidden by an earlier pass, and early completion produces bounded corrective feedback.
 
+**2026-10-18 — Inspection-only session policy:** new API sessions may select a
+strict, immutable inspection flag. The shared registry and loop allow only file
+reads/search/listing and memory recall, rejecting an entire mixed batch before
+any dispatch when it requests commands, edits, memory writes or other tools.
+Read-and-answer completion can honestly retain checks not_run. Creation echoes
+the actual policy so clients can refuse silent fallback on older servers. The
+policy and actual namespace are captured in execution profiles; archives retain
+it after restart, current review projects the same tools, and guarded forks cannot
+upgrade inspection to editing. This is model-tool gating, not host isolation:
+other writers, owner operations and opt-in capture/storage retain existing limits.
+CLI/panel selection follows separately; broader task state, compaction and real
+workflow validation remain open. No inference, model-quality claim or Duodoro edits.
+Validation: 79 focused and 1,239 offline tests (five live deselected), Ruff/format/
+mypy passed. Both scripted matrices passed 90/90 with labels/metric limits inspected.
+
 **2026-10-14 — Nonnegative usage boundary:** normalized token usage rejects negative
 prompt/output counts before accounting or tool dispatch. Unknown/zero/positive
 counts remain valid. A mocked backend attempting a write with malformed usage

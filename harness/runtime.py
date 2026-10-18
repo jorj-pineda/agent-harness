@@ -23,6 +23,7 @@ from workspace import SnapshotLimitError, Workspace, compare, snapshot
 from workspace.changes import TextCapture, review_diffs
 from workspace.core import DEFAULT_IGNORE_GLOBS
 
+from .access import execution_registry
 from .admission import turn_admission
 from .cancellation import TurnCancellation
 from .config import CodingToolset, Settings
@@ -53,6 +54,7 @@ def build_registry(
     code_tool_transform: Callable[[Tool], Tool] | None = None,
     command_env: Mapping[str, str] | None = None,
     memory_session: Session | None = None,
+    inspection_only: bool = False,
 ) -> ToolRegistry:
     if memory_session is not None and memory_session.user_id != user_id:
         raise ValueError("Memory source session owner must match the registry user")
@@ -82,7 +84,7 @@ def build_registry(
             code_registry.register(tool)
         for tool in code_registry:
             registry.register(code_tool_transform(tool) if code_tool_transform else tool)
-    return registry
+    return execution_registry(registry, inspection_only=inspection_only)
 
 
 def refresh_system_message(
@@ -95,11 +97,16 @@ def refresh_system_message(
     repository_instructions: RepositoryInstructions | None = None,
 ) -> None:
     blocks = [system_prompt]
+    if session.inspection_only:
+        blocks.append(
+            "Inspection-only session: inspect files and recall notes, then answer. "
+            "Do not edit files, execute commands or store memory. No project check is required."
+        )
     if repository_instructions is not None:
         instruction_block = repository_instructions.prompt_block()
         if instruction_block is not None:
             blocks.append(instruction_block)
-    if project_check_argv is not None:
+    if project_check_argv is not None and not session.inspection_only:
         blocks.append(
             "After editing, run this project check with run_command argv: "
             f"{json.dumps(project_check_argv)}"
@@ -172,6 +179,7 @@ async def run_configured_turn(
         )
     if is_out_of_scope_request(message):
         return out_of_scope_response()
+    registry = execution_registry(registry, inspection_only=session.inspection_only)
     with turn_admission.claim(session.session_id, session.workspace_root) as busy:
         if busy is not None:
             return TurnResponse(
@@ -225,6 +233,7 @@ async def run_configured_turn(
                     provider.name,
                     registry,
                     system_prompt=system_prompt,
+                    inspection_only=session.inspection_only,
                     repository_instructions=instructions.review
                     if settings.load_root_agents
                     else None,

@@ -130,6 +130,7 @@ class Session(BaseModel):
     session_id: str = Field(default_factory=_uuid)
     user_id: str | None = None
     checkpoint_turns: bool = False
+    inspection_only: bool = Field(default=False, strict=True, frozen=True)
     continuation_source: ContinuationSource | None = None
     workspace_root: str | None = Field(
         default=None,
