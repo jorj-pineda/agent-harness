@@ -1679,6 +1679,20 @@ contract labels/metric limits inspected. Broader Milestone 4 stays incomplete.
 **Outcome:** the project can state where it helps, how much it costs, and where human intervention is still needed.
 
 
+**2026-10-18 — Readable long-input acceptance diagnostics:** retry-header pytest
+parameters now have short explicit IDs. Values, expected results and assertions
+are unchanged; only criterion-source labels/hash change. Offline regressions apply
+both archived Gemma feature diffs unchanged to fresh disposable copies: each still
+has four failures and 24 passes, with all long-leading-zero/non-ASCII failure IDs
+and totals retained inside the unchanged output cap. Historical reports and pinned
+criterion hashes remain intact. Other noisy failures can still clip, so output
+coverage metadata remains necessary. No inference, patch repair, paid calls,
+Duodoro edits or model-quality improvement; broader Milestone 6 stays open.
+Validation: 109 focused and 1,215 offline tests (five live deselected), Ruff,
+formatting and mypy passed. Both scripted matrices passed 90/90 escalation
+decisions; contract labels and metric limits were inspected.
+
+
 **2026-10-18 — Explicit grader-output coverage:** new real-task result rows record
 whether either bounded grader stream or the combined report prefix was clipped.
 Missing legacy/custom metadata stays unknown; historical raw reports are unchanged.

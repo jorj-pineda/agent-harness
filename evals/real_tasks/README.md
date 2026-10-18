@@ -234,3 +234,14 @@ process logging. Old/custom rows default to null (coverage unknown). Exit-code
 acceptance is unchanged. A clipped prefix can omit failure names or pytest totals;
 inspect this flag before treating the diagnostic text as a full explanation.
 Historical reports retain their original output and coverage limitations.
+
+The retry-header acceptance suite uses short explicit parameter IDs, including
+long leading-zero/oversized inputs and non-ASCII digits. This keeps its known
+feature failure names and pytest totals within the unchanged grader output cap.
+The values, assertions and expected behavior are unchanged; the acceptance file
+hash changes because pytest labels are part of its source. Historical evaluations
+remain pinned to their original revision/criterion hashes and are not rewritten.
+Offline regressions apply both archived feature diffs unchanged to fresh copies,
+retain their four failures/24 passes and check that all four failure IDs fit in
+unclipped output. This is artifact replay, not new inference or improved acceptance.
+Other noisy failures can still exceed the cap; inspect output coverage metadata.
