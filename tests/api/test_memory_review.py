@@ -67,7 +67,9 @@ def test_deletion_changes_future_prompt_without_erasing_saved_evidence(tmp_path)
     provider.script(
         make_response(
             tool_calls=[
-                ToolCall(id="note", name="remember", arguments={"note": "Incorrect convention"})
+                ToolCall(
+                    id="note", name="remember_fact", arguments={"fact": "Incorrect convention"}
+                )
             ]
         ),
         make_response(content="Stored note"),
@@ -163,7 +165,7 @@ def test_owner_correction_and_restart_preserve_old_run_evidence(tmp_path):
     provider.script(
         make_response(
             tool_calls=[
-                ToolCall(id="note", name="remember", arguments={"note": "Wrong convention"})
+                ToolCall(id="note", name="remember_fact", arguments={"fact": "Wrong convention"})
             ]
         ),
         make_response(content="Stored"),
@@ -223,7 +225,9 @@ def test_api_remember_source_turn_survives_restart_and_deduplication(tmp_path):
     provider = ScriptedProvider()
     provider.script(
         make_response(
-            tool_calls=[ToolCall(id="first", name="remember", arguments={"note": "convention"})]
+            tool_calls=[
+                ToolCall(id="first", name="remember_fact", arguments={"fact": "convention"})
+            ]
         ),
         make_response(content="Stored"),
         make_response(
@@ -260,7 +264,7 @@ def test_runtime_injection_is_workspace_scoped_across_restart(tmp_path):
     provider.script(
         make_response(
             tool_calls=[
-                ToolCall(id="local", name="remember", arguments={"note": "A convention"}),
+                ToolCall(id="local", name="remember_fact", arguments={"fact": "A convention"}),
                 ToolCall(
                     id="global",
                     name="remember_fact",

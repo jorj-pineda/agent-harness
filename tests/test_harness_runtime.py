@@ -121,7 +121,7 @@ async def test_runtime_applies_configured_policy(tmp_path: Path, policy: dict) -
 
 async def test_runtime_uses_iteration_budget_and_scope_policy(tmp_path: Path) -> None:
     provider = ScriptedProvider()
-    provider.script(make_response(tool_calls=[ToolCall(id="a", name="recall", arguments={})]))
+    provider.script(make_response(tool_calls=[ToolCall(id="a", name="recall_facts", arguments={})]))
     with FactStore(tmp_path / "memory.db") as store:
         registry = build_registry(fact_store=store, user_id="dev", workspace_root=None)
         kwargs = {
@@ -522,7 +522,7 @@ async def test_runtime_recall_overflow_feedback_allows_smaller_retry(tmp_path: P
 
     provider = ScriptedProvider()
     provider.script(
-        make_response(tool_calls=[ToolCall(id="large", name="recall", arguments={})]),
+        make_response(tool_calls=[ToolCall(id="large", name="recall_facts", arguments={})]),
         make_response(
             tool_calls=[ToolCall(id="small", name="recall_facts", arguments={"max_results": 1})]
         ),
@@ -576,7 +576,8 @@ async def test_configured_registry_omits_unavailable_semantic_tool(
         assert "semantic_search" not in registry.names()
         assert "semantic_search" not in seen
         assert {"grep_repo", "read_file", "write_file", "run_command"} <= set(seen)
-        assert {"remember", "remember_fact", "recall", "recall_facts"} <= set(registry.names())
+        assert {"remember_fact", "recall_facts"} <= set(registry.names())
+        assert {"remember", "recall"}.isdisjoint(registry.names())
         with pytest.raises(ToolError, match="Unknown tool"):
             await registry.invoke("semantic_search", {"query": "anything"})
 
@@ -598,7 +599,9 @@ async def test_memory_source_tracks_active_turn_without_relabeling_duplicates(
         ),
         make_response(content="Stored"),
         make_response(
-            tool_calls=[ToolCall(id="second", name="remember", arguments={"note": "durable note"})]
+            tool_calls=[
+                ToolCall(id="second", name="remember_fact", arguments={"fact": "durable note"})
+            ]
         ),
         make_response(content="Already known"),
     )
@@ -621,7 +624,7 @@ async def test_memory_source_tracks_active_turn_without_relabeling_duplicates(
         assert note.source_turn_id != session.turns[1].turn_id
         assert note.updated_at is None
         # No active turn: a direct factory invocation must not borrow a finished source.
-        await registry.invoke("remember", {"note": "outside configured turn"})
+        await registry.invoke("remember_fact", {"fact": "outside configured turn"})
         assert store.list("dev")[0].source_turn_id is None
 
 
@@ -635,3 +638,37 @@ def test_memory_source_session_owner_mismatch_prevents_registry_binding(tmp_path
                 memory_session=Session(user_id="other"),
             )
         assert store.list("dev") == store.list("other") == []
+
+
+async def test_canonical_memory_namespace_preserves_scope_and_records_schema_drift(tmp_path):
+    import json
+
+    from harness.configuration_review import compare_profiles
+    from harness.execution_profile import capture_execution_profile
+    from tools import ToolRegistry
+    from tools.memory import register_memory_tools
+
+    root = str(tmp_path / "repo")
+    with FactStore(tmp_path / "memory.db") as store:
+        canonical = build_registry(fact_store=store, user_id="dev", workspace_root=None)
+        legacy = ToolRegistry()
+        register_memory_tools(legacy, store=store, user_id="dev")
+        old_profile = capture_execution_profile(Settings(_env_file=None), "ollama", legacy)
+        current = capture_execution_profile(Settings(_env_file=None), "ollama", canonical)
+        drift = compare_profiles(old_profile, current)
+        assert drift.status == "changed"
+        assert {"tool_names", "tool_specs_sha256"} <= set(drift.changed_fields)
+        assert len(
+            json.dumps([spec.model_dump(mode="json") for spec in canonical.as_tool_specs()])
+        ) < len(json.dumps([spec.model_dump(mode="json") for spec in legacy.as_tool_specs()]))
+        for name, args in (("remember", {"note": "must not write"}), ("recall", {})):
+            with pytest.raises(ToolError, match="Unknown tool"):
+                await canonical.invoke(name, args)
+        assert store.list("dev") == []
+        store.add("dev", "another workspace", workspace_root=root)
+        await canonical.invoke("remember_fact", {"fact": "user preference", "scope": "global"})
+        assert await canonical.invoke("recall_facts", {}) == ["user preference"]
+        assert [note.fact for note in store.list("dev", scoped=True, workspace_root=root)] == [
+            "user preference",
+            "another workspace",
+        ]
