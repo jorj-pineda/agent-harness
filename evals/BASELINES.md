@@ -1790,3 +1790,130 @@ Validation of the archival PR: 99 focused tests and 1,205 offline tests passed
 passed 90/90 escalation decisions; `scripted-contract` labels and metric limits
 were inspected. The existing Chroma deprecation warning remains. These offline
 checks validate mechanics and packaging, separately from the six live observations.
+
+## 2026-10-18 — Eight versus twelve model iterations (local development)
+
+Six fixed local Gemma attempts compared explicit named profiles with eight or
+twelve iterations at clean revision `f25c7e0eb7755effa017f09c15910dd7730cd31c`.
+Each cap produced **2/3 accepted artifacts**. Completed-and-accepted counts were
+**0/3 at eight, 2/3 at twelve**. This small public development comparison establishes
+no repeatable coding-quality gain, and the global default remains eight.
+
+Evidence:
+
+- [Eight-iteration raw report](results/2026-10-18-gemma4-12b-iterations-8.json)
+- [Twelve-iteration raw report](results/2026-10-18-gemma4-12b-iterations-12.json)
+- [Frozen settings, profiles, order, hashes and cleanup](results/2026-10-18-gemma4-12b-iterations.metadata.json)
+- [Exact executed reproduction recipe](results/2026-10-18-gemma4-12b-iterations-reproduce.py)
+- [Unchanged saved-diff replay audit](results/2026-10-18-gemma4-12b-iterations.replay-audit.json)
+
+The model was `gemma4:12b`, digest
+`4eb23ef187e2c5462566d6a1d3bbbc2f1346d0b4327cbb66d58fffbcc9b2b05c`,
+Ollama 0.33.2 on an Apple M1 Pro with 16 GiB RAM. Requests explicitly used
+16,384 context, thinking off and temperature 0; after-attempt active-model
+observations reported the same digest/context. This is not per-request backend
+or tokenizer attestation. Both variants used the shared application runtime,
+full tools with canonical memory names, compact `coding-v3-compact-v1`, disposable
+trusted fixtures and `owned-pytest-v1` independent acceptance. Code retains host
+permissions; disposable copies are not process isolation.
+
+The selected profile name was `local` in both groups. Only its iteration value
+and resulting definition hash differed. All other recorded runtime settings and
+tool schemas matched for each task pair. Fixed limits were 24 tools, 180 seconds
+for dispatch, 60 seconds per request, 8,192 turn output tokens, 2,048 requested
+output tokens per request, 64,000 total tokens, 16,384 effective context, 256 minimum
+output tokens and 3 estimated bytes/token. One completion recovery, two identical
+calls and four touched files were allowed. Plan/check requirements, root instruction
+loading and support tools were off; project check argv was unset. The observed
+check status therefore uses the recognized-command heuristic. Explicit defaults
+plus frozen overrides disabled dotenv/environment-derived settings; fact stores
+were isolated and unseeded. Token gates are estimate-based and dispatch deadlines
+are not hard end-to-end return bounds.
+
+All six planned attempts are retained in execution order below. There was one
+attempt per task/cap, no attempt reruns, tuning or manual patch repair. Reports stay separate
+by cap so their aggregates do not combine unlike budgets.
+
+| Task | Cap | Artifact accepted | Completion | Observed check | Seconds | Tools | Reported prompt / output tokens |
+|---|---:|---|---|---|---:|---:|---:|
+| `extract_label_normalizer` | 8 | yes | iteration limit | passed | 114.7 | 8 | 21,104 / 924 |
+| `extract_label_normalizer` | 12 | yes | completed | passed | 108.6 | 7 | 21,194 / 857 |
+| `positive_total_existing_failure` | 12 | yes | completed | failed | 106.6 | 10 | 30,800 / 678 |
+| `positive_total_existing_failure` | 8 | yes | iteration limit | stale | 75.1 | 8 | 19,872 / 452 |
+| `retry_after_seconds` | 8 | no | iteration limit | passed | 144.6 | 8 | 22,128 / 1,117 |
+| `retry_after_seconds` | 12 | no | wall limit | passed | 180.2 | 10 | unknown |
+
+Trace findings limit the interpretation:
+
+- The twelve-cap refactor completed in **eight responses**, with seven tools. Its
+  eight-cap counterpart spent a tool on a rejected no-op replacement and ended
+  after eight tools/responses without a final answer. Their action sequences differ,
+  so this completion difference cannot be attributed to extra allowed iterations.
+- Both bugfix runs had the same first eight tool names/arguments/errors. They
+  recovered from a quoted argv and an escaped-newline exact-edit mismatch. At eight,
+  the correct edit arrived after failed pre-edit checks and no final answer. At
+  twelve, eleven responses allowed post-edit focused pass, broad failure and a final
+  answer explicitly naming the untouched legacy date-format failure. Acceptance
+  protects the legacy bytes. Completed-and-accepted does not require observed
+  passing status: the latest broad check is correctly still failed.
+- Both feature patches reject non-ASCII digits but fail the two very long
+  leading-zero cases: integer conversion rejects the string while its leading zeros
+  are still present.
+  Each passed the visible check and failed independent acceptance (2 failed,
+  26 passed). The twelve-cap attempt also recovered from malformed/unsupported
+  command forms, then reached the 180-second dispatch deadline during its eleventh
+  request, after ten responses. Extra iterations did not fix its artifact.
+- No blank final replies or completion-recovery messages occurred. Three eight-cap
+  runs exhausted iterations; the twelve-cap group had two completed runs and the
+  wall stop. The aggregate false-completion count is zero in both groups because
+  both completed artifacts passed acceptance, without certifying other passed-check
+  states or final-answer claims generally.
+
+The cancelled in-flight wall-limited request makes that attempt's full usage
+unknown. Its ten recorded responses retain a known prefix of 31,554 prompt and
+1,134 output tokens; these are not full totals or zero-cost evidence. The twelve-cap
+median reported total (26,764.5) excludes this attempt and covers only two rows;
+the eight-cap median (22,028) covers all three. They are not comparable full-cost
+measurements. Median latency was 114.7 versus 108.6 seconds and tools 8 versus 10,
+but one sample per cell, cold first eight-cap request, alternating fixed order,
+backend/cache variation, disposable path differences and shared-host conditions
+prevent a reliable latency or causal-quality conclusion. This is a current paired
+budget observation; the prior revision's different tool namespace/profile setup
+is not an alias-removal experiment here.
+
+Post-hoc replay applied every saved diff unchanged in a fresh fixture copy and
+reproduced all six acceptance exit codes. No criteria, reference, source fixture
+or raw report changed. All original and replay acceptance output fit the normal
+caps and reported no clipping; short explicit failure IDs retain the two feature
+failures and totals. This is offline artifact replay, not new inference or rescue.
+The recipe SHA-256 remained
+`ee884ec25bf64b279dad931648dc543de6069ce2ff3ee7d344ddc66a54ce7cae`
+through execution and archival.
+
+For inference reproduction, extract the recipe to an absolute temporary path,
+prepare a clean isolated checkout of the pinned revision with normal dependencies,
+and install the exact model digest on local Ollama. From that checkout run:
+
+```sh
+uv run python -c 'import runpy; runpy.run_path("/absolute/tmp/reproduce.py", run_name="__main__")' --output-dir /absolute/new-experiment-directory
+```
+
+The output directory must not already exist. The recipe rejects dirty/changed
+harness revisions or model-digest mismatch, validates references before inference,
+hashes tasks/criteria/reference files, saves each cap's report after each attempt
+and stops on provider/runtime errors without retry/fallback. The newer archival PR
+checkout is intentionally rejected; use the pinned revision. Backend results can
+still vary. Artifact-only replay uses a fresh fixture, `git apply` on the row's
+saved diff and `evals.real_run.acceptance_check`, without a model.
+
+The run lasted 20:22:24–20:34:37 UTC on October 18. The model started unloaded and
+was explicitly unloaded afterward; `ollama ps` was empty. The pre-existing Ollama
+server remained running. No paid calls, additional models, Duodoro edits, manual
+rescues or runtime/default tuning occurred. Repeated and held-out comparisons,
+20–30 tasks, repository questions and ten real-project workflows remain open.
+
+Archival validation: 141 focused tests and 1,226 offline tests passed (five live
+tests deselected), plus Ruff, all 240 Python files formatted and mypy. Both scripted
+matrices passed 90/90 escalation decisions; contract labels and metric limits were
+inspected. The existing Chroma deprecation warning remains. These gates validate
+mechanics/packaging, separately from the six live observations above.
