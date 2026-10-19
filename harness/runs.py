@@ -8,6 +8,8 @@ from typing import Annotated, Literal
 
 from pydantic import BaseModel, Field
 
+from providers.base import ProviderFailure
+
 from .execution_profile import ExecutionProfile
 from .state import ContinuationSource, TurnResponse
 
@@ -51,6 +53,14 @@ class RunRecord(BaseModel):
     finished_at: datetime | None = None
     response: TurnResponse | None = None
     error: str | None = None
+    provider_failure: ProviderFailure | None = Field(
+        default=None,
+        description=(
+            "Allowlisted provider failure observation, without raw error text or payloads. "
+            "Null for legacy records, non-provider failures or when not observed. "
+            "Does not establish remote cancellation, token usage or retry safety."
+        ),
+    )
 
 
 class RequestConflictError(ValueError):

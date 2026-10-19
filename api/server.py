@@ -67,7 +67,7 @@ from memory import FactStore
 from memory.review import MemoryNoteDetail, MemoryPage, preview_note, review_notes
 from memory.store import FactConflictError, FactTooLargeError, MemoryScopePrecondition
 from providers import create_embedder
-from providers.base import ChatProvider, Embedder
+from providers.base import ChatProvider, Embedder, ProviderError
 from tools import ToolRegistry
 from workspace.core import WorkspaceError
 
@@ -998,9 +998,14 @@ def _start_run(
             if saved is not None and saved.status == "running":
                 store.finish_run(record.run_id, result)
             return result
-        except BaseException:
+        except BaseException as failure:
             try:
-                store.fail_run(record.run_id)
+                store.fail_run(
+                    record.run_id,
+                    provider_failure=failure.failure
+                    if isinstance(failure, ProviderError)
+                    else None,
+                )
             except Exception as exc:
                 log.error("api=run_failure_storage exception=%s", type(exc).__name__)
             raise

@@ -426,6 +426,26 @@ def test_history_commands_only_read_and_label_run_state(status: str) -> None:
     client.cancel.assert_not_called()
 
 
+def test_saved_provider_failure_is_visible_without_submission() -> None:
+    record = _saved_run("failed")
+    record["provider_failure"] = {"kind": "read_timeout", "http_status": None}
+    record["error"] = (
+        "Execution or final storage failed; workspace edits may exist. "
+        "Review before new work. Provider failure: read_timeout."
+    )
+    with patch("cli.main.AgentClient") as mock:
+        client = mock.return_value
+        client.run.return_value = record
+        detail = runner.invoke(app, ["run", "r1", "--user-id", "dev"])
+        raw = runner.invoke(app, ["run", "r1", "--user-id", "dev", "--json"])
+    assert detail.exit_code == raw.exit_code == 0
+    assert "Provider failure: read_timeout" in detail.output
+    assert "No saved final response" in detail.output
+    assert '"kind": "read_timeout"' in raw.output
+    client.chat.assert_not_called()
+    client.create_session.assert_not_called()
+
+
 def test_client_history_requests_are_gets_and_chat_retains_explicit_key() -> None:
     with patch("httpx.get", return_value=_ok_response([])) as get:
         AgentClient().runs("dev", session_id="s1", request_id="key1", limit=20, offset=2)

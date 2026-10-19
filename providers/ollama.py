@@ -20,6 +20,7 @@ from .base import (
     ChatMessage,
     FinishReason,
     ProviderError,
+    ProviderFailure,
     ProviderResponse,
     TokenUsage,
     ToolCall,
@@ -83,7 +84,9 @@ class OllamaProvider:
             response = await self._client.post("/api/chat", json=body)
             response.raise_for_status()
         except httpx.HTTPError as exc:
-            raise ProviderError(f"Ollama chat request failed: {exc}") from exc
+            raise ProviderError(
+                f"Ollama chat request failed: {exc}", failure=_http_failure(exc)
+            ) from exc
         latency_ms = (time.perf_counter() - start) * 1000
         return _response_from_ollama(
             response.json(), fallback_model=self._model, latency_ms=latency_ms
@@ -97,12 +100,32 @@ class OllamaProvider:
             )
             response.raise_for_status()
         except httpx.HTTPError as exc:
-            raise ProviderError(f"Ollama embed request failed: {exc}") from exc
+            raise ProviderError(
+                f"Ollama embed request failed: {exc}", failure=_http_failure(exc)
+            ) from exc
         data: dict[str, Any] = response.json()
         embeddings = data.get("embeddings")
         if not isinstance(embeddings, list):
             raise ProviderError(f"Ollama embed returned unexpected payload: {data!r}")
         return [list(map(float, vec)) for vec in embeddings]
+
+
+def _http_failure(exc: httpx.HTTPError) -> ProviderFailure:
+    if isinstance(exc, httpx.HTTPStatusError):
+        return ProviderFailure(kind="http_status", http_status=exc.response.status_code)
+    if isinstance(exc, httpx.ReadTimeout):
+        return ProviderFailure(kind="read_timeout")
+    if isinstance(exc, httpx.ConnectTimeout):
+        return ProviderFailure(kind="connect_timeout")
+    if isinstance(exc, httpx.WriteTimeout):
+        return ProviderFailure(kind="write_timeout")
+    if isinstance(exc, httpx.PoolTimeout):
+        return ProviderFailure(kind="pool_timeout")
+    if isinstance(exc, httpx.TimeoutException):
+        return ProviderFailure(kind="timeout")
+    if isinstance(exc, httpx.NetworkError):
+        return ProviderFailure(kind="connection")
+    return ProviderFailure()
 
 
 def _message_to_ollama(m: ChatMessage) -> dict[str, Any]:

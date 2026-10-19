@@ -15,6 +15,8 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
+from providers.base import ProviderFailure
+
 from .checkpoints import CapturedCheckpoint, CheckpointRecord, CheckpointSummary
 from .execution_profile import ExecutionProfile
 from .reverts import FileRevertInput, FileRevertOutcome, FileRevertRecord
@@ -503,7 +505,7 @@ class SessionStore:
                     )
             self._update_run(record)
 
-    def fail_run(self, run_id: str) -> None:
+    def fail_run(self, run_id: str, *, provider_failure: ProviderFailure | None = None) -> None:
         record = self.get_run(run_id)
         if record is None or record.status != "running":
             return
@@ -511,6 +513,10 @@ class SessionStore:
         record.error = (
             "Execution or final storage failed; workspace edits may exist. Review before new work."
         )
+        record.provider_failure = provider_failure
+        if provider_failure is not None:
+            status = f" HTTP {provider_failure.http_status}" if provider_failure.http_status else ""
+            record.error += f" Provider failure: {provider_failure.kind}{status}."
         record.finished_at = datetime.now(UTC)
         with self._conn:
             self._update_run(record)
