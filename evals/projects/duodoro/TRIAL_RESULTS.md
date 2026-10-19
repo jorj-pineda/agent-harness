@@ -166,3 +166,8 @@ configuration as an unattended coding assistant for the frozen task envelope.
 The next useful decision is whether to narrow that envelope or investigate the
 recorded edit/timeout failures with a controlled follow-up—not another unmeasured
 feature batch. This cohort makes no general claim that Gemma cannot code.
+
+
+Subsequent offline investigation: [exact-edit mismatch diagnosis](EDIT_MISMATCH_DIAGNOSIS.md)
+reproduces nine dispatched failures and extends specific rejection feedback.
+It does not rerun or revise this cohort, its criteria, or its acceptance counts.
