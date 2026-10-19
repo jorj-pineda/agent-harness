@@ -134,9 +134,10 @@ and reserved recovery phases. All ten acceptance sets now validate offline;
 seven new adapters include independent external criteria and reference patches.
 T08 also requires independent review of the final refactor's actual reuse.
 The ledger remains unrun. The [deterministic client preflight](evals/projects/duodoro/CLIENT_PREFLIGHT.md)
-passed the representative exercised paths. The final execution freeze and G0 at
-its selected revision remain pending; G1–G5 remain open. This follow-up does not change the
-point-in-time audit evidence above or authorize inference.
+passed the representative exercised paths. The [execution freeze](evals/projects/duodoro/EXECUTION_FREEZE.md)
+now pins runtime `cd98917` and records G0 there with the concrete Node 24 toolchain.
+The manifest needs review before dispatch; G1 review and G2–G5 outcomes remain open.
+This follow-up does not change the point-in-time audit evidence above or start inference.
 
 ## Concrete audit findings and scope decisions
 
