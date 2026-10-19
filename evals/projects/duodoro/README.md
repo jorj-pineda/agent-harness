@@ -127,3 +127,14 @@ Preparation validation: 41 focused tests and 1,291 offline tests passed (five li
 tests deselected); Ruff, formatting and mypy passed. Both scripted matrices passed
 90/90 escalation decisions at unique temporary report paths; their reports retain
 scripted-contract labels and metric limits. No inference or model comparison ran.
+
+
+## Prepared paired feedback follow-up (not run)
+
+The [comparison freeze](EDIT_FEEDBACK_COMPARISON.md) prepares twelve attempts on
+T01/T04/T09 with unchanged requests, clients, acceptance and per-task limits.
+Two repeats per arm counterbalance pair order. Control and treatment share the
+merged provider-failure reporting runtime; the only runtime difference is the
+old/new mismatch diagnostic. Both-arm offline checks and the declared five-case
+control exclusion are recorded. Review is pending before inference; this is not
+a result or held-out comparison, and the original trial counts remain unchanged.
