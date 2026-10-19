@@ -1,30 +1,32 @@
 # Roadmap: a coding harness for lower-tier models
 
-Updated: 2026-10-18
+Updated: 2026-10-19
 
 ## Current release decision
 
-The [2026-10-18 release-readiness audit](RELEASE_READINESS.md) maps shipped behavior
-to evidence and defines a finite set of release gates. Current decision: controlled
-source-checkout trial preparation can proceed; the personal-use release targets
-are not met. Freeze new feature batches unless a reproduced trial blocker requires
-a focused fix. The next step is review of the prepared execution freeze for the
-approved ten-task trial, not completion of every deferred feature. The existing
-release/held-out criteria below remain unchanged; the audit does not complete Milestones 2–6 or authorize live runs.
+The [release-readiness audit](RELEASE_READINESS.md) defines the release gates.
+The reviewed, frozen [ten-task Duodoro client trial](evals/projects/duodoro/TRIAL_RESULTS.md)
+is complete: **2/10 accepted artifacts and 1/10 completed-and-accepted**, below
+G3's 8/10 artifact target. This configuration is a **no-go for the frozen unattended
+task envelope**. Freeze feature batches; use the retained failures to choose a
+narrower envelope or a controlled investigation, rather than treating more features
+as release progress. The existing release/held-out criteria remain unchanged.
 A packaged panel release also needs the reproduced missing-wheel-assets fix.
 
-The [ten-task protocol](evals/projects/duodoro/TRIAL_PROTOCOL.md) records Jorge's
-approval of the proposed tasks and limits. All ten acceptance sets are prepared
-and pass offline initial-fail/reference-pass validation; seven new sets include
-adversarial coverage. The ledger records preparation asset hashes but remains
-unrun. The [deterministic client preflight](evals/projects/duodoro/CLIENT_PREFLIGHT.md)
-passed representative real CLI/panel paths, including the assigned CLI restart,
-continuation and reversal flows. The [execution freeze](evals/projects/duodoro/EXECUTION_FREEZE.md)
-pins runtime `cd98917`, fresh baselines, criteria, approved settings and local model
-metadata; G0 passed at that revision with the concrete Node 24 toolchain. Review
-of the manifest remains required before inference. T08 additionally requires
-independent source review of the final patch; automated behavior checks alone are insufficient.
-No trial outcome or release criterion is completed by this preparation.
+G1 agreement/review completed before authorized inference. Execution used the
+[freeze](evals/projects/duodoro/EXECUTION_FREEZE.md)'s runtime `cd98917`, approved
+limits and unchanged criteria in disposable copies. G0 passed there with concrete
+Node 24; reporting commits were not the execution runtime. The committed ledger
+remains an unrun preparation template; the separate results retain every outcome.
+
+G2 remains open: real CLI/panel submission and review, cancellation, server restart
+and one guarded fork were exercised, but cancellation preceded any partial edit
+and the planned reversal was rejected. G3 was missed; G4's held-out/repeated
+two-model comparison and G5's release decision remain unmet. No patch repair,
+hidden reruns, model switches or Duodoro working-checkout edits occurred. T08
+failed executable acceptance without a refactor; source review was not performed
+or counted as passing. This cohort does not complete Milestones 2–6 or establish
+a model-quality improvement.
 
 ## Direction
 

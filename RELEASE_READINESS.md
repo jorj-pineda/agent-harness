@@ -140,11 +140,16 @@ T08 also requires independent review of the final refactor's actual reuse.
 The ledger remains unrun. The [deterministic client preflight](evals/projects/duodoro/CLIENT_PREFLIGHT.md)
 passed the representative exercised paths. The [execution freeze](evals/projects/duodoro/EXECUTION_FREEZE.md)
 now pins runtime `cd98917` and records G0 there with the concrete Node 24 toolchain.
-The task/settings agreement component of G1 is complete. Its remaining freeze
-review is pending: the manifest requires a completed review/merged PR record
-before dispatch. G1 as a whole stays open until that review; G2–G5 outcomes
-remain open.
-This follow-up does not change the point-in-time audit evidence above or start inference.
+G1 agreement and freeze review completed before authorized inference, following
+PR #148's merge. The [completed trial](evals/projects/duodoro/TRIAL_RESULTS.md)
+retains all ten outcomes: **2/10 accepted artifacts; 1/10 completed-and-accepted**.
+The committed ledger remains an unrun template; observed results are separate.
+G2 remains open: cancel/restart/fork controls ran, but cancellation preceded a
+partial edit and the planned real reversal was rejected. G3's 8/10 target was
+missed. G4/G5 remain unmet. Current decision: **no-go for the frozen unattended
+task envelope**; choose a narrower envelope or controlled failure investigation.
+This follow-up preserves the point-in-time audit table above. No implementation
+or acceptance criteria changed, and no quality gain is claimed.
 
 ## Concrete audit findings and scope decisions
 
