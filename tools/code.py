@@ -610,13 +610,27 @@ def _replace_mismatch_error(text: str, old_text: str, count: int) -> str:
             f"Expected exactly one old_text match; found {count}. "
             "Include more surrounding lines in old_text so it matches once."
         )
-    unescaped = old_text.replace("\\n", "\n")
-    if "\n" not in old_text and unescaped != old_text and text.count(unescaped) == 1:
-        return (
-            "Expected exactly one old_text match; found 0. old_text contains the two "
-            "characters backslash and n where the file has line breaks. Resend old_text "
-            "and new_text with real line breaks."
-        )
+    # Diagnose only; never use these candidates as edit arguments. Literal source
+    # escapes already matched (or were ambiguous) before reaching this branch.
+    line_breaks = old_text.replace("\\n", "\n")
+    candidates = (
+        (line_breaks, "line breaks", "the two characters backslash and n"),
+        (old_text.replace('\\"', '"'), "double quotes", "backslash-escaped double quotes"),
+        (
+            line_breaks.replace('\\"', '"'),
+            "line breaks and double quotes",
+            "backslash-n and backslash-escaped double quotes",
+        ),
+    )
+    for candidate, expected, supplied in candidates:
+        if candidate != old_text and text.count(candidate) == 1:
+            return (
+                "Expected exactly one old_text match; found 0. old_text contains "
+                f"{supplied} where the file has {expected}. Resend old_text "
+                f"and new_text with real {expected}, copied exactly from read_file content, "
+                "without an extra layer of JSON escaping. No edit was applied; "
+                "arguments were not rewritten."
+            )
     return (
         "Expected exactly one old_text match; found 0. "
         "Copy old_text exactly from the latest read_file content."
