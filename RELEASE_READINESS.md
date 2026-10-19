@@ -87,7 +87,11 @@ incorrect patch; a passed visible check is not automatically a correct one.
 
 ## Finite release gates
 
-| Gate | Current disposition | Evidence required to close it |
+Dispositions in this table are the historical audit at `62ac6a4`. See
+[Trial preparation follow-up](#trial-preparation-follow-up) for subsequent G0/G1
+progress; the acceptance requirements remain unchanged.
+
+| Gate | Disposition at audited revision | Evidence required to close it |
 |---|---|---|
 | G0 — source/regression baseline | Audit checks recorded below; mechanics covered within stated limits. | Keep the gate green at the exact trial/release revision. Investigate any preservation, duplicate-edit or false-status regression before live work. |
 | G1 — frozen trial agreement | Open; needs Jorge's choices, not another feature train. | Ten named, bounded real coding tasks; immutable acceptance/scope checks; chosen profile, per-task time/token limits, allowed clarification and rescue rules. Duodoro/local Gemma are already authorized; no new repository/model/paid budget is assumed. |
@@ -136,7 +140,10 @@ T08 also requires independent review of the final refactor's actual reuse.
 The ledger remains unrun. The [deterministic client preflight](evals/projects/duodoro/CLIENT_PREFLIGHT.md)
 passed the representative exercised paths. The [execution freeze](evals/projects/duodoro/EXECUTION_FREEZE.md)
 now pins runtime `cd98917` and records G0 there with the concrete Node 24 toolchain.
-The manifest needs review before dispatch; G1 review and G2–G5 outcomes remain open.
+The task/settings agreement component of G1 is complete. Its remaining freeze
+review is pending: the manifest requires a completed review/merged PR record
+before dispatch. G1 as a whole stays open until that review; G2–G5 outcomes
+remain open.
 This follow-up does not change the point-in-time audit evidence above or start inference.
 
 ## Concrete audit findings and scope decisions

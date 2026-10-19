@@ -3,8 +3,10 @@
 **Approved for offline preparation, not yet runnable.** Jorge approved the proposed
 ten tasks and limits, including the five-minute dispatch allowance and reserved
 recovery phases. All ten acceptance sets now pass baseline-fail/reference-pass
-validation; the seven new sets also have adversarial regression coverage. This
-prepares release gate G1 in [the readiness audit](../../../RELEASE_READINESS.md).
+validation; the seven new sets also have adversarial regression coverage. The
+task/settings agreement component of G1 is complete. The remaining G1 freeze
+review is pending, as distinguished from the historical audit table in
+[the readiness follow-up](../../../RELEASE_READINESS.md#trial-preparation-follow-up).
 The [deterministic client preflight](CLIENT_PREFLIGHT.md) passed the exercised
 paths. The [execution freeze](EXECUTION_FREEZE.md) pins runtime `cd98917` and G0
 there; its manifest needs review before trial dispatch. G2–G5 remain open.
