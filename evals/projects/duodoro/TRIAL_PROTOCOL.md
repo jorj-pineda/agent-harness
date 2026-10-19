@@ -3,11 +3,13 @@
 **Approved for offline preparation, not yet runnable.** Jorge approved the proposed
 ten tasks and limits, including the five-minute dispatch allowance and reserved
 recovery phases. All ten acceptance sets now pass baseline-fail/reference-pass
-validation; the seven new sets also have adversarial regression coverage. This
-prepares release gate G1 in [the readiness audit](../../../RELEASE_READINESS.md).
+validation; the seven new sets also have adversarial regression coverage. The
+task/settings agreement component of G1 is complete. The remaining G1 freeze
+review is pending, as distinguished from the historical audit table in
+[the readiness follow-up](../../../RELEASE_READINESS.md#trial-preparation-follow-up).
 The [deterministic client preflight](CLIENT_PREFLIGHT.md) passed the exercised
-paths. Do not dispatch trial inference until the reviewed execution freeze and
-G0 at its selected revision are complete. G1–G5 remain open.
+paths. The [execution freeze](EXECUTION_FREEZE.md) pins runtime `cd98917` and G0
+there; its manifest needs review before trial dispatch. G2–G5 remain open.
 
 The [ledger template](trial-ledger.json) contains ten unrun rows, source blob IDs,
 client assignments and null results. It is documentation/data, not a new runner
@@ -195,15 +197,16 @@ operator actions must be recorded even when they are not manual patch repair.
 1. Task/settings/recovery agreement is recorded in the unrun ledger. It authorizes
    preparation; execution remains gated below.
 2. All ten adapters/references/criteria are implemented and validated offline.
-   Freeze source/criterion hashes and actual requests/settings in a reviewed
-   execution manifest after preflight. Preserve historical definitions; do not
-   rewrite old task criteria to fit this trial. Ledger hashes identify preparation
+   The [freeze manifest](execution-freeze.json) records source/criterion hashes,
+   fresh baselines and actual requests/settings after preflight. Review it before
+   dispatch. Preserve historical definitions; do not rewrite old task criteria to fit this trial. Ledger hashes identify preparation
    assets, not a final execution freeze or a future workspace baseline.
 3. The [recorded deterministic preflight](CLIENT_PREFLIGHT.md) exercised
    representative real-client/setup paths before inference: commands/path environment, captures and scoped fork eligibility,
    actual CLI/panel controls, and the planned two-phase accounting. Record any
    blocker instead of adding speculative features. Pick the final harness revision
-   only after these preparations, then rerun G0 there.
+   only after these preparations. The execution freeze pins `cd98917` and records
+   G0 there; executing a different revision requires a new freeze/check.
 4. Copy the ledger template to a unique report directory outside both source
    checkouts; populate real IDs/hashes/evidence paths. Do not edit or overwrite the
    template into a claimed result. Attempts, completion, acceptance, budget and

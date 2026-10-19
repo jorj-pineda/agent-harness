@@ -8,9 +8,9 @@ The [2026-10-18 release-readiness audit](RELEASE_READINESS.md) maps shipped beha
 to evidence and defines a finite set of release gates. Current decision: controlled
 source-checkout trial preparation can proceed; the personal-use release targets
 are not met. Freeze new feature batches unless a reproduced trial blocker requires
-a focused fix. The next step is a deterministic client preflight and execution freeze for the
-approved ten-task trial, not completion of every deferred feature. The existing release/held-out criteria below
-remain unchanged; the audit does not complete Milestones 2–6 or authorize live runs.
+a focused fix. The next step is review of the prepared execution freeze for the
+approved ten-task trial, not completion of every deferred feature. The existing
+release/held-out criteria below remain unchanged; the audit does not complete Milestones 2–6 or authorize live runs.
 A packaged panel release also needs the reproduced missing-wheel-assets fix.
 
 The [ten-task protocol](evals/projects/duodoro/TRIAL_PROTOCOL.md) records Jorge's
@@ -19,9 +19,11 @@ and pass offline initial-fail/reference-pass validation; seven new sets include
 adversarial coverage. The ledger records preparation asset hashes but remains
 unrun. The [deterministic client preflight](evals/projects/duodoro/CLIENT_PREFLIGHT.md)
 passed representative real CLI/panel paths, including the assigned CLI restart,
-continuation and reversal flows. The final execution manifest and G0 at its frozen
-revision remain pending before inference. T08 additionally requires independent
-source review of the final patch; automated behavior checks alone are insufficient.
+continuation and reversal flows. The [execution freeze](evals/projects/duodoro/EXECUTION_FREEZE.md)
+pins runtime `cd98917`, fresh baselines, criteria, approved settings and local model
+metadata; G0 passed at that revision with the concrete Node 24 toolchain. Review
+of the manifest remains required before inference. T08 additionally requires
+independent source review of the final patch; automated behavior checks alone are insufficient.
 No trial outcome or release criterion is completed by this preparation.
 
 ## Direction

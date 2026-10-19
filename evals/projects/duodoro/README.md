@@ -107,8 +107,9 @@ T08 additionally needs independent source review using its external rubric: an
 automated passing behavioral grade alone is insufficient for full acceptance.
 
 The [deterministic client preflight](CLIENT_PREFLIGHT.md) passed representative
-CLI/panel workflows without inference. A reviewed final execution freeze remains
-pending before inference. Earlier free-Go authorization is not a current pricing
+CLI/panel workflows without inference. The [execution freeze](EXECUTION_FREEZE.md)
+records fresh baselines, exact requests/settings/model metadata and G0 at runtime
+`cd98917`; its review remains required before inference. Earlier free-Go authorization is not a current pricing
 claim or instruction to start hosted calls. No model ran during this preparation;
 these public development tasks are not held out and establish no quality gain.
 
