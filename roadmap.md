@@ -13,6 +13,12 @@ completion of every deferred feature. The existing release/held-out criteria bel
 remain unchanged; the audit does not complete Milestones 2–6 or authorize live runs.
 A packaged panel release also needs the reproduced missing-wheel-assets fix.
 
+The [draft ten-task protocol](evals/projects/duodoro/TRIAL_PROTOCOL.md) is now the
+concrete G1 preparation artifact. Five minutes of dispatch allowance per task was
+selected by Jorge; task/settings agreement and seven missing acceptance adapters
+remain open. The ledger is unrun. No trial inference or release criterion is
+completed by publishing that proposal.
+
 ## Direction
 
 Build a coding harness Jorge can use on real repositories with affordable hosted models and locally runnable models that struggle with coding-agent workflows. The harness should help those models inspect the right code, make focused edits, recover from errors, and verify their work within an explicit budget.
