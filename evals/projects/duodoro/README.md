@@ -87,3 +87,15 @@ is unverified. No model inference on this task has run yet.
 These are three prepared real-project tasks, not completion of the ten-task release target,
 held-out evaluation or repeated comparisons on multiple lower-tier models. Offline
 baseline/reference validation is criterion validation, not model-quality evidence.
+
+
+## Proposed client trial (not started)
+
+The [ten-task protocol](TRIAL_PROTOCOL.md) and [unrun ledger template](trial-ledger.json)
+propose five CLI and five panel tasks on the same pinned source. Jorge selected a
+five-minute per-task dispatch allowance; the task set, other settings and recovery
+allocation remain unapproved. This trial proposes local Gemma only. Earlier free-Go
+comparison authorization above is not a current pricing claim or instruction to
+start hosted calls. Seven new candidates still lack implemented/validated criteria;
+only the three existing adapters were revalidated offline during preparation.
+Do not treat this proposal or its null-result ledger as a runnable or completed trial.

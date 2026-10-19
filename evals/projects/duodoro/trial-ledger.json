@@ -1,0 +1,409 @@
+{
+  "schema_version": 1,
+  "kind": "unrun_trial_ledger_template",
+  "approval_status": "draft_not_approved",
+  "repository": "duodoro",
+  "source_revision": "5324cabba4ad3c8ad2e1cd1480218cf087d9b741",
+  "source_tree_git_id": "1d8da1323eedea0d7c870420ec3c9911a5978520",
+  "protocol": "TRIAL_PROTOCOL.md",
+  "runtime_consumes_this_template": false,
+  "agreement": {
+    "dispatch_seconds_per_task": 300,
+    "dispatch_budget_confirmed_by_jorge": true,
+    "task_set_approved": null,
+    "token_profile_settings_approved": null,
+    "recovery_allocation_approved": null
+  },
+  "proposed_model": {
+    "provider": "ollama",
+    "model": "gemma4:12b",
+    "served_digest_at_freeze": null
+  },
+  "proposed_common_settings": {
+    "coding_prompt_profile": "compact",
+    "coding_toolset": "full",
+    "ollama_num_ctx": 16384,
+    "max_context_tokens": 16384,
+    "ollama_think": false,
+    "max_request_output_tokens": 2048,
+    "min_request_output_tokens": 256,
+    "request_timeout_seconds": 60,
+    "max_completion_retries": 1,
+    "max_identical_tool_calls": 2,
+    "prompt_estimate_bytes_per_token": 3,
+    "require_verification_before_finish": true,
+    "require_plan_before_edit": false,
+    "project_check_argv": [
+      "python",
+      "-m",
+      "pytest",
+      "-q",
+      "test_visible.py"
+    ],
+    "enable_support_tools": false,
+    "load_root_agents": false,
+    "max_files_touched_per_turn": 2
+  },
+  "proposed_budget_plans": {
+    "one_turn": {
+      "max_operator_submitted_turns": 1,
+      "per_turn": {
+        "max_turn_wall_seconds": 300,
+        "max_tool_iterations": 12,
+        "max_tool_calls_per_turn": 24,
+        "max_total_tokens_per_turn": 64000,
+        "max_completion_tokens_per_turn": 8192
+      }
+    },
+    "two_reserved_phases": {
+      "max_operator_submitted_turns": 2,
+      "per_turn": {
+        "max_turn_wall_seconds": 150,
+        "max_tool_iterations": 6,
+        "max_tool_calls_per_turn": 12,
+        "max_total_tokens_per_turn": 32000,
+        "max_completion_tokens_per_turn": 4096
+      }
+    }
+  },
+  "limits": [
+    "Not a held-out set or a claim of ten independent benchmark samples.",
+    "Seven acceptance/reference/visible adapters remain unimplemented; no trial run is authorized.",
+    "Per-turn budgets are enforced by the runtime; phase counts require operator enforcement.",
+    "Prompt/total-token gates are estimates; interrupted requests can leave actual usage unknown.",
+    "Copy this template outside source checkouts; do not overwrite it with execution results."
+  ],
+  "tasks": [
+    {
+      "id": "T01",
+      "candidate": "duration_format",
+      "client": "CLI",
+      "category": "bugfix",
+      "allowed_modified_paths": [
+        "client/src/lib/format.ts"
+      ],
+      "source_git_blob_ids": {
+        "client/src/lib/format.ts": "900af4ee8b4d268bb437057f420f98ddd3ff17fd"
+      },
+      "existing_definition": "task.json",
+      "existing_adapter": "duration_format",
+      "criterion_status": "existing_adapter_revalidated_offline",
+      "existing_file_sha256": {
+        "task.json": "73e50112c209b8ce4267cf419f2ff537f9263d679ee68e1116fd23c171485012",
+        "acceptance/duration_format/test_acceptance.py": "eb658229d6ee00a8b870357c68458cb0dbd4ee05cc9e87caf8142c73bb763e2f"
+      },
+      "contract": "TRIAL_PROTOCOL.md#acceptance-contracts-to-implement-and-freeze-before-any-model-run",
+      "planned_recovery": null,
+      "proposed_budget_plan": "one_turn",
+      "requires_independent_refactor_source_review": false,
+      "execution_status": "not_run",
+      "frozen_execution_manifest_sha256": null,
+      "execution": null,
+      "artifact_acceptance": null,
+      "completed_and_accepted": null,
+      "observed_check_status": null,
+      "within_budget": null,
+      "client_workflow_passed": null,
+      "preservation_passed": null,
+      "independent_source_review": null,
+      "manual_interventions": null,
+      "evidence_paths": null
+    },
+    {
+      "id": "T02",
+      "candidate": "timer_normalization",
+      "client": "panel",
+      "category": "bugfix",
+      "allowed_modified_paths": [
+        "server/payloadParsers.js"
+      ],
+      "source_git_blob_ids": {
+        "server/payloadParsers.js": "790cccfb966a6f561e9a34ffbe41e4645e7a9e2d"
+      },
+      "existing_definition": "task_timer.json",
+      "existing_adapter": "timer_normalization",
+      "criterion_status": "existing_adapter_revalidated_offline",
+      "existing_file_sha256": {
+        "task_timer.json": "b6df589932ea619011a55ca87726bf8ab44b23076ae5c8e6d8bdabffcf859975",
+        "acceptance/timer_normalization/test_acceptance.py": "71c615741d10b39668529f0b8e8cdab285e8a6f60bd97b8332717021e11f74ce"
+      },
+      "contract": "TRIAL_PROTOCOL.md#acceptance-contracts-to-implement-and-freeze-before-any-model-run",
+      "planned_recovery": null,
+      "proposed_budget_plan": "one_turn",
+      "requires_independent_refactor_source_review": false,
+      "execution_status": "not_run",
+      "frozen_execution_manifest_sha256": null,
+      "execution": null,
+      "artifact_acceptance": null,
+      "completed_and_accepted": null,
+      "observed_check_status": null,
+      "within_budget": null,
+      "client_workflow_passed": null,
+      "preservation_passed": null,
+      "independent_source_review": null,
+      "manual_interventions": null,
+      "evidence_paths": null
+    },
+    {
+      "id": "T03",
+      "candidate": "sunday_first_calendar",
+      "client": "CLI",
+      "category": "feature",
+      "allowed_modified_paths": [
+        "client/src/lib/focusCalendar.ts"
+      ],
+      "source_git_blob_ids": {
+        "client/src/lib/focusCalendar.ts": "2ceaea94a8a0ae6e0dbf15cff7335e4c31ab0764"
+      },
+      "existing_definition": "task_calendar.json",
+      "existing_adapter": "calendar_layout",
+      "criterion_status": "existing_adapter_revalidated_offline",
+      "existing_file_sha256": {
+        "task_calendar.json": "6f87f33cfece5cbd957eaa1670f3f2aa886e09ea3874fe340fd1410cab4785aa",
+        "acceptance/calendar_layout/test_acceptance.py": "e446204d7c13efc57d400756a61371f07da27af429b9be1810c472f833813bdd"
+      },
+      "contract": "TRIAL_PROTOCOL.md#acceptance-contracts-to-implement-and-freeze-before-any-model-run",
+      "planned_recovery": "cancel_restart_guarded_fork",
+      "proposed_budget_plan": "two_reserved_phases",
+      "requires_independent_refactor_source_review": false,
+      "execution_status": "not_run",
+      "frozen_execution_manifest_sha256": null,
+      "execution": null,
+      "artifact_acceptance": null,
+      "completed_and_accepted": null,
+      "observed_check_status": null,
+      "within_budget": null,
+      "client_workflow_passed": null,
+      "preservation_passed": null,
+      "independent_source_review": null,
+      "manual_interventions": null,
+      "evidence_paths": null
+    },
+    {
+      "id": "T04",
+      "candidate": "share_storage_errors",
+      "client": "panel",
+      "category": "bugfix",
+      "allowed_modified_paths": [
+        "client/src/lib/shareInvite.ts"
+      ],
+      "source_git_blob_ids": {
+        "client/src/lib/shareInvite.ts": "65fc9d241213e25793c34a40ff9b515148c4501a"
+      },
+      "existing_definition": null,
+      "existing_adapter": null,
+      "criterion_status": "not_implemented",
+      "existing_file_sha256": {},
+      "contract": "TRIAL_PROTOCOL.md#acceptance-contracts-to-implement-and-freeze-before-any-model-run",
+      "planned_recovery": null,
+      "proposed_budget_plan": "one_turn",
+      "requires_independent_refactor_source_review": false,
+      "execution_status": "not_run",
+      "frozen_execution_manifest_sha256": null,
+      "execution": null,
+      "artifact_acceptance": null,
+      "completed_and_accepted": null,
+      "observed_check_status": null,
+      "within_budget": null,
+      "client_workflow_passed": null,
+      "preservation_passed": null,
+      "independent_source_review": null,
+      "manual_interventions": null,
+      "evidence_paths": null
+    },
+    {
+      "id": "T05",
+      "candidate": "normalize_persisted_timer_prefs",
+      "client": "CLI",
+      "category": "bugfix",
+      "allowed_modified_paths": [
+        "client/src/lib/timerPrefs.ts"
+      ],
+      "source_git_blob_ids": {
+        "client/src/lib/timerPrefs.ts": "4973d1fe0e7a8a4815d7985ca52ffc40b57fd199"
+      },
+      "existing_definition": null,
+      "existing_adapter": null,
+      "criterion_status": "not_implemented",
+      "existing_file_sha256": {},
+      "contract": "TRIAL_PROTOCOL.md#acceptance-contracts-to-implement-and-freeze-before-any-model-run",
+      "planned_recovery": "post_grade_single_file_reversal",
+      "proposed_budget_plan": "one_turn",
+      "requires_independent_refactor_source_review": false,
+      "execution_status": "not_run",
+      "frozen_execution_manifest_sha256": null,
+      "execution": null,
+      "artifact_acceptance": null,
+      "completed_and_accepted": null,
+      "observed_check_status": null,
+      "within_budget": null,
+      "client_workflow_passed": null,
+      "preservation_passed": null,
+      "independent_source_review": null,
+      "manual_interventions": null,
+      "evidence_paths": null
+    },
+    {
+      "id": "T06",
+      "candidate": "shortcut_player_count",
+      "client": "panel",
+      "category": "bugfix",
+      "allowed_modified_paths": [
+        "client/src/lib/keyboardShortcuts.ts"
+      ],
+      "source_git_blob_ids": {
+        "client/src/lib/keyboardShortcuts.ts": "d454e0dd6f0775f7ad38cccdf3031d9076684b7b"
+      },
+      "existing_definition": null,
+      "existing_adapter": null,
+      "criterion_status": "not_implemented",
+      "existing_file_sha256": {},
+      "contract": "TRIAL_PROTOCOL.md#acceptance-contracts-to-implement-and-freeze-before-any-model-run",
+      "planned_recovery": null,
+      "proposed_budget_plan": "one_turn",
+      "requires_independent_refactor_source_review": false,
+      "execution_status": "not_run",
+      "frozen_execution_manifest_sha256": null,
+      "execution": null,
+      "artifact_acceptance": null,
+      "completed_and_accepted": null,
+      "observed_check_status": null,
+      "within_budget": null,
+      "client_workflow_passed": null,
+      "preservation_passed": null,
+      "independent_source_review": null,
+      "manual_interventions": null,
+      "evidence_paths": null
+    },
+    {
+      "id": "T07",
+      "candidate": "upcoming_rotation_preview",
+      "client": "CLI",
+      "category": "feature",
+      "allowed_modified_paths": [
+        "client/src/lib/rotation.ts",
+        "server/rotation.js"
+      ],
+      "source_git_blob_ids": {
+        "client/src/lib/rotation.ts": "2426d13b9b201d9c069f87a4d5f64908e6d08b2e",
+        "server/rotation.js": "508e2f92c3b5960d399a696484c9b6d4dd2bf4f0"
+      },
+      "existing_definition": null,
+      "existing_adapter": null,
+      "criterion_status": "not_implemented",
+      "existing_file_sha256": {},
+      "contract": "TRIAL_PROTOCOL.md#acceptance-contracts-to-implement-and-freeze-before-any-model-run",
+      "planned_recovery": null,
+      "proposed_budget_plan": "one_turn",
+      "requires_independent_refactor_source_review": false,
+      "execution_status": "not_run",
+      "frozen_execution_manifest_sha256": null,
+      "execution": null,
+      "artifact_acceptance": null,
+      "completed_and_accepted": null,
+      "observed_check_status": null,
+      "within_budget": null,
+      "client_workflow_passed": null,
+      "preservation_passed": null,
+      "independent_source_review": null,
+      "manual_interventions": null,
+      "evidence_paths": null
+    },
+    {
+      "id": "T08",
+      "candidate": "extract_bounded_duration",
+      "client": "panel",
+      "category": "refactor",
+      "allowed_modified_paths": [
+        "server/payloadParsers.js"
+      ],
+      "source_git_blob_ids": {
+        "server/payloadParsers.js": "790cccfb966a6f561e9a34ffbe41e4645e7a9e2d"
+      },
+      "existing_definition": null,
+      "existing_adapter": null,
+      "criterion_status": "not_implemented",
+      "existing_file_sha256": {},
+      "contract": "TRIAL_PROTOCOL.md#acceptance-contracts-to-implement-and-freeze-before-any-model-run",
+      "planned_recovery": null,
+      "proposed_budget_plan": "one_turn",
+      "requires_independent_refactor_source_review": true,
+      "execution_status": "not_run",
+      "frozen_execution_manifest_sha256": null,
+      "execution": null,
+      "artifact_acceptance": null,
+      "completed_and_accepted": null,
+      "observed_check_status": null,
+      "within_budget": null,
+      "client_workflow_passed": null,
+      "preservation_passed": null,
+      "independent_source_review": null,
+      "manual_interventions": null,
+      "evidence_paths": null
+    },
+    {
+      "id": "T09",
+      "candidate": "normalize_tag_filter",
+      "client": "CLI",
+      "category": "feature",
+      "allowed_modified_paths": [
+        "client/src/lib/focusTags.ts"
+      ],
+      "source_git_blob_ids": {
+        "client/src/lib/focusTags.ts": "14e2c93883a8b11733d8921d85e8125c8ebc4788"
+      },
+      "existing_definition": null,
+      "existing_adapter": null,
+      "criterion_status": "not_implemented",
+      "existing_file_sha256": {},
+      "contract": "TRIAL_PROTOCOL.md#acceptance-contracts-to-implement-and-freeze-before-any-model-run",
+      "planned_recovery": null,
+      "proposed_budget_plan": "one_turn",
+      "requires_independent_refactor_source_review": false,
+      "execution_status": "not_run",
+      "frozen_execution_manifest_sha256": null,
+      "execution": null,
+      "artifact_acceptance": null,
+      "completed_and_accepted": null,
+      "observed_check_status": null,
+      "within_budget": null,
+      "client_workflow_passed": null,
+      "preservation_passed": null,
+      "independent_source_review": null,
+      "manual_interventions": null,
+      "evidence_paths": null
+    },
+    {
+      "id": "T10",
+      "candidate": "trim_wrapup_intentions",
+      "client": "panel",
+      "category": "bugfix",
+      "allowed_modified_paths": [
+        "client/src/lib/sessionWrapUp.ts"
+      ],
+      "source_git_blob_ids": {
+        "client/src/lib/sessionWrapUp.ts": "c1622a882ee2f7f41f070e0f57ebceb2b86e3339"
+      },
+      "existing_definition": null,
+      "existing_adapter": null,
+      "criterion_status": "not_implemented",
+      "existing_file_sha256": {},
+      "contract": "TRIAL_PROTOCOL.md#acceptance-contracts-to-implement-and-freeze-before-any-model-run",
+      "planned_recovery": null,
+      "proposed_budget_plan": "one_turn",
+      "requires_independent_refactor_source_review": false,
+      "execution_status": "not_run",
+      "frozen_execution_manifest_sha256": null,
+      "execution": null,
+      "artifact_acceptance": null,
+      "completed_and_accepted": null,
+      "observed_check_status": null,
+      "within_budget": null,
+      "client_workflow_passed": null,
+      "preservation_passed": null,
+      "independent_source_review": null,
+      "manual_interventions": null,
+      "evidence_paths": null
+    }
+  ]
+}
