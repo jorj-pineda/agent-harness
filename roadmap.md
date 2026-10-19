@@ -41,6 +41,23 @@ Validation: nine recorded-call replays preserved files/arguments; 90 focused and
 1,304 offline tests passed (five live deselected in the full gate), plus Ruff,
 formatting and mypy. Both scripted matrices passed 90/90 with labels/limits inspected.
 
+**2026-10-19 — Durable provider-failure observations:** failed API runs can retain
+allowlisted kind/status metadata from the provider boundary; Ollama classifies
+HTTP timeout types, network errors and status failures. Unknown causes remain
+unknown, non-provider/legacy absence stays null, and historical trial records are
+not rewritten. Existing CLI/panel saved-error review surfaces the safe summary;
+SSE still directs explicit run inspection. Real-file offline HTTP/SSE regressions
+preserve pre-existing/agent edits across provider failure, restart and keyed replay
+without duplicate work or fabricated completion/check/usage evidence. This does
+not recover missing partial final responses or classify other SDK causes; failed
+storage can still lose metadata. No retry or timeout behavior changed; no inference, paid calls or
+Duodoro edits ran. Release gates and the original trial counts remain unmet;
+a separately frozen same-model follow-up remains necessary.
+Validation: 100 focused and 1,330 offline tests passed (five live deselected in
+full gate), Ruff/format/mypy passed, and both scripted matrices passed 90/90 with
+contract labels/metric limits inspected. These validate failure bookkeeping,
+not model-quality improvement.
+
 ## Direction
 
 Build a coding harness Jorge can use on real repositories with affordable hosted models and locally runnable models that struggle with coding-agent workflows. The harness should help those models inspect the right code, make focused edits, recover from errors, and verify their work within an explicit budget.

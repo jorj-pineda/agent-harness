@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import Any, Literal, Protocol, runtime_checkable
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 Role = Literal["system", "user", "assistant", "tool"]
 FinishReason = Literal["stop", "tool_use", "length", "content_filter", "error"]
@@ -87,8 +87,30 @@ class Embedder(Protocol):
     async def embed(self, texts: list[str]) -> list[list[float]]: ...
 
 
+class ProviderFailure(BaseModel):
+    """Allowlisted observations only; never raw exception/request/response text."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    kind: Literal[
+        "read_timeout",
+        "connect_timeout",
+        "write_timeout",
+        "pool_timeout",
+        "timeout",
+        "connection",
+        "http_status",
+        "unknown",
+    ] = "unknown"
+    http_status: int | None = Field(default=None, strict=True, ge=100, le=599)
+
+
 class ProviderError(Exception):
     """Raised by provider implementations for any backend-side failure.
 
     Keeps provider-specific exception types from leaking upward.
     """
+
+    def __init__(self, message: str = "", *, failure: ProviderFailure | None = None) -> None:
+        super().__init__(message)
+        self.failure = failure if failure is not None else ProviderFailure()
