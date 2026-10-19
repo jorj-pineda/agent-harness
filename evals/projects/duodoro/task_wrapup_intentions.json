@@ -1,0 +1,12 @@
+{
+  "id": "duodoro_wrapup_intentions",
+  "repository": "duodoro",
+  "source_revision": "5324cabba4ad3c8ad2e1cd1480218cf087d9b741",
+  "category": "bugfix",
+  "allowed_modified_paths": [
+    "client/src/lib/sessionWrapUp.ts"
+  ],
+  "visible_node_check": "visible_wrapup_intentions.mjs",
+  "requires_independent_source_review": false,
+  "request": "In the disposable pinned Duodoro source, Normalize unfinishedIntentions text after collecting the existing eligible current, previous and next intentions. Trim each candidate string, drop empty/whitespace-only values and deduplicate exact trimmed strings case-sensitively, preserving current -> previous -> next order. Preserve phase and completed-state eligibility. Return a fresh array without mutating intentions/recap. Non-string values outside declared types need no new behavior. Inspect applicable instructions and relevant existing code/tests first. Only modify client/src/lib/sessionWrapUp.ts. Preserve every other file, tests and pre-existing work. This library task adds test_visible.py and visible_check.mjs as visible Node-native checks. After editing run [\"python\",\"-m\",\"pytest\",\"-q\",\"test_visible.py\"]. This is not full application/Vitest/typechecking coverage. Do not install dependencies, start services or touch Docker. Report actual check outcomes, unresolved issues and limits honestly."
+}

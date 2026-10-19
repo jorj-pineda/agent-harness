@@ -1,0 +1,12 @@
+{
+  "id": "duodoro_shortcut_count",
+  "repository": "duodoro",
+  "source_revision": "5324cabba4ad3c8ad2e1cd1480218cf087d9b741",
+  "category": "bugfix",
+  "allowed_modified_paths": [
+    "client/src/lib/keyboardShortcuts.ts"
+  ],
+  "visible_node_check": "visible_shortcut_count.mjs",
+  "requires_independent_source_review": false,
+  "request": "In the disposable pinned Duodoro source, Harden startShortcutAction so playerCount must be a positive safe integer. Reject NaN, infinities, fractions, zero, negatives, strings, booleans and other invalid runtime values without coercion. Preserve all existing game/session/connection/started/editing gates, valid positive safe integer counts, and waiting -> start / ready -> again behavior. Do not mutate the state. Inspect applicable instructions and relevant existing code/tests first. Only modify client/src/lib/keyboardShortcuts.ts. Preserve every other file, tests and pre-existing work. This library task adds test_visible.py and visible_check.mjs as visible Node-native checks. After editing run [\"python\",\"-m\",\"pytest\",\"-q\",\"test_visible.py\"]. This is not full application/Vitest/typechecking coverage. Do not install dependencies, start services or touch Docker. Report actual check outcomes, unresolved issues and limits honestly."
+}

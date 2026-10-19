@@ -1,0 +1,12 @@
+{
+  "id": "duodoro_duration_refactor",
+  "repository": "duodoro",
+  "source_revision": "5324cabba4ad3c8ad2e1cd1480218cf087d9b741",
+  "category": "refactor",
+  "allowed_modified_paths": [
+    "server/payloadParsers.js"
+  ],
+  "visible_node_check": "visible_duration_refactor.mjs",
+  "requires_independent_source_review": true,
+  "request": "In the disposable pinned Duodoro source, Extract and export boundedDuration(value, fallback, min, max), and use the same helper for both parseStartSession duration fields. Preserve Math.min(Math.max(Number(value) || fallback, min), max), including fractional seconds, defaults, infinity clamps and thrown Symbol coercion. Preserve session IDs, modes and every existing parser/export. This is a behavior-preserving refactor: do not floor durations. Besides executable behavioral checks, independent source review will verify actual reuse for both fields and removal of duplication; an unused exported helper does not satisfy the request. Inspect applicable instructions and relevant existing code/tests first. Only modify server/payloadParsers.js. Preserve every other file, tests and pre-existing work. This library task adds test_visible.py and visible_check.mjs as visible Node-native checks. After editing run [\"python\",\"-m\",\"pytest\",\"-q\",\"test_visible.py\"]. This is not full application/Vitest/typechecking coverage. Do not install dependencies, start services or touch Docker. Report actual check outcomes, unresolved issues and limits honestly."
+}

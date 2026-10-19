@@ -16,6 +16,18 @@ from evals.real_run import Task
 from workspace import disposable_workspace
 
 ROOT = Path(__file__).parent
+TASK_DEFINITIONS = {
+    "duration_format": ("task.json", "visible_duration.py"),
+    "timer_normalization": ("task_timer.json", "visible_timer.py"),
+    "calendar_layout": ("task_calendar.json", "visible_calendar.py"),
+    "share_storage": ("task_share_storage.json", "visible_trial.py"),
+    "timer_prefs": ("task_timer_prefs.json", "visible_trial.py"),
+    "shortcut_count": ("task_shortcut_count.json", "visible_trial.py"),
+    "rotation_preview": ("task_rotation_preview.json", "visible_trial.py"),
+    "duration_refactor": ("task_duration_refactor.json", "visible_trial.py"),
+    "tag_filter": ("task_tag_filter.json", "visible_trial.py"),
+    "wrapup_intentions": ("task_wrapup_intentions.json", "visible_trial.py"),
+}
 
 
 def prepare_task(
@@ -23,7 +35,16 @@ def prepare_task(
     destination: Path,
     *,
     task_name: Literal[
-        "duration_format", "timer_normalization", "calendar_layout"
+        "duration_format",
+        "timer_normalization",
+        "calendar_layout",
+        "share_storage",
+        "timer_prefs",
+        "shortcut_count",
+        "rotation_preview",
+        "duration_refactor",
+        "tag_filter",
+        "wrapup_intentions",
     ] = "duration_format",
 ) -> Task:
     """Caller owns destination cleanup; never edit or reset the source checkout.
@@ -32,14 +53,9 @@ def prepare_task(
     installation, provider calls or services happen here. Grading still executes
     trusted repository code on the host; this is not process isolation.
     """
-    definitions = {
-        "duration_format": ("task.json", "visible_duration.py"),
-        "timer_normalization": ("task_timer.json", "visible_timer.py"),
-        "calendar_layout": ("task_calendar.json", "visible_calendar.py"),
-    }
-    if task_name not in definitions:
+    if task_name not in TASK_DEFINITIONS:
         raise ValueError("Unknown frozen Duodoro task")
-    metadata_file, visible_file = definitions[task_name]
+    metadata_file, visible_file = TASK_DEFINITIONS[task_name]
     metadata = json.loads((ROOT / metadata_file).read_text())
     source = repository.resolve(strict=True)
     destination = destination.resolve()
@@ -66,10 +82,14 @@ def prepare_task(
         with disposable_workspace(extracted) as copy:
             fixture = destination / "fixture"
             shutil.copytree(copy.workspace.root, fixture)
-    for name in ("test_visible.py", "preexisting-user-work.txt"):
+    setup_files = {"test_visible.py": ROOT / visible_file}
+    if "visible_node_check" in metadata:
+        setup_files["visible_check.mjs"] = ROOT / metadata["visible_node_check"]
+    for name in (*setup_files, "preexisting-user-work.txt"):
         if (fixture / name).exists():
             raise ValueError("Task setup would overwrite a pinned source file")
-    shutil.copyfile(ROOT / visible_file, fixture / "test_visible.py")
+    for name, path in setup_files.items():
+        shutil.copyfile(path, fixture / name)
     (fixture / "preexisting-user-work.txt").write_text("Preserve this setup-owned work.\n")
     acceptance = destination / "acceptance"
     shutil.copytree(ROOT / "acceptance" / task_name, acceptance)
@@ -96,6 +116,7 @@ def prepare_task(
         fixture,
         acceptance,
         ROOT / "reference" / task_name,
+        category=metadata.get("category", "unclassified"),
     )
 
 

@@ -1,0 +1,12 @@
+{
+  "id": "duodoro_tag_filter",
+  "repository": "duodoro",
+  "source_revision": "5324cabba4ad3c8ad2e1cd1480218cf087d9b741",
+  "category": "feature",
+  "allowed_modified_paths": [
+    "client/src/lib/focusTags.ts"
+  ],
+  "visible_node_check": "visible_tag_filter.mjs",
+  "requires_independent_source_review": false,
+  "request": "In the disposable pinned Duodoro source, Export normalizeTagFilter(value: unknown): TagFilter. Return the input unchanged only when existing isTagFilter accepts it; otherwise return all. Cover every existing preset plus all/untagged. Do not trim, lowercase, coerce or mutate invalid inputs. Preserve existing labels, validators, match behavior, calendar readers and confirmed-write readers. Do not change database/RPC behavior or unrelated private-tag normalization. Inspect applicable instructions and relevant existing code/tests first. Only modify client/src/lib/focusTags.ts. Preserve every other file, tests and pre-existing work. This library task adds test_visible.py and visible_check.mjs as visible Node-native checks. After editing run [\"python\",\"-m\",\"pytest\",\"-q\",\"test_visible.py\"]. This is not full application/Vitest/typechecking coverage. Do not install dependencies, start services or touch Docker. Report actual check outcomes, unresolved issues and limits honestly."
+}

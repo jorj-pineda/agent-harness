@@ -1,0 +1,371 @@
+[
+  {
+    "name": "parseDeleteAccount",
+    "args": [
+      {
+        "confirmation": "DELETE"
+      }
+    ],
+    "result": {
+      "ok": true,
+      "value": {
+        "confirmation": "DELETE"
+      }
+    }
+  },
+  {
+    "name": "parseDeleteAccount",
+    "args": [
+      {
+        "confirmation": "delete"
+      }
+    ],
+    "result": {
+      "ok": false,
+      "reason": "confirmation"
+    }
+  },
+  {
+    "name": "parseOnlineFriends",
+    "args": [
+      {
+        "friendIds": [
+          "a",
+          "b"
+        ]
+      }
+    ],
+    "result": {
+      "ok": true,
+      "value": {
+        "friendIds": [
+          "a",
+          "b"
+        ]
+      }
+    }
+  },
+  {
+    "name": "parseOnlineFriends",
+    "args": [
+      {
+        "friendIds": [
+          1
+        ]
+      }
+    ],
+    "result": {
+      "ok": false,
+      "reason": "friend_ids"
+    }
+  },
+  {
+    "name": "parseSendInvite",
+    "args": [
+      {
+        "targetUserId": "u",
+        "fromName": "x"
+      }
+    ],
+    "result": {
+      "ok": true,
+      "value": {
+        "targetUserId": "u",
+        "sessionId": null,
+        "fromName": "x"
+      }
+    }
+  },
+  {
+    "name": "parseSendInvite",
+    "args": [
+      {}
+    ],
+    "result": {
+      "ok": false,
+      "reason": "target_user_id"
+    }
+  },
+  {
+    "name": "parseCreateSession",
+    "args": [
+      {
+        "avatar": {
+          "skinColor": "#aabbcc",
+          "hairStyle": "bob",
+          "hairColor": "#abcdef",
+          "eyeStyle": "normal",
+          "outfitColor": "#123456"
+        },
+        "pet": "cat"
+      }
+    ],
+    "result": {
+      "ok": true,
+      "value": {
+        "avatar": {
+          "skinColor": "#aabbcc",
+          "hairStyle": "bob",
+          "hairColor": "#abcdef",
+          "eyeStyle": "normal",
+          "outfitColor": "#123456"
+        },
+        "displayName": "Player",
+        "pet": "cat",
+        "petName": "Mochi"
+      }
+    }
+  },
+  {
+    "name": "parseCreateSession",
+    "args": [
+      {
+        "avatar": null
+      }
+    ],
+    "result": {
+      "ok": false,
+      "reason": "avatar"
+    }
+  },
+  {
+    "name": "parseShareInvite",
+    "args": [
+      {
+        "sessionId": "s"
+      }
+    ],
+    "result": {
+      "ok": true,
+      "value": {
+        "sessionId": "s"
+      }
+    }
+  },
+  {
+    "name": "parseShareInvite",
+    "args": [
+      {}
+    ],
+    "result": {
+      "ok": false,
+      "reason": "session_id"
+    }
+  },
+  {
+    "name": "parseJoinSession",
+    "args": [
+      {
+        "avatar": {
+          "skinColor": "#aabbcc",
+          "hairStyle": "bob",
+          "hairColor": "#abcdef",
+          "eyeStyle": "normal",
+          "outfitColor": "#123456"
+        },
+        "sessionId": "s"
+      }
+    ],
+    "result": {
+      "ok": true,
+      "value": {
+        "sessionId": "s",
+        "shareToken": null,
+        "joiningByLink": false,
+        "avatar": {
+          "skinColor": "#aabbcc",
+          "hairStyle": "bob",
+          "hairColor": "#abcdef",
+          "eyeStyle": "normal",
+          "outfitColor": "#123456"
+        },
+        "displayName": "Player",
+        "pet": null,
+        "petName": null
+      }
+    }
+  },
+  {
+    "name": "parseJoinSession",
+    "args": [
+      {
+        "avatar": {
+          "skinColor": "#aabbcc",
+          "hairStyle": "bob",
+          "hairColor": "#abcdef",
+          "eyeStyle": "normal",
+          "outfitColor": "#123456"
+        },
+        "shareToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    ],
+    "result": {
+      "ok": true,
+      "value": {
+        "sessionId": null,
+        "shareToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "joiningByLink": true,
+        "avatar": {
+          "skinColor": "#aabbcc",
+          "hairStyle": "bob",
+          "hairColor": "#abcdef",
+          "eyeStyle": "normal",
+          "outfitColor": "#123456"
+        },
+        "displayName": "Player",
+        "pet": null,
+        "petName": null
+      }
+    }
+  },
+  {
+    "name": "parseSessionReference",
+    "args": [
+      {
+        "sessionId": "s"
+      }
+    ],
+    "result": {
+      "ok": true,
+      "value": {
+        "sessionId": "s"
+      }
+    }
+  },
+  {
+    "name": "parseSessionReference",
+    "args": [
+      {
+        "sessionId": 1
+      }
+    ],
+    "result": {
+      "ok": false,
+      "reason": "session_id"
+    }
+  },
+  {
+    "name": "parseSetPet",
+    "args": [
+      {
+        "sessionId": "s",
+        "pet": "dragon",
+        "petName": " Ember "
+      }
+    ],
+    "result": {
+      "ok": true,
+      "value": {
+        "sessionId": "s",
+        "pet": "dragon",
+        "petName": "Ember"
+      }
+    }
+  },
+  {
+    "name": "parseSetPetName",
+    "args": [
+      {
+        "sessionId": "s",
+        "name": " Mochi "
+      }
+    ],
+    "result": {
+      "ok": true,
+      "value": {
+        "sessionId": "s",
+        "name": "Mochi"
+      }
+    }
+  },
+  {
+    "name": "parseSetIntention",
+    "args": [
+      {
+        "sessionId": "s",
+        "text": " work   now "
+      }
+    ],
+    "result": {
+      "ok": true,
+      "value": {
+        "sessionId": "s",
+        "text": "work now"
+      }
+    }
+  },
+  {
+    "name": "parseSetIntention",
+    "args": [
+      {
+        "sessionId": "s",
+        "text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      }
+    ],
+    "result": {
+      "ok": false,
+      "reason": "intention"
+    }
+  },
+  {
+    "name": "parseResolveIntention",
+    "args": [
+      {
+        "sessionId": "s",
+        "round": 1,
+        "action": "carry"
+      }
+    ],
+    "result": {
+      "ok": true,
+      "value": {
+        "sessionId": "s",
+        "round": 1,
+        "action": "carry"
+      }
+    }
+  },
+  {
+    "name": "parseResolveIntention",
+    "args": [
+      {
+        "sessionId": "s",
+        "round": 0,
+        "action": "done"
+      }
+    ],
+    "result": {
+      "ok": false,
+      "reason": "intention"
+    }
+  },
+  {
+    "name": "parseReaction",
+    "args": [
+      {
+        "sessionId": "s",
+        "reaction": "heart"
+      }
+    ],
+    "result": {
+      "ok": true,
+      "value": {
+        "sessionId": "s",
+        "reaction": "heart"
+      }
+    }
+  },
+  {
+    "name": "parseReaction",
+    "args": [
+      {
+        "sessionId": "s",
+        "reaction": "bad"
+      }
+    ],
+    "result": {
+      "ok": false,
+      "reason": "reaction"
+    }
+  }
+]
