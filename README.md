@@ -20,6 +20,12 @@ explicit single-file reversal and guarded continuation forks. Saved history is
 read-only by default. Cancellation waits for owned cleanup; guarded continuation
 checks scoped evidence and cannot certify all external/dependency state.
 
+For the current go/no-go assessment, start with the
+[release-readiness audit](RELEASE_READINESS.md). The controlled source-checkout
+trial and ten-task agreement are next; full personal-use release criteria remain
+open. The current wheel omits panel assets, so use the source checkout for the
+panel until packaged installation is fixed and validated.
+
 Read [roadmap.md](roadmap.md) for remaining acceptance criteria and
 [AGENTS.md](AGENTS.md) for development rules. Model observations in
 [evals/BASELINES.md](evals/BASELINES.md) distinguish independently accepted patches
@@ -458,7 +464,9 @@ temporary file; there is no fsync/power-loss guarantee, checkpoint or revert.
 File-tool edit metadata includes either operation. These mechanics have offline
 regression coverage; model-level success still requires real coding evaluations.
 
-**Named startup model profiles.** `MODEL_PROFILES` is an optional JSON map of up
+### Named startup model profiles
+
+`MODEL_PROFILES` is an optional JSON map of up
 to 16 definitions. `MODEL_PROFILE` selects one explicitly; unset/empty keeps direct
 settings and does not activate catalog entries. Example syntax (unmeasured budgets):
 

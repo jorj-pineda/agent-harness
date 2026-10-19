@@ -125,8 +125,15 @@ Path validation and command allowlists are not process isolation. Tests/npm scri
 execute trusted repository code with host permissions. Admission coordinates one
 harness process, not editors, other API workers or external writers. Checkpoints
 exclude some paths/metadata and are not an atomic whole-workspace restore.
-Cross-process isolation, full reconciliation, context compaction, selectable model
-profiles and broader held-out/project acceptance remain roadmap work.
+Cross-process coordination, untrusted-code isolation, full reconciliation, context
+compaction, runtime model switching and broader held-out/project acceptance remain
+roadmap work. Named
+profiles can already be configured and selected at server startup; see the
+[README profile configuration](README.md#named-startup-model-profiles).
+
+This walkthrough assumes a source checkout. The current wheel omits panel assets;
+a wheel-only API starts headless. See the [release-readiness audit](RELEASE_READINESS.md)
+for the current release gates and distribution limits.
 
 Legacy Docker/support smoke observations remain in [evals/LIVE.md](evals/LIVE.md).
 They are historical environment observations, not a recommendation to spend money
