@@ -58,6 +58,19 @@ full gate), Ruff/format/mypy passed, and both scripted matrices passed 90/90 wit
 contract labels/metric limits inspected. These validate failure bookkeeping,
 not model-quality improvement.
 
+**2026-10-19 — Paired feedback comparison prepared, not run:** the
+[review freeze](evals/projects/duodoro/EDIT_FEEDBACK_COMPARISON.md) pins twelve
+fresh attempts (T01/T04/T09 × two arms × two repeats), original clients/requests/
+criteria/limits and counterbalanced pair order. Both runtimes include provider
+failure reporting; control restores only the previous mismatch helper. All 12
+baselines and profiles match; selected initial/reference validation passed.
+Treatment passed 1,330 offline tests; control passed 1,325 common regressions with
+five declared treatment-specific cases excluded, plus five live exclusions in
+each arm. Both arms passed static gates and both scripted 90/90 matrices. These
+are mechanics evidence, not a new coding result. Review of the protocol/manifest
+and control exclusion remains required before dispatch. No model was loaded,
+no inference ran and the prior trial/release status is unchanged.
+
 ## Direction
 
 Build a coding harness Jorge can use on real repositories with affordable hosted models and locally runnable models that struggle with coding-agent workflows. The harness should help those models inspect the right code, make focused edits, recover from errors, and verify their work within an explicit budget.
