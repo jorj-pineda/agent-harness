@@ -68,7 +68,7 @@
   },
   "limits": [
     "Not a held-out set or a claim of ten independent benchmark samples.",
-    "All ten acceptance sets validated offline; deterministic client preflight and final execution freeze remain pending. No trial inference is authorized yet.",
+    "All ten acceptance sets validated offline and representative deterministic client preflight passed; final execution freeze and G0 at its selected revision remain pending. No trial inference is authorized yet.",
     "Per-turn budgets are enforced by the runtime; phase counts require operator enforcement.",
     "Prompt/total-token gates are estimates; interrupted requests can leave actual usage unknown.",
     "Copy this template outside source checkouts; do not overwrite it with execution results.",

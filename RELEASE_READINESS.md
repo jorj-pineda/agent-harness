@@ -133,8 +133,9 @@ Jorge's approval of the tasks, 300-second dispatch allowance, token/profile limi
 and reserved recovery phases. All ten acceptance sets now validate offline;
 seven new adapters include independent external criteria and reference patches.
 T08 also requires independent review of the final refactor's actual reuse.
-The ledger remains unrun. Deterministic client preflight and the final execution
-freeze remain pending; G1–G5 remain open. This follow-up does not change the
+The ledger remains unrun. The [deterministic client preflight](evals/projects/duodoro/CLIENT_PREFLIGHT.md)
+passed the representative exercised paths. The final execution freeze and G0 at
+its selected revision remain pending; G1–G5 remain open. This follow-up does not change the
 point-in-time audit evidence above or authorize inference.
 
 ## Concrete audit findings and scope decisions

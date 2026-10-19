@@ -5,8 +5,9 @@ ten tasks and limits, including the five-minute dispatch allowance and reserved
 recovery phases. All ten acceptance sets now pass baseline-fail/reference-pass
 validation; the seven new sets also have adversarial regression coverage. This
 prepares release gate G1 in [the readiness audit](../../../RELEASE_READINESS.md).
-Do not dispatch trial inference until the deterministic real-client preflight and
-reviewed execution freeze are complete. G1–G5 remain open.
+The [deterministic client preflight](CLIENT_PREFLIGHT.md) passed the exercised
+paths. Do not dispatch trial inference until the reviewed execution freeze and
+G0 at its selected revision are complete. G1–G5 remain open.
 
 The [ledger template](trial-ledger.json) contains ten unrun rows, source blob IDs,
 client assignments and null results. It is documentation/data, not a new runner
@@ -198,8 +199,8 @@ operator actions must be recorded even when they are not manual patch repair.
    execution manifest after preflight. Preserve historical definitions; do not
    rewrite old task criteria to fit this trial. Ledger hashes identify preparation
    assets, not a final execution freeze or a future workspace baseline.
-3. Verify a clean client/setup preflight with a deterministic provider before
-   inference: commands/path environment, captures and scoped fork eligibility,
+3. The [recorded deterministic preflight](CLIENT_PREFLIGHT.md) exercised
+   representative real-client/setup paths before inference: commands/path environment, captures and scoped fork eligibility,
    actual CLI/panel controls, and the planned two-phase accounting. Record any
    blocker instead of adding speculative features. Pick the final harness revision
    only after these preparations, then rerun G0 there.
