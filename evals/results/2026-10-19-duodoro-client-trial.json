@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "evidence_kind": "real-client-real-tools-coding-trial",
-  "trial_status": "in_progress",
-  "reported_at_utc": "2026-10-19T05:22:56.251503+00:00",
+  "trial_status": "complete",
+  "reported_at_utc": "2026-10-19T05:42:02.933145+00:00",
   "runtime_revision": "cd9891718193ae4d9bb56056ae8aea8e57a9ef4c",
   "freeze_pr": "https://github.com/jorj-pineda/agent-harness/pull/148",
   "freeze_manifest_sha256": "26f9971e635d204599a38968b10427bef967178890a1c041d26eb3cfc7bfb62d",
@@ -43,7 +43,7 @@
       ],
       "token_totals_known": true,
       "reported_token_limits_met": true,
-      "within_budget": null,
+      "within_budget": true,
       "run_ids": [
         "6664462cdeed4762b81636bbe3ef9102"
       ],
@@ -60,6 +60,11 @@
           "patch_repair": false
         }
       ],
+      "failure_class": "exact_edit_mismatches_then_total_token_gate",
+      "outcome_class": "exact_edit_mismatches_then_total_token_gate",
+      "budget_assessment_scope": "Known reported phase token totals plus journal lifecycle elapsed at/below configured dispatch allowance; captured runtime limits enforced tools/iterations. Unknown usage prevents a compliance claim. Lifecycle includes final review/storage; not a hard return guarantee.",
+      "artifact_recheck_matches": true,
+      "captured_runtime_profile_matches": true,
       "execution_status": "observed",
       "run_statuses": [
         "finished"
@@ -123,7 +128,7 @@
       ],
       "token_totals_known": true,
       "reported_token_limits_met": true,
-      "within_budget": null,
+      "within_budget": true,
       "run_ids": [
         "8227403c976443be94315bd2a664ae85"
       ],
@@ -134,6 +139,11 @@
       "preservation_passed": true,
       "manual_patch_repair": false,
       "manual_interventions": [],
+      "failure_class": "accepted_patch_then_total_token_gate_before_verification",
+      "outcome_class": "accepted_patch_then_total_token_gate_before_verification",
+      "budget_assessment_scope": "Known reported phase token totals plus journal lifecycle elapsed at/below configured dispatch allowance; captured runtime limits enforced tools/iterations. Unknown usage prevents a compliance claim. Lifecycle includes final review/storage; not a hard return guarantee.",
+      "artifact_recheck_matches": true,
+      "captured_runtime_profile_matches": true,
       "execution_status": "observed",
       "run_statuses": [
         "finished"
@@ -201,6 +211,11 @@
           "patch_repair": false
         }
       ],
+      "failure_class": "reserved_continuation_total_token_gate_no_patch",
+      "outcome_class": "reserved_continuation_total_token_gate_no_patch",
+      "budget_assessment_scope": "Known reported phase token totals plus journal lifecycle elapsed at/below configured dispatch allowance; captured runtime limits enforced tools/iterations. Unknown usage prevents a compliance claim. Lifecycle includes final review/storage; not a hard return guarantee.",
+      "artifact_recheck_matches": true,
+      "captured_runtime_profile_matches": true,
       "execution_status": "observed",
       "run_statuses": [
         "cancelled",
@@ -248,7 +263,7 @@
       ],
       "token_totals_known": true,
       "reported_token_limits_met": true,
-      "within_budget": null,
+      "within_budget": true,
       "run_ids": [
         "3a525e3e117a4fb29aebb6fc824e9f70"
       ],
@@ -259,6 +274,11 @@
       "preservation_passed": true,
       "manual_patch_repair": false,
       "manual_interventions": [],
+      "failure_class": "exact_edit_mismatches_then_total_token_gate",
+      "outcome_class": "exact_edit_mismatches_then_total_token_gate",
+      "budget_assessment_scope": "Known reported phase token totals plus journal lifecycle elapsed at/below configured dispatch allowance; captured runtime limits enforced tools/iterations. Unknown usage prevents a compliance claim. Lifecycle includes final review/storage; not a hard return guarantee.",
+      "artifact_recheck_matches": true,
+      "captured_runtime_profile_matches": true,
       "execution_status": "observed",
       "run_statuses": [
         "finished"
@@ -300,7 +320,10 @@
       "unrelated_changes": [],
       "criteria_unchanged": true,
       "phase_usage": [
-        {}
+        {
+          "prompt_tokens": null,
+          "completion_tokens": null
+        }
       ],
       "token_totals_known": false,
       "reported_token_limits_met": null,
@@ -328,7 +351,11 @@
         }
       ],
       "run_status": "failed",
-      "failure_class": "provider_request_timeout",
+      "failure_class": "provider_read_timeout",
+      "outcome_class": "provider_read_timeout",
+      "budget_assessment_scope": "Known reported phase token totals plus journal lifecycle elapsed at/below configured dispatch allowance; captured runtime limits enforced tools/iterations. Unknown usage prevents a compliance claim. Lifecycle includes final review/storage; not a hard return guarantee.",
+      "artifact_recheck_matches": true,
+      "captured_runtime_profile_matches": true,
       "execution_status": "observed",
       "run_statuses": [
         "failed"
@@ -336,8 +363,8 @@
       "phase_lifecycle_seconds": [
         139.806546
       ],
-      "tool_errors": [],
-      "check_attempts": [],
+      "tool_errors": null,
+      "check_attempts": null,
       "evidence_sha256": {
         "T05-run.json": "8c5f2d6e82da8b52891c7104f284a528d307575fcf97df7794379f23145227c2"
       },
@@ -353,9 +380,60 @@
       "allowed_modified_paths": [
         "client/src/lib/keyboardShortcuts.ts"
       ],
-      "execution_status": "not_yet_graded",
-      "artifact_acceptance": null,
-      "completed_and_accepted": null
+      "completion_status": null,
+      "verification_status": null,
+      "completion_reason": null,
+      "external_behavior_scope_passed": false,
+      "artifact_acceptance": false,
+      "independent_source_review": null,
+      "completed_and_accepted": false,
+      "changed_paths": [],
+      "unrelated_changes": [],
+      "criteria_unchanged": true,
+      "phase_usage": [
+        {
+          "prompt_tokens": null,
+          "completion_tokens": null
+        }
+      ],
+      "token_totals_known": false,
+      "reported_token_limits_met": null,
+      "within_budget": null,
+      "run_ids": [
+        "c5ad336749094db09b32ddd9fddea3f8"
+      ],
+      "loop_latency_ms": [
+        null
+      ],
+      "client_workflow_passed": true,
+      "preservation_passed": true,
+      "manual_patch_repair": false,
+      "manual_interventions": [
+        {
+          "kind": "panel_check_run_after_stream_failure",
+          "model_resubmitted": false,
+          "patch_repair": false
+        }
+      ],
+      "run_status": "failed",
+      "failure_class": "provider_error_underlying_cause_unavailable_in_stream_log",
+      "outcome_class": "provider_error_underlying_cause_unavailable_in_stream_log",
+      "budget_assessment_scope": "Known reported phase token totals plus journal lifecycle elapsed at/below configured dispatch allowance; captured runtime limits enforced tools/iterations. Unknown usage prevents a compliance claim. Lifecycle includes final review/storage; not a hard return guarantee.",
+      "artifact_recheck_matches": true,
+      "captured_runtime_profile_matches": true,
+      "execution_status": "observed",
+      "run_statuses": [
+        "failed"
+      ],
+      "phase_lifecycle_seconds": [
+        126.382607
+      ],
+      "tool_errors": null,
+      "check_attempts": null,
+      "evidence_sha256": {
+        "T06-run.json": "0729474f58faa0c23696f0d4871a44adf98e7e21e4ef75146e8df3379791cdfa"
+      },
+      "acceptance_evidence_sha256": "3c000a10e1dc819431240b26d35516f0211342fb01e6da816125378182c53b25"
     },
     {
       "id": "T07",
@@ -368,9 +446,60 @@
         "client/src/lib/rotation.ts",
         "server/rotation.js"
       ],
-      "execution_status": "not_yet_graded",
-      "artifact_acceptance": null,
-      "completed_and_accepted": null
+      "completion_status": null,
+      "verification_status": null,
+      "completion_reason": null,
+      "external_behavior_scope_passed": false,
+      "artifact_acceptance": false,
+      "independent_source_review": null,
+      "completed_and_accepted": false,
+      "changed_paths": [],
+      "unrelated_changes": [],
+      "criteria_unchanged": true,
+      "phase_usage": [
+        {
+          "prompt_tokens": null,
+          "completion_tokens": null
+        }
+      ],
+      "token_totals_known": false,
+      "reported_token_limits_met": null,
+      "within_budget": null,
+      "run_ids": [
+        "e617b058a0c140a6af7362cbf8e5db0a"
+      ],
+      "loop_latency_ms": [
+        null
+      ],
+      "client_workflow_passed": true,
+      "preservation_passed": true,
+      "manual_patch_repair": false,
+      "manual_interventions": [
+        {
+          "kind": "CLI_120s_response_timeout_recovered_by_read_only_run_inspection",
+          "model_resubmitted": false,
+          "patch_repair": false
+        }
+      ],
+      "run_status": "failed",
+      "failure_class": "provider_read_timeout",
+      "outcome_class": "provider_read_timeout",
+      "budget_assessment_scope": "Known reported phase token totals plus journal lifecycle elapsed at/below configured dispatch allowance; captured runtime limits enforced tools/iterations. Unknown usage prevents a compliance claim. Lifecycle includes final review/storage; not a hard return guarantee.",
+      "artifact_recheck_matches": true,
+      "captured_runtime_profile_matches": true,
+      "execution_status": "observed",
+      "run_statuses": [
+        "failed"
+      ],
+      "phase_lifecycle_seconds": [
+        182.852451
+      ],
+      "tool_errors": null,
+      "check_attempts": null,
+      "evidence_sha256": {
+        "T07-run.json": "a5ba03f4430274c49becf1536ad89ad70a69afb2a05e4fb7c73f20fda4bf633b"
+      },
+      "acceptance_evidence_sha256": "4cd6b86f104a8b416a745e19d5abf5683eeb32e022429b4a98a18491b0eb1c5d"
     },
     {
       "id": "T08",
@@ -382,9 +511,63 @@
       "allowed_modified_paths": [
         "server/payloadParsers.js"
       ],
-      "execution_status": "not_yet_graded",
-      "artifact_acceptance": null,
-      "completed_and_accepted": null
+      "completion_status": null,
+      "verification_status": null,
+      "completion_reason": null,
+      "external_behavior_scope_passed": false,
+      "artifact_acceptance": false,
+      "independent_source_review": {
+        "status": "not_performed_behavior_scope_acceptance_failed",
+        "accepted": false
+      },
+      "completed_and_accepted": false,
+      "changed_paths": [],
+      "unrelated_changes": [],
+      "criteria_unchanged": true,
+      "phase_usage": [
+        {
+          "prompt_tokens": null,
+          "completion_tokens": null
+        }
+      ],
+      "token_totals_known": false,
+      "reported_token_limits_met": null,
+      "within_budget": null,
+      "run_ids": [
+        "d24f9e37d701443abe2c55d0566e6b29"
+      ],
+      "loop_latency_ms": [
+        null
+      ],
+      "client_workflow_passed": true,
+      "preservation_passed": true,
+      "manual_patch_repair": false,
+      "manual_interventions": [
+        {
+          "kind": "panel_check_run_after_stream_failure",
+          "model_resubmitted": false,
+          "patch_repair": false
+        }
+      ],
+      "run_status": "failed",
+      "failure_class": "provider_error_underlying_cause_unavailable_in_stream_log",
+      "outcome_class": "provider_error_underlying_cause_unavailable_in_stream_log",
+      "budget_assessment_scope": "Known reported phase token totals plus journal lifecycle elapsed at/below configured dispatch allowance; captured runtime limits enforced tools/iterations. Unknown usage prevents a compliance claim. Lifecycle includes final review/storage; not a hard return guarantee.",
+      "artifact_recheck_matches": true,
+      "captured_runtime_profile_matches": true,
+      "execution_status": "observed",
+      "run_statuses": [
+        "failed"
+      ],
+      "phase_lifecycle_seconds": [
+        139.714514
+      ],
+      "tool_errors": null,
+      "check_attempts": null,
+      "evidence_sha256": {
+        "T08-run.json": "46f5cb4d2968bfcffdf1fd413ba89bfff7bb1f06ff7d5e0e6ac17bab4bbbcf15"
+      },
+      "acceptance_evidence_sha256": "dfe190a1a164df2181c39978df917f9a8da21c9c88e628bdfd41c09434950d1f"
     },
     {
       "id": "T09",
@@ -396,9 +579,64 @@
       "allowed_modified_paths": [
         "client/src/lib/focusTags.ts"
       ],
-      "execution_status": "not_yet_graded",
-      "artifact_acceptance": null,
-      "completed_and_accepted": null
+      "completion_status": "budget_exhausted",
+      "verification_status": "not_run",
+      "completion_reason": "Total token budget cannot fit another model request after these tools.",
+      "external_behavior_scope_passed": false,
+      "artifact_acceptance": false,
+      "independent_source_review": null,
+      "completed_and_accepted": false,
+      "changed_paths": [],
+      "unrelated_changes": [],
+      "criteria_unchanged": true,
+      "phase_usage": [
+        {
+          "prompt_tokens": 60488,
+          "completion_tokens": 1260
+        }
+      ],
+      "token_totals_known": true,
+      "reported_token_limits_met": true,
+      "within_budget": true,
+      "run_ids": [
+        "af166e66e7134eb5ade6531a6a5db585"
+      ],
+      "loop_latency_ms": [
+        218538.22483301163
+      ],
+      "client_workflow_passed": true,
+      "preservation_passed": true,
+      "manual_patch_repair": false,
+      "manual_interventions": [
+        {
+          "kind": "CLI_120s_response_timeout_recovered_by_read_only_run_inspection",
+          "model_resubmitted": false,
+          "patch_repair": false
+        }
+      ],
+      "failure_class": "exact_edit_mismatches_then_total_token_gate",
+      "outcome_class": "exact_edit_mismatches_then_total_token_gate",
+      "budget_assessment_scope": "Known reported phase token totals plus journal lifecycle elapsed at/below configured dispatch allowance; captured runtime limits enforced tools/iterations. Unknown usage prevents a compliance claim. Lifecycle includes final review/storage; not a hard return guarantee.",
+      "artifact_recheck_matches": true,
+      "captured_runtime_profile_matches": true,
+      "execution_status": "observed",
+      "run_statuses": [
+        "finished"
+      ],
+      "phase_lifecycle_seconds": [
+        218.911933
+      ],
+      "tool_errors": [
+        "replace_text: Expected exactly one old_text match; found 0. Copy old_text exactly from the latest read_file content.",
+        "replace_text: Expected exactly one old_text match; found 0. Copy old_text exactly from the latest read_file content.",
+        "replace_text: Expected exactly one old_text match; found 0. Copy old_text exactly from the latest read_file content.",
+        "replace_text: Tool not executed: this turn has already stopped."
+      ],
+      "check_attempts": [],
+      "evidence_sha256": {
+        "T09-run.json": "3964cdaba5908eaf1398bc624d27bfbf795c893daffc4867f01361dc3b43287f"
+      },
+      "acceptance_evidence_sha256": "f10c194f525c9cbee0eb2b16bb4ec32a4a3f5b4f9becce5416a505ef0b82e332"
     },
     {
       "id": "T10",
@@ -410,9 +648,70 @@
       "allowed_modified_paths": [
         "client/src/lib/sessionWrapUp.ts"
       ],
-      "execution_status": "not_yet_graded",
-      "artifact_acceptance": null,
-      "completed_and_accepted": null
+      "completion_status": "completed",
+      "verification_status": "passed",
+      "completion_reason": null,
+      "external_behavior_scope_passed": true,
+      "artifact_acceptance": true,
+      "independent_source_review": null,
+      "completed_and_accepted": true,
+      "changed_paths": [
+        "client/src/lib/sessionWrapUp.ts"
+      ],
+      "unrelated_changes": [],
+      "criteria_unchanged": true,
+      "phase_usage": [
+        {
+          "prompt_tokens": 30764,
+          "completion_tokens": 1224
+        }
+      ],
+      "token_totals_known": true,
+      "reported_token_limits_met": true,
+      "within_budget": true,
+      "run_ids": [
+        "0d696b3017ec4883a0d01e63885d9f69"
+      ],
+      "loop_latency_ms": [
+        171821.4100829363
+      ],
+      "client_workflow_passed": true,
+      "preservation_passed": true,
+      "manual_patch_repair": false,
+      "manual_interventions": [],
+      "failure_class": null,
+      "outcome_class": "completed_checked_and_accepted",
+      "budget_assessment_scope": "Known reported phase token totals plus journal lifecycle elapsed at/below configured dispatch allowance; captured runtime limits enforced tools/iterations. Unknown usage prevents a compliance claim. Lifecycle includes final review/storage; not a hard return guarantee.",
+      "artifact_recheck_matches": true,
+      "captured_runtime_profile_matches": true,
+      "execution_status": "observed",
+      "run_statuses": [
+        "finished"
+      ],
+      "phase_lifecycle_seconds": [
+        172.198679
+      ],
+      "tool_errors": [],
+      "check_attempts": [
+        {
+          "argv": [
+            "python",
+            "-m",
+            "pytest",
+            "-q",
+            "test_visible.py"
+          ],
+          "exit_code": 0,
+          "status": "passed",
+          "relevant": true,
+          "superseded_by_edit": false,
+          "error": null
+        }
+      ],
+      "evidence_sha256": {
+        "T10-run.json": "42b17e9674554fef844255b52edd7f4275ffec110c12e121e850d33a733ee05a"
+      },
+      "acceptance_evidence_sha256": "57bf77aa68edf7441973b32899f50b4d3477a5e8cfb4ba48a25dd8bffd2f0d7d"
     }
   ],
   "limits": [
@@ -422,7 +721,76 @@
     "Unknown interrupted/request-failure usage remains unknown; no zero substitution.",
     "T08 requires independent final-patch source review in addition to automated behavior/scope checks."
   ],
-  "graded_tasks": 5,
-  "accepted_artifacts_observed": 1,
-  "completed_and_accepted_observed": 0
+  "graded_tasks": 10,
+  "accepted_artifacts_observed": 2,
+  "completed_and_accepted_observed": 1,
+  "decision": "no_go_for_frozen_unattended_task_envelope",
+  "node_version": "v24.22.0",
+  "sampling_temperature": 0.0,
+  "raw_run_records": 11,
+  "ordinary_submissions": 10,
+  "reserved_continuation_submissions": 1,
+  "replacement_attempts": 0,
+  "manual_patch_repairs": 0,
+  "api_run_failures": 4,
+  "completion_status_counts": {
+    "budget_exhausted": 5,
+    "unavailable_failed_run": 4,
+    "completed": 1
+  },
+  "check_status_counts": {
+    "failed": 1,
+    "not_run": 4,
+    "unavailable_failed_run": 4,
+    "passed": 1
+  },
+  "within_budget_known_task_count": 5,
+  "within_budget_unknown_task_count": 5,
+  "known_within_budget_accepted_artifacts": 2,
+  "all_criteria_unchanged": true,
+  "all_artifact_grades_reproduced": true,
+  "all_captured_profiles_matched": true,
+  "all_preservation_checks_passed_with_planned_T05_sentinel_exception": true,
+  "planned_reversal_successfully_applied": false,
+  "planned_cancel_restart_guarded_fork_exercised": true,
+  "usage": {
+    "known_phase_count": 6,
+    "unknown_phase_count": 5,
+    "sum_of_known_phase_prompt_tokens": 274169,
+    "sum_of_known_phase_completion_tokens": 6206,
+    "full_cohort_token_total": null,
+    "scope_note": "Sums cover only available complete phase reports; failed/cancelled requests can have additional unreported usage. They are not a full cohort total."
+  },
+  "categories": {
+    "bugfix": {
+      "attempted": 6,
+      "artifact_accepted": 2,
+      "completed_and_accepted": 1
+    },
+    "feature": {
+      "attempted": 3,
+      "artifact_accepted": 0,
+      "completed_and_accepted": 0
+    },
+    "refactor": {
+      "attempted": 1,
+      "artifact_accepted": 0,
+      "completed_and_accepted": 0
+    }
+  },
+  "cleanup": {
+    "api_listener_released": true,
+    "evaluation_loaded_gemma_unloaded": true,
+    "ollama_ps": {
+      "models": []
+    },
+    "preexisting_ollama_service_left_running": true,
+    "observed_at_utc": "2026-10-19T05:42:02.837735+00:00",
+    "unload_command": "/usr/local/bin/ollama stop gemma4:12b",
+    "unload_command_exit_code": 0
+  },
+  "final_audit_sha256": "ce2e8e765c7a199c3fc98c6a6abda553d6bc22e55415391b296c8dea827bd8bf",
+  "operator_journal_sha256": "e2bd7ee77a3af9b766ec223644f649f48e7319c3a5118c1d92558a4e791f29a6",
+  "total_observed_run_lifecycle_seconds": 1682.982205,
+  "timing_scope": "Sum of journal run created-to-finished intervals, including setup/final review/storage. Excludes operator gaps and grading; not pure inference or a hard dispatch/return bound."
 }
