@@ -1003,6 +1003,25 @@ Execution/final-storage errors produce `failed` records. At startup, abandoned
 chat retries without a saved result return an error (409 on HTTP, an error event
 on SSE). Inspect the workspace before starting new work with a new session/key.
 
+Failed runs have an additive nullable `provider_failure` observation. Ollama
+HTTP failures retain an allowlisted timeout kind (`read_timeout`, `connect_timeout`,
+`write_timeout`, `pool_timeout`, or generic `timeout`), `connection`, or
+`http_status` with its numeric HTTP status. Unclassified provider errors record
+`unknown`; other failures and legacy records have null metadata. SDK-specific
+causes for other backends are not yet classified. The saved `error` summary also
+includes this observation, so CLI run review and the panel's Check run/history
+show it through their existing review paths. Live SSE errors still direct the
+client to inspect the saved run; they do not replay a final response.
+
+These fields omit raw exception text, request/response bodies, URLs, headers and
+credentials; existing transcripts and traces retain their existing content scope.
+A failure category does not explain why a backend stalled, prove remote inference
+stopped, establish token usage, or authorize a safe retry. No retry/default timeout
+changed. Failed runs still have no invented completion/check/usage evidence.
+Metadata depends on successful run-failure storage; it cannot repair a failed
+archive write or recover missing partial transcripts/diffs. Historical failed
+records are not backfilled, including the frozen Duodoro trial's unknown causes.
+
 This remains one API process per database/workspace, with process-local admission;
 there is no cross-process execution coordination or authenticated ownership.
 Runs retain input and final evidence in `SESSION_DB_PATH`, without full event journals,
