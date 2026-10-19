@@ -106,7 +106,8 @@ External criteria reject selected incorrect patches that pass visible smoke test
 T08 additionally needs independent source review using its external rubric: an
 automated passing behavioral grade alone is insufficient for full acceptance.
 
-Deterministic real-client preflight and a reviewed final execution freeze remain
+The [deterministic client preflight](CLIENT_PREFLIGHT.md) passed representative
+CLI/panel workflows without inference. A reviewed final execution freeze remains
 pending before inference. Earlier free-Go authorization is not a current pricing
 claim or instruction to start hosted calls. No model ran during this preparation;
 these public development tasks are not held out and establish no quality gain.

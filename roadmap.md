@@ -17,7 +17,9 @@ The [ten-task protocol](evals/projects/duodoro/TRIAL_PROTOCOL.md) records Jorge'
 approval of the proposed tasks and limits. All ten acceptance sets are prepared
 and pass offline initial-fail/reference-pass validation; seven new sets include
 adversarial coverage. The ledger records preparation asset hashes but remains
-unrun. Real-client preflight, the final execution manifest and G0 at the frozen
+unrun. The [deterministic client preflight](evals/projects/duodoro/CLIENT_PREFLIGHT.md)
+passed representative real CLI/panel paths, including the assigned CLI restart,
+continuation and reversal flows. The final execution manifest and G0 at its frozen
 revision remain pending before inference. T08 additionally requires independent
 source review of the final patch; automated behavior checks alone are insufficient.
 No trial outcome or release criterion is completed by this preparation.
