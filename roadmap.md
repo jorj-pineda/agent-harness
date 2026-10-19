@@ -1,6 +1,17 @@
 # Roadmap: a coding harness for lower-tier models
 
-Updated: 2026-10-14
+Updated: 2026-10-18
+
+## Current release decision
+
+The [2026-10-18 release-readiness audit](RELEASE_READINESS.md) maps shipped behavior
+to evidence and defines a finite set of release gates. Current decision: controlled
+source-checkout trial preparation can proceed; the personal-use release targets
+are not met. Freeze new feature batches unless a reproduced trial blocker requires
+a focused fix. The next step is agreement on ten bounded tasks and budgets, not
+completion of every deferred feature. The existing release/held-out criteria below
+remain unchanged; the audit does not complete Milestones 2–6 or authorize live runs.
+A packaged panel release also needs the reproduced missing-wheel-assets fix.
 
 ## Direction
 
@@ -793,7 +804,7 @@ The harness does not need to make every model good at every task. It needs to id
   management, and the rest of the personal-use workflow remain open. Offline checks
   alone are not evidence of better model coding performance.
 
-### Review baseline
+### Historical review baseline (pre-pivot snapshot)
 
 The existing foundation is worth keeping:
 
@@ -805,9 +816,12 @@ The existing foundation is worth keeping:
 
 Review baseline: 381 offline tests passed, five live tests were deselected, and Ruff and mypy passed. No live model-quality comparison was performed during that review.
 
-Important limitations found in the current implementation:
+The following table records that earlier implementation, not the current
+release state. Several entries have since been addressed by the dated slices.
+Use the [release audit evidence map](RELEASE_READINESS.md) for current behavior;
+retain this table as historical context.
 
-| Area | Current behavior | Consequence |
+| Area | Behavior at that historical review | Consequence |
 |---|---|---|
 | Evaluations | `--live` uses a real model with scripted code-tool results and omits the application's system prompt | It does not measure actual coding success or the production harness |
 | Patch scoring | Checks expected filenames in `files_touched` | An incorrect patch can receive full credit |
