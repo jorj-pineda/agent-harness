@@ -1,0 +1,364 @@
+{
+  "acceptance_runner_sha256": "67be1aa3212f6c5fa941fcf6dd84ac0dcdcb5def9abf400e648de13d091b7bd6",
+  "arms": {
+    "control": {
+      "checkout": "/Users/jorge/.local/share/agent-harness/trials/duodoro-edit-feedback-sgpr8sdv/control",
+      "mismatch_function_sha256": "c124f2a7aa3990e59c6bbdd5ee7600a4cd1cd388aaea2dd399f9c7b8c30bfac9",
+      "revision": "1c9249af2b5bcaad2e1628c130a9e879c934196f",
+      "tools_code_sha256": "16243a2674ba9edd02ab28fab4e6f2d4cff00f321a69a9f73ef43951ed915930",
+      "tree": "b3d03f61807955e9cab30eec56ae14cb1c9b21ba"
+    },
+    "treatment": {
+      "checkout": "/Users/jorge/.local/share/agent-harness/trials/duodoro-edit-feedback-sgpr8sdv/treatment",
+      "mismatch_function_sha256": "4ac698a0d990c938fe7e3ef3073647ece3cb1cdbe890d2c30babcb84f0367b30",
+      "revision": "5974d2201cb12829de2b593b602c649515e98b0d",
+      "tools_code_sha256": "7c689aee936227bbedec50536bd99378a446640847cf41991f438a34cfd828dd",
+      "tree": "e995733d89fa64f6e2e0d71471e0280040cc7161"
+    }
+  },
+  "attempts": [
+    {
+      "arm": "control",
+      "artifact_acceptance": null,
+      "artifact_directory": "/Users/jorge/.local/share/agent-harness/trials/duodoro-edit-feedback-sgpr8sdv/attempts/01-T01-r1-control",
+      "baseline_sha256": "b9b094a6d2d7350e8f28ae6fa90efe2b6517c3da40adc3f9a8945527827debd0",
+      "completed_and_accepted": null,
+      "id": "01-T01-r1-control",
+      "repeat": 1,
+      "run_id": null,
+      "runtime_revision": "1c9249af2b5bcaad2e1628c130a9e879c934196f",
+      "settings_sha256": "24fb4087207094fc9d10ab570f2fe7ac926385a5886fdaf02790119a137e163c",
+      "status": "not_started",
+      "task": "T01",
+      "usage": null
+    },
+    {
+      "arm": "treatment",
+      "artifact_acceptance": null,
+      "artifact_directory": "/Users/jorge/.local/share/agent-harness/trials/duodoro-edit-feedback-sgpr8sdv/attempts/02-T01-r1-treatment",
+      "baseline_sha256": "b9b094a6d2d7350e8f28ae6fa90efe2b6517c3da40adc3f9a8945527827debd0",
+      "completed_and_accepted": null,
+      "id": "02-T01-r1-treatment",
+      "repeat": 1,
+      "run_id": null,
+      "runtime_revision": "5974d2201cb12829de2b593b602c649515e98b0d",
+      "settings_sha256": "bcdfa4b6a92f9e1617cdc54b9d6fba0897d66b8dcdd16c3f618fcb5cdda34d08",
+      "status": "not_started",
+      "task": "T01",
+      "usage": null
+    },
+    {
+      "arm": "treatment",
+      "artifact_acceptance": null,
+      "artifact_directory": "/Users/jorge/.local/share/agent-harness/trials/duodoro-edit-feedback-sgpr8sdv/attempts/03-T04-r1-treatment",
+      "baseline_sha256": "45738425c01ed6525a944618384197579806f24f835c1c6fda82b2cf3dd28f04",
+      "completed_and_accepted": null,
+      "id": "03-T04-r1-treatment",
+      "repeat": 1,
+      "run_id": null,
+      "runtime_revision": "5974d2201cb12829de2b593b602c649515e98b0d",
+      "settings_sha256": "b5d828827a2ede77c0d1302370dead810dac7a3a28b5424fb95bd4c349295b8a",
+      "status": "not_started",
+      "task": "T04",
+      "usage": null
+    },
+    {
+      "arm": "control",
+      "artifact_acceptance": null,
+      "artifact_directory": "/Users/jorge/.local/share/agent-harness/trials/duodoro-edit-feedback-sgpr8sdv/attempts/04-T04-r1-control",
+      "baseline_sha256": "45738425c01ed6525a944618384197579806f24f835c1c6fda82b2cf3dd28f04",
+      "completed_and_accepted": null,
+      "id": "04-T04-r1-control",
+      "repeat": 1,
+      "run_id": null,
+      "runtime_revision": "1c9249af2b5bcaad2e1628c130a9e879c934196f",
+      "settings_sha256": "b740777de241b4e4e6394e847d368bcb82b214e3a40402c3f11f6271ecdfb5a9",
+      "status": "not_started",
+      "task": "T04",
+      "usage": null
+    },
+    {
+      "arm": "control",
+      "artifact_acceptance": null,
+      "artifact_directory": "/Users/jorge/.local/share/agent-harness/trials/duodoro-edit-feedback-sgpr8sdv/attempts/05-T09-r1-control",
+      "baseline_sha256": "8ee4ee3f84d8d4c407dc8fe659136619e552332f8b08e4d0cc3383268aa7d632",
+      "completed_and_accepted": null,
+      "id": "05-T09-r1-control",
+      "repeat": 1,
+      "run_id": null,
+      "runtime_revision": "1c9249af2b5bcaad2e1628c130a9e879c934196f",
+      "settings_sha256": "d6be94aa874bde28513282197187d54e05dbf4abc2102d750a743c8f15b84d4d",
+      "status": "not_started",
+      "task": "T09",
+      "usage": null
+    },
+    {
+      "arm": "treatment",
+      "artifact_acceptance": null,
+      "artifact_directory": "/Users/jorge/.local/share/agent-harness/trials/duodoro-edit-feedback-sgpr8sdv/attempts/06-T09-r1-treatment",
+      "baseline_sha256": "8ee4ee3f84d8d4c407dc8fe659136619e552332f8b08e4d0cc3383268aa7d632",
+      "completed_and_accepted": null,
+      "id": "06-T09-r1-treatment",
+      "repeat": 1,
+      "run_id": null,
+      "runtime_revision": "5974d2201cb12829de2b593b602c649515e98b0d",
+      "settings_sha256": "553975109c7916a4b9d5d8312f07c7ebd08ddeb496b537d328adf810a44b0fa2",
+      "status": "not_started",
+      "task": "T09",
+      "usage": null
+    },
+    {
+      "arm": "treatment",
+      "artifact_acceptance": null,
+      "artifact_directory": "/Users/jorge/.local/share/agent-harness/trials/duodoro-edit-feedback-sgpr8sdv/attempts/07-T01-r2-treatment",
+      "baseline_sha256": "b9b094a6d2d7350e8f28ae6fa90efe2b6517c3da40adc3f9a8945527827debd0",
+      "completed_and_accepted": null,
+      "id": "07-T01-r2-treatment",
+      "repeat": 2,
+      "run_id": null,
+      "runtime_revision": "5974d2201cb12829de2b593b602c649515e98b0d",
+      "settings_sha256": "029c53849647f15fa6d432994e1d96801be2bb20eda3cc2a3e82f27eea8412ba",
+      "status": "not_started",
+      "task": "T01",
+      "usage": null
+    },
+    {
+      "arm": "control",
+      "artifact_acceptance": null,
+      "artifact_directory": "/Users/jorge/.local/share/agent-harness/trials/duodoro-edit-feedback-sgpr8sdv/attempts/08-T01-r2-control",
+      "baseline_sha256": "b9b094a6d2d7350e8f28ae6fa90efe2b6517c3da40adc3f9a8945527827debd0",
+      "completed_and_accepted": null,
+      "id": "08-T01-r2-control",
+      "repeat": 2,
+      "run_id": null,
+      "runtime_revision": "1c9249af2b5bcaad2e1628c130a9e879c934196f",
+      "settings_sha256": "40ac480c07c4772744a86c74a5d8de60c5c94c86c4dcd91b13c09bee8521159a",
+      "status": "not_started",
+      "task": "T01",
+      "usage": null
+    },
+    {
+      "arm": "control",
+      "artifact_acceptance": null,
+      "artifact_directory": "/Users/jorge/.local/share/agent-harness/trials/duodoro-edit-feedback-sgpr8sdv/attempts/09-T04-r2-control",
+      "baseline_sha256": "45738425c01ed6525a944618384197579806f24f835c1c6fda82b2cf3dd28f04",
+      "completed_and_accepted": null,
+      "id": "09-T04-r2-control",
+      "repeat": 2,
+      "run_id": null,
+      "runtime_revision": "1c9249af2b5bcaad2e1628c130a9e879c934196f",
+      "settings_sha256": "2163b7b916686c978f59fad6929c33282c29ec775f31b16b78465483b1fcfa0e",
+      "status": "not_started",
+      "task": "T04",
+      "usage": null
+    },
+    {
+      "arm": "treatment",
+      "artifact_acceptance": null,
+      "artifact_directory": "/Users/jorge/.local/share/agent-harness/trials/duodoro-edit-feedback-sgpr8sdv/attempts/10-T04-r2-treatment",
+      "baseline_sha256": "45738425c01ed6525a944618384197579806f24f835c1c6fda82b2cf3dd28f04",
+      "completed_and_accepted": null,
+      "id": "10-T04-r2-treatment",
+      "repeat": 2,
+      "run_id": null,
+      "runtime_revision": "5974d2201cb12829de2b593b602c649515e98b0d",
+      "settings_sha256": "9dfc658e213b090852732b50e67999718e2b83e4d0d055761189b8a7a4d7d51f",
+      "status": "not_started",
+      "task": "T04",
+      "usage": null
+    },
+    {
+      "arm": "treatment",
+      "artifact_acceptance": null,
+      "artifact_directory": "/Users/jorge/.local/share/agent-harness/trials/duodoro-edit-feedback-sgpr8sdv/attempts/11-T09-r2-treatment",
+      "baseline_sha256": "8ee4ee3f84d8d4c407dc8fe659136619e552332f8b08e4d0cc3383268aa7d632",
+      "completed_and_accepted": null,
+      "id": "11-T09-r2-treatment",
+      "repeat": 2,
+      "run_id": null,
+      "runtime_revision": "5974d2201cb12829de2b593b602c649515e98b0d",
+      "settings_sha256": "939163098af7f57f8c41936d9cfdccc88d6412169916fea65f2bcd65709cb8ab",
+      "status": "not_started",
+      "task": "T09",
+      "usage": null
+    },
+    {
+      "arm": "control",
+      "artifact_acceptance": null,
+      "artifact_directory": "/Users/jorge/.local/share/agent-harness/trials/duodoro-edit-feedback-sgpr8sdv/attempts/12-T09-r2-control",
+      "baseline_sha256": "8ee4ee3f84d8d4c407dc8fe659136619e552332f8b08e4d0cc3383268aa7d632",
+      "completed_and_accepted": null,
+      "id": "12-T09-r2-control",
+      "repeat": 2,
+      "run_id": null,
+      "runtime_revision": "1c9249af2b5bcaad2e1628c130a9e879c934196f",
+      "settings_sha256": "36c72340f96f7cb26f6f277cf9026f00d26315b580d4ec3a9348272fa793a6d0",
+      "status": "not_started",
+      "task": "T09",
+      "usage": null
+    }
+  ],
+  "command_path": "/Users/jorge/Projects/agent-harness/.venv/bin:/Users/jorge/.vite-plus/js_runtime/node/24.22.0/bin:/Library/Frameworks/Python.framework/Versions/3.14/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Users/jorge/.vite-plus/bin:/Users/jorge/.vite-plus/packages/@openai/codex/84961cf0-d2e3-40e5-b06d-6bec42509ad3/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/codex-path:/Users/jorge/.codex/tmp/arg0-macos/codex-arg0JYuhaq:/Users/jorge/.vite-plus/js_runtime/node/24.22.0/bin:/Users/jorge/.opencode/bin:/Users/jorge/.bun/bin:/Users/jorge/Downloads/google-cloud-sdk/bin:/Users/jorge/.antigravity-ide/antigravity-ide/bin:/Users/jorge/.sdkman/candidates/java/current/bin:/Users/jorge/.sdkman/candidates/grails/current/bin:/Users/jorge/.sdkman/candidates/gradle/current/bin:/Users/jorge/.local/bin:/Library/Frameworks/Python.framework/Versions/3.14/bin:/Users/jorge/.cargo/bin:/Users/jorge/.docker/bin",
+  "control_bundle_sha256": "d534866402604d2b0b463f186ec5d974394262a5c0ad93cbf3dbc1724a3245b3",
+  "control_patch_sha256": "e0bb1eff85809166f490609aa476426c7c2542d3ba9329d0a6e738021ed4beac",
+  "execution_status": "not_started",
+  "finalization_recipe_sha256": "23e3c51125ba24a0f45458e0f677fdbf6908248ff3c93038d091912142a2f728",
+  "g0": {
+    "both_arms_each_scripted_set": "90/90; scripted-contract labels and metric limits inspected",
+    "both_arms_static": "Ruff, format256 and mypy56 passed",
+    "control_common_pytest": {
+      "deselected_node": "tests/test_exact_edit_feedback.py::test_ollama_exact_edit_feedback_preserves_arguments_and_requires_explicit_correction",
+      "intentional_treatment_assertion_deselected": 5,
+      "live_deselected": 5,
+      "passed": 1325
+    },
+    "logs_sha256": {
+      "control-coding.md": "0bbbda9d02c386b0092dbb6fc3d1819f0b7d83a67d56e29c519917131d29abe3",
+      "control-offline-profiles.json": "a5b3ddff7d3139a5e23991330a4d38dc627ab8fe7fe10148784a6dd0805079b4",
+      "control-support.md": "75bb82922bf2f28620fc17d5749ef4469caef7ffd399c235f1dc8bccc2e99abb",
+      "g0-control-format.log": "cc199a57a5c7fffcf8d4daf5a28ebb8dd97f626dacee6e2fd506ca4d72be1fff",
+      "g0-control-mypy.log": "070c9c331a2e491aabe528a802fadba01ab960cc6017b0199149ee76a8b866b5",
+      "g0-control-pytest.log": "4b5023d3bf52096c951113d8b3cde25a3b6e42fc69360ac1f18def524e3edb01",
+      "g0-control-ruff.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "g0-treatment-format.log": "cc199a57a5c7fffcf8d4daf5a28ebb8dd97f626dacee6e2fd506ca4d72be1fff",
+      "g0-treatment-mypy.log": "070c9c331a2e491aabe528a802fadba01ab960cc6017b0199149ee76a8b866b5",
+      "g0-treatment-pytest.log": "951b40ecf10bbc7b9d2122426629e054db42f7404542cf9de7ca8475f3bb612a",
+      "g0-treatment-ruff.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "treatment-coding.md": "0bbbda9d02c386b0092dbb6fc3d1819f0b7d83a67d56e29c519917131d29abe3",
+      "treatment-offline-profiles.json": "9d023042384c8c549b2a49e112d6ec39bf53267dbc2105b1216df6f983cb530a",
+      "treatment-support.md": "79147ee40a89bf3b29d60630f671c75aa31f9eb59a711e6a0c4794a1f2b96af1"
+    },
+    "profiles_equal": true,
+    "status": "passed_with_declared_control_test_exclusion",
+    "treatment_pytest": {
+      "live_deselected": 5,
+      "passed": 1330
+    }
+  },
+  "initial_loaded_models": {
+    "models": []
+  },
+  "installed_distributions_sha256": "eccbb41fa7ff520b5ace5e33cc4da0f647268bc027050eb0d711b329eca3a8cf",
+  "kind": "unrun_paired_edit_feedback_comparison",
+  "limits": {
+    "context_tokens": 16384,
+    "dispatch_seconds": 300,
+    "iterations": 12,
+    "manual_patch_repairs": 0,
+    "output_tokens": 8192,
+    "planned_coding_submissions": 12,
+    "recovery_phases": 0,
+    "replacements": 0,
+    "request_output_tokens": 2048,
+    "request_seconds": 60,
+    "tools": 24,
+    "total_tokens": 64000
+  },
+  "managed_executables": {
+    "node": {
+      "path": "/Users/jorge/.vite-plus/js_runtime/node/24.22.0/bin/node",
+      "sha256": "b468fb9c67427c9d3aec07ee1105e63020923a631a9a2a00beb71a7ba3768bfd"
+    },
+    "python": {
+      "path": "/Users/jorge/Projects/agent-harness/.venv/bin/python",
+      "sha256": "c015ab131972822e27ed108cf353582af6ca2fd7daf6296789576c7e7d1ad61a"
+    }
+  },
+  "model": {
+    "digest": "4eb23ef187e2c5462566d6a1d3bbbc2f1346d0b4327cbb66d58fffbcc9b2b05c",
+    "name": "gemma4:12b",
+    "ollama_version": "0.33.2"
+  },
+  "original_freeze_sha256": "26f9971e635d204599a38968b10427bef967178890a1c041d26eb3cfc7bfb62d",
+  "preparation_limits": [
+    "No inference; metadata GET requests only. No evaluation model loaded.",
+    "Initial static invocation created alternate worktree .venv without static tools; removed. All recorded checks use original absolute environment.",
+    "Public development tasks selected after failures; not held out.",
+    "Control experiment commit/bundle and raw preparation logs are local, not a portable public trace kit."
+  ],
+  "preparation_recipe_sha256": "8a3921cf35458ddfba11bc23d0493469e93ea0ab018c22110df87cd844a27a51",
+  "prepared_at_utc": "2026-10-19T22:33:54.129965+00:00",
+  "profile_check_recipe_sha256": "bee4fabda3666c64641684d99e582287f5733daeecd403b698f2428da1392b4b",
+  "protocol_sha256": "fab8c1e9b128540b573d2c0252302f94c67175a44352614a1cf8467908482bdb",
+  "review_requirements": "Review/merge this protocol, exact source/control-only patch, manifest checksum and declared control gate exclusions before inference.",
+  "review_status": "pending",
+  "runtime_base": "5974d2201cb12829de2b593b602c649515e98b0d",
+  "runtime_dependency_lock_sha256": "55e5f615fd59b081a9d42d2d117a4c75970a3de0a951dfa2dff4e813724237a0",
+  "schema_version": 1,
+  "tasks": {
+    "T01": {
+      "acceptance_files_sha256": {
+        "baseline.json": "b9b094a6d2d7350e8f28ae6fa90efe2b6517c3da40adc3f9a8945527827debd0",
+        "test_acceptance.py": "eb658229d6ee00a8b870357c68458cb0dbd4ee05cc9e87caf8142c73bb763e2f"
+      },
+      "adapter": "duration_format",
+      "allowed_modified_paths": [
+        "client/src/lib/format.ts"
+      ],
+      "category": "bugfix",
+      "client": "CLI",
+      "id": "T01",
+      "offline_validation": "initial visible/external fail; reference visible/external pass",
+      "reference_files_sha256": {
+        "client/src/lib/format.ts": "7f3a802eed35e725cd05b45258fd0a08b28546ada21e13e849c3add5910adc0f"
+      },
+      "request": "In Duodoro, harden formatDuration and formatTime in client/src/lib/format.ts against negative and non-finite numeric durations. Negative numbers, NaN, Infinity and -Infinity must render as zero (0m and 0:00). Preserve existing finite-positive formatting, fractional truncation and formatTag behavior. Inspect AGENTS.md and the existing format tests first. Only modify client/src/lib/format.ts; preserve all other files, including pre-existing work and tests. For this disposable library-level evaluation, test_visible.py is an additional visible task check using the installed Node runtime's native TypeScript support; run [\"python\",\"-m\",\"pytest\",\"-q\",\"test_visible.py\"] after the edit. This adapter does not run the full Next/Vitest suite. Do not install dependencies, start services or touch Docker. Report the observed checks and any limits honestly.",
+      "request_utf8_sha256": "15b7c2d1ba4548a7085c577f62dcd4de4b1a5974079659e39a8098f2a2236098",
+      "session_options": {
+        "checkpoint_turns": true,
+        "inspection_only": false,
+        "provider": "ollama"
+      }
+    },
+    "T04": {
+      "acceptance_files_sha256": {
+        "baseline.json": "45738425c01ed6525a944618384197579806f24f835c1c6fda82b2cf3dd28f04",
+        "checks.mjs": "832eedcdc1c6c17e62d3f1a4d58f95cf391ffc451f253af54de720f581b70dd4",
+        "test_acceptance.py": "9395e0743c45e8d1568d8fe2898adea5c21d191dac2c9d69e51e6aef979e7af3"
+      },
+      "adapter": "share_storage",
+      "allowed_modified_paths": [
+        "client/src/lib/shareInvite.ts"
+      ],
+      "category": "bugfix",
+      "client": "panel",
+      "id": "T04",
+      "offline_validation": "initial visible/external fail; reference visible/external pass",
+      "reference_files_sha256": {
+        "client/src/lib/shareInvite.ts": "76723da20067a3ccfe23c7ed3bca2a5a45e683782954d094655d2cb474d44ac3"
+      },
+      "request": "In the disposable pinned Duodoro source, Make pending share-invite storage resilient to unavailable browser storage. Preserve the exact token validator and URL behavior. SSR returns false for store and null for read and clears without error. Valid tokens round-trip; malformed stored tokens are removed. Throwing getItem/setItem/removeItem or the sessionStorage accessor must not escape: store returns false on a failed set, read returns null on a failed read/cleanup, and clear no-ops on failure. Do not weaken validation. Inspect applicable instructions and relevant existing code/tests first. Only modify client/src/lib/shareInvite.ts. Preserve every other file, tests and pre-existing work. This library task adds test_visible.py and visible_check.mjs as visible Node-native checks. After editing run [\"python\",\"-m\",\"pytest\",\"-q\",\"test_visible.py\"]. This is not full application/Vitest/typechecking coverage. Do not install dependencies, start services or touch Docker. Report actual check outcomes, unresolved issues and limits honestly.",
+      "request_utf8_sha256": "93b8cde7f4ea0e097a87b1e59ee388d65acc43f17e5a861f739d6d87e4c4c318",
+      "session_options": {
+        "checkpoint_turns": true,
+        "inspection_only": false,
+        "provider": "ollama"
+      }
+    },
+    "T09": {
+      "acceptance_files_sha256": {
+        "baseline.json": "8ee4ee3f84d8d4c407dc8fe659136619e552332f8b08e4d0cc3383268aa7d632",
+        "checks.mjs": "9ddbc81dbf7ef4029283258c7d89cc36aa57c535bbe5a0f16602f39fdbb660f0",
+        "test_acceptance.py": "419af666ea737d4a49b7f31017d54bdd811863ffcb07aea0009f1f546ee15f1a"
+      },
+      "adapter": "tag_filter",
+      "allowed_modified_paths": [
+        "client/src/lib/focusTags.ts"
+      ],
+      "category": "feature",
+      "client": "CLI",
+      "id": "T09",
+      "offline_validation": "initial visible/external fail; reference visible/external pass",
+      "reference_files_sha256": {
+        "client/src/lib/focusTags.ts": "c4ed51d7d6a0841dfbf96d8cba04a624bc41c4543f221bd34d783980160ac0d2"
+      },
+      "request": "In the disposable pinned Duodoro source, Export normalizeTagFilter(value: unknown): TagFilter. Return the input unchanged only when existing isTagFilter accepts it; otherwise return all. Cover every existing preset plus all/untagged. Do not trim, lowercase, coerce or mutate invalid inputs. Preserve existing labels, validators, match behavior, calendar readers and confirmed-write readers. Do not change database/RPC behavior or unrelated private-tag normalization. Inspect applicable instructions and relevant existing code/tests first. Only modify client/src/lib/focusTags.ts. Preserve every other file, tests and pre-existing work. This library task adds test_visible.py and visible_check.mjs as visible Node-native checks. After editing run [\"python\",\"-m\",\"pytest\",\"-q\",\"test_visible.py\"]. This is not full application/Vitest/typechecking coverage. Do not install dependencies, start services or touch Docker. Report actual check outcomes, unresolved issues and limits honestly.",
+      "request_utf8_sha256": "5d1da15f3c546162ca0fa34e4f3cba95b704ee0ceed992db6539f245f9ad446b",
+      "session_options": {
+        "checkpoint_turns": true,
+        "inspection_only": false,
+        "provider": "ollama"
+      }
+    }
+  }
+}
