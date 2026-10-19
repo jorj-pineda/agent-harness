@@ -34,7 +34,7 @@ def repository(tmp_path, monkeypatch, *, collision=False):
     ).stdout.strip()
     definitions = tmp_path / "definitions"
     shutil.copytree(prepare.ROOT, definitions, ignore=shutil.ignore_patterns("__pycache__"))
-    for name in ("task.json", "task_timer.json", "task_calendar.json"):
+    for name, _ in prepare.TASK_DEFINITIONS.values():
         metadata = json.loads((definitions / name).read_text())
         metadata["source_revision"] = revision
         (definitions / name).write_text(json.dumps(metadata))
@@ -42,7 +42,7 @@ def repository(tmp_path, monkeypatch, *, collision=False):
     return source
 
 
-@pytest.mark.parametrize("task_name", ["duration_format", "timer_normalization", "calendar_layout"])
+@pytest.mark.parametrize("task_name", prepare.TASK_DEFINITIONS)
 def test_preparation_uses_pinned_commit_preserves_dirty_source_and_excludes_env(
     tmp_path, monkeypatch, task_name
 ):

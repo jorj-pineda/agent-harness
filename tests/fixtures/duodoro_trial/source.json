@@ -1,0 +1,17 @@
+{
+  "repository": "duodoro",
+  "revision": "5324cabba4ad3c8ad2e1cd1480218cf087d9b741",
+  "files_sha256": {
+    "client/src/lib/shareInvite.ts": "03c45c90b904f6de366bc93ff0a7d426982155e9e68416850b5c2209e3d250f5",
+    "client/src/lib/timerPrefs.ts": "b9ed4258e0012a0062424b01837c00fe51263d02ba5753582216fdaa4a425871",
+    "client/src/lib/keyboardShortcuts.ts": "8a277b2828f5d60741ada79832db503318a9a3546514d18124222302c6842200",
+    "client/src/lib/rotation.ts": "924a0ea1eeb6e2de86472ec971e7c2e5ea6de9d298b7136fa19a340cba74e6e1",
+    "server/rotation.js": "eb8333bd896089fc9f46fd555d98113d4d6a63a44b39eeef768a7246b11bb294",
+    "server/payloadParsers.js": "1feec11cc434e66bbc0d7054fdc08411c54a40336d7e24c575ab049c2af08f6c",
+    "client/src/lib/focusTags.ts": "e6afa702fed767c6bac03be17c7b5f9b6dbbc9b924ba2d7b415ee05deed22b15",
+    "client/src/lib/sessionWrapUp.ts": "5ba701392fc20fa06255348661e08db72c7c9dd1d33537345587ef1083b235b2",
+    "shared/companionNames.js": "a3d5ed45cbafb52584f2ffc544ce10939bf62fb4961a04c35904f692ec365666",
+    "client/src/lib/format.ts": "22d1c3647d9be8e6b1ad9c188a483dbf3a97070213ffc6565c0dd51d89bab90b",
+    "client/src/lib/focusCalendar.ts": "fb77b38845811ca7b34456bc4bb4552f4a844c36400df8cbccfeafba61b2968c"
+  }
+}

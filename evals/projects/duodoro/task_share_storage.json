@@ -1,0 +1,12 @@
+{
+  "id": "duodoro_share_storage",
+  "repository": "duodoro",
+  "source_revision": "5324cabba4ad3c8ad2e1cd1480218cf087d9b741",
+  "category": "bugfix",
+  "allowed_modified_paths": [
+    "client/src/lib/shareInvite.ts"
+  ],
+  "visible_node_check": "visible_share_storage.mjs",
+  "requires_independent_source_review": false,
+  "request": "In the disposable pinned Duodoro source, Make pending share-invite storage resilient to unavailable browser storage. Preserve the exact token validator and URL behavior. SSR returns false for store and null for read and clears without error. Valid tokens round-trip; malformed stored tokens are removed. Throwing getItem/setItem/removeItem or the sessionStorage accessor must not escape: store returns false on a failed set, read returns null on a failed read/cleanup, and clear no-ops on failure. Do not weaken validation. Inspect applicable instructions and relevant existing code/tests first. Only modify client/src/lib/shareInvite.ts. Preserve every other file, tests and pre-existing work. This library task adds test_visible.py and visible_check.mjs as visible Node-native checks. After editing run [\"python\",\"-m\",\"pytest\",\"-q\",\"test_visible.py\"]. This is not full application/Vitest/typechecking coverage. Do not install dependencies, start services or touch Docker. Report actual check outcomes, unresolved issues and limits honestly."
+}

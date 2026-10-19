@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "unrun_trial_ledger_template",
-  "approval_status": "draft_not_approved",
+  "approval_status": "approved_for_offline_preparation",
   "repository": "duodoro",
   "source_revision": "5324cabba4ad3c8ad2e1cd1480218cf087d9b741",
   "source_tree_git_id": "1d8da1323eedea0d7c870420ec3c9911a5978520",
@@ -10,9 +10,9 @@
   "agreement": {
     "dispatch_seconds_per_task": 300,
     "dispatch_budget_confirmed_by_jorge": true,
-    "task_set_approved": null,
-    "token_profile_settings_approved": null,
-    "recovery_allocation_approved": null
+    "task_set_approved": true,
+    "token_profile_settings_approved": true,
+    "recovery_allocation_approved": true
   },
   "proposed_model": {
     "provider": "ollama",
@@ -68,10 +68,11 @@
   },
   "limits": [
     "Not a held-out set or a claim of ten independent benchmark samples.",
-    "Seven acceptance/reference/visible adapters remain unimplemented; no trial run is authorized.",
+    "All ten acceptance sets validated offline; deterministic client preflight and final execution freeze remain pending. No trial inference is authorized yet.",
     "Per-turn budgets are enforced by the runtime; phase counts require operator enforcement.",
     "Prompt/total-token gates are estimates; interrupted requests can leave actual usage unknown.",
-    "Copy this template outside source checkouts; do not overwrite it with execution results."
+    "Copy this template outside source checkouts; do not overwrite it with execution results.",
+    "T08 automated grading covers behavior/scope only; independent final-patch source review is required for full artifact acceptance."
   ],
   "tasks": [
     {
@@ -87,9 +88,10 @@
       },
       "existing_definition": "task.json",
       "existing_adapter": "duration_format",
-      "criterion_status": "existing_adapter_revalidated_offline",
+      "criterion_status": "implemented_validated_offline",
       "existing_file_sha256": {
         "task.json": "73e50112c209b8ce4267cf419f2ff537f9263d679ee68e1116fd23c171485012",
+        "visible_duration.py": "bab3360429b3f90df5e465a33af968149e0febe88b5d3767a1ea20e83f167b46",
         "acceptance/duration_format/test_acceptance.py": "eb658229d6ee00a8b870357c68458cb0dbd4ee05cc9e87caf8142c73bb763e2f"
       },
       "contract": "TRIAL_PROTOCOL.md#acceptance-contracts-to-implement-and-freeze-before-any-model-run",
@@ -122,9 +124,10 @@
       },
       "existing_definition": "task_timer.json",
       "existing_adapter": "timer_normalization",
-      "criterion_status": "existing_adapter_revalidated_offline",
+      "criterion_status": "implemented_validated_offline",
       "existing_file_sha256": {
         "task_timer.json": "b6df589932ea619011a55ca87726bf8ab44b23076ae5c8e6d8bdabffcf859975",
+        "visible_timer.py": "a56f0b5c5a71967fc19c4cf9c28ede72bd7bb8b8499daac63248688af7441cc4",
         "acceptance/timer_normalization/test_acceptance.py": "71c615741d10b39668529f0b8e8cdab285e8a6f60bd97b8332717021e11f74ce"
       },
       "contract": "TRIAL_PROTOCOL.md#acceptance-contracts-to-implement-and-freeze-before-any-model-run",
@@ -157,9 +160,10 @@
       },
       "existing_definition": "task_calendar.json",
       "existing_adapter": "calendar_layout",
-      "criterion_status": "existing_adapter_revalidated_offline",
+      "criterion_status": "implemented_validated_offline",
       "existing_file_sha256": {
         "task_calendar.json": "6f87f33cfece5cbd957eaa1670f3f2aa886e09ea3874fe340fd1410cab4785aa",
+        "visible_calendar.py": "ecd47b8d7ce9f6a0f8175b53d97443589f4df0437bae29adbe99e58ac672710a",
         "acceptance/calendar_layout/test_acceptance.py": "e446204d7c13efc57d400756a61371f07da27af429b9be1810c472f833813bdd"
       },
       "contract": "TRIAL_PROTOCOL.md#acceptance-contracts-to-implement-and-freeze-before-any-model-run",
@@ -190,10 +194,16 @@
       "source_git_blob_ids": {
         "client/src/lib/shareInvite.ts": "65fc9d241213e25793c34a40ff9b515148c4501a"
       },
-      "existing_definition": null,
-      "existing_adapter": null,
-      "criterion_status": "not_implemented",
-      "existing_file_sha256": {},
+      "existing_definition": "task_share_storage.json",
+      "existing_adapter": "share_storage",
+      "criterion_status": "implemented_validated_offline",
+      "existing_file_sha256": {
+        "task_share_storage.json": "a2462bdfe1561457622dc0302ee361854471ee60850d4d08f91cf0d636213e37",
+        "visible_trial.py": "a11949e7a91097373c2722033ed35e2b8fbf1f9d79f0df77342b41757de94758",
+        "acceptance/share_storage/checks.mjs": "832eedcdc1c6c17e62d3f1a4d58f95cf391ffc451f253af54de720f581b70dd4",
+        "acceptance/share_storage/test_acceptance.py": "9395e0743c45e8d1568d8fe2898adea5c21d191dac2c9d69e51e6aef979e7af3",
+        "visible_share_storage.mjs": "64283b912a4b869fc2f071f33235edb0d511e8c14b0986540d6b9a2a9a6eaab3"
+      },
       "contract": "TRIAL_PROTOCOL.md#acceptance-contracts-to-implement-and-freeze-before-any-model-run",
       "planned_recovery": null,
       "proposed_budget_plan": "one_turn",
@@ -222,10 +232,16 @@
       "source_git_blob_ids": {
         "client/src/lib/timerPrefs.ts": "4973d1fe0e7a8a4815d7985ca52ffc40b57fd199"
       },
-      "existing_definition": null,
-      "existing_adapter": null,
-      "criterion_status": "not_implemented",
-      "existing_file_sha256": {},
+      "existing_definition": "task_timer_prefs.json",
+      "existing_adapter": "timer_prefs",
+      "criterion_status": "implemented_validated_offline",
+      "existing_file_sha256": {
+        "task_timer_prefs.json": "2edccb33c6da735ed796ad5df3e379d2c0ce8107ac1a36a092ebc09e6f605171",
+        "visible_trial.py": "a11949e7a91097373c2722033ed35e2b8fbf1f9d79f0df77342b41757de94758",
+        "acceptance/timer_prefs/checks.mjs": "81850f022c9ac2b7424fd44e7c986c4391907866b94ff1f9d0b6122450073d14",
+        "acceptance/timer_prefs/test_acceptance.py": "b9af5f55cf5455972ff18e2acecadb168ed6895106fe1b9adb5035067b046f5f",
+        "visible_timer_prefs.mjs": "71cce1c22a9accb728caca984a1fe9bf7e656236edbf80c34e8d19b8f3d84ae5"
+      },
       "contract": "TRIAL_PROTOCOL.md#acceptance-contracts-to-implement-and-freeze-before-any-model-run",
       "planned_recovery": "post_grade_single_file_reversal",
       "proposed_budget_plan": "one_turn",
@@ -254,10 +270,16 @@
       "source_git_blob_ids": {
         "client/src/lib/keyboardShortcuts.ts": "d454e0dd6f0775f7ad38cccdf3031d9076684b7b"
       },
-      "existing_definition": null,
-      "existing_adapter": null,
-      "criterion_status": "not_implemented",
-      "existing_file_sha256": {},
+      "existing_definition": "task_shortcut_count.json",
+      "existing_adapter": "shortcut_count",
+      "criterion_status": "implemented_validated_offline",
+      "existing_file_sha256": {
+        "task_shortcut_count.json": "001b0d5f85c885754d4c6472c98582b3e23f9367583846d0736ae6496ca888a0",
+        "visible_trial.py": "a11949e7a91097373c2722033ed35e2b8fbf1f9d79f0df77342b41757de94758",
+        "acceptance/shortcut_count/checks.mjs": "dc675dc06f005f7a78f19c92b525cdfdce842e243b031f18dd3eac94e665f615",
+        "acceptance/shortcut_count/test_acceptance.py": "5f3eff8eb73a7e3abf238cc8cc3292e50e0ec138751a6450988f59f6eca83ef7",
+        "visible_shortcut_count.mjs": "2786cb69977afd51f3da86857d75abb88af8dcf3d7299760ecc3cea4d29b70ec"
+      },
       "contract": "TRIAL_PROTOCOL.md#acceptance-contracts-to-implement-and-freeze-before-any-model-run",
       "planned_recovery": null,
       "proposed_budget_plan": "one_turn",
@@ -288,10 +310,17 @@
         "client/src/lib/rotation.ts": "2426d13b9b201d9c069f87a4d5f64908e6d08b2e",
         "server/rotation.js": "508e2f92c3b5960d399a696484c9b6d4dd2bf4f0"
       },
-      "existing_definition": null,
-      "existing_adapter": null,
-      "criterion_status": "not_implemented",
-      "existing_file_sha256": {},
+      "existing_definition": "task_rotation_preview.json",
+      "existing_adapter": "rotation_preview",
+      "criterion_status": "implemented_validated_offline",
+      "existing_file_sha256": {
+        "task_rotation_preview.json": "c73468a229e7456bbc912053dbc11a2b94dc05a867fae8960391b2442ea9170e",
+        "visible_trial.py": "a11949e7a91097373c2722033ed35e2b8fbf1f9d79f0df77342b41757de94758",
+        "acceptance/rotation_preview/checks.mjs": "bde99f82a0b56ea245f69f3ca12c498a36cb3354e7071cee92085d0cba5f0893",
+        "acceptance/rotation_preview/golden.json": "83e30979018416d53605b146cf19156f0f1d61365b553754c0d1803b28b6db1b",
+        "acceptance/rotation_preview/test_acceptance.py": "da340c6fa52cabceda29436f40200137d7a6eb0d6a5cac839d86b408160ff502",
+        "visible_rotation_preview.mjs": "6519d46bfc4e44a3a6276b995dc2b3715cf4e7a8dd441b266e89fe6da42f8413"
+      },
       "contract": "TRIAL_PROTOCOL.md#acceptance-contracts-to-implement-and-freeze-before-any-model-run",
       "planned_recovery": null,
       "proposed_budget_plan": "one_turn",
@@ -320,10 +349,18 @@
       "source_git_blob_ids": {
         "server/payloadParsers.js": "790cccfb966a6f561e9a34ffbe41e4645e7a9e2d"
       },
-      "existing_definition": null,
-      "existing_adapter": null,
-      "criterion_status": "not_implemented",
-      "existing_file_sha256": {},
+      "existing_definition": "task_duration_refactor.json",
+      "existing_adapter": "duration_refactor",
+      "criterion_status": "implemented_validated_offline",
+      "existing_file_sha256": {
+        "task_duration_refactor.json": "cff20c698af5d1ad8b80927393f4bd449f25478fe3928c304815d671d4df4e64",
+        "visible_trial.py": "a11949e7a91097373c2722033ed35e2b8fbf1f9d79f0df77342b41757de94758",
+        "acceptance/duration_refactor/checks.mjs": "b53efa86e913731759ac3d786ccc5ef875b2514099289fbbba7d35a0101855f6",
+        "acceptance/duration_refactor/golden.json": "df3d2bd21984958ca1bc604300df67a6aca41e0a66823f9ea8d9140afc96b3f6",
+        "acceptance/duration_refactor/source-review.md": "f0f5d549e94ad1aeee3e568ec27e3704d5885b4c27a8aa362d3586b953b7a6a7",
+        "acceptance/duration_refactor/test_acceptance.py": "96f290ded070f1c566080c1892c27e91c7e3a6a26d64444ce32d996dcff8a87c",
+        "visible_duration_refactor.mjs": "449b3cebb914bec88aac664dec64ea8f227b8470b41a0bad3c4b663446cace27"
+      },
       "contract": "TRIAL_PROTOCOL.md#acceptance-contracts-to-implement-and-freeze-before-any-model-run",
       "planned_recovery": null,
       "proposed_budget_plan": "one_turn",
@@ -352,10 +389,16 @@
       "source_git_blob_ids": {
         "client/src/lib/focusTags.ts": "14e2c93883a8b11733d8921d85e8125c8ebc4788"
       },
-      "existing_definition": null,
-      "existing_adapter": null,
-      "criterion_status": "not_implemented",
-      "existing_file_sha256": {},
+      "existing_definition": "task_tag_filter.json",
+      "existing_adapter": "tag_filter",
+      "criterion_status": "implemented_validated_offline",
+      "existing_file_sha256": {
+        "task_tag_filter.json": "5b4d86ef8b59eb2104bed53a26d091aa75f450f2400b41558509b34bebe822e6",
+        "visible_trial.py": "a11949e7a91097373c2722033ed35e2b8fbf1f9d79f0df77342b41757de94758",
+        "acceptance/tag_filter/checks.mjs": "9ddbc81dbf7ef4029283258c7d89cc36aa57c535bbe5a0f16602f39fdbb660f0",
+        "acceptance/tag_filter/test_acceptance.py": "419af666ea737d4a49b7f31017d54bdd811863ffcb07aea0009f1f546ee15f1a",
+        "visible_tag_filter.mjs": "60da84a7201b28c343c30df82c1ac542154987a5f4b1527bbf44287416dbd7c6"
+      },
       "contract": "TRIAL_PROTOCOL.md#acceptance-contracts-to-implement-and-freeze-before-any-model-run",
       "planned_recovery": null,
       "proposed_budget_plan": "one_turn",
@@ -384,10 +427,16 @@
       "source_git_blob_ids": {
         "client/src/lib/sessionWrapUp.ts": "c1622a882ee2f7f41f070e0f57ebceb2b86e3339"
       },
-      "existing_definition": null,
-      "existing_adapter": null,
-      "criterion_status": "not_implemented",
-      "existing_file_sha256": {},
+      "existing_definition": "task_wrapup_intentions.json",
+      "existing_adapter": "wrapup_intentions",
+      "criterion_status": "implemented_validated_offline",
+      "existing_file_sha256": {
+        "task_wrapup_intentions.json": "2280d10201f589e540329c4d241611f9096dfa911341321b7208ce3776ec9a0c",
+        "visible_trial.py": "a11949e7a91097373c2722033ed35e2b8fbf1f9d79f0df77342b41757de94758",
+        "acceptance/wrapup_intentions/checks.mjs": "ebb5d0eb876b1ea8f9f45c2f0d78c23c6d12958cb2a6ccf5321270069be796db",
+        "acceptance/wrapup_intentions/test_acceptance.py": "bd5a5ec5177fd134be9459c40fdb5f70d6762a52b8ce6a1962082043300744e4",
+        "visible_wrapup_intentions.mjs": "fbceebfec6f930ff85e6a5bf2d25f3363b95aef499de495730233237bbefbd89"
+      },
       "contract": "TRIAL_PROTOCOL.md#acceptance-contracts-to-implement-and-freeze-before-any-model-run",
       "planned_recovery": null,
       "proposed_budget_plan": "one_turn",

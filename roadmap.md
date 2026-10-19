@@ -8,16 +8,19 @@ The [2026-10-18 release-readiness audit](RELEASE_READINESS.md) maps shipped beha
 to evidence and defines a finite set of release gates. Current decision: controlled
 source-checkout trial preparation can proceed; the personal-use release targets
 are not met. Freeze new feature batches unless a reproduced trial blocker requires
-a focused fix. The next step is agreement on ten bounded tasks and budgets, not
-completion of every deferred feature. The existing release/held-out criteria below
+a focused fix. The next step is a deterministic client preflight and execution freeze for the
+approved ten-task trial, not completion of every deferred feature. The existing release/held-out criteria below
 remain unchanged; the audit does not complete Milestones 2–6 or authorize live runs.
 A packaged panel release also needs the reproduced missing-wheel-assets fix.
 
-The [draft ten-task protocol](evals/projects/duodoro/TRIAL_PROTOCOL.md) is now the
-concrete G1 preparation artifact. Five minutes of dispatch allowance per task was
-selected by Jorge; task/settings agreement and seven missing acceptance adapters
-remain open. The ledger is unrun. No trial inference or release criterion is
-completed by publishing that proposal.
+The [ten-task protocol](evals/projects/duodoro/TRIAL_PROTOCOL.md) records Jorge's
+approval of the proposed tasks and limits. All ten acceptance sets are prepared
+and pass offline initial-fail/reference-pass validation; seven new sets include
+adversarial coverage. The ledger records preparation asset hashes but remains
+unrun. Real-client preflight, the final execution manifest and G0 at the frozen
+revision remain pending before inference. T08 additionally requires independent
+source review of the final patch; automated behavior checks alone are insufficient.
+No trial outcome or release criterion is completed by this preparation.
 
 ## Direction
 

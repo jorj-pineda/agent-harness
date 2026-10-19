@@ -1,0 +1,504 @@
+{
+  "worlds": [
+    "forest",
+    "space",
+    "beach",
+    "city",
+    "mountain",
+    "library",
+    "cafe",
+    "grocery"
+  ],
+  "cycles": [
+    {
+      "cycle": -5,
+      "order": [
+        "forest",
+        "space",
+        "library",
+        "mountain",
+        "cafe",
+        "beach",
+        "city",
+        "grocery"
+      ]
+    },
+    {
+      "cycle": -1,
+      "order": [
+        "beach",
+        "cafe",
+        "library",
+        "grocery",
+        "space",
+        "forest",
+        "mountain",
+        "city"
+      ]
+    },
+    {
+      "cycle": 0,
+      "order": [
+        "library",
+        "grocery",
+        "mountain",
+        "space",
+        "cafe",
+        "beach",
+        "forest",
+        "city"
+      ]
+    },
+    {
+      "cycle": 1,
+      "order": [
+        "cafe",
+        "grocery",
+        "beach",
+        "forest",
+        "mountain",
+        "city",
+        "space",
+        "library"
+      ]
+    },
+    {
+      "cycle": 2,
+      "order": [
+        "grocery",
+        "city",
+        "cafe",
+        "forest",
+        "mountain",
+        "library",
+        "beach",
+        "space"
+      ]
+    },
+    {
+      "cycle": 57,
+      "order": [
+        "library",
+        "forest",
+        "space",
+        "mountain",
+        "cafe",
+        "grocery",
+        "city",
+        "beach"
+      ]
+    }
+  ],
+  "moments": [
+    {
+      "now": -1000000000000,
+      "slot": -277779,
+      "world": "library",
+      "next": -999999000000,
+      "remaining": 1000000,
+      "preview": [
+        {
+          "world": "city",
+          "startsAt": -999999000000
+        },
+        {
+          "world": "beach",
+          "startsAt": -999995400000
+        },
+        {
+          "world": "space",
+          "startsAt": -999991800000
+        },
+        {
+          "world": "library",
+          "startsAt": -999988200000
+        },
+        {
+          "world": "cafe",
+          "startsAt": -999984600000
+        },
+        {
+          "world": "forest",
+          "startsAt": -999981000000
+        },
+        {
+          "world": "mountain",
+          "startsAt": -999977400000
+        },
+        {
+          "world": "beach",
+          "startsAt": -999973800000
+        }
+      ]
+    },
+    {
+      "now": -28800001,
+      "slot": -9,
+      "world": "mountain",
+      "next": -27000000,
+      "remaining": 1800001,
+      "preview": [
+        {
+          "world": "beach",
+          "startsAt": -27000000
+        },
+        {
+          "world": "cafe",
+          "startsAt": -23400000
+        },
+        {
+          "world": "library",
+          "startsAt": -19800000
+        },
+        {
+          "world": "grocery",
+          "startsAt": -16200000
+        },
+        {
+          "world": "space",
+          "startsAt": -12600000
+        },
+        {
+          "world": "forest",
+          "startsAt": -9000000
+        },
+        {
+          "world": "mountain",
+          "startsAt": -5400000
+        },
+        {
+          "world": "city",
+          "startsAt": -1800000
+        }
+      ]
+    },
+    {
+      "now": -1800001,
+      "slot": -2,
+      "world": "mountain",
+      "next": -1800000,
+      "remaining": 1,
+      "preview": [
+        {
+          "world": "city",
+          "startsAt": -1800000
+        },
+        {
+          "world": "library",
+          "startsAt": 1800000
+        },
+        {
+          "world": "grocery",
+          "startsAt": 5400000
+        },
+        {
+          "world": "mountain",
+          "startsAt": 9000000
+        },
+        {
+          "world": "space",
+          "startsAt": 12600000
+        },
+        {
+          "world": "cafe",
+          "startsAt": 16200000
+        },
+        {
+          "world": "beach",
+          "startsAt": 19800000
+        },
+        {
+          "world": "forest",
+          "startsAt": 23400000
+        }
+      ]
+    },
+    {
+      "now": -1,
+      "slot": -1,
+      "world": "city",
+      "next": 1800000,
+      "remaining": 1800001,
+      "preview": [
+        {
+          "world": "library",
+          "startsAt": 1800000
+        },
+        {
+          "world": "grocery",
+          "startsAt": 5400000
+        },
+        {
+          "world": "mountain",
+          "startsAt": 9000000
+        },
+        {
+          "world": "space",
+          "startsAt": 12600000
+        },
+        {
+          "world": "cafe",
+          "startsAt": 16200000
+        },
+        {
+          "world": "beach",
+          "startsAt": 19800000
+        },
+        {
+          "world": "forest",
+          "startsAt": 23400000
+        },
+        {
+          "world": "city",
+          "startsAt": 27000000
+        }
+      ]
+    },
+    {
+      "now": 0,
+      "slot": -1,
+      "world": "city",
+      "next": 1800000,
+      "remaining": 1800000,
+      "preview": [
+        {
+          "world": "library",
+          "startsAt": 1800000
+        },
+        {
+          "world": "grocery",
+          "startsAt": 5400000
+        },
+        {
+          "world": "mountain",
+          "startsAt": 9000000
+        },
+        {
+          "world": "space",
+          "startsAt": 12600000
+        },
+        {
+          "world": "cafe",
+          "startsAt": 16200000
+        },
+        {
+          "world": "beach",
+          "startsAt": 19800000
+        },
+        {
+          "world": "forest",
+          "startsAt": 23400000
+        },
+        {
+          "world": "city",
+          "startsAt": 27000000
+        }
+      ]
+    },
+    {
+      "now": 1799999,
+      "slot": -1,
+      "world": "city",
+      "next": 1800000,
+      "remaining": 1,
+      "preview": [
+        {
+          "world": "library",
+          "startsAt": 1800000
+        },
+        {
+          "world": "grocery",
+          "startsAt": 5400000
+        },
+        {
+          "world": "mountain",
+          "startsAt": 9000000
+        },
+        {
+          "world": "space",
+          "startsAt": 12600000
+        },
+        {
+          "world": "cafe",
+          "startsAt": 16200000
+        },
+        {
+          "world": "beach",
+          "startsAt": 19800000
+        },
+        {
+          "world": "forest",
+          "startsAt": 23400000
+        },
+        {
+          "world": "city",
+          "startsAt": 27000000
+        }
+      ]
+    },
+    {
+      "now": 1800000,
+      "slot": 0,
+      "world": "library",
+      "next": 5400000,
+      "remaining": 3600000,
+      "preview": [
+        {
+          "world": "grocery",
+          "startsAt": 5400000
+        },
+        {
+          "world": "mountain",
+          "startsAt": 9000000
+        },
+        {
+          "world": "space",
+          "startsAt": 12600000
+        },
+        {
+          "world": "cafe",
+          "startsAt": 16200000
+        },
+        {
+          "world": "beach",
+          "startsAt": 19800000
+        },
+        {
+          "world": "forest",
+          "startsAt": 23400000
+        },
+        {
+          "world": "city",
+          "startsAt": 27000000
+        },
+        {
+          "world": "cafe",
+          "startsAt": 30600000
+        }
+      ]
+    },
+    {
+      "now": 1800001,
+      "slot": 0,
+      "world": "library",
+      "next": 5400000,
+      "remaining": 3599999,
+      "preview": [
+        {
+          "world": "grocery",
+          "startsAt": 5400000
+        },
+        {
+          "world": "mountain",
+          "startsAt": 9000000
+        },
+        {
+          "world": "space",
+          "startsAt": 12600000
+        },
+        {
+          "world": "cafe",
+          "startsAt": 16200000
+        },
+        {
+          "world": "beach",
+          "startsAt": 19800000
+        },
+        {
+          "world": "forest",
+          "startsAt": 23400000
+        },
+        {
+          "world": "city",
+          "startsAt": 27000000
+        },
+        {
+          "world": "cafe",
+          "startsAt": 30600000
+        }
+      ]
+    },
+    {
+      "now": 1700000000000,
+      "slot": 472221,
+      "world": "space",
+      "next": 1700001000000,
+      "remaining": 1000000,
+      "preview": [
+        {
+          "world": "beach",
+          "startsAt": 1700001000000
+        },
+        {
+          "world": "cafe",
+          "startsAt": 1700004600000
+        },
+        {
+          "world": "city",
+          "startsAt": 1700008200000
+        },
+        {
+          "world": "library",
+          "startsAt": 1700011800000
+        },
+        {
+          "world": "mountain",
+          "startsAt": 1700015400000
+        },
+        {
+          "world": "space",
+          "startsAt": 1700019000000
+        },
+        {
+          "world": "cafe",
+          "startsAt": 1700022600000
+        },
+        {
+          "world": "grocery",
+          "startsAt": 1700026200000
+        }
+      ]
+    },
+    {
+      "now": 1700003600000,
+      "slot": 472222,
+      "world": "beach",
+      "next": 1700004600000,
+      "remaining": 1000000,
+      "preview": [
+        {
+          "world": "cafe",
+          "startsAt": 1700004600000
+        },
+        {
+          "world": "city",
+          "startsAt": 1700008200000
+        },
+        {
+          "world": "library",
+          "startsAt": 1700011800000
+        },
+        {
+          "world": "mountain",
+          "startsAt": 1700015400000
+        },
+        {
+          "world": "space",
+          "startsAt": 1700019000000
+        },
+        {
+          "world": "cafe",
+          "startsAt": 1700022600000
+        },
+        {
+          "world": "grocery",
+          "startsAt": 1700026200000
+        },
+        {
+          "world": "beach",
+          "startsAt": 1700029800000
+        }
+      ]
+    }
+  ]
+}

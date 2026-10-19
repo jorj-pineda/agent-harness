@@ -1,0 +1,54 @@
+import assert from 'node:assert/strict';
+const m = await import('./client/src/lib/shareInvite.ts');
+const token='a'.repeat(43), key=m.PENDING_SHARE_INVITE_KEY;
+assert.equal(key,'duodoro:pending-share-invite');
+for(const value of [token,'A'.repeat(42)+'_','-'.repeat(43)]) assert.equal(m.isShareInviteToken(value),true);
+for(const value of ['', 'a'.repeat(42), 'a'.repeat(44),'a'.repeat(42)+'/',null,0,{},true]) {
+  assert.equal(m.isShareInviteToken(value),false);
+  assert.equal(m.shareInviteUrl(value,'https://example.test'),null);
+}
+assert.equal(m.shareInviteUrl(token,'https://example.test'),'https://example.test/join/'+token);
+delete globalThis.window;
+assert.equal(m.storePendingShareInvite(token),false);
+assert.equal(m.readPendingShareInvite(),null);
+m.clearPendingShareInvite();
+globalThis.window={};
+for(const broken of ['getItem','setItem','removeItem']) {
+  let value=broken==='removeItem'?'bad':token;
+  globalThis.sessionStorage={getItem(){if(broken==='getItem')throw Error('blocked');
+      return value;
+    },setItem(k,v){if(broken==='setItem')throw Error('blocked');
+      value=v;
+    },removeItem(){if(broken==='removeItem')throw Error('blocked');
+      value=null;
+    }};
+  if(broken==='setItem')assert.equal(m.storePendingShareInvite(token),false);
+  if(broken==='getItem'||broken==='removeItem')assert.equal(m.readPendingShareInvite(),null);
+  assert.doesNotThrow(()=>m.clearPendingShareInvite());
+}
+Object.defineProperty(globalThis,'sessionStorage',{configurable:true,get(){throw Error('blocked accessor');
+  }});
+assert.equal(m.storePendingShareInvite(token),false);
+assert.equal(m.readPendingShareInvite(),null);
+m.clearPendingShareInvite();
+delete globalThis.sessionStorage;
+let value=null;
+let writes=0;
+globalThis.sessionStorage={getItem(k){assert.equal(k,key);
+    return value;
+  },setItem(k,v){assert.equal(k,key);
+    writes++;
+    value=v;
+  },removeItem(k){assert.equal(k,key);
+    value=null;
+  }};
+assert.equal(m.storePendingShareInvite('bad'),false);
+assert.equal(writes,0);
+assert.equal(m.storePendingShareInvite(token),true);
+assert.equal(m.readPendingShareInvite(),token);
+value='bad';
+assert.equal(m.readPendingShareInvite(),null);
+assert.equal(value,null);
+m.storePendingShareInvite(token);
+m.clearPendingShareInvite();
+assert.equal(value,null);

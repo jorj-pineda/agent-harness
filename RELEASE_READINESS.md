@@ -128,12 +128,14 @@ case. Do not erase the full-roadmap criterion by narrowing the trial.
 
 ## Trial preparation follow-up
 
-The [draft ten-task Duodoro protocol](evals/projects/duodoro/TRIAL_PROTOCOL.md)
-provides concrete client/task/recovery assignments and an unrun ledger. Jorge
-selected a 300-second per-task dispatch allowance after this audit. The task set,
-token/profile limits and two-phase recovery allocation still need agreement;
-seven candidate adapters/criteria remain unimplemented. G1–G5 remain open. This
-follow-up does not change the audited source/results above or authorize inference.
+The [ten-task Duodoro protocol](evals/projects/duodoro/TRIAL_PROTOCOL.md) records
+Jorge's approval of the tasks, 300-second dispatch allowance, token/profile limits
+and reserved recovery phases. All ten acceptance sets now validate offline;
+seven new adapters include independent external criteria and reference patches.
+T08 also requires independent review of the final refactor's actual reuse.
+The ledger remains unrun. Deterministic client preflight and the final execution
+freeze remain pending; G1–G5 remain open. This follow-up does not change the
+point-in-time audit evidence above or authorize inference.
 
 ## Concrete audit findings and scope decisions
 
