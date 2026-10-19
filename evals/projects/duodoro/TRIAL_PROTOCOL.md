@@ -1,15 +1,13 @@
 # Ten-task Duodoro client trial: approved preparation
 
-**Approved for offline preparation, not yet runnable.** Jorge approved the proposed
-ten tasks and limits, including the five-minute dispatch allowance and reserved
-recovery phases. All ten acceptance sets now pass baseline-fail/reference-pass
-validation; the seven new sets also have adversarial regression coverage. The
-task/settings agreement component of G1 is complete. The remaining G1 freeze
-review is pending, as distinguished from the historical audit table in
-[the readiness follow-up](../../../RELEASE_READINESS.md#trial-preparation-follow-up).
-The [deterministic client preflight](CLIENT_PREFLIGHT.md) passed the exercised
-paths. The [execution freeze](EXECUTION_FREEZE.md) pins runtime `cd98917` and G0
-there; its manifest needs review before trial dispatch. G2–G5 remain open.
+**Executed after agreement and freeze review.** Jorge approved these ten tasks,
+the five-minute dispatch allowance and reserved recovery limits. All acceptance
+sets validated offline; the [preflight](CLIENT_PREFLIGHT.md) and
+[execution freeze](EXECUTION_FREEZE.md) preceded authorized inference at runtime
+`cd98917`. PR #148 completed freeze review. The [results](TRIAL_RESULTS.md) retain
+all ten outcomes: 2/10 accepted artifacts and 1/10 completed-and-accepted. G2 stays
+open, G3's target was missed, and G4/G5 remain unmet. The contract below records
+the unchanged approved protocol; it is not authorization for another cohort.
 
 The [ledger template](trial-ledger.json) contains ten unrun rows, source blob IDs,
 client assignments and null results. It is documentation/data, not a new runner
@@ -192,7 +190,7 @@ operator actions must be recorded even when they are not manual patch repair.
   workflow criterion. Record the blocker and stop that workflow; fix it in a
   separate regression-backed PR rather than improvising a hidden operator path.
 
-## Before execution: unresolved gates and ledger use
+## Preparation gates and ledger use (historical execution requirements)
 
 1. Task/settings/recovery agreement is recorded in the unrun ledger. It authorizes
    preparation; execution remains gated below.

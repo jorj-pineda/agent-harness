@@ -89,7 +89,17 @@ held-out evaluation or repeated comparisons on multiple lower-tier models. Offli
 baseline/reference validation is criterion validation, not model-quality evidence.
 
 
-## Approved client-trial preparation (not started)
+## Completed frozen client trial
+
+The [2026-10-19 results](TRIAL_RESULTS.md) retain the full real-client local Gemma
+cohort: **2/10 accepted artifacts, 1/10 completed-and-accepted**, below the 8/10
+target. G1 review completed before inference; G2 remains open (real reversal was
+not demonstrated), G3 was missed and G4/G5 remain unmet. No Duodoro working-tree
+edits or paid calls occurred. The configuration is a no-go for the frozen
+unattended task envelope. This is a public development cohort, not held-out or
+comparative quality evidence.
+
+### Preparation record
 
 The [ten-task protocol](TRIAL_PROTOCOL.md) and [unrun ledger template](trial-ledger.json)
 record Jorge's approval of five CLI and five panel tasks, local Gemma, the
@@ -109,7 +119,7 @@ automated passing behavioral grade alone is insufficient for full acceptance.
 The [deterministic client preflight](CLIENT_PREFLIGHT.md) passed representative
 CLI/panel workflows without inference. The [execution freeze](EXECUTION_FREEZE.md)
 records fresh baselines, exact requests/settings/model metadata and G0 at runtime
-`cd98917`; its review remains required before inference. Earlier free-Go authorization is not a current pricing
+`cd98917`; review completed in PR #148 before authorized execution. Earlier free-Go authorization is not a current pricing
 claim or instruction to start hosted calls. No model ran during this preparation;
 these public development tasks are not held out and establish no quality gain.
 

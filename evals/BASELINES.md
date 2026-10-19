@@ -1917,3 +1917,32 @@ tests deselected), plus Ruff, all 240 Python files formatted and mypy. Both scri
 matrices passed 90/90 escalation decisions; contract labels and metric limits were
 inspected. The existing Chroma deprecation warning remains. These gates validate
 mechanics/packaging, separately from the six live observations above.
+
+
+## 2026-10-19 — frozen ten-task Duodoro client cohort
+
+[Full report](projects/duodoro/TRIAL_RESULTS.md) and
+[machine-readable observations](results/2026-10-19-duodoro-client-trial.json).
+Real local Gemma `gemma4:12b` / Ollama 0.33.2, runtime
+`cd9891718193ae4d9bb56056ae8aea8e57a9ef4c`, frozen Duodoro source/criteria and
+five CLI/five panel initial submissions. Ten tasks plus T03's one reserved fork
+produced **2/10 accepted artifacts, 1/10 completed-and-accepted**. The 8/10 target
+was missed: five final budget stops, four failed runs without normal response
+evidence, one completed/passed run. T02 passed external acceptance despite its
+budget stop; T10 completed and passed both checks. Failed runs' missing usage is
+unknown, not zero. Six known phase reports total 274,169 prompt / 6,206 output
+tokens; five phases are unknown, so these are not full-cohort totals.
+
+Cancel/restart/fork controls ran before any partial edit; T05's planned reversal
+was rejected and is not a demonstrated recovery success. No patch repair,
+replacement tasks, hidden retries or new model hints occurred. Final artifact
+rechecks reproduced all ten grades; scope/hash/settings audits passed. Raw local
+evidence and cleanup are documented in the report. The temporary API stopped,
+Gemma was unloaded, and the existing Ollama service remained running. Duodoro's
+working checkout was untouched; no paid calls or Docker actions occurred.
+
+This single public development cohort is not a same-model baseline comparison,
+held-out evaluation or evidence of quality improvement. G2 remains open, G3 was
+missed, and G4/G5 remain unmet. This docs/data report did not rerun G0: the frozen
+runtime's 1,291 offline tests/static checks/two scripted 90/90 matrices remain
+historical mechanics evidence, separate from these live results.

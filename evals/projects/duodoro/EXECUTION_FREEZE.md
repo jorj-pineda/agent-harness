@@ -6,7 +6,13 @@ document are a review copy added afterward; **do not substitute their later merg
 commit or latest main as the execution runtime**. This PR changes documentation
 and data only. No trial submission or inference occurred during freezing.
 
-G1 task/settings agreement is complete; its remaining freeze review is pending.
+Execution follow-up: PR #148 completed review before the authorized cohort.
+The [results](TRIAL_RESULTS.md) record 2/10 accepted artifacts and 1/10
+completed-and-accepted; G2 remains open, G3 was missed and G4/G5 remain unmet.
+The manifest bytes/runtime pin below are unchanged. The remainder records the
+preparation and review requirements at freeze time.
+
+At freeze preparation, G1 task/settings agreement was complete; review was pending.
 The manifest requires a completed review/merged PR record before dispatch. Its
 presence alone is not approval. The review checksum (SHA-256) is
 `26f9971e635d204599a38968b10427bef967178890a1c041d26eb3cfc7bfb62d`.
