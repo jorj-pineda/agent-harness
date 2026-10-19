@@ -89,13 +89,29 @@ held-out evaluation or repeated comparisons on multiple lower-tier models. Offli
 baseline/reference validation is criterion validation, not model-quality evidence.
 
 
-## Proposed client trial (not started)
+## Approved client-trial preparation (not started)
 
 The [ten-task protocol](TRIAL_PROTOCOL.md) and [unrun ledger template](trial-ledger.json)
-propose five CLI and five panel tasks on the same pinned source. Jorge selected a
-five-minute per-task dispatch allowance; the task set, other settings and recovery
-allocation remain unapproved. This trial proposes local Gemma only. Earlier free-Go
-comparison authorization above is not a current pricing claim or instruction to
-start hosted calls. Seven new candidates still lack implemented/validated criteria;
-only the three existing adapters were revalidated offline during preparation.
-Do not treat this proposal or its null-result ledger as a runnable or completed trial.
+record Jorge's approval of five CLI and five panel tasks, local Gemma, the
+five-minute dispatch allowance and the proposed token/recovery limits. All ten
+adapters validate initial failure and reference success offline. The seven new
+factory task names are `share_storage`, `timer_prefs`, `shortcut_count`,
+`rotation_preview`, `duration_refactor`, `tag_filter` and `wrapup_intentions`.
+Original three task definitions and acceptance criteria remain unchanged.
+
+Checks use native Node 24 (preparation validated on 24.22.0) for library behavior;
+they do not establish full-app, Vitest or TypeScript typecheck coverage. Portable
+pinned source snapshots support offline CI without the user's Duodoro checkout.
+External criteria reject selected incorrect patches that pass visible smoke tests.
+T08 additionally needs independent source review using its external rubric: an
+automated passing behavioral grade alone is insufficient for full acceptance.
+
+Deterministic real-client preflight and a reviewed final execution freeze remain
+pending before inference. Earlier free-Go authorization is not a current pricing
+claim or instruction to start hosted calls. No model ran during this preparation;
+these public development tasks are not held out and establish no quality gain.
+
+Preparation validation: 41 focused tests and 1,291 offline tests passed (five live
+tests deselected); Ruff, formatting and mypy passed. Both scripted matrices passed
+90/90 escalation decisions at unique temporary report paths; their reports retain
+scripted-contract labels and metric limits. No inference or model comparison ran.
