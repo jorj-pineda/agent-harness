@@ -28,6 +28,19 @@ failed executable acceptance without a refactor; source review was not performed
 or counted as passing. This cohort does not complete Milestones 2–6 or establish
 a model-quality improvement.
 
+**2026-10-19 — Recorded exact-edit mismatch diagnosis:** offline replay reproduced
+nine dispatched failures across T01/T04/T09. Specific feedback now covers mixed
+real/escaped newlines and escaped double quotes when a diagnostic candidate is
+unique, without rewriting arguments or applying an approximate edit. Literal
+escapes, stale hashes and unique-match/content/mode guards retain their semantics.
+See the [diagnosis](evals/projects/duodoro/EDIT_MISMATCH_DIAGNOSIS.md). This fixes
+feedback coverage, not measured task completion; the original trial outcomes and
+release gates remain unchanged. Provider-error reporting and a controlled
+same-model follow-up remain separate work. No inference or Duodoro edits ran.
+Validation: nine recorded-call replays preserved files/arguments; 90 focused and
+1,304 offline tests passed (five live deselected in the full gate), plus Ruff,
+formatting and mypy. Both scripted matrices passed 90/90 with labels/limits inspected.
+
 ## Direction
 
 Build a coding harness Jorge can use on real repositories with affordable hosted models and locally runnable models that struggle with coding-agent workflows. The harness should help those models inspect the right code, make focused edits, recover from errors, and verify their work within an explicit budget.

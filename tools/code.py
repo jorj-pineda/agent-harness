@@ -626,9 +626,9 @@ def _replace_mismatch_error(text: str, old_text: str, count: int) -> str:
         if candidate != old_text and text.count(candidate) == 1:
             return (
                 "Expected exactly one old_text match; found 0. old_text contains "
-                f"{supplied} where the file has {expected}. Resend old_text "
-                f"and new_text with real {expected}, copied exactly from read_file content, "
-                "without an extra layer of JSON escaping. No edit was applied; "
+                f"{supplied} where the file has {expected}. Copy old_text exactly from "
+                f"read_file content, using real {expected} at those positions. "
+                "Check new_text for the same extra layer of JSON escaping. No edit was applied; "
                 "arguments were not rewritten."
             )
     return (
