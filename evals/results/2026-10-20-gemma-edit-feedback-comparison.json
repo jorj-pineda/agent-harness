@@ -2,7 +2,7 @@
   "schema_version": 1,
   "evidence_kind": "real-client-real-tools-paired-development-comparison",
   "status": "in_progress",
-  "reported_at_utc": "2026-10-20T03:58:20.028371+00:00",
+  "reported_at_utc": "2026-10-20T04:05:30.995142+00:00",
   "freeze_pr": "https://github.com/jorj-pineda/agent-harness/pull/152",
   "freeze_sha256": "208d8241cf9d2a20859aedd15e792f273d928b22fa54ab2261a43c784d5f13a8",
   "runtime_base": "5974d2201cb12829de2b593b602c649515e98b0d",
@@ -13,7 +13,7 @@
   },
   "scheduled_attempts": 12,
   "scheduled_per_arm": 6,
-  "graded_attempts": 6,
+  "graded_attempts": 8,
   "local_evidence_directory": "/Users/jorge/.local/share/agent-harness/trials/duodoro-edit-feedback-sgpr8sdv",
   "tasks": [
     {
@@ -62,6 +62,11 @@
       ],
       "successful_exact_edits": 0,
       "cli_response_timeout": true,
+      "model_response_records": 7,
+      "run_lifecycle_seconds": 202.006532,
+      "reported_token_limits_met": true,
+      "within_budget": true,
+      "budget_assessment_scope": "Sufficient observed upper bounds: complete reported usage, full run journal interval <=300s, response and tool-record counts within configured caps. Unknown/missing evidence is not a compliance claim; no hard return or backend-token attestation.",
       "saved_system_prompt_sha256": "efebf17637339b3559e6bac4c2d6b43da975ed783b69b0fe5942cb464b3a334f",
       "system_prompt_without_workspace_sha256": "2d10dd30b6d1e900f510d55f0b79c7da105a748fc680cecb0bed77cc139e5105"
     },
@@ -108,6 +113,11 @@
       ],
       "successful_exact_edits": 1,
       "cli_response_timeout": true,
+      "model_response_records": 7,
+      "run_lifecycle_seconds": 230.046502,
+      "reported_token_limits_met": true,
+      "within_budget": true,
+      "budget_assessment_scope": "Sufficient observed upper bounds: complete reported usage, full run journal interval <=300s, response and tool-record counts within configured caps. Unknown/missing evidence is not a compliance claim; no hard return or backend-token attestation.",
       "saved_system_prompt_sha256": "0eec51dec9d3ede6148d233db55c0d9cb4fe8825158e8c6c6de8617f4046b585",
       "system_prompt_without_workspace_sha256": "2d10dd30b6d1e900f510d55f0b79c7da105a748fc680cecb0bed77cc139e5105"
     },
@@ -154,6 +164,11 @@
       ],
       "successful_exact_edits": 3,
       "cli_response_timeout": null,
+      "model_response_records": 10,
+      "run_lifecycle_seconds": 203.78253,
+      "reported_token_limits_met": true,
+      "within_budget": true,
+      "budget_assessment_scope": "Sufficient observed upper bounds: complete reported usage, full run journal interval <=300s, response and tool-record counts within configured caps. Unknown/missing evidence is not a compliance claim; no hard return or backend-token attestation.",
       "saved_system_prompt_sha256": "85d2f7ec22938447b16acdea0c7b040c418b20a92afb3a5ac4b7f70e9ef26428",
       "system_prompt_without_workspace_sha256": "2d10dd30b6d1e900f510d55f0b79c7da105a748fc680cecb0bed77cc139e5105"
     },
@@ -214,6 +229,11 @@
       ],
       "successful_exact_edits": 0,
       "cli_response_timeout": null,
+      "model_response_records": 11,
+      "run_lifecycle_seconds": 201.89984,
+      "reported_token_limits_met": true,
+      "within_budget": true,
+      "budget_assessment_scope": "Sufficient observed upper bounds: complete reported usage, full run journal interval <=300s, response and tool-record counts within configured caps. Unknown/missing evidence is not a compliance claim; no hard return or backend-token attestation.",
       "saved_system_prompt_sha256": "443b8f767881f9bdbff6b8f5a62459ca6c7881fca023018ecdf9bbb0638b90e5",
       "system_prompt_without_workspace_sha256": "2d10dd30b6d1e900f510d55f0b79c7da105a748fc680cecb0bed77cc139e5105"
     },
@@ -269,6 +289,11 @@
       ],
       "successful_exact_edits": 0,
       "cli_response_timeout": true,
+      "model_response_records": 10,
+      "run_lifecycle_seconds": 204.660085,
+      "reported_token_limits_met": true,
+      "within_budget": true,
+      "budget_assessment_scope": "Sufficient observed upper bounds: complete reported usage, full run journal interval <=300s, response and tool-record counts within configured caps. Unknown/missing evidence is not a compliance claim; no hard return or backend-token attestation.",
       "saved_system_prompt_sha256": "60932f1a63e2b44eae73e53f83b71b186d0793659680a19d24b476b97e50fe8b",
       "system_prompt_without_workspace_sha256": "2d10dd30b6d1e900f510d55f0b79c7da105a748fc680cecb0bed77cc139e5105"
     },
@@ -315,6 +340,11 @@
       ],
       "successful_exact_edits": 1,
       "cli_response_timeout": true,
+      "model_response_records": 8,
+      "run_lifecycle_seconds": 149.013379,
+      "reported_token_limits_met": true,
+      "within_budget": true,
+      "budget_assessment_scope": "Sufficient observed upper bounds: complete reported usage, full run journal interval <=300s, response and tool-record counts within configured caps. Unknown/missing evidence is not a compliance claim; no hard return or backend-token attestation.",
       "saved_system_prompt_sha256": "b5787fb7a547571618d4a47c4c52090710729a0fc40c53ed2251da2e4d7e0503",
       "system_prompt_without_workspace_sha256": "2d10dd30b6d1e900f510d55f0b79c7da105a748fc680cecb0bed77cc139e5105"
     },
@@ -325,17 +355,49 @@
       "repeat": 2,
       "runtime_revision": "5974d2201cb12829de2b593b602c649515e98b0d",
       "client": "CLI",
-      "execution_status": "submitted",
-      "artifact_acceptance": null,
-      "completed_and_accepted": null,
-      "completion_status": null,
-      "verification_status": null,
-      "run_status": null,
-      "run_id": null,
-      "token_usage": null,
+      "execution_status": "observed",
+      "artifact_acceptance": true,
+      "completed_and_accepted": false,
+      "completion_status": "budget_exhausted",
+      "verification_status": "not_run",
+      "run_status": "finished",
+      "run_id": "291721bb6a8043aa860b052681f2e632",
+      "token_usage": {
+        "prompt_tokens": 51679,
+        "completion_tokens": 1264
+      },
       "provider_failure": null,
-      "changed_paths": null,
-      "criteria_unchanged": null
+      "changed_paths": [
+        "client/src/lib/format.ts"
+      ],
+      "criteria_unchanged": true,
+      "unrelated_changes": [],
+      "completion_reason": "Estimated next request of ~12762 prompt tokens does not fit the remaining total token budget (64000 per turn).",
+      "tool_errors": [
+        "replace_text: Expected exactly one old_text match; found 0. old_text contains backslash-n and backslash-escaped double quotes where the file has line breaks and double quotes. Copy old_text exactly from read_file content, using real line breaks and double quotes at those positions. Check new_text for the same extra layer of JSON escaping. No edit was applied; arguments were not rewritten."
+      ],
+      "loop_latency_ms": 207292.3521670103,
+      "created_at": "2026-10-20T03:58:12.058132Z",
+      "finished_at": "2026-10-20T04:01:39.551581Z",
+      "manual_patch_repair": false,
+      "run_sha256": "543bf2a08a9252120e9819246a6de972c577395a71145045ef856da86f8331ea",
+      "acceptance_sha256": "e6a044258bc7307ea59c43d0c3659d8305c1cb87cb9b7434a52defaed142ead0",
+      "tool_call_records": 7,
+      "exact_edit_errors": [
+        {
+          "old_text_sha256": "b12e1031dcf8be71e205298ef7844f49a85d6dda15453ba502e21e0bb4986357",
+          "error": "Expected exactly one old_text match; found 0. old_text contains backslash-n and backslash-escaped double quotes where the file has line breaks and double quotes. Copy old_text exactly from read_file content, using real line breaks and double quotes at those positions. Check new_text for the same extra layer of JSON escaping. No edit was applied; arguments were not rewritten."
+        }
+      ],
+      "successful_exact_edits": 1,
+      "cli_response_timeout": true,
+      "model_response_records": 7,
+      "run_lifecycle_seconds": 207.493449,
+      "reported_token_limits_met": true,
+      "within_budget": true,
+      "budget_assessment_scope": "Sufficient observed upper bounds: complete reported usage, full run journal interval <=300s, response and tool-record counts within configured caps. Unknown/missing evidence is not a compliance claim; no hard return or backend-token attestation.",
+      "saved_system_prompt_sha256": "77da25028b4ae4063ba06cc275633632edfacea84403eac48689d625ddc89320",
+      "system_prompt_without_workspace_sha256": "2d10dd30b6d1e900f510d55f0b79c7da105a748fc680cecb0bed77cc139e5105"
     },
     {
       "id": "08-T01-r2-control",
@@ -344,17 +406,42 @@
       "repeat": 2,
       "runtime_revision": "1c9249af2b5bcaad2e1628c130a9e879c934196f",
       "client": "CLI",
-      "execution_status": "not_started",
-      "artifact_acceptance": null,
-      "completed_and_accepted": null,
-      "completion_status": null,
-      "verification_status": null,
-      "run_status": null,
-      "run_id": null,
-      "token_usage": null,
+      "execution_status": "observed",
+      "artifact_acceptance": false,
+      "completed_and_accepted": false,
+      "completion_status": "blocked",
+      "verification_status": "not_run",
+      "run_status": "finished",
+      "run_id": "329745bef0b44a9d8d39aaee187965ca",
+      "token_usage": {
+        "prompt_tokens": 37715,
+        "completion_tokens": 188
+      },
       "provider_failure": null,
-      "changed_paths": null,
-      "criteria_unchanged": null
+      "changed_paths": [],
+      "criteria_unchanged": true,
+      "unrelated_changes": [],
+      "completion_reason": "Repeated unchanged call to 'grep_repo'.",
+      "tool_errors": [
+        "grep_repo: Tool not executed: Repeated unchanged call to 'grep_repo'."
+      ],
+      "loop_latency_ms": 86242.06895804405,
+      "created_at": "2026-10-20T04:02:16.824674Z",
+      "finished_at": "2026-10-20T04:03:43.249223Z",
+      "manual_patch_repair": false,
+      "run_sha256": "7cd48235bf016d59267e8558f55bd796ba26cfdad026461b9816c6a0700c3d87",
+      "acceptance_sha256": "9c53fc36cf78e4a30ff2f3f534b3bcb5487f5df84884afe81f75f75da2000a92",
+      "tool_call_records": 7,
+      "exact_edit_errors": [],
+      "successful_exact_edits": 0,
+      "cli_response_timeout": false,
+      "model_response_records": 7,
+      "run_lifecycle_seconds": 86.424549,
+      "reported_token_limits_met": true,
+      "within_budget": true,
+      "budget_assessment_scope": "Sufficient observed upper bounds: complete reported usage, full run journal interval <=300s, response and tool-record counts within configured caps. Unknown/missing evidence is not a compliance claim; no hard return or backend-token attestation.",
+      "saved_system_prompt_sha256": "65df922e2c993df02ad22bff8d7468c5bb8355494e55348d22c633578d5c64a0",
+      "system_prompt_without_workspace_sha256": "2d10dd30b6d1e900f510d55f0b79c7da105a748fc680cecb0bed77cc139e5105"
     },
     {
       "id": "09-T04-r2-control",
@@ -363,7 +450,7 @@
       "repeat": 2,
       "runtime_revision": "1c9249af2b5bcaad2e1628c130a9e879c934196f",
       "client": "panel",
-      "execution_status": "not_started",
+      "execution_status": "submitted",
       "artifact_acceptance": null,
       "completed_and_accepted": null,
       "completion_status": null,
@@ -436,27 +523,28 @@
   "arms": {
     "control": {
       "scheduled": 6,
-      "graded": 3,
+      "graded": 4,
       "artifact_accepted": 0,
       "completed_and_accepted": 0,
       "completion_status_counts": {
-        "budget_exhausted": 3
+        "budget_exhausted": 3,
+        "blocked": 1
       },
       "check_status_counts": {
-        "not_run": 3
+        "not_run": 4
       }
     },
     "treatment": {
       "scheduled": 6,
-      "graded": 3,
-      "artifact_accepted": 3,
+      "graded": 4,
+      "artifact_accepted": 4,
       "completed_and_accepted": 2,
       "completion_status_counts": {
-        "budget_exhausted": 1,
+        "budget_exhausted": 2,
         "completed": 2
       },
       "check_status_counts": {
-        "not_run": 1,
+        "not_run": 2,
         "passed": 2
       }
     }
@@ -486,8 +574,8 @@
     {
       "repeat": 2,
       "task": "T01",
-      "control_artifact_acceptance": null,
-      "treatment_artifact_acceptance": null,
+      "control_artifact_acceptance": false,
+      "treatment_artifact_acceptance": true,
       "tool_call_prefix_equal_through_first_mismatch": null
     },
     {
