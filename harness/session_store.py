@@ -17,6 +17,7 @@ from pydantic import BaseModel, Field
 
 from providers.base import ProviderFailure
 
+from .budget_evidence import MAX_SAVED_BUDGET_EVENTS, BudgetEvidence, BudgetObservation
 from .checkpoints import CapturedCheckpoint, CheckpointRecord, CheckpointSummary
 from .execution_profile import ExecutionProfile
 from .reverts import FileRevertInput, FileRevertOutcome, FileRevertRecord
@@ -426,6 +427,7 @@ class SessionStore:
         ):
             raise ValueError("Execution profile does not match run provider/model identity")
         record.execution_profile = profile
+        record.budget_evidence = BudgetEvidence()
         with self._conn:
             self._update_run(record)
             progress = ToolProgress(
@@ -440,6 +442,20 @@ class SessionStore:
             "SELECT record FROM tool_progress WHERE run_id = ?", (run_id,)
         ).fetchone()
         return ToolProgress.model_validate_json(row[0]) if row else ToolProgress(run_id=run_id)
+
+    def record_budget_observation(self, run_id: str, event: BudgetObservation) -> None:
+        """Commit before onward work; never append evidence to legacy/terminal runs."""
+        record = self.get_run(run_id)
+        if record is None or record.status != "running" or record.budget_evidence is None:
+            raise ValueError("Budget evidence requires an admitted running run")
+        evidence = record.budget_evidence
+        evidence.observed_events += 1
+        if len(evidence.events) < MAX_SAVED_BUDGET_EVENTS:
+            evidence.events.append(event)
+        else:
+            evidence.events_truncated = True
+        with self._conn:
+            self._update_run(record)
 
     def record_tool_event(self, run_id: str, event: SavedToolEvent) -> None:
         """Commit metadata before onward work; terminal/legacy runs cannot acquire history."""

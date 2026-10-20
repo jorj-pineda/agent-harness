@@ -82,6 +82,17 @@ def test_cancel_persists_partial_review_and_retires_session(
     assert response["escalated"] is True
     assert "+agent = 2\n" in response["workspace_changes"]["diffs"][0]["diff"]
     assert response["token_usage"]["completion_tokens"] is None  # Interrupted model usage unknown.
+    evidence = harness.client.get(f"/runs/{response['run_id']}", params={"user_id": "dev"}).json()[
+        "budget_evidence"
+    ]
+    assert [event["kind"] for event in evidence["events"]] == [
+        "request",
+        "response",
+        "request",
+        "request_failure",
+    ]
+    assert evidence["events"][1]["usage"] == {"prompt_tokens": 10, "completion_tokens": 5}
+    assert evidence["events"][-1]["usage"] is None
     saved = harness.client.get(f"/sessions/{sid}", params={"user_id": "dev"}).json()
     assert saved["responses"][0]["response"] == response
     assert saved["session"]["turns"][0]["finished_at"] is not None
@@ -91,6 +102,12 @@ def test_cancel_persists_partial_review_and_retires_session(
     # Separate application lifecycle reads the same cancellation envelope.
     with TestClient(make_app(tmp_path, ScriptedProvider())) as client:
         assert client.get(f"/sessions/{sid}", params={"user_id": "dev"}).json() == saved
+        assert (
+            client.get(f"/runs/{response['run_id']}", params={"user_id": "dev"}).json()[
+                "budget_evidence"
+            ]
+            == evidence
+        )
 
 
 def test_cancel_unknown_idle_and_archived(harness: Harness) -> None:

@@ -10,6 +10,7 @@ from pydantic import BaseModel, Field
 
 from providers.base import ProviderFailure
 
+from .budget_evidence import BudgetEvidence
 from .execution_profile import ExecutionProfile
 from .state import ContinuationSource, TurnResponse
 
@@ -52,6 +53,12 @@ class RunRecord(BaseModel):
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     finished_at: datetime | None = None
     response: TurnResponse | None = None
+    budget_evidence: BudgetEvidence | None = Field(
+        default=None,
+        description=(
+            "Bounded request/usage/token-stop metadata; null for legacy or unadmitted runs."
+        ),
+    )
     error: str | None = None
     provider_failure: ProviderFailure | None = Field(
         default=None,

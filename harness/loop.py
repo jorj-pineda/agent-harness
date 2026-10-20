@@ -23,6 +23,7 @@ import asyncio
 import json
 import logging
 import time
+from collections.abc import Callable
 from datetime import UTC, datetime
 from typing import Any
 
@@ -30,6 +31,7 @@ from providers.base import ChatMessage, ChatProvider, ProviderResponse, TokenUsa
 from tools import ToolError, ToolRegistry
 
 from .access import INSPECTION_BLOCK_REASON, INSPECTION_TOOL_NAMES, execution_registry
+from .budget_evidence import BudgetObservation, BudgetObservationKind
 from .cancellation import TurnCancellation, TurnCancelled
 from .context import BudgetStop, TokenBudget
 from .grounding import Grounder
@@ -106,6 +108,7 @@ async def run_turn(
     required_check: list[str] | None = None,
     on_event: EventCallback | None = None,
     trace: list[TurnTraceRecord] | None = None,
+    on_budget_observation: Callable[[BudgetObservation], None] | None = None,
     cancellation: TurnCancellation | None = None,
 ) -> TurnResponse:
     """Drive one user turn to completion via ReAct + tool dispatch.
@@ -163,6 +166,36 @@ async def run_turn(
     cancel_reason = "Cancellation requested; owned tool work has settled. Review partial work."
     wall_limit_reason = f"Turn wall-time budget of {max_turn_wall_seconds:g}s reached."
 
+    def observe_budget(
+        kind: BudgetObservationKind,
+        *,
+        usage: TokenUsage | None = None,
+        max_tokens: int | None = None,
+    ) -> None:
+        if on_budget_observation is None:
+            return
+        sized = kind in {"request", "pre_request_stop", "post_response_stop"}
+        footprint = prompt_footprint(session.messages, tool_specs, budget) if sized else None
+        on_budget_observation(
+            BudgetObservation(
+                kind=kind,
+                iteration=iteration,
+                message_count=len(session.messages),
+                estimated_prompt_tokens=footprint.estimated_prompt_tokens if footprint else None,
+                heuristic_prompt_tokens=footprint.heuristic_prompt_tokens if footprint else None,
+                anchor_adjustment_tokens=footprint.anchor_adjustment_tokens if footprint else None,
+                max_tokens=max_tokens,
+                identity=request_identity(session.messages, tool_specs, max_tokens)
+                if kind == "request"
+                else None,
+                usage=usage.model_copy(deep=True) if usage is not None else None,
+                prompt_tokens_used=budget.prompt_used if kind != "request_failure" else None,
+                completion_tokens_used=budget.completion_used
+                if kind != "request_failure"
+                else None,
+            )
+        )
+
     for iteration in range(max_iterations):
         if cancellation is not None and cancellation.requested:
             final_answer = "(turn cancelled before task completion)"
@@ -171,6 +204,7 @@ async def run_turn(
             break
         allowance = budget.request_allowance(session.messages, tool_specs)
         if isinstance(allowance, BudgetStop):
+            observe_budget("pre_request_stop")
             if trace is not None:
                 trace.append(
                     BudgetStopTrace(
@@ -198,6 +232,7 @@ async def run_turn(
             completion_reason = wall_limit_reason
             break
         sent_count = len(session.messages)
+        observe_budget("request", max_tokens=allowance)
         if trace is not None:
             trace.append(
                 RequestTrace(
@@ -229,6 +264,7 @@ async def run_turn(
                     else await request_model()
                 )
         except TurnCancelled:
+            observe_budget("request_failure")
             if trace is not None:
                 trace.append(
                     RequestFailureTrace(iteration=iteration, exception_type="TurnCancelled")
@@ -239,6 +275,7 @@ async def run_turn(
             completion_reason = cancel_reason
             break
         except TimeoutError:
+            observe_budget("request_failure")
             if not budget_timeout.expired():
                 if trace is not None:
                     trace.append(
@@ -255,6 +292,7 @@ async def run_turn(
             completion_reason = wall_limit_reason
             break
         except (Exception, asyncio.CancelledError) as exc:
+            observe_budget("request_failure")
             if trace is not None:
                 trace.append(
                     RequestFailureTrace(
@@ -276,6 +314,7 @@ async def run_turn(
                 )
             )
         budget.record(response.usage, sent_count)
+        observe_budget("response", usage=response.usage)
         if deadline is not None and asyncio.get_running_loop().time() >= deadline:
             final_answer = "(turn stopped before task completion)"
             completion_status = "budget_exhausted"
@@ -323,6 +362,8 @@ async def run_turn(
             break
 
         budget_stop = budget.after_response(wants_tools=bool(usable_calls))
+        if budget_stop is not None:
+            observe_budget("post_response_stop")
         if budget_stop is not None and trace is not None:
             trace.append(
                 BudgetStopTrace(

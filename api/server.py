@@ -44,6 +44,7 @@ from fastapi.responses import StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
 from harness.admission import turn_admission
+from harness.budget_evidence import BudgetObservation
 from harness.cancellation import TurnCancellation
 from harness.check_suggestions import CheckSuggestions, suggest_project_checks
 from harness.checkpoints import CheckpointRecord, CheckpointSummary, capture_checkpoint
@@ -1193,6 +1194,21 @@ async def _execute_turn(
                 detail="Execution configuration storage failed; no inference or tools started.",
             ) from exc
 
+    def save_budget_observation(event: BudgetObservation) -> None:
+        if run_id is None:
+            return
+        try:
+            _session_store(components).record_budget_observation(run_id, event)
+        except Exception as exc:
+            log.error("api=budget_evidence_failed exception=%s", type(exc).__name__)
+            raise HTTPException(
+                status_code=503,
+                detail=(
+                    "Budget evidence storage failed; execution stopped. "
+                    "Usage may be unknown and workspace edits may exist; inspect saved work."
+                ),
+            ) from exc
+
     def capture_workspace_review(baseline: WorkspaceReviewBaseline) -> None:
         nonlocal workspace_baseline
         workspace_baseline = baseline
@@ -1341,6 +1357,7 @@ async def _execute_turn(
             registry=registry,
             grounder=components.grounder,
             on_event=save_tool_progress,
+            on_budget_observation=save_budget_observation if run_id is not None else None,
             on_finalized=save_finalized,
             on_workspace_review=capture_workspace_review,
             on_execution_profile=save_execution_profile if run_id is not None else None,
