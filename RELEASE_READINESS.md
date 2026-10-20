@@ -162,6 +162,26 @@ control block limit attribution. The original ten-task counts, no-go decision an
 G2–G5 remain unchanged. This comparison neither demonstrates real reversal nor
 supplies held-out/two-model evidence. No release approval follows from it.
 
+## Packaged panel follow-up — 2026-10-20
+
+The reproduced missing-asset blocker is fixed: wheel builds include `ui/` at
+`api/ui/`, and the API resolves packaged assets before the source-checkout fallback.
+The offline [packaging regression](tests/test_wheel_panel.py) builds the source
+distribution and wheel, installs the wheel with `--no-deps` into temporary storage,
+then imports its API with isolated Python outside the checkout. All four asset
+bytes and panel/static routes match; API routes retain precedence, and coding-only
+startup opens temporary stores without Chroma or inference. The regression failed
+on the missing wheel entry before the fix.
+
+This reuses the installed dependency environment; it does not establish a fresh
+dependency installation, a complete OS/Python compatibility matrix, release
+approval or a model-quality improvement. G2–G5 remain open. The point-in-time
+finding and reproduction below describe the original audited revision.
+Eight focused regressions and 1,343 offline tests passed (five live deselected),
+plus Ruff, formatting and mypy. The existing Chroma deprecation warning remains;
+the installed coding-only smoke itself does not import Chroma. No evaluation
+behavior changed, so the scripted matrices were not rerun locally for this fix.
+
 ## Concrete audit findings and scope decisions
 
 | Finding | Classification | Disposition |

@@ -51,7 +51,7 @@ def test_built_wheel_serves_panel_outside_checkout(tmp_path: Path) -> None:
                 pass
         server._build_providers = lambda _: {'scripted': Provider()}
         settings = Settings(_env_file=None, default_provider='scripted',
-            enable_support_tools=False,
+            enable_support_tools=False, default_workspace_root=None,
             memory_db_path=Path('memory.db'), session_db_path=Path('sessions.db'))
         with TestClient(server.create_app(settings=settings)) as client:
             html = client.get('/')
