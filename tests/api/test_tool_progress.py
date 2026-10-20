@@ -205,6 +205,11 @@ with TestClient(make_app(root,provider)) as client:
         run_id = record["run_id"]
         saved = client.get(f"/runs/{run_id}", params={"user_id": "dev"}).json()
         assert saved["status"] == "interrupted" and saved["response"] is None
+        evidence = saved["budget_evidence"]
+        assert [event["kind"] for event in evidence["events"]] == ["request", "response", "request"]
+        assert evidence["events"][-1]["identity"] is not None
+        # The killed in-flight request has no invented usage or failure observation.
+        assert evidence["events"][-1]["usage"] is None
         progress = client.get(f"/runs/{run_id}/tool-progress", params={"user_id": "dev"}).json()
         assert progress["observed_events"] == 2
         assert [event["type"] for event in progress["events"]] == ["tool_start", "tool_end"]

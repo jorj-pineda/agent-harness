@@ -25,6 +25,7 @@ from workspace.core import DEFAULT_IGNORE_GLOBS
 
 from .access import execution_registry
 from .admission import turn_admission
+from .budget_evidence import BudgetObservation
 from .cancellation import TurnCancellation
 from .config import CodingToolset, Settings
 from .execution_profile import ExecutionProfile, capture_execution_profile
@@ -155,6 +156,7 @@ async def run_configured_turn(
     on_event: EventCallback | None = None,
     system_prompt: str | None = None,
     trace: list[TurnTraceRecord] | None = None,
+    on_budget_observation: Callable[[BudgetObservation], None] | None = None,
     on_finalized: Callable[[Session, TurnResponse], None] | None = None,
     cancellation: TurnCancellation | None = None,
     on_workspace_review: Callable[[WorkspaceReviewBaseline], None] | None = None,
@@ -285,6 +287,7 @@ async def run_configured_turn(
             required_check=settings.project_check_argv,
             on_event=on_event,
             trace=trace,
+            on_budget_observation=on_budget_observation,
             cancellation=cancellation,
         )
         if cancellation is not None:

@@ -545,16 +545,22 @@ async def test_wall_budget_cancels_slow_provider_before_tool_dispatch() -> None:
             )
 
     provider = SlowProvider([_response(content="too late")])
+    from harness.budget_evidence import BudgetObservation
+
+    observations: list[BudgetObservation] = []
     response = await run_turn(
         session=Session(),
         user_input="answer",
         provider=provider,
         registry=_registry(),
         max_turn_wall_seconds=0.1,
+        on_budget_observation=observations.append,
     )
     assert response.completion_status == "budget_exhausted"
     assert "wall-time" in (response.completion_reason or "")
     assert response.answer != "too late"
+    assert [event.kind for event in observations] == ["request", "request_failure"]
+    assert observations[-1].usage is None and observations[-1].prompt_tokens_used is None
 
 
 async def test_provider_timeout_is_not_misreported_as_wall_budget() -> None:
