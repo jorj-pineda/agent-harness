@@ -207,6 +207,19 @@ pass 90/90 with Chroma absent. [Evidence and limits](WHEEL_INSTALLATION.md#optio
 remain separate from coding-quality/release evidence; no inference or retrieval
 request ran. Prior install observations retain their original runtime/counts.
 
+## Existing editing-preset observations — 2026-10-20
+
+The [same-root T01 comparison](evals/projects/duodoro/TOOLSET_RESULTS.md) at
+`ce5d54c` observed full **0/2 accepted, 0/2 completed-and-accepted** versus
+whole-file **2/2 accepted, 2/2 completed-and-accepted**, with passing checks.
+Both successful answers also include an unexecuted inaccurate test illustration;
+artifact acceptance does not validate all prose. Regrades and preservation/evidence
+audits passed; all owned APIs/model were stopped/unloaded. No operator coding
+repair, replacement or default switch occurred. One selected public task/two
+repeats and whole-file stale-hash/large-write risks do not meet G3/G4 or approve
+release. Original cohorts/no-go and G2–G5 remain unchanged; this is a narrow
+observed preset contrast, not compaction or a general quality claim.
+
 ## Concrete audit findings and scope decisions
 
 | Finding | Classification | Disposition |

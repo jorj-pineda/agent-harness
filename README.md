@@ -26,6 +26,10 @@ For the current go/no-go assessment, start with the
 task envelope. The selected [same-root read-batching comparison](evals/projects/duodoro/BATCH_READ_RESULTS.md)
 also completed no workflows (0/2 per arm); the batching hint never activated in
 available normalized history. Production prompts and release gates remain unchanged.
+The subsequent [existing-preset comparison](evals/projects/duodoro/TOOLSET_RESULTS.md)
+completed and independently accepted T01 in 2/2 whole-file attempts versus 0/2
+full attempts. This one selected task does not justify a default switch or release;
+both successful answers also included an unexecuted inaccurate test illustration.
 Built wheels include the panel assets. An offline packaging regression installs
 the wheel outside the checkout and exercises panel/API routes with the existing
 dependency environment. Separate [fresh wheel-install observations](WHEEL_INSTALLATION.md)
