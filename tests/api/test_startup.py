@@ -17,6 +17,25 @@ from providers.base import ToolCall
 from .conftest import FakeEmbedder, ScriptedProvider, make_response
 
 
+def test_missing_support_extra_fails_before_opening_resources(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    settings = Settings(
+        _env_file=None,
+        enable_support_tools=True,
+        memory_db_path=tmp_path / "memory.db",
+        session_db_path=tmp_path / "sessions.db",
+    )
+    monkeypatch.setattr(server, "find_spec", lambda _: None)
+    providers = Mock(side_effect=AssertionError("Must not allocate providers"))
+    monkeypatch.setattr(server, "_build_providers", providers)
+    with pytest.raises(RuntimeError, match=r"agent-harness\[support\]"):
+        server.build_components(settings)
+    providers.assert_not_called()
+    assert not settings.memory_db_path.exists()
+    assert not settings.session_db_path.exists()
+
+
 def test_coding_api_import_startup_and_turn_without_support_modules(tmp_path: Path) -> None:
     # Use a fresh interpreter: other test modules import Chroma before collection.
     script = textwrap.dedent("""

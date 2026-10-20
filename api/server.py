@@ -36,6 +36,7 @@ from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager, suppress
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
+from importlib.util import find_spec
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal
 
@@ -122,6 +123,12 @@ ComponentsFactory = Callable[[Settings], Components]
 
 def build_components(settings: Settings) -> Components:
     """Default factory: open real backends from the validated settings."""
+    if settings.enable_support_tools and find_spec("chromadb") is None:
+        raise RuntimeError(
+            "Support tools require the optional support dependencies. "
+            "Install 'agent-harness[support]' (or run 'uv sync --extra support' "
+            "from a checkout) before enabling ENABLE_SUPPORT_TOOLS."
+        )
     providers = _build_providers(settings)
     embedder = None
     collection = None
