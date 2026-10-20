@@ -1,0 +1,800 @@
+{
+  "schema_version": 1,
+  "evidence_kind": "real-client-real-tools-paired-development-comparison",
+  "status": "complete",
+  "reported_at_utc": "2026-10-20T04:24:25.799997+00:00",
+  "freeze_pr": "https://github.com/jorj-pineda/agent-harness/pull/152",
+  "freeze_sha256": "208d8241cf9d2a20859aedd15e792f273d928b22fa54ab2261a43c784d5f13a8",
+  "runtime_base": "5974d2201cb12829de2b593b602c649515e98b0d",
+  "model": {
+    "digest": "4eb23ef187e2c5462566d6a1d3bbbc2f1346d0b4327cbb66d58fffbcc9b2b05c",
+    "name": "gemma4:12b",
+    "ollama_version": "0.33.2"
+  },
+  "scheduled_attempts": 12,
+  "scheduled_per_arm": 6,
+  "graded_attempts": 12,
+  "local_evidence_directory": "/Users/jorge/.local/share/agent-harness/trials/duodoro-edit-feedback-sgpr8sdv",
+  "tasks": [
+    {
+      "id": "01-T01-r1-control",
+      "task": "T01",
+      "arm": "control",
+      "repeat": 1,
+      "runtime_revision": "1c9249af2b5bcaad2e1628c130a9e879c934196f",
+      "client": "CLI",
+      "execution_status": "observed",
+      "artifact_acceptance": false,
+      "completed_and_accepted": false,
+      "completion_status": "budget_exhausted",
+      "verification_status": "not_run",
+      "run_status": "finished",
+      "run_id": "363d759d6e984cd6969b1ca18cc983b0",
+      "token_usage": {
+        "prompt_tokens": 51600,
+        "completion_tokens": 1243
+      },
+      "provider_failure": null,
+      "changed_paths": [],
+      "criteria_unchanged": true,
+      "unrelated_changes": [],
+      "completion_reason": "Estimated next request of ~12414 prompt tokens does not fit the remaining total token budget (64000 per turn).",
+      "tool_errors": [
+        "replace_text: Expected exactly one old_text match; found 0. Copy old_text exactly from the latest read_file content.",
+        "replace_text: Expected exactly one old_text match; found 0. Copy old_text exactly from the latest read_file content."
+      ],
+      "loop_latency_ms": 201753.69554197788,
+      "created_at": "2026-10-20T03:29:52.720870Z",
+      "finished_at": "2026-10-20T03:33:14.727402Z",
+      "manual_patch_repair": false,
+      "run_sha256": "420b048c9a001aa82c2cf4964f5bea3cd4878357c0afb1e86e6f16d4a22abe59",
+      "acceptance_sha256": "8fb18d5960661aed55b6086d3b725a2534c0354e49d9f5e913468f0ad9cf1468",
+      "tool_call_records": 7,
+      "exact_edit_errors": [
+        {
+          "old_text_sha256": "e5709b90a8c7c6581096b86d0a67d12ba83391793212d65787c20f11424f8dd7",
+          "error": "Expected exactly one old_text match; found 0. Copy old_text exactly from the latest read_file content."
+        },
+        {
+          "old_text_sha256": "e5709b90a8c7c6581096b86d0a67d12ba83391793212d65787c20f11424f8dd7",
+          "error": "Expected exactly one old_text match; found 0. Copy old_text exactly from the latest read_file content."
+        }
+      ],
+      "successful_exact_edits": 0,
+      "later_successful_exact_edit_after_mismatch": false,
+      "cli_response_timeout": true,
+      "model_response_records": 7,
+      "run_lifecycle_seconds": 202.006532,
+      "reported_token_limits_met": true,
+      "within_budget": true,
+      "budget_assessment_scope": "Sufficient observed upper bounds: complete reported usage, full run journal interval <=300s, response and tool-record counts within configured caps. Unknown/missing evidence is not a compliance claim; no hard return or backend-token attestation.",
+      "saved_system_prompt_sha256": "efebf17637339b3559e6bac4c2d6b43da975ed783b69b0fe5942cb464b3a334f",
+      "system_prompt_without_workspace_sha256": "2d10dd30b6d1e900f510d55f0b79c7da105a748fc680cecb0bed77cc139e5105"
+    },
+    {
+      "id": "02-T01-r1-treatment",
+      "task": "T01",
+      "arm": "treatment",
+      "repeat": 1,
+      "runtime_revision": "5974d2201cb12829de2b593b602c649515e98b0d",
+      "client": "CLI",
+      "execution_status": "observed",
+      "artifact_acceptance": true,
+      "completed_and_accepted": false,
+      "completion_status": "budget_exhausted",
+      "verification_status": "not_run",
+      "run_status": "finished",
+      "run_id": "239ee99382434666bb212ad5a6ae69b9",
+      "token_usage": {
+        "prompt_tokens": 51679,
+        "completion_tokens": 1264
+      },
+      "provider_failure": null,
+      "changed_paths": [
+        "client/src/lib/format.ts"
+      ],
+      "criteria_unchanged": true,
+      "unrelated_changes": [],
+      "completion_reason": "Estimated next request of ~12762 prompt tokens does not fit the remaining total token budget (64000 per turn).",
+      "tool_errors": [
+        "replace_text: Expected exactly one old_text match; found 0. old_text contains backslash-n and backslash-escaped double quotes where the file has line breaks and double quotes. Copy old_text exactly from read_file content, using real line breaks and double quotes at those positions. Check new_text for the same extra layer of JSON escaping. No edit was applied; arguments were not rewritten."
+      ],
+      "loop_latency_ms": 229729.43454104662,
+      "created_at": "2026-10-20T03:35:13.076718Z",
+      "finished_at": "2026-10-20T03:39:03.123220Z",
+      "manual_patch_repair": false,
+      "run_sha256": "4822dfb59372955a685ddf23845e3cdb3b31085b90814f0b104436fd31e65dd0",
+      "acceptance_sha256": "ca0707e2503e382304cf810dd6cd504bcf7ea51dc97e673373c254b2c8ab991b",
+      "tool_call_records": 7,
+      "exact_edit_errors": [
+        {
+          "old_text_sha256": "b12e1031dcf8be71e205298ef7844f49a85d6dda15453ba502e21e0bb4986357",
+          "error": "Expected exactly one old_text match; found 0. old_text contains backslash-n and backslash-escaped double quotes where the file has line breaks and double quotes. Copy old_text exactly from read_file content, using real line breaks and double quotes at those positions. Check new_text for the same extra layer of JSON escaping. No edit was applied; arguments were not rewritten."
+        }
+      ],
+      "successful_exact_edits": 1,
+      "later_successful_exact_edit_after_mismatch": true,
+      "cli_response_timeout": true,
+      "model_response_records": 7,
+      "run_lifecycle_seconds": 230.046502,
+      "reported_token_limits_met": true,
+      "within_budget": true,
+      "budget_assessment_scope": "Sufficient observed upper bounds: complete reported usage, full run journal interval <=300s, response and tool-record counts within configured caps. Unknown/missing evidence is not a compliance claim; no hard return or backend-token attestation.",
+      "saved_system_prompt_sha256": "0eec51dec9d3ede6148d233db55c0d9cb4fe8825158e8c6c6de8617f4046b585",
+      "system_prompt_without_workspace_sha256": "2d10dd30b6d1e900f510d55f0b79c7da105a748fc680cecb0bed77cc139e5105"
+    },
+    {
+      "id": "03-T04-r1-treatment",
+      "task": "T04",
+      "arm": "treatment",
+      "repeat": 1,
+      "runtime_revision": "5974d2201cb12829de2b593b602c649515e98b0d",
+      "client": "panel",
+      "execution_status": "observed",
+      "artifact_acceptance": true,
+      "completed_and_accepted": true,
+      "completion_status": "completed",
+      "verification_status": "passed",
+      "run_status": "finished",
+      "run_id": "906ed3f522fd4c6e95d036b384b0c037",
+      "token_usage": {
+        "prompt_tokens": 52274,
+        "completion_tokens": 1471
+      },
+      "provider_failure": null,
+      "changed_paths": [
+        "client/src/lib/shareInvite.ts"
+      ],
+      "criteria_unchanged": true,
+      "unrelated_changes": [],
+      "completion_reason": null,
+      "tool_errors": [
+        "replace_text: Expected exactly one old_text match; found 0. old_text contains backslash-n and backslash-escaped double quotes where the file has line breaks and double quotes. Copy old_text exactly from read_file content, using real line breaks and double quotes at those positions. Check new_text for the same extra layer of JSON escaping. No edit was applied; arguments were not rewritten."
+      ],
+      "loop_latency_ms": 203452.26095807552,
+      "created_at": "2026-10-20T03:40:19.530385Z",
+      "finished_at": "2026-10-20T03:43:43.312915Z",
+      "manual_patch_repair": false,
+      "run_sha256": "676f96ba94760aa5678468c1ba0e10f2d966495b5ba55ed659a757d44decd06f",
+      "acceptance_sha256": "513f5211aa4d6571a0b3c522ba5315317fe9caa9c1a5c466377a85296a84d62e",
+      "tool_call_records": 8,
+      "exact_edit_errors": [
+        {
+          "old_text_sha256": "80f7f941411ac5d00a10d9cc614c0f5e7a20468ffd920774de7b4b6a610d6f54",
+          "error": "Expected exactly one old_text match; found 0. old_text contains backslash-n and backslash-escaped double quotes where the file has line breaks and double quotes. Copy old_text exactly from read_file content, using real line breaks and double quotes at those positions. Check new_text for the same extra layer of JSON escaping. No edit was applied; arguments were not rewritten."
+        }
+      ],
+      "successful_exact_edits": 3,
+      "later_successful_exact_edit_after_mismatch": true,
+      "cli_response_timeout": null,
+      "model_response_records": 10,
+      "run_lifecycle_seconds": 203.78253,
+      "reported_token_limits_met": true,
+      "within_budget": true,
+      "budget_assessment_scope": "Sufficient observed upper bounds: complete reported usage, full run journal interval <=300s, response and tool-record counts within configured caps. Unknown/missing evidence is not a compliance claim; no hard return or backend-token attestation.",
+      "saved_system_prompt_sha256": "85d2f7ec22938447b16acdea0c7b040c418b20a92afb3a5ac4b7f70e9ef26428",
+      "system_prompt_without_workspace_sha256": "2d10dd30b6d1e900f510d55f0b79c7da105a748fc680cecb0bed77cc139e5105"
+    },
+    {
+      "id": "04-T04-r1-control",
+      "task": "T04",
+      "arm": "control",
+      "repeat": 1,
+      "runtime_revision": "1c9249af2b5bcaad2e1628c130a9e879c934196f",
+      "client": "panel",
+      "execution_status": "observed",
+      "artifact_acceptance": false,
+      "completed_and_accepted": false,
+      "completion_status": "budget_exhausted",
+      "verification_status": "not_run",
+      "run_status": "finished",
+      "run_id": "69b8d2897d6b409fb4d79f480297a92b",
+      "token_usage": {
+        "prompt_tokens": 58040,
+        "completion_tokens": 1516
+      },
+      "provider_failure": null,
+      "changed_paths": [],
+      "criteria_unchanged": true,
+      "unrelated_changes": [],
+      "completion_reason": "Total token budget cannot fit another model request after these tools.",
+      "tool_errors": [
+        "replace_text: Expected exactly one old_text match; found 0. Copy old_text exactly from the latest read_file content.",
+        "replace_text: Expected exactly one old_text match; found 0. Copy old_text exactly from the latest read_file content.",
+        "replace_text: Expected exactly one old_text match; found 0. Copy old_text exactly from the latest read_file content.",
+        "replace_text: Expected exactly one old_text match; found 0. Copy old_text exactly from the latest read_file content.",
+        "replace_text: Tool not executed: this turn has already stopped."
+      ],
+      "loop_latency_ms": 201647.02741599083,
+      "created_at": "2026-10-20T03:45:53.962309Z",
+      "finished_at": "2026-10-20T03:49:15.862149Z",
+      "manual_patch_repair": false,
+      "run_sha256": "2c9225384bb8085c6449076c4ddacd64e64255f9ed73893af0602f7907618b0c",
+      "acceptance_sha256": "69539c958d851638881782fe187828022060014fac0e39c8d14a5ee08bce93ac",
+      "tool_call_records": 10,
+      "exact_edit_errors": [
+        {
+          "old_text_sha256": "80f7f941411ac5d00a10d9cc614c0f5e7a20468ffd920774de7b4b6a610d6f54",
+          "error": "Expected exactly one old_text match; found 0. Copy old_text exactly from the latest read_file content."
+        },
+        {
+          "old_text_sha256": "f3eb6c12d495006daa36ce3f4e91bcf2c60f5799bc522b97ff0f05ad392e1ced",
+          "error": "Expected exactly one old_text match; found 0. Copy old_text exactly from the latest read_file content."
+        },
+        {
+          "old_text_sha256": "f3eb6c12d495006daa36ce3f4e91bcf2c60f5799bc522b97ff0f05ad392e1ced",
+          "error": "Expected exactly one old_text match; found 0. Copy old_text exactly from the latest read_file content."
+        },
+        {
+          "old_text_sha256": "f3eb6c12d495006daa36ce3f4e91bcf2c60f5799bc522b97ff0f05ad392e1ced",
+          "error": "Expected exactly one old_text match; found 0. Copy old_text exactly from the latest read_file content."
+        }
+      ],
+      "successful_exact_edits": 0,
+      "later_successful_exact_edit_after_mismatch": false,
+      "cli_response_timeout": null,
+      "model_response_records": 11,
+      "run_lifecycle_seconds": 201.89984,
+      "reported_token_limits_met": true,
+      "within_budget": true,
+      "budget_assessment_scope": "Sufficient observed upper bounds: complete reported usage, full run journal interval <=300s, response and tool-record counts within configured caps. Unknown/missing evidence is not a compliance claim; no hard return or backend-token attestation.",
+      "saved_system_prompt_sha256": "443b8f767881f9bdbff6b8f5a62459ca6c7881fca023018ecdf9bbb0638b90e5",
+      "system_prompt_without_workspace_sha256": "2d10dd30b6d1e900f510d55f0b79c7da105a748fc680cecb0bed77cc139e5105"
+    },
+    {
+      "id": "05-T09-r1-control",
+      "task": "T09",
+      "arm": "control",
+      "repeat": 1,
+      "runtime_revision": "1c9249af2b5bcaad2e1628c130a9e879c934196f",
+      "client": "CLI",
+      "execution_status": "observed",
+      "artifact_acceptance": false,
+      "completed_and_accepted": false,
+      "completion_status": "budget_exhausted",
+      "verification_status": "not_run",
+      "run_status": "finished",
+      "run_id": "b2a049e947b842018a6c1e10b6aaeaee",
+      "token_usage": {
+        "prompt_tokens": 60554,
+        "completion_tokens": 1259
+      },
+      "provider_failure": null,
+      "changed_paths": [],
+      "criteria_unchanged": true,
+      "unrelated_changes": [],
+      "completion_reason": "Total token budget cannot fit another model request after these tools.",
+      "tool_errors": [
+        "replace_text: Expected exactly one old_text match; found 0. Copy old_text exactly from the latest read_file content.",
+        "replace_text: Expected exactly one old_text match; found 0. Copy old_text exactly from the latest read_file content.",
+        "replace_text: Expected exactly one old_text match; found 0. Copy old_text exactly from the latest read_file content.",
+        "replace_text: Tool not executed: this turn has already stopped."
+      ],
+      "loop_latency_ms": 204414.27537494898,
+      "created_at": "2026-10-20T03:50:49.049734Z",
+      "finished_at": "2026-10-20T03:54:13.709819Z",
+      "manual_patch_repair": false,
+      "run_sha256": "fb75a17fcc01c2d50287c8a732a460bcd48d36d53e454557e0d6e2f9770bccdd",
+      "acceptance_sha256": "2b594be6504aa1babf5d01722b5d5640ba692a66eb023b3c0d4444e127e3cdfe",
+      "tool_call_records": 9,
+      "exact_edit_errors": [
+        {
+          "old_text_sha256": "b5aef95e1089e638147758ca2d559171f6d4dc204ea161bc8fcd947e197e71c4",
+          "error": "Expected exactly one old_text match; found 0. Copy old_text exactly from the latest read_file content."
+        },
+        {
+          "old_text_sha256": "b5aef95e1089e638147758ca2d559171f6d4dc204ea161bc8fcd947e197e71c4",
+          "error": "Expected exactly one old_text match; found 0. Copy old_text exactly from the latest read_file content."
+        },
+        {
+          "old_text_sha256": "b5aef95e1089e638147758ca2d559171f6d4dc204ea161bc8fcd947e197e71c4",
+          "error": "Expected exactly one old_text match; found 0. Copy old_text exactly from the latest read_file content."
+        }
+      ],
+      "successful_exact_edits": 0,
+      "later_successful_exact_edit_after_mismatch": false,
+      "cli_response_timeout": true,
+      "model_response_records": 10,
+      "run_lifecycle_seconds": 204.660085,
+      "reported_token_limits_met": true,
+      "within_budget": true,
+      "budget_assessment_scope": "Sufficient observed upper bounds: complete reported usage, full run journal interval <=300s, response and tool-record counts within configured caps. Unknown/missing evidence is not a compliance claim; no hard return or backend-token attestation.",
+      "saved_system_prompt_sha256": "60932f1a63e2b44eae73e53f83b71b186d0793659680a19d24b476b97e50fe8b",
+      "system_prompt_without_workspace_sha256": "2d10dd30b6d1e900f510d55f0b79c7da105a748fc680cecb0bed77cc139e5105"
+    },
+    {
+      "id": "06-T09-r1-treatment",
+      "task": "T09",
+      "arm": "treatment",
+      "repeat": 1,
+      "runtime_revision": "5974d2201cb12829de2b593b602c649515e98b0d",
+      "client": "CLI",
+      "execution_status": "observed",
+      "artifact_acceptance": true,
+      "completed_and_accepted": true,
+      "completion_status": "completed",
+      "verification_status": "passed",
+      "run_status": "finished",
+      "run_id": "571751a70e8248248bcaa92ee5be9d3c",
+      "token_usage": {
+        "prompt_tokens": 40963,
+        "completion_tokens": 995
+      },
+      "provider_failure": null,
+      "changed_paths": [
+        "client/src/lib/focusTags.ts"
+      ],
+      "criteria_unchanged": true,
+      "unrelated_changes": [],
+      "completion_reason": null,
+      "tool_errors": [
+        "replace_text: Expected exactly one old_text match; found 0. old_text contains backslash-n and backslash-escaped double quotes where the file has line breaks and double quotes. Copy old_text exactly from read_file content, using real line breaks and double quotes at those positions. Check new_text for the same extra layer of JSON escaping. No edit was applied; arguments were not rewritten."
+      ],
+      "loop_latency_ms": 148820.7563340068,
+      "created_at": "2026-10-20T03:55:26.227181Z",
+      "finished_at": "2026-10-20T03:57:55.240560Z",
+      "manual_patch_repair": false,
+      "run_sha256": "93c7c129fba6320b45abdf15b60f5fe297e05841ec140ceac825aebce20a6241",
+      "acceptance_sha256": "f9735cee2f5b76e708d01969178cd7c5e236bc02595f6d04b2a2eb4ea003c95a",
+      "tool_call_records": 6,
+      "exact_edit_errors": [
+        {
+          "old_text_sha256": "b5aef95e1089e638147758ca2d559171f6d4dc204ea161bc8fcd947e197e71c4",
+          "error": "Expected exactly one old_text match; found 0. old_text contains backslash-n and backslash-escaped double quotes where the file has line breaks and double quotes. Copy old_text exactly from read_file content, using real line breaks and double quotes at those positions. Check new_text for the same extra layer of JSON escaping. No edit was applied; arguments were not rewritten."
+        }
+      ],
+      "successful_exact_edits": 1,
+      "later_successful_exact_edit_after_mismatch": true,
+      "cli_response_timeout": true,
+      "model_response_records": 8,
+      "run_lifecycle_seconds": 149.013379,
+      "reported_token_limits_met": true,
+      "within_budget": true,
+      "budget_assessment_scope": "Sufficient observed upper bounds: complete reported usage, full run journal interval <=300s, response and tool-record counts within configured caps. Unknown/missing evidence is not a compliance claim; no hard return or backend-token attestation.",
+      "saved_system_prompt_sha256": "b5787fb7a547571618d4a47c4c52090710729a0fc40c53ed2251da2e4d7e0503",
+      "system_prompt_without_workspace_sha256": "2d10dd30b6d1e900f510d55f0b79c7da105a748fc680cecb0bed77cc139e5105"
+    },
+    {
+      "id": "07-T01-r2-treatment",
+      "task": "T01",
+      "arm": "treatment",
+      "repeat": 2,
+      "runtime_revision": "5974d2201cb12829de2b593b602c649515e98b0d",
+      "client": "CLI",
+      "execution_status": "observed",
+      "artifact_acceptance": true,
+      "completed_and_accepted": false,
+      "completion_status": "budget_exhausted",
+      "verification_status": "not_run",
+      "run_status": "finished",
+      "run_id": "291721bb6a8043aa860b052681f2e632",
+      "token_usage": {
+        "prompt_tokens": 51679,
+        "completion_tokens": 1264
+      },
+      "provider_failure": null,
+      "changed_paths": [
+        "client/src/lib/format.ts"
+      ],
+      "criteria_unchanged": true,
+      "unrelated_changes": [],
+      "completion_reason": "Estimated next request of ~12762 prompt tokens does not fit the remaining total token budget (64000 per turn).",
+      "tool_errors": [
+        "replace_text: Expected exactly one old_text match; found 0. old_text contains backslash-n and backslash-escaped double quotes where the file has line breaks and double quotes. Copy old_text exactly from read_file content, using real line breaks and double quotes at those positions. Check new_text for the same extra layer of JSON escaping. No edit was applied; arguments were not rewritten."
+      ],
+      "loop_latency_ms": 207292.3521670103,
+      "created_at": "2026-10-20T03:58:12.058132Z",
+      "finished_at": "2026-10-20T04:01:39.551581Z",
+      "manual_patch_repair": false,
+      "run_sha256": "543bf2a08a9252120e9819246a6de972c577395a71145045ef856da86f8331ea",
+      "acceptance_sha256": "e6a044258bc7307ea59c43d0c3659d8305c1cb87cb9b7434a52defaed142ead0",
+      "tool_call_records": 7,
+      "exact_edit_errors": [
+        {
+          "old_text_sha256": "b12e1031dcf8be71e205298ef7844f49a85d6dda15453ba502e21e0bb4986357",
+          "error": "Expected exactly one old_text match; found 0. old_text contains backslash-n and backslash-escaped double quotes where the file has line breaks and double quotes. Copy old_text exactly from read_file content, using real line breaks and double quotes at those positions. Check new_text for the same extra layer of JSON escaping. No edit was applied; arguments were not rewritten."
+        }
+      ],
+      "successful_exact_edits": 1,
+      "later_successful_exact_edit_after_mismatch": true,
+      "cli_response_timeout": true,
+      "model_response_records": 7,
+      "run_lifecycle_seconds": 207.493449,
+      "reported_token_limits_met": true,
+      "within_budget": true,
+      "budget_assessment_scope": "Sufficient observed upper bounds: complete reported usage, full run journal interval <=300s, response and tool-record counts within configured caps. Unknown/missing evidence is not a compliance claim; no hard return or backend-token attestation.",
+      "saved_system_prompt_sha256": "77da25028b4ae4063ba06cc275633632edfacea84403eac48689d625ddc89320",
+      "system_prompt_without_workspace_sha256": "2d10dd30b6d1e900f510d55f0b79c7da105a748fc680cecb0bed77cc139e5105"
+    },
+    {
+      "id": "08-T01-r2-control",
+      "task": "T01",
+      "arm": "control",
+      "repeat": 2,
+      "runtime_revision": "1c9249af2b5bcaad2e1628c130a9e879c934196f",
+      "client": "CLI",
+      "execution_status": "observed",
+      "artifact_acceptance": false,
+      "completed_and_accepted": false,
+      "completion_status": "blocked",
+      "verification_status": "not_run",
+      "run_status": "finished",
+      "run_id": "329745bef0b44a9d8d39aaee187965ca",
+      "token_usage": {
+        "prompt_tokens": 37715,
+        "completion_tokens": 188
+      },
+      "provider_failure": null,
+      "changed_paths": [],
+      "criteria_unchanged": true,
+      "unrelated_changes": [],
+      "completion_reason": "Repeated unchanged call to 'grep_repo'.",
+      "tool_errors": [
+        "grep_repo: Tool not executed: Repeated unchanged call to 'grep_repo'."
+      ],
+      "loop_latency_ms": 86242.06895804405,
+      "created_at": "2026-10-20T04:02:16.824674Z",
+      "finished_at": "2026-10-20T04:03:43.249223Z",
+      "manual_patch_repair": false,
+      "run_sha256": "7cd48235bf016d59267e8558f55bd796ba26cfdad026461b9816c6a0700c3d87",
+      "acceptance_sha256": "9c53fc36cf78e4a30ff2f3f534b3bcb5487f5df84884afe81f75f75da2000a92",
+      "tool_call_records": 7,
+      "exact_edit_errors": [],
+      "successful_exact_edits": 0,
+      "later_successful_exact_edit_after_mismatch": null,
+      "cli_response_timeout": false,
+      "model_response_records": 7,
+      "run_lifecycle_seconds": 86.424549,
+      "reported_token_limits_met": true,
+      "within_budget": true,
+      "budget_assessment_scope": "Sufficient observed upper bounds: complete reported usage, full run journal interval <=300s, response and tool-record counts within configured caps. Unknown/missing evidence is not a compliance claim; no hard return or backend-token attestation.",
+      "saved_system_prompt_sha256": "65df922e2c993df02ad22bff8d7468c5bb8355494e55348d22c633578d5c64a0",
+      "system_prompt_without_workspace_sha256": "2d10dd30b6d1e900f510d55f0b79c7da105a748fc680cecb0bed77cc139e5105"
+    },
+    {
+      "id": "09-T04-r2-control",
+      "task": "T04",
+      "arm": "control",
+      "repeat": 2,
+      "runtime_revision": "1c9249af2b5bcaad2e1628c130a9e879c934196f",
+      "client": "panel",
+      "execution_status": "observed",
+      "artifact_acceptance": false,
+      "completed_and_accepted": false,
+      "completion_status": "budget_exhausted",
+      "verification_status": "not_run",
+      "run_status": "finished",
+      "run_id": "3c58e2d87e38468a9f688a7ab87e8d70",
+      "token_usage": {
+        "prompt_tokens": 58040,
+        "completion_tokens": 1516
+      },
+      "provider_failure": null,
+      "changed_paths": [],
+      "criteria_unchanged": true,
+      "unrelated_changes": [],
+      "completion_reason": "Total token budget cannot fit another model request after these tools.",
+      "tool_errors": [
+        "replace_text: Expected exactly one old_text match; found 0. Copy old_text exactly from the latest read_file content.",
+        "replace_text: Expected exactly one old_text match; found 0. Copy old_text exactly from the latest read_file content.",
+        "replace_text: Expected exactly one old_text match; found 0. Copy old_text exactly from the latest read_file content.",
+        "replace_text: Expected exactly one old_text match; found 0. Copy old_text exactly from the latest read_file content.",
+        "replace_text: Tool not executed: this turn has already stopped."
+      ],
+      "loop_latency_ms": 193146.90987497568,
+      "created_at": "2026-10-20T04:05:30.864974Z",
+      "finished_at": "2026-10-20T04:08:44.273802Z",
+      "manual_patch_repair": false,
+      "run_sha256": "eca7ba73c90c3016e04c3c95d50edb88f2b8ab262301bab12d59470c3a212052",
+      "acceptance_sha256": "3956f7e5e2b3c4d591489d52992afdb602114fca2a5093563522624da5d456fb",
+      "tool_call_records": 10,
+      "exact_edit_errors": [
+        {
+          "old_text_sha256": "80f7f941411ac5d00a10d9cc614c0f5e7a20468ffd920774de7b4b6a610d6f54",
+          "error": "Expected exactly one old_text match; found 0. Copy old_text exactly from the latest read_file content."
+        },
+        {
+          "old_text_sha256": "f3eb6c12d495006daa36ce3f4e91bcf2c60f5799bc522b97ff0f05ad392e1ced",
+          "error": "Expected exactly one old_text match; found 0. Copy old_text exactly from the latest read_file content."
+        },
+        {
+          "old_text_sha256": "f3eb6c12d495006daa36ce3f4e91bcf2c60f5799bc522b97ff0f05ad392e1ced",
+          "error": "Expected exactly one old_text match; found 0. Copy old_text exactly from the latest read_file content."
+        },
+        {
+          "old_text_sha256": "f3eb6c12d495006daa36ce3f4e91bcf2c60f5799bc522b97ff0f05ad392e1ced",
+          "error": "Expected exactly one old_text match; found 0. Copy old_text exactly from the latest read_file content."
+        }
+      ],
+      "successful_exact_edits": 0,
+      "later_successful_exact_edit_after_mismatch": false,
+      "cli_response_timeout": null,
+      "model_response_records": 11,
+      "run_lifecycle_seconds": 193.408828,
+      "reported_token_limits_met": true,
+      "within_budget": true,
+      "budget_assessment_scope": "Sufficient observed upper bounds: complete reported usage, full run journal interval <=300s, response and tool-record counts within configured caps. Unknown/missing evidence is not a compliance claim; no hard return or backend-token attestation.",
+      "saved_system_prompt_sha256": "130dbe23dd831ad27e852a4c2938c4e9890b52c8f48ec5b13a4ce14f427fab08",
+      "system_prompt_without_workspace_sha256": "2d10dd30b6d1e900f510d55f0b79c7da105a748fc680cecb0bed77cc139e5105"
+    },
+    {
+      "id": "10-T04-r2-treatment",
+      "task": "T04",
+      "arm": "treatment",
+      "repeat": 2,
+      "runtime_revision": "5974d2201cb12829de2b593b602c649515e98b0d",
+      "client": "panel",
+      "execution_status": "observed",
+      "artifact_acceptance": true,
+      "completed_and_accepted": true,
+      "completion_status": "completed",
+      "verification_status": "passed",
+      "run_status": "finished",
+      "run_id": "2d8bde430e484b1e8628e6b7a1421437",
+      "token_usage": {
+        "prompt_tokens": 52286,
+        "completion_tokens": 1477
+      },
+      "provider_failure": null,
+      "changed_paths": [
+        "client/src/lib/shareInvite.ts"
+      ],
+      "criteria_unchanged": true,
+      "unrelated_changes": [],
+      "preservation_passed": true,
+      "completion_reason": null,
+      "tool_errors": [
+        "replace_text: Expected exactly one old_text match; found 0. old_text contains backslash-n and backslash-escaped double quotes where the file has line breaks and double quotes. Copy old_text exactly from read_file content, using real line breaks and double quotes at those positions. Check new_text for the same extra layer of JSON escaping. No edit was applied; arguments were not rewritten."
+      ],
+      "loop_latency_ms": 191695.32783395052,
+      "created_at": "2026-10-20T04:10:55.297121Z",
+      "finished_at": "2026-10-20T04:14:07.265850Z",
+      "manual_patch_repair": false,
+      "run_sha256": "3d1d97c96f2e1478900ccbc6d9b6d983c55715e6629c9e3c365405a28da13ca4",
+      "acceptance_sha256": "dff179332203bb7016ae0b6daea3cb5233a426e812bbea2f48e97ff58b73b188",
+      "tool_call_records": 8,
+      "exact_edit_errors": [
+        {
+          "old_text_sha256": "80f7f941411ac5d00a10d9cc614c0f5e7a20468ffd920774de7b4b6a610d6f54",
+          "error": "Expected exactly one old_text match; found 0. old_text contains backslash-n and backslash-escaped double quotes where the file has line breaks and double quotes. Copy old_text exactly from read_file content, using real line breaks and double quotes at those positions. Check new_text for the same extra layer of JSON escaping. No edit was applied; arguments were not rewritten."
+        }
+      ],
+      "successful_exact_edits": 3,
+      "later_successful_exact_edit_after_mismatch": true,
+      "cli_response_timeout": null,
+      "model_response_records": 10,
+      "run_lifecycle_seconds": 191.968729,
+      "reported_token_limits_met": true,
+      "within_budget": true,
+      "budget_assessment_scope": "Sufficient observed upper bounds: complete reported usage, full run journal interval <=300s, response and tool-record counts within configured caps. Unknown/missing evidence is not a compliance claim; no hard return or backend-token attestation.",
+      "saved_system_prompt_sha256": "78bf6cdcd185c8f77a13af4da2a1eb43b6dd2d1002ccbf67df624392ddd6c049",
+      "system_prompt_without_workspace_sha256": "2d10dd30b6d1e900f510d55f0b79c7da105a748fc680cecb0bed77cc139e5105"
+    },
+    {
+      "id": "11-T09-r2-treatment",
+      "task": "T09",
+      "arm": "treatment",
+      "repeat": 2,
+      "runtime_revision": "5974d2201cb12829de2b593b602c649515e98b0d",
+      "client": "CLI",
+      "execution_status": "observed",
+      "artifact_acceptance": true,
+      "completed_and_accepted": true,
+      "completion_status": "completed",
+      "verification_status": "passed",
+      "run_status": "finished",
+      "run_id": "f61eccc3d8714a3d85f98b4dbc5a67d2",
+      "token_usage": {
+        "prompt_tokens": 40963,
+        "completion_tokens": 1002
+      },
+      "provider_failure": null,
+      "changed_paths": [
+        "client/src/lib/focusTags.ts"
+      ],
+      "criteria_unchanged": true,
+      "unrelated_changes": [],
+      "preservation_passed": true,
+      "completion_reason": null,
+      "tool_errors": [
+        "replace_text: Expected exactly one old_text match; found 0. old_text contains backslash-n and backslash-escaped double quotes where the file has line breaks and double quotes. Copy old_text exactly from read_file content, using real line breaks and double quotes at those positions. Check new_text for the same extra layer of JSON escaping. No edit was applied; arguments were not rewritten."
+      ],
+      "loop_latency_ms": 151602.3296249509,
+      "created_at": "2026-10-20T04:15:27.827094Z",
+      "finished_at": "2026-10-20T04:17:59.719650Z",
+      "manual_patch_repair": false,
+      "run_sha256": "94dee9e33ccf457bb2bc4b3e4cf8bd15aac67cb63e68a9407724649b851d7e0e",
+      "acceptance_sha256": "781449970a196788b589274d5766f303be3e8266e1f26103caa2d1dd2c0c6f7e",
+      "tool_call_records": 6,
+      "exact_edit_errors": [
+        {
+          "old_text_sha256": "b5aef95e1089e638147758ca2d559171f6d4dc204ea161bc8fcd947e197e71c4",
+          "error": "Expected exactly one old_text match; found 0. old_text contains backslash-n and backslash-escaped double quotes where the file has line breaks and double quotes. Copy old_text exactly from read_file content, using real line breaks and double quotes at those positions. Check new_text for the same extra layer of JSON escaping. No edit was applied; arguments were not rewritten."
+        }
+      ],
+      "successful_exact_edits": 1,
+      "later_successful_exact_edit_after_mismatch": true,
+      "cli_response_timeout": true,
+      "model_response_records": 8,
+      "run_lifecycle_seconds": 151.892556,
+      "reported_token_limits_met": true,
+      "within_budget": true,
+      "budget_assessment_scope": "Sufficient observed upper bounds: complete reported usage, full run journal interval <=300s, response and tool-record counts within configured caps. Unknown/missing evidence is not a compliance claim; no hard return or backend-token attestation.",
+      "saved_system_prompt_sha256": "f183bbee91438c2ddf92c2139fd4e379a9cb7f404c5046de9c64ff36eb2c44b5",
+      "system_prompt_without_workspace_sha256": "2d10dd30b6d1e900f510d55f0b79c7da105a748fc680cecb0bed77cc139e5105"
+    },
+    {
+      "id": "12-T09-r2-control",
+      "task": "T09",
+      "arm": "control",
+      "repeat": 2,
+      "runtime_revision": "1c9249af2b5bcaad2e1628c130a9e879c934196f",
+      "client": "CLI",
+      "execution_status": "observed",
+      "artifact_acceptance": false,
+      "completed_and_accepted": false,
+      "completion_status": "budget_exhausted",
+      "verification_status": "not_run",
+      "run_status": "finished",
+      "run_id": "39d5db9759744b9e8ceabae941bb08c9",
+      "token_usage": {
+        "prompt_tokens": 60554,
+        "completion_tokens": 1259
+      },
+      "provider_failure": null,
+      "changed_paths": [],
+      "criteria_unchanged": true,
+      "unrelated_changes": [],
+      "preservation_passed": true,
+      "completion_reason": "Total token budget cannot fit another model request after these tools.",
+      "tool_errors": [
+        "replace_text: Expected exactly one old_text match; found 0. Copy old_text exactly from the latest read_file content.",
+        "replace_text: Expected exactly one old_text match; found 0. Copy old_text exactly from the latest read_file content.",
+        "replace_text: Expected exactly one old_text match; found 0. Copy old_text exactly from the latest read_file content.",
+        "replace_text: Tool not executed: this turn has already stopped."
+      ],
+      "loop_latency_ms": 204435.3572499752,
+      "created_at": "2026-10-20T04:19:53.132911Z",
+      "finished_at": "2026-10-20T04:23:17.826411Z",
+      "manual_patch_repair": false,
+      "run_sha256": "3d4ffdabc03e0dd92f98d2a8886b371eed6d2fb2fc0175b9bfa6d580be56d508",
+      "acceptance_sha256": "94c66268a308e85ea6e5a1519fb1a84e6741c0580eb7f2453182973d6d4bdf51",
+      "tool_call_records": 9,
+      "exact_edit_errors": [
+        {
+          "old_text_sha256": "b5aef95e1089e638147758ca2d559171f6d4dc204ea161bc8fcd947e197e71c4",
+          "error": "Expected exactly one old_text match; found 0. Copy old_text exactly from the latest read_file content."
+        },
+        {
+          "old_text_sha256": "b5aef95e1089e638147758ca2d559171f6d4dc204ea161bc8fcd947e197e71c4",
+          "error": "Expected exactly one old_text match; found 0. Copy old_text exactly from the latest read_file content."
+        },
+        {
+          "old_text_sha256": "b5aef95e1089e638147758ca2d559171f6d4dc204ea161bc8fcd947e197e71c4",
+          "error": "Expected exactly one old_text match; found 0. Copy old_text exactly from the latest read_file content."
+        }
+      ],
+      "successful_exact_edits": 0,
+      "later_successful_exact_edit_after_mismatch": false,
+      "cli_response_timeout": true,
+      "model_response_records": 10,
+      "run_lifecycle_seconds": 204.6935,
+      "reported_token_limits_met": true,
+      "within_budget": true,
+      "budget_assessment_scope": "Sufficient observed upper bounds: complete reported usage, full run journal interval <=300s, response and tool-record counts within configured caps. Unknown/missing evidence is not a compliance claim; no hard return or backend-token attestation.",
+      "saved_system_prompt_sha256": "4a787bd5c08fbb183e04dd3994e3c0757ee3bb219f471895dfa2a9c899bf8e1f",
+      "system_prompt_without_workspace_sha256": "2d10dd30b6d1e900f510d55f0b79c7da105a748fc680cecb0bed77cc139e5105"
+    }
+  ],
+  "arms": {
+    "control": {
+      "scheduled": 6,
+      "graded": 6,
+      "artifact_accepted": 0,
+      "completed_and_accepted": 0,
+      "completion_status_counts": {
+        "budget_exhausted": 5,
+        "blocked": 1
+      },
+      "check_status_counts": {
+        "not_run": 6
+      },
+      "attempts_with_mismatch": 5,
+      "exact_mismatch_errors": 16,
+      "attempts_with_later_successful_exact_edit_after_mismatch": 0,
+      "known_within_budget": 6,
+      "usage_known_attempts": 6,
+      "sum_known_prompt_tokens": 326503,
+      "sum_known_completion_tokens": 6981
+    },
+    "treatment": {
+      "scheduled": 6,
+      "graded": 6,
+      "artifact_accepted": 6,
+      "completed_and_accepted": 4,
+      "completion_status_counts": {
+        "budget_exhausted": 2,
+        "completed": 4
+      },
+      "check_status_counts": {
+        "not_run": 2,
+        "passed": 4
+      },
+      "attempts_with_mismatch": 6,
+      "exact_mismatch_errors": 6,
+      "attempts_with_later_successful_exact_edit_after_mismatch": 6,
+      "known_within_budget": 6,
+      "usage_known_attempts": 6,
+      "sum_known_prompt_tokens": 289844,
+      "sum_known_completion_tokens": 7473
+    }
+  },
+  "pairs": [
+    {
+      "repeat": 1,
+      "task": "T01",
+      "control_artifact_acceptance": false,
+      "treatment_artifact_acceptance": true,
+      "tool_call_prefix_equal_through_first_mismatch": false
+    },
+    {
+      "repeat": 1,
+      "task": "T04",
+      "control_artifact_acceptance": false,
+      "treatment_artifact_acceptance": true,
+      "tool_call_prefix_equal_through_first_mismatch": true
+    },
+    {
+      "repeat": 1,
+      "task": "T09",
+      "control_artifact_acceptance": false,
+      "treatment_artifact_acceptance": true,
+      "tool_call_prefix_equal_through_first_mismatch": true
+    },
+    {
+      "repeat": 2,
+      "task": "T01",
+      "control_artifact_acceptance": false,
+      "treatment_artifact_acceptance": true,
+      "tool_call_prefix_equal_through_first_mismatch": null
+    },
+    {
+      "repeat": 2,
+      "task": "T04",
+      "control_artifact_acceptance": false,
+      "treatment_artifact_acceptance": true,
+      "tool_call_prefix_equal_through_first_mismatch": false
+    },
+    {
+      "repeat": 2,
+      "task": "T09",
+      "control_artifact_acceptance": false,
+      "treatment_artifact_acceptance": true,
+      "tool_call_prefix_equal_through_first_mismatch": true
+    }
+  ],
+  "limits": [
+    "Tasks selected after known failures; public development cohort, not held out.",
+    "Two repeats per arm/task, six pairs; no general or causal quality gain implied.",
+    "Rendered system prompts include different frozen absolute workspace paths (with arm names); equal offline base-profile hashes do not establish identical rendered requests.",
+    "Unknown failed usage remains unknown; no missing final evidence fabricated.",
+    "Cold-start every attempt, explicit client assignment and unchanged budgets; historical cohort is separate.",
+    "Full source/stores/traces remain local; no portable full-trace bundle."
+  ],
+  "final_audit": {
+    "sha256": "a9b5c4fc9ed6904149c5d99f428d4be54e340cdc609dafd4cbc7dbbbf09e5b61",
+    "artifact_grades_reproduced": 12,
+    "single_saved_run_per_attempt": true,
+    "protected_files_preserved": true,
+    "criteria_settings_profiles_matched": true,
+    "api_stopped_model_unloaded": true
+  },
+  "operator_journal_sha256": "2264f225d943598affbc98097867027d7bd1791067bd21ae1446a904af232159",
+  "operator_script_sha256": {
+    "audit-feedback-results.py": "4c27ac5d1cc8554f03650f887aebaf0f13a647847a23a111afea1930eaa036fd",
+    "build-feedback-public-result.py": "0ff1fe34740d043fae87558edaeb5cae1aaf214a2bcbb3b20cede97185a3b0e8",
+    "edit-feedback-live-server.py": "029b49d4ddba5bc9e9567363f694a2f3c3bf0bd3d9ddd5cf5cda0b1cde79265b",
+    "edit-feedback-ops.py": "7f2495b15e2029f26d0457f059d13f14b6cc48c0d711f39ebe07661c8517146a",
+    "write-feedback-report.py": "7b9c001335686d0c78456a482c29fb6e9ca22e4a963b5cab1b42e9d6a53724d6"
+  }
+}

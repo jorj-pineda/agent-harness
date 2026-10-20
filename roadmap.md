@@ -1,6 +1,6 @@
 # Roadmap: a coding harness for lower-tier models
 
-Updated: 2026-10-19
+Updated: 2026-10-20
 
 ## Current release decision
 
@@ -70,6 +70,22 @@ each arm. Both arms passed static gates and both scripted 90/90 matrices. These
 are mechanics evidence, not a new coding result. Review of the protocol/manifest
 and control exclusion remains required before dispatch. No model was loaded,
 no inference ran and the prior trial/release status is unchanged.
+
+**2026-10-20 UTC — Frozen feedback comparison observed:** all twelve reviewed
+attempts ran through their assigned real clients with unchanged criteria and
+limits. [Results](evals/projects/duodoro/EDIT_FEEDBACK_RESULTS.md): control **0/6
+accepted, 0/6 completed-and-accepted**; treatment **6/6 accepted, 4/6
+completed-and-accepted**. All saved artifact grades reproduced, protected files
+were preserved, and the owned API/model were stopped/unloaded. No coding repair,
+replacement attempt or Duodoro working-checkout edit occurred. Four operator
+lookup/cleanup/probe corrections are recorded separately. All twelve usage
+reports are known; seven CLI requests timed out while server-owned work continued.
+These selected public tasks and two repeats do not establish a general causal
+gain: rendered prompts contain differing absolute paths with arm names; two of
+five comparable pre-feedback tool prefixes diverge, and one control blocks before
+any edit. Original ten-task results and G2–G5 remain unchanged/unmet. Next work
+must address measurement identity and incomplete workflows explicitly, rather
+than expanding feature batches or declaring release readiness.
 
 ## Direction
 
