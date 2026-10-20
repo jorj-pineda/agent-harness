@@ -87,6 +87,23 @@ any edit. Original ten-task results and G2–G5 remain unchanged/unmet. Next wor
 must address measurement identity and incomplete workflows explicitly, rather
 than expanding feature batches or declaring release readiness.
 
+**2026-10-20 — Normalized request identity:** opt-in shared-loop traces now hash
+the actual rendered messages, exposed schemas and output allowance immediately
+before provider calls. Offline configured-runtime regressions expose different
+workspace paths despite equal base-prompt hashes, reproduce same-path identity,
+and retain all message/call details without changing model inputs. Legacy or
+unsupported non-JSON evidence stays unknown. This addresses observation of the
+feedback cohort's path confound; it does not fix experimental workspace identity,
+enforce a paired preflight, attest backend requests or establish a quality gain.
+API configured profiles remain base evidence; future client comparisons still
+need explicit equivalent-input preparation/review. No inference, new cohort,
+budget/context changes or Duodoro working-checkout edits. The duration workflow's
+total-token stops, original trial counts and release gates remain open.
+Validation: 52 focused and 1,334 offline tests passed (five live deselected),
+Ruff/format/mypy passed, and both scripted matrices passed 90/90 escalation
+decisions with contract labels and metric limits inspected. The existing Chroma
+deprecation warning remains; these checks validate evidence mechanics only.
+
 ## Direction
 
 Build a coding harness Jorge can use on real repositories with affordable hosted models and locally runnable models that struggle with coding-agent workflows. The harness should help those models inspect the right code, make focused edits, recover from errors, and verify their work within an explicit budget.

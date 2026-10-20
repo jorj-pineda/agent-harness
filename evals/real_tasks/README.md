@@ -209,6 +209,38 @@ other trace entries still contain sensitive source and are not credential-redact
 Trace computation consumes processing time under existing dispatch deadlines.
 No compaction, profile calibration or model-quality improvement is established.
 
+### Normalized request identity (2026-10-20)
+
+New opt-in `request` records include nullable `identity` with format
+`normalized-chat-request-v1`: SHA-256 digests for the complete rendered normalized
+message list, exposed tool schemas, and their combination with the actual
+`max_tokens` allowance. The loop computes these after request gates and before
+calling the provider, on every attempted request, including one that later fails.
+Prevented requests still have no request record. Legacy or non-JSON inputs have
+unknown identity (`null`); no digest is invented from stringified unsupported data.
+
+Canonical JSON sorts object keys, uses compact separators and UTF-8 without ASCII
+escaping, and rejects non-finite numbers. Arrays retain order. Message digests
+include all normalized `ChatMessage` fields, including roles, text, tool arguments,
+call IDs and tool names; schema digests include all `ToolSpec` fields. The combined
+digest covers an object with `format`, `messages`, `tools`, and `max_tokens` keys.
+Paths, newlines and call IDs are never removed or normalized. Equal base-prompt
+profile hashes are insufficient: workspace paths, memories, check instructions
+and prior messages can change the rendered request. The Duodoro feedback cohort
+demonstrated this distinction; its old records and outcomes remain unchanged.
+
+Compare fingerprints before interpreting a paired experiment, and inspect any
+difference instead of silently stripping arm/path information. This is observation,
+not an automatic comparison admission gate or a fix for workspace-path confounding.
+No new comparison is frozen or run by this change. Matching fingerprints identify
+only these normalized inputs; they exclude provider/model identity, temperature,
+provider-specific serialization/options, server defaults and hidden state. Preserve
+the separate runtime/model/configuration evidence. They do not prove deterministic
+sampling, request delivery, backend equivalence or quality improvement. Hashes do
+not provide secret redaction or access control; raw traces remain sensitive.
+Normal API profiles/payloads do not gain these fields; API cohort collectors must
+explicitly arrange equivalent preflight/trace collection before a future freeze.
+
 Named startup profiles use the same `Settings` binding as the API. The evaluator's
 explicit provider must match the selected profile; no fallback/selection occurs.
 `runtime_config.model_profile` records only the selected name/provider/model and
