@@ -182,6 +182,20 @@ plus Ruff, formatting and mypy. The existing Chroma deprecation warning remains;
 the installed coding-only smoke itself does not import Chroma. No evaluation
 behavior changed, so the scripted matrices were not rerun locally for this fix.
 
+## Fresh installation follow-up — 2026-10-20
+
+At `326e69c`, separate Python 3.11.15 and 3.14.5 environments on macOS arm64
+installed the built wheel and its lock-constrained dependencies without system
+site packages. Both passed dependency checks, actual console/API startup, panel
+asset serving, session/manual-checkpoint/configuration inspection and checkpoint
+review after restart. Zero coding runs/inference; fixture bytes/mode and shutdown
+were preserved. [Installation evidence](WHEEL_INSTALLATION.md) records cache
+misses, registry retries with unchanged constraints, a corrected operator shutdown
+assertion and retained hashes/logs. This supplies the narrow fresh-install evidence
+missing from the packaging regression, not unconstrained-dependency compatibility,
+interactive browser/model acceptance, G2 recovery or G5 release approval. Original
+trial outcomes and G2–G5 remain unchanged. Docs/data only; no new full gate run.
+
 ## Concrete audit findings and scope decisions
 
 | Finding | Classification | Disposition |
