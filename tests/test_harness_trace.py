@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import asyncio
+import hashlib
+import json
+from pathlib import Path
 
 import pytest
 
@@ -12,6 +15,7 @@ from harness.trace import (
     RequestFailureTrace,
     ResponseTrace,
     TurnTraceRecord,
+    request_identity,
 )
 from providers.base import ChatMessage, ToolCall
 from tests.test_harness_loop import FakeProvider, _echo_tool, _response
@@ -69,6 +73,22 @@ async def test_trace_reconstructs_requests_and_preserves_blank_recovery() -> Non
             assert record.message_count == len(transcript)
             assert record.estimated_prompt_tokens > 0
             assert record.max_tokens is None
+            messages, specs = provider.calls[requests]
+            payload = {
+                "format": "normalized-chat-request-v1",
+                "messages": [m.model_dump() for m in messages],
+                "tools": [t.model_dump() for t in specs or []],
+                "max_tokens": provider.max_tokens_seen[requests],
+            }
+            assert record.identity is not None
+            assert (
+                record.identity.request_sha256
+                == hashlib.sha256(
+                    json.dumps(
+                        payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+                    ).encode()
+                ).hexdigest()
+            )
             requests += 1
         elif record.kind == "response":
             transcript.append(
@@ -291,6 +311,100 @@ def test_footprint_uses_budget_math_and_caps_payload_free_rankings() -> None:
         )
     )
     assert legacy.footprint is None
+    assert legacy.identity is None
+
+
+def test_request_identity_preserves_inputs_but_canonicalizes_object_keys() -> None:
+    from providers.base import ToolSpec
+
+    messages = [
+        ChatMessage(role="system", content="Workspace root: /trial/control/fixture"),
+        ChatMessage(
+            role="assistant",
+            tool_calls=[ToolCall(id="one", name="read_file", arguments={"a": 1, "b": 2})],
+        ),
+        ChatMessage(role="tool", content="é\n", tool_call_id="one", tool_name="read_file"),
+    ]
+    tools = [ToolSpec(name="read_file", description="Read", parameters_schema={"a": 1, "b": 2})]
+    original = request_identity(messages, tools, None)
+    assert original is not None
+    reordered = [m.model_copy(deep=True) for m in messages]
+    reordered[1].tool_calls[0].arguments = {"b": 2, "a": 1}
+    assert request_identity(reordered, tools, None) == original
+    assert request_identity(messages, tools, 2048) != original
+    assert request_identity(list(reversed(messages)), tools, None) != original
+    changed_tool = tools[0].model_copy(update={"description": "Different schema description"})
+    assert request_identity(messages, [changed_tool], None) != original
+    for index, change in [
+        (0, {"content": "Workspace root: /trial/treatment/fixture"}),
+        (2, {"content": "é\\n"}),
+        (2, {"tool_call_id": "two"}),
+        (2, {"tool_name": "other_tool"}),
+        (2, {"role": "user"}),
+    ]:
+        altered = [m.model_copy(deep=True) for m in messages]
+        altered[index] = altered[index].model_copy(update=change)
+        assert request_identity(altered, tools, None) != original
+    serialized = original.model_dump_json()
+    for sensitive in ("/trial", "read_file", "é"):
+        assert sensitive not in serialized
+
+
+@pytest.mark.parametrize("unsupported", [object(), float("nan")])
+def test_non_json_request_identity_is_unknown(unsupported: object) -> None:
+    message = ChatMessage(
+        role="assistant", tool_calls=[ToolCall(id="x", name="echo", arguments={"x": unsupported})]
+    )
+    assert request_identity([message], [], None) is None
+
+
+async def test_configured_request_identity_detects_workspace_path_before_provider(
+    tmp_path: Path,
+) -> None:
+    from harness.config import Settings
+    from harness.runtime import build_registry, run_configured_turn
+    from memory import FactStore
+
+    identities = []
+    profiles = []
+
+    class InspectingProvider(FakeProvider):
+        def __init__(self, records: list[TurnTraceRecord]) -> None:
+            super().__init__([_response(content="Observed")])
+            self.records = records
+
+        async def chat(self, *args, **kwargs):
+            # The identity exists before inference, even if the provider fails.
+            assert self.records[0].kind == "request" and self.records[0].identity is not None
+            return await super().chat(*args, **kwargs)
+
+    with FactStore(tmp_path / "memory.db") as store:
+        for name in ("control", "treatment", "control"):
+            root = tmp_path / name
+            root.mkdir(exist_ok=True)
+            (root / "user.txt").write_text("preserved")
+            records: list[TurnTraceRecord] = []
+
+            await run_configured_turn(
+                session=Session(workspace_root=str(root)),
+                message="Inspect only",
+                provider=InspectingProvider(records),
+                registry=build_registry(fact_store=store, user_id="dev", workspace_root=str(root)),
+                fact_store=store,
+                user_id="dev",
+                settings=Settings(_env_file=None),
+                trace=records,
+                on_execution_profile=profiles.append,
+            )
+            first = records[0]
+            assert first.kind == "request" and first.identity is not None
+            identities.append(first.identity)
+            assert (root / "user.txt").read_text() == "preserved"
+    assert profiles[0].base_prompt_sha256 == profiles[1].base_prompt_sha256
+    assert identities[0].tool_specs_sha256 == identities[1].tool_specs_sha256
+    assert identities[0].messages_sha256 != identities[1].messages_sha256
+    assert identities[0] != identities[1]
+    assert identities[0] == identities[2]
 
 
 async def test_real_reads_reach_a_blocked_request_without_changing_user_work(tmp_path) -> None:

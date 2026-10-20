@@ -98,6 +98,10 @@ async def test_real_tool_edit_is_scored_from_final_files(tmp_path: Path) -> None
     assert result.runtime_config["context_limit_policy"] == "configured-min-v1"
     assert result.runtime_config["prompt_estimate_bytes_per_token"] == 4.5
     assert result.turn_trace[0]["footprint"]["prompt_estimate_bytes_per_token"] == 4.5
+    identity = result.turn_trace[0]["identity"]
+    assert identity["format"] == "normalized-chat-request-v1"
+    assert len(identity["request_sha256"]) == 64
+    assert all(r["identity"] is not None for r in result.turn_trace if r["kind"] == "request")
     assert result.runtime_config["max_workspace_diff_bytes"] == 64_000
     assert result.runtime_config["max_diff_snapshot_bytes"] == 2_000_000
     assert len(result.source_revision) == 64

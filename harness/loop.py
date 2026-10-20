@@ -53,6 +53,7 @@ from .trace import (
     ResponseTrace,
     TurnTraceRecord,
     prompt_footprint,
+    request_identity,
 )
 from .transcript import tool_batch_issue, transcript_block_reason
 
@@ -204,6 +205,7 @@ async def run_turn(
                     message_count=sent_count,
                     estimated_prompt_tokens=budget.estimate_prompt(session.messages, tool_specs),
                     max_tokens=allowance,
+                    identity=request_identity(session.messages, tool_specs, allowance),
                     footprint=prompt_footprint(session.messages, tool_specs, budget),
                     initial_messages=[m.model_copy(deep=True) for m in session.messages]
                     if iteration == 0
