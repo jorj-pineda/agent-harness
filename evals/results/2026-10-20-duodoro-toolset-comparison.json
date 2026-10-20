@@ -2,7 +2,7 @@
   "schema_version": 1,
   "evidence_kind": "real-cli-real-tools-selected-task-paired-comparison",
   "status": "in_progress",
-  "reported_at_utc": "2026-10-20T17:54:57.157274+00:00",
+  "reported_at_utc": "2026-10-20T17:58:51.704838+00:00",
   "freeze_pr": "https://github.com/jorj-pineda/agent-harness/pull/162",
   "freeze_sha256": "07f3db7c47816bb36c87757e74af9e9bd971b535ef09a9f22ed6e68a1be69f6b",
   "runtime_base": "ce5d54c7394c476afcee29a8981fecd96631cc9f",
@@ -12,7 +12,7 @@
     "ollama_version": "0.33.2"
   },
   "scheduled_attempts": 4,
-  "graded_attempts": 1,
+  "graded_attempts": 2,
   "local_evidence_directory": "/Users/jorge/.local/share/agent-harness/trials/duodoro-toolset-pl69m2cm",
   "tasks": [
     {
@@ -410,17 +410,400 @@
       "repeat": 1,
       "runtime_revision": "ce5d54c7394c476afcee29a8981fecd96631cc9f",
       "execution_workspace": "/Users/jorge/.local/share/agent-harness/trials/duodoro-toolset-pl69m2cm/workspace",
-      "execution_status": "submitted",
-      "run_id": null,
-      "run_status": null,
-      "artifact_acceptance": null,
-      "completed_and_accepted": null,
-      "completion_status": null,
-      "verification_status": null,
-      "token_usage": null,
+      "execution_status": "observed",
+      "run_id": "7346d387bdd5486f8a47865053d09e4a",
+      "run_status": "finished",
+      "artifact_acceptance": true,
+      "completed_and_accepted": true,
+      "completion_status": "completed",
+      "verification_status": "passed",
+      "token_usage": {
+        "prompt_tokens": 58967,
+        "completion_tokens": 1132
+      },
       "provider_failure": null,
-      "requested_read_batches": null,
-      "successful_read_batches": null
+      "requested_read_batches": 0,
+      "successful_read_batches": 0,
+      "completion_reason": null,
+      "changed_paths": [
+        "client/src/lib/format.ts"
+      ],
+      "unrelated_changes": [],
+      "preservation_passed": true,
+      "first_request_identity_matched": true,
+      "criteria_unchanged": true,
+      "manual_patch_repair": false,
+      "run_sha256": "12582e0c588981662714cb6ad126a0d1102b903ef6ae8e0cfa01554c911e5774",
+      "acceptance_sha256": "b3544cf48b2956e9fa5c568aef79f27f633d8ad900ef9d06f8bc9a30846f59bd",
+      "budget_evidence": {
+        "events": [
+          {
+            "kind": "request",
+            "iteration": 0,
+            "message_count": 2,
+            "estimated_prompt_tokens": 2796,
+            "heuristic_prompt_tokens": 2796,
+            "anchor_adjustment_tokens": 0,
+            "max_tokens": 2048,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "dfcd4d76b89cda22f17f7e68368c01c17150df5e00a924186c310d2eb3450838",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+              "request_sha256": "f23fbd717755f9a61c1c6ad39a09eae59c370a6bac76ea9b92be115873b720f7"
+            },
+            "usage": null,
+            "prompt_tokens_used": 0,
+            "completion_tokens_used": 0
+          },
+          {
+            "kind": "response",
+            "iteration": 0,
+            "message_count": 2,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "anchor_adjustment_tokens": null,
+            "max_tokens": null,
+            "identity": null,
+            "usage": {
+              "prompt_tokens": 1731,
+              "completion_tokens": 18
+            },
+            "prompt_tokens_used": 1731,
+            "completion_tokens_used": 18
+          },
+          {
+            "kind": "request",
+            "iteration": 1,
+            "message_count": 4,
+            "estimated_prompt_tokens": 8613,
+            "heuristic_prompt_tokens": 8613,
+            "anchor_adjustment_tokens": 0,
+            "max_tokens": 2048,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "6aa02829d6874ea44ae739a60b23a2fe8fdd02c102e1d83bd42cf054aa4b4577",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+              "request_sha256": "ad45734713fcf3900414327cd3184a6338a0c21b37e7b48508fd5496807b9457"
+            },
+            "usage": null,
+            "prompt_tokens_used": 1731,
+            "completion_tokens_used": 18
+          },
+          {
+            "kind": "response",
+            "iteration": 1,
+            "message_count": 4,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "anchor_adjustment_tokens": null,
+            "max_tokens": null,
+            "identity": null,
+            "usage": {
+              "prompt_tokens": 6071,
+              "completion_tokens": 23
+            },
+            "prompt_tokens_used": 7802,
+            "completion_tokens_used": 41
+          },
+          {
+            "kind": "request",
+            "iteration": 2,
+            "message_count": 6,
+            "estimated_prompt_tokens": 9966,
+            "heuristic_prompt_tokens": 9966,
+            "anchor_adjustment_tokens": 0,
+            "max_tokens": 2048,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "3235d0367861af01e70fed0e460db9fb1686c19b23d6ed36a1e6ae748edeac69",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+              "request_sha256": "7b98c60354752b2d3c0eee84dba60a749c1cb86469715b0d54f14493b1c53f94"
+            },
+            "usage": null,
+            "prompt_tokens_used": 7802,
+            "completion_tokens_used": 41
+          },
+          {
+            "kind": "response",
+            "iteration": 2,
+            "message_count": 6,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "anchor_adjustment_tokens": null,
+            "max_tokens": null,
+            "identity": null,
+            "usage": {
+              "prompt_tokens": 7539,
+              "completion_tokens": 27
+            },
+            "prompt_tokens_used": 15341,
+            "completion_tokens_used": 68
+          },
+          {
+            "kind": "request",
+            "iteration": 3,
+            "message_count": 8,
+            "estimated_prompt_tokens": 10222,
+            "heuristic_prompt_tokens": 10222,
+            "anchor_adjustment_tokens": 0,
+            "max_tokens": 2048,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "16559fe9c0c7e9933d0f149e44a5a0f826ef9cd20436405b0eac0d82b5d50a2d",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+              "request_sha256": "782bd316fffb6439072b99c4db129436b77195e0572e814461261793de1129d8"
+            },
+            "usage": null,
+            "prompt_tokens_used": 15341,
+            "completion_tokens_used": 68
+          },
+          {
+            "kind": "response",
+            "iteration": 3,
+            "message_count": 8,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "anchor_adjustment_tokens": null,
+            "max_tokens": null,
+            "identity": null,
+            "usage": {
+              "prompt_tokens": 7862,
+              "completion_tokens": 29
+            },
+            "prompt_tokens_used": 23203,
+            "completion_tokens_used": 97
+          },
+          {
+            "kind": "request",
+            "iteration": 4,
+            "message_count": 10,
+            "estimated_prompt_tokens": 10794,
+            "heuristic_prompt_tokens": 10794,
+            "anchor_adjustment_tokens": 0,
+            "max_tokens": 2048,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "b7211e23bbce5cc9885def0d0845d245ba677de5021128d87c2f84e6d6bd0860",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+              "request_sha256": "a864c3912aaec24115172507d8ce1dd6328425109301228fdce05ad1f73bb112"
+            },
+            "usage": null,
+            "prompt_tokens_used": 23203,
+            "completion_tokens_used": 97
+          },
+          {
+            "kind": "response",
+            "iteration": 4,
+            "message_count": 10,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "anchor_adjustment_tokens": null,
+            "max_tokens": null,
+            "identity": null,
+            "usage": {
+              "prompt_tokens": 8589,
+              "completion_tokens": 127
+            },
+            "prompt_tokens_used": 31792,
+            "completion_tokens_used": 224
+          },
+          {
+            "kind": "request",
+            "iteration": 5,
+            "message_count": 12,
+            "estimated_prompt_tokens": 11075,
+            "heuristic_prompt_tokens": 11075,
+            "anchor_adjustment_tokens": 0,
+            "max_tokens": 2048,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "80d8ea5a3cfab1b880c3d01c283bf37646a7281514e907916f505cb327cba753",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+              "request_sha256": "d60b194bd24a6348b0fbb67992a663be8e11046c6e36d27d0f13858dd91f65a3"
+            },
+            "usage": null,
+            "prompt_tokens_used": 31792,
+            "completion_tokens_used": 224
+          },
+          {
+            "kind": "response",
+            "iteration": 5,
+            "message_count": 12,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "anchor_adjustment_tokens": null,
+            "max_tokens": null,
+            "identity": null,
+            "usage": {
+              "prompt_tokens": 8833,
+              "completion_tokens": 246
+            },
+            "prompt_tokens_used": 40625,
+            "completion_tokens_used": 470
+          },
+          {
+            "kind": "request",
+            "iteration": 6,
+            "message_count": 14,
+            "estimated_prompt_tokens": 11336,
+            "heuristic_prompt_tokens": 11336,
+            "anchor_adjustment_tokens": 0,
+            "max_tokens": 2048,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "78b031794bdb13257787cacc07398a4c18c2d9df94bd503d30b9f2c603ce8804",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+              "request_sha256": "f2b39d081d48b44bc669146a9041b5ff08809e95b7d80877b035a3c5ed82c8a3"
+            },
+            "usage": null,
+            "prompt_tokens_used": 40625,
+            "completion_tokens_used": 470
+          },
+          {
+            "kind": "response",
+            "iteration": 6,
+            "message_count": 14,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "anchor_adjustment_tokens": null,
+            "max_tokens": null,
+            "identity": null,
+            "usage": {
+              "prompt_tokens": 9107,
+              "completion_tokens": 45
+            },
+            "prompt_tokens_used": 49732,
+            "completion_tokens_used": 515
+          },
+          {
+            "kind": "request",
+            "iteration": 7,
+            "message_count": 16,
+            "estimated_prompt_tokens": 11464,
+            "heuristic_prompt_tokens": 11464,
+            "anchor_adjustment_tokens": 0,
+            "max_tokens": 2048,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "b515a38cbe5e5dc6135b76b3e974fb5e5f18c26b1f873b8f0b5ed29a6c878984",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+              "request_sha256": "3989c074f5c0f9c3d513087e32f52fbc5c8a05ebde5ff8f2704f79c25355e652"
+            },
+            "usage": null,
+            "prompt_tokens_used": 49732,
+            "completion_tokens_used": 515
+          },
+          {
+            "kind": "response",
+            "iteration": 7,
+            "message_count": 16,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "anchor_adjustment_tokens": null,
+            "max_tokens": null,
+            "identity": null,
+            "usage": {
+              "prompt_tokens": 9235,
+              "completion_tokens": 617
+            },
+            "prompt_tokens_used": 58967,
+            "completion_tokens_used": 1132
+          }
+        ],
+        "observed_events": 16,
+        "events_truncated": false,
+        "read_only": true,
+        "scope_note": "Bounded prefix of normalized request attempts, reported response usage and token-gate stops. Request precedes delivery; response usage is a provider report, not backend attestation. Failure usage is unknown; a request without a response may have consumed tokens. Missing/truncated evidence is not zero usage or proven budget compliance. No messages, paths, call IDs, tool arguments/results or exception text are stored here. Fingerprints cover normalized inputs only; see the separate configured profile for limits/provider identity. Wall/tool/iteration stops are not token-gate events. Not completion, acceptance, replay or permission to resume."
+      },
+      "request_attempts_observed": 8,
+      "responses_observed": 8,
+      "known_response_usage_prefix": [
+        {
+          "prompt_tokens": 1731,
+          "completion_tokens": 18
+        },
+        {
+          "prompt_tokens": 6071,
+          "completion_tokens": 23
+        },
+        {
+          "prompt_tokens": 7539,
+          "completion_tokens": 27
+        },
+        {
+          "prompt_tokens": 7862,
+          "completion_tokens": 29
+        },
+        {
+          "prompt_tokens": 8589,
+          "completion_tokens": 127
+        },
+        {
+          "prompt_tokens": 8833,
+          "completion_tokens": 246
+        },
+        {
+          "prompt_tokens": 9107,
+          "completion_tokens": 45
+        },
+        {
+          "prompt_tokens": 9235,
+          "completion_tokens": 617
+        }
+      ],
+      "cli_response_timeout": true,
+      "run_created_at": "2026-10-20T17:54:57.196159Z",
+      "run_finished_at": "2026-10-20T17:58:07.965570Z",
+      "run_lifecycle_seconds": 190.769411,
+      "archive_sha256": "49d6d71333f1a676c9b486b04bf0e3c5876303e7c0ca58bd2373bf1b280b3729",
+      "current_transcript_available": true,
+      "archived_batch_details": [],
+      "transcript_tool_record_alignment": true,
+      "tool_record_count": 7,
+      "tool_errors": [],
+      "loop_latency_ms": 190550.18158394098,
+      "usage_known": true,
+      "observed_budget_upper_bounds_met": true,
+      "cleanup": {
+        "api_stopped": true,
+        "model_unloaded": true,
+        "workspace_archived": true
+      },
+      "edit_tool_records": [
+        {
+          "name": "write_file",
+          "path": "client/src/lib/format.ts",
+          "error": null,
+          "interrupted": false,
+          "result_available": true
+        }
+      ],
+      "successful_target_write_file": true,
+      "normalized_tool_batches": [
+        [
+          "read_file"
+        ],
+        [
+          "list_dir"
+        ],
+        [
+          "read_file"
+        ],
+        [
+          "read_file"
+        ],
+        [
+          "emit_plan"
+        ],
+        [
+          "write_file"
+        ],
+        [
+          "run_command"
+        ],
+        []
+      ],
+      "pre_request_token_stop": null
     },
     {
       "id": "03-T01-r2-whole_file",
@@ -476,15 +859,17 @@
     },
     "whole_file": {
       "scheduled": 2,
-      "graded": 0,
-      "artifact_accepted": 0,
-      "completed_and_accepted": 0,
-      "completion_status_counts": {},
-      "attempts_with_successful_target_write_file": 0,
+      "graded": 1,
+      "artifact_accepted": 1,
+      "completed_and_accepted": 1,
+      "completion_status_counts": {
+        "completed": 1
+      },
+      "attempts_with_successful_target_write_file": 1,
       "attempts_with_observed_read_batch": 0,
       "attempts_with_successful_read_batch": 0,
       "batch_coverage_unknown_attempts": 0,
-      "usage_known_attempts": 0
+      "usage_known_attempts": 1
     }
   },
   "limits": [
