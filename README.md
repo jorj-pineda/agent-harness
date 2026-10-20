@@ -21,9 +21,12 @@ read-only by default. Cancellation waits for owned cleanup; guarded continuation
 checks scoped evidence and cannot certify all external/dependency state.
 
 For the current go/no-go assessment, start with the
-[release-readiness audit](RELEASE_READINESS.md). The controlled source-checkout
-trial and ten-task agreement are next; full personal-use release criteria remain
-open. The current wheel omits panel assets, so use the source checkout for the
+[release-readiness audit](RELEASE_READINESS.md). The frozen ten-task trial produced
+2/10 accepted artifacts and 1/10 completed-and-accepted: a no-go for its unattended
+task envelope. The selected [same-root read-batching comparison](evals/projects/duodoro/BATCH_READ_RESULTS.md)
+also completed no workflows (0/2 per arm); the batching hint never activated in
+available normalized history. Production prompts and release gates remain unchanged.
+The current wheel omits panel assets, so use the source checkout for the
 panel until packaged installation is fixed and validated.
 
 Read [roadmap.md](roadmap.md) for remaining acceptance criteria and
@@ -31,8 +34,8 @@ Read [roadmap.md](roadmap.md) for remaining acceptance criteria and
 [evals/BASELINES.md](evals/BASELINES.md) distinguish independently accepted patches
 from completed/checked turns. Offline matrices validate scripted contracts, and
 `--live` matrices use real inference with simulated tools. Neither establishes
-real coding quality. Repeated held-out comparisons and the ten-task real-project
-workflow remain open. Historical demo results retain their original limitations.
+real coding quality. Repeated held-out comparisons and the ten-task acceptance
+target remain unmet. Historical demo results retain their original limitations.
 
 ## Architecture
 

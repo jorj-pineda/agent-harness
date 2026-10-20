@@ -152,6 +152,27 @@ request-count hypothesis, not content removal or measured quality. Review/merge
 and a subsequent execution instruction remain required; historical results and
 release gates remain unchanged. No Duodoro working-checkout edits or paid calls.
 
+**2026-10-20 — Frozen same-root read-batching comparison observed:** all four
+reviewed T01 attempts ran through the actual CLI with unchanged inputs/criteria/
+limits, a shared literal workspace path and matching guarded first identities.
+[Results](evals/projects/duodoro/BATCH_READ_RESULTS.md): control **0/2 accepted,
+0/2 completed-and-accepted**; treatment **2/2 accepted, 0/2 completed-and-accepted**.
+All four used seven requests and stopped at the total-token estimate gate before
+checks. No requested or successful read batches appeared in available normalized
+history; raw suppressed/unarchived provider calls are not reconstructed. The
+intended batching mechanism did not activate, so do not attribute accepted-patch
+differences to batching or ship the experimental sentence. Production prompts,
+approved limits, original trial/comparison outcomes and G2–G5 remain unchanged.
+External regrades reproduced all four outcomes; protected files, frozen settings/
+criteria, runtime/environment hashes, profiles and one durable run per attempt
+passed audit. Every CLI response timed out while owned work continued; read-only
+lookup recovered final evidence without resubmission. All artifacts are archived,
+the owned API stopped and Gemma unloaded; no coding repair, Duodoro working-checkout
+edit, paid call or Docker action occurred. This docs/data report does not rerun
+preparation's G0. Select a narrower workflow or separately reviewed context/request
+intervention with retention/activation criteria before more inference; this does
+not complete broader roadmap milestones or establish a general quality gain.
+
 ## Direction
 
 Build a coding harness Jorge can use on real repositories with affordable hosted models and locally runnable models that struggle with coding-agent workflows. The harness should help those models inspect the right code, make focused edits, recover from errors, and verify their work within an explicit budget.

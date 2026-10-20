@@ -2004,3 +2004,34 @@ docs/data investigation did not rerun the full gate/matrices. Original ten-task
 and paired-comparison counts, unmet release gates and path-confound limits remain
 unchanged. The recipe/raw inputs remain local at the diagnosis's recorded path;
 no inference, paid calls, Duodoro working-checkout edits or Docker actions ran.
+
+## 2026-10-20 — frozen same-root Gemma read-batching comparison
+
+[Full report](projects/duodoro/BATCH_READ_RESULTS.md) and
+[all four observations](results/2026-10-20-duodoro-batch-read-comparison.json).
+Actual CLI T01 submissions used pinned control `45f4182` and local treatment
+`1f7e0f6`, which adds only one independent-read-batching sentence. Common literal
+workspace paths and the frozen first-request assertion matched before forwarding;
+all instruction/tool text and approved limits remained intact.
+
+Control produced **0/2 accepted artifacts, 0/2 completed-and-accepted**; treatment
+produced **2/2 accepted, 0/2 completed-and-accepted**. All four made seven requests,
+stopped at the total-token estimate gate and ran no check. No read batch appeared
+in normalized archived history; raw suppressed/unarchived calls remain outside
+that coverage. This is not evidence that batching improved coding or efficiency.
+All usage is known: 205,942 prompt / 3,266 output tokens across four attempts.
+Every CLI response timed out; saved read-only inspection recovered outcomes without
+resubmission. No operator coding rescue, artifact repair or replacement attempt.
+
+Final external regrades reproduced every artifact grade. Runtime/environment,
+settings/criteria/reference/staging, first identities, captured profiles, single-run
+stores and protected-file audits passed. All four full workspaces are preserved;
+the owned API stopped and Gemma was unloaded, retaining the existing Ollama service.
+Local evidence/recipes/hashes and limitations are documented in the report. No
+Duodoro working-checkout edits, paid calls, model switches or Docker actions.
+
+Keep the production prompt and approved gates. This one selected public task and
+two repeats per arm do not establish a general/causal or held-out gain. Original
+ten-task and feedback comparison results and G2–G5 remain unchanged/unmet. This
+docs/data report did not rerun preparation's two 1,342-test offline gates, static
+checks or both scripted 90/90 matrices per arm; those remain mechanics evidence.
