@@ -1598,6 +1598,11 @@ gate have a separate `budget_stop` record. These expose message/schema estimates
 anchor adjustment and the ten largest payloads by index/role/tool name, without
 copying raw source/arguments into the footprint. Existing raw traces remain sensitive.
 Historical reports stay unchanged; old request records have no invented footprint.
+New request traces also fingerprint the rendered normalized messages, tools and
+output allowance before provider dispatch. Unlike the base-prompt profile hash,
+these retain differing workspace paths and injected context. Old/missing identities
+remain unknown. These opt-in hashes do not enforce paired-input equality or attest
+provider wire/backend equivalence; no API profile or model input changes.
 See [trace evidence](evals/real_tasks/README.md) for coverage and estimate limits.
 This supplies context-pressure diagnostics; it does not compact context, change
 budgets or scoring, or demonstrate better model coding quality.
