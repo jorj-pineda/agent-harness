@@ -1984,3 +1984,23 @@ does not rerun preparation's G0: treatment's 1,330 offline passes and control's
 1,325 common passes (five explicit diagnostic exclusions, plus five live exclusions
 in each arm), static checks and both scripted 90/90 matrices per arm remain
 historical mechanics evidence. The public report is not a portable full-trace kit.
+
+## 2026-10-20 — offline duration budget diagnosis (no inference)
+
+[Diagnosis](projects/duodoro/DURATION_BUDGET_DIAGNOSIS.md) and
+[metadata](results/2026-10-20-duodoro-duration-budget-diagnosis.json) replay both
+accepted-but-incomplete T01 treatment runs at pinned runtime `5974d22`. Each has
+52,943 reported total tokens used, 11,057 remaining, and a 12,762-token final prompt
+heuristic plus a 256 minimum output reservation. The original gate rejects with
+the exact saved reason even without reconstructing a reported anchor. The root
+instruction result is the largest repeated payload (57.09% of final message bytes),
+not a measured percentage of backend tokens. Seven request heuristics and null
+per-request reported usage remain distinct. No instruction removal, continuation,
+patch repair, calibration, budget change or new model result is implied.
+
+Two offline recipe executions produced identical metadata; runtime/run/settings/
+schema hashes matched. Existing context/trace regressions passed 27 tests. This
+docs/data investigation did not rerun the full gate/matrices. Original ten-task
+and paired-comparison counts, unmet release gates and path-confound limits remain
+unchanged. The recipe/raw inputs remain local at the diagnosis's recorded path;
+no inference, paid calls, Duodoro working-checkout edits or Docker actions ran.

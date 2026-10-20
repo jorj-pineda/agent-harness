@@ -1,0 +1,457 @@
+{
+  "evidence_kind": "offline-recorded-transcript-sizing-and-gate-replay",
+  "inference": false,
+  "runtime_revision": "5974d2201cb12829de2b593b602c649515e98b0d",
+  "freeze_sha256": "208d8241cf9d2a20859aedd15e792f273d928b22fa54ab2261a43c784d5f13a8",
+  "recipe_sha256": "40d8c95cc3feb7db972b2e8f1e64a6c3aea839bed5fc351256a186eb52bdec2e",
+  "rows": [
+    {
+      "id": "02-T01-r1-treatment",
+      "run_id": "239ee99382434666bb212ad5a6ae69b9",
+      "run_sha256": "4822dfb59372955a685ddf23845e3cdb3b31085b90814f0b104436fd31e65dd0",
+      "archive_sha256": "21f0b96669df43fa31d3e650d8a676983ad18efbcb95ed9c057837ed0ccbc96d",
+      "settings_sha256": "bcdfa4b6a92f9e1617cdc54b9d6fba0897d66b8dcdd16c3f618fcb5cdda34d08",
+      "tool_specs_sha256": "ed9513f8ec9f445e896debdce70694aec434cf29756ba7c42d06f0557c029db2",
+      "artifact_acceptance": true,
+      "completion_status": "budget_exhausted",
+      "verification_status": "not_run",
+      "reported_usage": {
+        "prompt_tokens": 51679,
+        "completion_tokens": 1264
+      },
+      "requests": [
+        {
+          "request": 1,
+          "message_count": 2,
+          "heuristic_prompt_tokens": 3129,
+          "reported_request_prompt_tokens": null,
+          "reported_request_output_tokens": null
+        },
+        {
+          "request": 2,
+          "message_count": 4,
+          "heuristic_prompt_tokens": 8946,
+          "reported_request_prompt_tokens": null,
+          "reported_request_output_tokens": null
+        },
+        {
+          "request": 3,
+          "message_count": 6,
+          "heuristic_prompt_tokens": 10299,
+          "reported_request_prompt_tokens": null,
+          "reported_request_output_tokens": null
+        },
+        {
+          "request": 4,
+          "message_count": 8,
+          "heuristic_prompt_tokens": 10555,
+          "reported_request_prompt_tokens": null,
+          "reported_request_output_tokens": null
+        },
+        {
+          "request": 5,
+          "message_count": 10,
+          "heuristic_prompt_tokens": 11127,
+          "reported_request_prompt_tokens": null,
+          "reported_request_output_tokens": null
+        },
+        {
+          "request": 6,
+          "message_count": 12,
+          "heuristic_prompt_tokens": 11431,
+          "reported_request_prompt_tokens": null,
+          "reported_request_output_tokens": null
+        },
+        {
+          "request": 7,
+          "message_count": 14,
+          "heuristic_prompt_tokens": 12027,
+          "reported_request_prompt_tokens": null,
+          "reported_request_output_tokens": null
+        }
+      ],
+      "messages": [
+        {
+          "message_index": 0,
+          "role": "system",
+          "label": "system",
+          "heuristic_payload_bytes": 886,
+          "sent_request_occurrences": 7,
+          "repeated_heuristic_payload_bytes": 6202
+        },
+        {
+          "message_index": 1,
+          "role": "user",
+          "label": "user",
+          "heuristic_payload_bytes": 853,
+          "sent_request_occurrences": 7,
+          "repeated_heuristic_payload_bytes": 5971
+        },
+        {
+          "message_index": 2,
+          "role": "assistant",
+          "label": "assistant",
+          "heuristic_payload_bytes": 30,
+          "sent_request_occurrences": 6,
+          "repeated_heuristic_payload_bytes": 180
+        },
+        {
+          "message_index": 3,
+          "role": "tool",
+          "label": "read_file:AGENTS.md",
+          "heuristic_payload_bytes": 17396,
+          "sent_request_occurrences": 6,
+          "repeated_heuristic_payload_bytes": 104376
+        },
+        {
+          "message_index": 4,
+          "role": "assistant",
+          "label": "assistant",
+          "heuristic_payload_bytes": 34,
+          "sent_request_occurrences": 5,
+          "repeated_heuristic_payload_bytes": 170
+        },
+        {
+          "message_index": 5,
+          "role": "tool",
+          "label": "list_dir",
+          "heuristic_payload_bytes": 4003,
+          "sent_request_occurrences": 5,
+          "repeated_heuristic_payload_bytes": 20015
+        },
+        {
+          "message_index": 6,
+          "role": "assistant",
+          "label": "assistant",
+          "heuristic_payload_bytes": 45,
+          "sent_request_occurrences": 4,
+          "repeated_heuristic_payload_bytes": 180
+        },
+        {
+          "message_index": 7,
+          "role": "tool",
+          "label": "read_file:client/src/lib/format.ts",
+          "heuristic_payload_bytes": 698,
+          "sent_request_occurrences": 4,
+          "repeated_heuristic_payload_bytes": 2792
+        },
+        {
+          "message_index": 8,
+          "role": "assistant",
+          "label": "assistant",
+          "heuristic_payload_bytes": 50,
+          "sent_request_occurrences": 3,
+          "repeated_heuristic_payload_bytes": 150
+        },
+        {
+          "message_index": 9,
+          "role": "tool",
+          "label": "read_file:client/src/lib/format.test.ts",
+          "heuristic_payload_bytes": 1643,
+          "sent_request_occurrences": 3,
+          "repeated_heuristic_payload_bytes": 4929
+        },
+        {
+          "message_index": 10,
+          "role": "assistant",
+          "label": "assistant",
+          "heuristic_payload_bytes": 435,
+          "sent_request_occurrences": 2,
+          "repeated_heuristic_payload_bytes": 870
+        },
+        {
+          "message_index": 11,
+          "role": "tool",
+          "label": "emit_plan",
+          "heuristic_payload_bytes": 452,
+          "sent_request_occurrences": 2,
+          "repeated_heuristic_payload_bytes": 904
+        },
+        {
+          "message_index": 12,
+          "role": "assistant",
+          "label": "assistant",
+          "heuristic_payload_bytes": 1374,
+          "sent_request_occurrences": 1,
+          "repeated_heuristic_payload_bytes": 1374
+        },
+        {
+          "message_index": 13,
+          "role": "tool",
+          "label": "replace_text",
+          "heuristic_payload_bytes": 391,
+          "sent_request_occurrences": 1,
+          "repeated_heuristic_payload_bytes": 391
+        },
+        {
+          "message_index": 14,
+          "role": "assistant",
+          "label": "assistant",
+          "heuristic_payload_bytes": 1324,
+          "sent_request_occurrences": 0,
+          "repeated_heuristic_payload_bytes": 0
+        },
+        {
+          "message_index": 15,
+          "role": "tool",
+          "label": "replace_text",
+          "heuristic_payload_bytes": 855,
+          "sent_request_occurrences": 0,
+          "repeated_heuristic_payload_bytes": 0
+        }
+      ],
+      "schema_heuristic_tokens_per_request": 2541,
+      "final_heuristic_prompt_tokens": 12762,
+      "final_message_payload_bytes": 30469,
+      "agents_final_payload_fraction": 0.5709409563818963,
+      "remaining_total_tokens": 11057,
+      "min_request_output_tokens": 256,
+      "required_total_room": 13018,
+      "shortfall_tokens": 1961,
+      "gate_replay": {
+        "status": "budget_exhausted",
+        "reason": "Estimated next request of ~12762 prompt tokens does not fit the remaining total token budget (64000 per turn).",
+        "reported_anchor_reconstructed": false,
+        "heuristic_alone_reproduces_recorded_stop": true
+      },
+      "tool_call_sequence": [
+        "read_file",
+        "list_dir",
+        "read_file",
+        "read_file",
+        "emit_plan",
+        "replace_text",
+        "replace_text"
+      ],
+      "per_request_usage_available": false
+    },
+    {
+      "id": "07-T01-r2-treatment",
+      "run_id": "291721bb6a8043aa860b052681f2e632",
+      "run_sha256": "543bf2a08a9252120e9819246a6de972c577395a71145045ef856da86f8331ea",
+      "archive_sha256": "fb1bf570226aa875b07fd5d2aaf94e341c48ea9c78616c3fc458df45ca1b25bf",
+      "settings_sha256": "029c53849647f15fa6d432994e1d96801be2bb20eda3cc2a3e82f27eea8412ba",
+      "tool_specs_sha256": "ed9513f8ec9f445e896debdce70694aec434cf29756ba7c42d06f0557c029db2",
+      "artifact_acceptance": true,
+      "completion_status": "budget_exhausted",
+      "verification_status": "not_run",
+      "reported_usage": {
+        "prompt_tokens": 51679,
+        "completion_tokens": 1264
+      },
+      "requests": [
+        {
+          "request": 1,
+          "message_count": 2,
+          "heuristic_prompt_tokens": 3129,
+          "reported_request_prompt_tokens": null,
+          "reported_request_output_tokens": null
+        },
+        {
+          "request": 2,
+          "message_count": 4,
+          "heuristic_prompt_tokens": 8946,
+          "reported_request_prompt_tokens": null,
+          "reported_request_output_tokens": null
+        },
+        {
+          "request": 3,
+          "message_count": 6,
+          "heuristic_prompt_tokens": 10299,
+          "reported_request_prompt_tokens": null,
+          "reported_request_output_tokens": null
+        },
+        {
+          "request": 4,
+          "message_count": 8,
+          "heuristic_prompt_tokens": 10555,
+          "reported_request_prompt_tokens": null,
+          "reported_request_output_tokens": null
+        },
+        {
+          "request": 5,
+          "message_count": 10,
+          "heuristic_prompt_tokens": 11127,
+          "reported_request_prompt_tokens": null,
+          "reported_request_output_tokens": null
+        },
+        {
+          "request": 6,
+          "message_count": 12,
+          "heuristic_prompt_tokens": 11431,
+          "reported_request_prompt_tokens": null,
+          "reported_request_output_tokens": null
+        },
+        {
+          "request": 7,
+          "message_count": 14,
+          "heuristic_prompt_tokens": 12027,
+          "reported_request_prompt_tokens": null,
+          "reported_request_output_tokens": null
+        }
+      ],
+      "messages": [
+        {
+          "message_index": 0,
+          "role": "system",
+          "label": "system",
+          "heuristic_payload_bytes": 886,
+          "sent_request_occurrences": 7,
+          "repeated_heuristic_payload_bytes": 6202
+        },
+        {
+          "message_index": 1,
+          "role": "user",
+          "label": "user",
+          "heuristic_payload_bytes": 853,
+          "sent_request_occurrences": 7,
+          "repeated_heuristic_payload_bytes": 5971
+        },
+        {
+          "message_index": 2,
+          "role": "assistant",
+          "label": "assistant",
+          "heuristic_payload_bytes": 30,
+          "sent_request_occurrences": 6,
+          "repeated_heuristic_payload_bytes": 180
+        },
+        {
+          "message_index": 3,
+          "role": "tool",
+          "label": "read_file:AGENTS.md",
+          "heuristic_payload_bytes": 17396,
+          "sent_request_occurrences": 6,
+          "repeated_heuristic_payload_bytes": 104376
+        },
+        {
+          "message_index": 4,
+          "role": "assistant",
+          "label": "assistant",
+          "heuristic_payload_bytes": 34,
+          "sent_request_occurrences": 5,
+          "repeated_heuristic_payload_bytes": 170
+        },
+        {
+          "message_index": 5,
+          "role": "tool",
+          "label": "list_dir",
+          "heuristic_payload_bytes": 4003,
+          "sent_request_occurrences": 5,
+          "repeated_heuristic_payload_bytes": 20015
+        },
+        {
+          "message_index": 6,
+          "role": "assistant",
+          "label": "assistant",
+          "heuristic_payload_bytes": 45,
+          "sent_request_occurrences": 4,
+          "repeated_heuristic_payload_bytes": 180
+        },
+        {
+          "message_index": 7,
+          "role": "tool",
+          "label": "read_file:client/src/lib/format.ts",
+          "heuristic_payload_bytes": 698,
+          "sent_request_occurrences": 4,
+          "repeated_heuristic_payload_bytes": 2792
+        },
+        {
+          "message_index": 8,
+          "role": "assistant",
+          "label": "assistant",
+          "heuristic_payload_bytes": 50,
+          "sent_request_occurrences": 3,
+          "repeated_heuristic_payload_bytes": 150
+        },
+        {
+          "message_index": 9,
+          "role": "tool",
+          "label": "read_file:client/src/lib/format.test.ts",
+          "heuristic_payload_bytes": 1643,
+          "sent_request_occurrences": 3,
+          "repeated_heuristic_payload_bytes": 4929
+        },
+        {
+          "message_index": 10,
+          "role": "assistant",
+          "label": "assistant",
+          "heuristic_payload_bytes": 435,
+          "sent_request_occurrences": 2,
+          "repeated_heuristic_payload_bytes": 870
+        },
+        {
+          "message_index": 11,
+          "role": "tool",
+          "label": "emit_plan",
+          "heuristic_payload_bytes": 452,
+          "sent_request_occurrences": 2,
+          "repeated_heuristic_payload_bytes": 904
+        },
+        {
+          "message_index": 12,
+          "role": "assistant",
+          "label": "assistant",
+          "heuristic_payload_bytes": 1374,
+          "sent_request_occurrences": 1,
+          "repeated_heuristic_payload_bytes": 1374
+        },
+        {
+          "message_index": 13,
+          "role": "tool",
+          "label": "replace_text",
+          "heuristic_payload_bytes": 391,
+          "sent_request_occurrences": 1,
+          "repeated_heuristic_payload_bytes": 391
+        },
+        {
+          "message_index": 14,
+          "role": "assistant",
+          "label": "assistant",
+          "heuristic_payload_bytes": 1324,
+          "sent_request_occurrences": 0,
+          "repeated_heuristic_payload_bytes": 0
+        },
+        {
+          "message_index": 15,
+          "role": "tool",
+          "label": "replace_text",
+          "heuristic_payload_bytes": 855,
+          "sent_request_occurrences": 0,
+          "repeated_heuristic_payload_bytes": 0
+        }
+      ],
+      "schema_heuristic_tokens_per_request": 2541,
+      "final_heuristic_prompt_tokens": 12762,
+      "final_message_payload_bytes": 30469,
+      "agents_final_payload_fraction": 0.5709409563818963,
+      "remaining_total_tokens": 11057,
+      "min_request_output_tokens": 256,
+      "required_total_room": 13018,
+      "shortfall_tokens": 1961,
+      "gate_replay": {
+        "status": "budget_exhausted",
+        "reason": "Estimated next request of ~12762 prompt tokens does not fit the remaining total token budget (64000 per turn).",
+        "reported_anchor_reconstructed": false,
+        "heuristic_alone_reproduces_recorded_stop": true
+      },
+      "tool_call_sequence": [
+        "read_file",
+        "list_dir",
+        "read_file",
+        "read_file",
+        "emit_plan",
+        "replace_text",
+        "replace_text"
+      ],
+      "per_request_usage_available": false
+    }
+  ],
+  "limits": [
+    "Offline final-transcript sizing, not new inference or a coding counterfactual.",
+    "Per-request reported usage and anchored estimates were not saved by these API runs; remain unknown.",
+    "Heuristic byte shares are not tokenizer counts or an attribution of backend token usage.",
+    "No transcript shortening, instruction loss, budget increase, automatic check or patch repair was performed.",
+    "No assumption that a smaller prompt would yield the same calls, correct patch, verification or completed answer.",
+    "All original trial/comparison results, freeze, criteria and release gates remain unchanged."
+  ]
+}

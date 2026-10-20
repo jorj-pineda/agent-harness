@@ -104,6 +104,20 @@ Ruff/format/mypy passed, and both scripted matrices passed 90/90 escalation
 decisions with contract labels and metric limits inspected. The existing Chroma
 deprecation warning remains; these checks validate evidence mechanics only.
 
+**2026-10-20 — Duration budget stops diagnosed offline:**
+[replay](evals/projects/duodoro/DURATION_BUDGET_DIAGNOSIS.md) of both accepted
+treatment duration patches reproduces the exact saved stop with the pinned
+runtime: 11,057 total tokens remaining versus 12,762 heuristic prompt tokens plus
+256 minimum output. The root `AGENTS.md` tool result is 57.09% of final message
+payload bytes and was resent in six requests. This is sizing, not tokenizer or
+causal usage attribution. Missing per-request usage/anchors remain unknown; no
+claim that a shorter prompt would preserve edits or finish. Keep the preventive
+gate and approved limits. Next implement compact per-request usage/budget-stop
+evidence for real clients before freezing a context intervention with explicit
+retention and workspace identity. No runtime/prompt/budget changes or inference;
+both offline replays are byte-identical, hashes match, and 27 context/trace
+regressions pass. Docs/data only; original outcomes and release gates stay open.
+
 ## Direction
 
 Build a coding harness Jorge can use on real repositories with affordable hosted models and locally runnable models that struggle with coding-agent workflows. The harness should help those models inspect the right code, make focused edits, recover from errors, and verify their work within an explicit budget.

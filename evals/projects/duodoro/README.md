@@ -145,3 +145,12 @@ limit attribution. This selected development comparison is not held out and does
 not establish a general causal gain. The original trial counts and release gates
 remain unchanged. No Duodoro working-checkout edits or paid calls occurred; the
 owned API stopped and evaluation-loaded Gemma was unloaded.
+
+The [duration budget diagnosis](DURATION_BUDGET_DIAGNOSIS.md) replays the two
+accepted-but-incomplete treatment artifacts offline. Both stops reproduce exactly:
+11,057 total tokens remained, while the next prompt heuristic plus minimum output
+reservation required 13,018. The root instruction result dominates message bytes,
+but no per-request usage was saved, so byte shares cannot attribute provider-token
+cost or establish that shortening context would complete the task. No runtime,
+prompt, limits or historical outcome changed; per-request client evidence and a
+reviewed context experiment remain separate next work.
