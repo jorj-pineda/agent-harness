@@ -13,7 +13,6 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "anthropic" },
-    { name = "chromadb" },
     { name = "fastapi" },
     { name = "httpx" },
     { name = "openai" },
@@ -27,6 +26,7 @@ dependencies = [
 
 [package.optional-dependencies]
 dev = [
+    { name = "chromadb" },
     { name = "mypy" },
     { name = "pytest" },
     { name = "pytest-asyncio" },
@@ -34,11 +34,15 @@ dev = [
     { name = "ruff" },
     { name = "types-pyyaml" },
 ]
+support = [
+    { name = "chromadb" },
+]
 
 [package.metadata]
 requires-dist = [
     { name = "anthropic", specifier = ">=0.40" },
-    { name = "chromadb", specifier = ">=0.5.20" },
+    { name = "chromadb", marker = "extra == 'dev'", specifier = ">=0.5.20" },
+    { name = "chromadb", marker = "extra == 'support'", specifier = ">=0.5.20" },
     { name = "fastapi", specifier = ">=0.115" },
     { name = "httpx", specifier = ">=0.28" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.13" },
@@ -55,7 +59,7 @@ requires-dist = [
     { name = "types-pyyaml", marker = "extra == 'dev'", specifier = ">=6.0" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.32" },
 ]
-provides-extras = ["dev"]
+provides-extras = ["support", "dev"]
 
 [[package]]
 name = "annotated-doc"

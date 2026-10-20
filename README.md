@@ -64,9 +64,13 @@ backend. Custom component factories must supply both support resources when the
 flag is enabled; missing resources fail during startup and allocated components
 are closed. The response contract and shared coding runtime are unchanged.
 
-Chroma remains in the package dependencies for legacy support tooling. This
-change removes its import/resource initialization from coding startup; separate
-installation extras are not part of this slice.
+Chroma and its retrieval dependencies are optional. A base wheel install supports
+coding without them; install the wheel with `[support]`, or run
+`uv sync --extra support` from a checkout, before enabling support tools. Missing
+support dependencies fail at startup with an installation hint before provider
+or store allocation. The `dev` extra retains Chroma for the full legacy regression
+suite, so `uv sync --extra dev` keeps its existing behavior. Package versions are
+unchanged in the lock. See [installation evidence](WHEEL_INSTALLATION.md#optional-support-dependencies).
 
 Each layer depends only on the ones below it. Model-specific quirks (Gemma 4's tool-call format vs OpenAI's function-call shape) are normalized at the provider boundary, so adding a fourth backend is a single-file change.
 

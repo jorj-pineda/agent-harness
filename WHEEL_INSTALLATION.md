@@ -18,6 +18,7 @@ The following reproduces the dependency policy from a checkout with uv installed
 Choose an installed Python; automatic Python downloads were disabled in the audit.
 
 ```sh
+checkout_dir="$PWD"
 install_dir="$(mktemp -d /tmp/agent-harness-install.XXXXXX)"
 uv build --out-dir "$install_dir/dist"
 uv export --locked --no-dev --no-emit-project --no-hashes \
@@ -85,3 +86,41 @@ are not a portable source/wheel bundle. Nothing was published to a package index
 No Duodoro edits, paid calls, Docker actions or existing Ollama service changes
 occurred. G2–G5 and the original ten-task no-go remain unchanged; this closes
 the narrow fresh lock-constrained installation observation on this host only.
+
+## Optional support dependencies
+
+The subsequent runtime `34976b8` moves Chroma from base requirements to a
+`support` extra. The `dev` extra retains it for the existing full regression suite.
+Coding-only installs need neither Chroma nor its retrieval dependencies; enabling
+support without the extra produces an early installation hint before allocating
+providers/stores. For source installs, use `uv sync --extra support`; ordinary
+development remains `uv sync --extra dev`.
+
+To add support to the wheel environment above while retaining the lock policy:
+
+```sh
+uv export --project "$checkout_dir" --locked --extra support \
+  --no-dev --no-emit-project --no-hashes \
+  --format requirements-txt --output-file "$install_dir/constraints.txt"
+uv pip install --python "$install_dir/venv/bin/python" \
+  --constraint "$install_dir/constraints.txt" \
+  "$install_dir/dist/agent_harness-0.1.0-py3-none-any.whl[support]"
+```
+
+In a fresh macOS arm64/Python 3.11.15 environment, the same constrained wheel
+installed **38 distributions in base mode**, with Chroma/NumPy/ONNX Runtime absent.
+Adding `[support]` produced **86 distributions** and successfully opened/closed the
+support collection and embedder without a retrieval or inference call. Base startup
+opened/closed normally, and missing-extra support startup failed before stores
+were created. Both dependency consistency checks passed. These counts describe
+this environment; they are not timing, disk-size, compatibility or coding-quality claims.
+
+Both installed-base scripted matrices also passed **90/90 escalation decisions**
+with Chroma absent; contract labels and metric limits were inspected. A separate
+matrix setup initially hid the existing registry cache by isolating HOME; the
+retained cache-miss log and explicit cache correction did not change dependencies
+or invoke inference. [Structured evidence](evals/results/2026-10-20-optional-support-install.json)
+retains inventories and recipe/report/log hashes at
+`~/.local/share/agent-harness/trials/optional-support-_xj_bewn/`.
+Earlier 86-package installation observations remain historical at their original
+runtime. No release gate or model-quality result changes.

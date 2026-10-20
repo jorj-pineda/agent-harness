@@ -6,7 +6,10 @@ import subprocess
 import sys
 import textwrap
 import zipfile
+from email import message_from_bytes
 from pathlib import Path
+
+from packaging.requirements import Requirement
 
 
 def test_built_wheel_serves_panel_outside_checkout(tmp_path: Path) -> None:
@@ -22,6 +25,19 @@ def test_built_wheel_serves_panel_outside_checkout(tmp_path: Path) -> None:
     assert built.returncode == 0, built.stderr
     (wheel,) = dist.glob("*.whl")
     with zipfile.ZipFile(wheel) as archive:
+        metadata_name = next(
+            name for name in archive.namelist() if name.endswith(".dist-info/METADATA")
+        )
+        metadata = message_from_bytes(archive.read(metadata_name))
+        chroma = [
+            Requirement(value)
+            for value in metadata.get_all("Requires-Dist", [])
+            if Requirement(value).name == "chromadb"
+        ]
+        assert chroma
+        assert all(req.marker and not req.marker.evaluate({"extra": ""}) for req in chroma)
+        for extra in ("support", "dev"):
+            assert any(req.marker and req.marker.evaluate({"extra": extra}) for req in chroma)
         for name in ("index.html", "app.js", "memory.js", "style.css"):
             assert archive.read(f"api/ui/{name}") == (root / "ui" / name).read_bytes()
     installed = tmp_path / "installed"

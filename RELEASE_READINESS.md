@@ -196,6 +196,17 @@ missing from the packaging regression, not unconstrained-dependency compatibilit
 interactive browser/model acceptance, G2 recovery or G5 release approval. Original
 trial outcomes and G2–G5 remain unchanged. Docs/data only; no new full gate run.
 
+## Optional support dependency follow-up — 2026-10-20
+
+Base installs now omit Chroma; `[support]` explicitly enables its installation,
+while `[dev]` keeps the full regression environment unchanged. A fresh
+lock-constrained macOS/Python 3.11.15 observation at `34976b8` records 38 base
+distributions versus 86 after adding support, normal resource lifecycle in both
+modes and a pre-resource missing-extra error. Both installed-base scripted matrices
+pass 90/90 with Chroma absent. [Evidence and limits](WHEEL_INSTALLATION.md#optional-support-dependencies)
+remain separate from coding-quality/release evidence; no inference or retrieval
+request ran. Prior install observations retain their original runtime/counts.
+
 ## Concrete audit findings and scope decisions
 
 | Finding | Classification | Disposition |

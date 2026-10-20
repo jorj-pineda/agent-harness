@@ -15,7 +15,6 @@ dependencies = [
     "httpx>=0.28",
     "anthropic>=0.40",
     "openai>=1.54",
-    "chromadb>=0.5.20",
     # step-11 evals
     "pyyaml>=6.0",
     "structlog>=24.4",
@@ -24,7 +23,10 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+support = ["chromadb>=0.5.20"]
 dev = [
+    # Keep the full legacy support regression suite available with --extra dev.
+    "chromadb>=0.5.20",
     "pytest>=8.3",
     "pytest-asyncio>=0.24",
     "pytest-cov>=6.0",

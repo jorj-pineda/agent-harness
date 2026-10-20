@@ -198,6 +198,21 @@ workflow or real partial-edit recovery were exercised. This docs/data validation
 does not close G2–G5, establish unconstrained future dependency compatibility or
 change the ten-task no-go. No release publication, Duodoro edits or paid calls.
 
+**2026-10-20 — Optional support dependencies:** base wheel requirements omit
+Chroma; `[support]` installs it explicitly and `[dev]` retains the full legacy
+regression environment. Missing support installation fails before provider/store
+allocation when support mode is requested. Built-metadata and lifecycle regressions
+cover this boundary. A fresh lock-constrained macOS/Python 3.11.15 install at
+`34976b8` has 38 base distributions without Chroma/NumPy/ONNX Runtime; adding
+support yields 86 and opens/closes the support resources without inference.
+[Evidence](WHEEL_INSTALLATION.md#optional-support-dependencies) retains inventories,
+recipe/log/report hashes and one operator cache-path correction. Package versions
+are unchanged; prior installation/model results and release gates are not rewritten.
+Validation: nine focused and 1,344 offline tests passed (five live deselected),
+Ruff/format/mypy passed. Both installed-base scripted matrices passed 90/90 with
+Chroma absent and labels/metric limits inspected. No coding-quality, performance,
+full compatibility or release claim; no inference, paid calls or Duodoro edits.
+
 ## Direction
 
 Build a coding harness Jorge can use on real repositories with affordable hosted models and locally runnable models that struggle with coding-agent workflows. The harness should help those models inspect the right code, make focused edits, recover from errors, and verify their work within an explicit budget.
