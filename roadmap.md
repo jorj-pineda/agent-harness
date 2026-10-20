@@ -118,6 +118,24 @@ retention and workspace identity. No runtime/prompt/budget changes or inference;
 both offline replays are byte-identical, hashes match, and 27 context/trace
 regressions pass. Docs/data only; original outcomes and release gates stay open.
 
+**2026-10-20 — Durable per-request budget observations:** new admitted API runs
+save a bounded 100-event prefix of normalized request identities/allowances/prompt
+estimates, reported per-response/cumulative usage, failures with unknown usage and
+token-gate stops. The shared loop supplies the same numeric observations without
+allocating full traces. Evidence commits before onward work; save failure stops
+execution. Owner-scoped run detail and CLI `run --json` retain it after restart and
+keyed replay, including interrupted runs. Legacy/unadmitted nulls, missing failure
+tails and truncation do not become zero usage or claimed compliance. No raw model/
+tool payloads enter this journal. This supplies the missing observation needed for
+a future duration/context experiment; it does not fix completion, enforce paired
+inputs or change limits/prompts/scoring. Formatted client views remain separate
+work. No inference or Duodoro edits; historical results and release gates stay open.
+Validation: 96 focused and 1,342 offline tests passed (five live deselected),
+Ruff/format/mypy passed, and both scripted matrices passed 90/90 escalation
+decisions with contract labels/limits inspected. Real-file scripted HTTP/SSE,
+restart/keyed replay, cancellation, killed-process and storage-failure regressions
+preserve work and unknown usage; these are mechanics evidence, not model quality.
+
 ## Direction
 
 Build a coding harness Jorge can use on real repositories with affordable hosted models and locally runnable models that struggle with coding-agent workflows. The harness should help those models inspect the right code, make focused edits, recover from errors, and verify their work within an explicit budget.

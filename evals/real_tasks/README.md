@@ -238,8 +238,52 @@ provider-specific serialization/options, server defaults and hidden state. Prese
 the separate runtime/model/configuration evidence. They do not prove deterministic
 sampling, request delivery, backend equivalence or quality improvement. Hashes do
 not provide secret redaction or access control; raw traces remain sensitive.
-Normal API profiles/payloads do not gain these fields; API cohort collectors must
-explicitly arrange equivalent preflight/trace collection before a future freeze.
+Configured profiles do not gain these fields. New API runs now retain a separate
+compact budget journal, described below; older API archives do not acquire it.
+Client comparisons still need equivalent-input preparation before a future freeze;
+the journal records actual attempts and is not paired preflight enforcement.
+
+### Durable API budget evidence (2026-10-20)
+
+New admitted runs initialize `RunRecord.budget_evidence` with an empty journal in
+the execution-profile transaction. The shared loop synchronously observes numeric
+request/usage/token-gate evidence without allocating a full trace. The API commits
+each observation before onward inference/tools; a save failure stops execution
+with 503 and retires the live session. Earlier edits or unreported usage can still
+exist. The normal run detail/list routes and CLI `run --json` expose this evidence
+under their existing owner convention; final TurnResponse fields are unchanged.
+The panel and formatted CLI summaries do not yet render this journal.
+
+The retained prefix is capped at **100 observations**, with `observed_events` and
+`events_truncated` indicating overflow. A null journal means legacy/not admitted,
+not zero work. An empty initialized journal means no observation was committed yet,
+not proof of backend inactivity. A missing response/failure after a request may
+mean process death or unsaved evidence. Startup retains the prefix while marking
+the run interrupted; keyed retries never append or dispatch again.
+
+- `request`: iteration, message count, normalized identity, output allowance and
+  heuristic/anchor/combined prompt estimates. It precedes the provider attempt;
+  it proves neither delivery nor remote execution. Null output allowance means
+  harness-uncapped only on a request; other event kinds do not record an allowance.
+- `response`: that response's provider-reported prompt/output usage, plus cumulative
+  known totals after recording it. Missing components stay null, including when
+  a configured usage guard then stops the turn. This is not billing attestation.
+- `request_failure`: request did not return a normal response. Per-request and
+  cumulative usage here are unknown; prior response observations retain the known
+  prefix. No exception text, arbitrary exception class or provider payload is saved.
+- `pre_request_stop` / `post_response_stop`: the token gate prevented a request or
+  stopped after a response. Estimates describe the transcript at that observation;
+  a post-response transcript includes the assistant but not pending tool results.
+  Compare the separate saved profile's limits and final completion reason. Wall,
+  cancellation, tool and iteration stops are not additional token-stop events.
+
+No message bodies, paths, tool names/IDs/arguments/results, largest-message rows or
+raw errors enter the journal. Fingerprints are hashes, not credential redaction or
+access control. This does not make existing full run/transcript evidence secret.
+Collection and SQLite commits consume the existing dispatch deadline; cleanup and
+final review can still exceed it. The shared evaluator's full opt-in traces remain
+separate, with the same runtime/budget logic. This adds no token policy, context
+reduction, resume permission, automatic check, comparison or model-quality claim.
 
 Named startup profiles use the same `Settings` binding as the API. The evaluator's
 explicit provider must match the selected profile; no fallback/selection occurs.

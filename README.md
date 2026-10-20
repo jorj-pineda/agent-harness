@@ -1601,11 +1601,23 @@ Historical reports stay unchanged; old request records have no invented footprin
 New request traces also fingerprint the rendered normalized messages, tools and
 output allowance before provider dispatch. Unlike the base-prompt profile hash,
 these retain differing workspace paths and injected context. Old/missing identities
-remain unknown. These opt-in hashes do not enforce paired-input equality or attest
-provider wire/backend equivalence; no API profile or model input changes.
+remain unknown. These hashes do not enforce paired-input equality or attest
+provider wire/backend equivalence; configured profiles and model inputs are unchanged.
 See [trace evidence](evals/real_tasks/README.md) for coverage and estimate limits.
 This supplies context-pressure diagnostics; it does not compact context, change
 budgets or scoring, or demonstrate better model coding quality.
+
+New admitted API runs retain nullable `budget_evidence` in the saved run record,
+available through owner-scoped `GET /runs/{run_id}` and CLI
+`agent-harness run <run-id> --user-id <owner> --json`, including after restart.
+It contains a bounded prefix of request fingerprints/output allowances/estimates,
+reported per-response usage, failures with unknown usage, and token-gate stops.
+Legacy/unadmitted runs remain null. Request evidence commits before inference;
+storage failure stops further work with an explicit error. This adds no SSE events
+or client summaries and does not automatically retry or continue a run. See the
+[budget evidence contract](evals/real_tasks/README.md#durable-api-budget-evidence-2026-10-20)
+for scope and unknowns. Collection/storage time consumes the existing dispatch
+allowance; this metadata does not fix the observed duration completion failures.
 
 
 `read_file` rejects invalid UTF-8 in selected lines instead of returning invented
