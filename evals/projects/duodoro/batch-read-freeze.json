@@ -129,10 +129,13 @@
     "total_tokens": 64000
   },
   "local_recipes_sha256": {
+    "batch-api-probe.py": "dc2cf553a31a633ec34f3c7108e364120b3a1e13d3c035960d139a3c3e05d26f",
     "batch-read-gates.py": "ed47b5caba8bedceb26fa7f5f7d8189b3705bbe4a5f8d8f6b5d74f52f612adf1",
     "batch-read-probe.py": "26ec1a85fe5a9df244d60fee902e8713d169e0cd71369a7e7badef4e918277ba",
     "batch-read-treatment-gates.py": "8b9bdb5d7cc6878914977498f9fdf6bb29a9614ba715f22032316c74ecc8c499",
-    "finalization-recipe.py": "d13d7aff3fb5630b32a08ee624fcacd41495d4e28895ea796ecfde866093becf",
+    "finalization-recipe.py": "689f417332a6e460c7259b146b6bec3d0e97cb094540f1121534eff48eea3572",
+    "guard-check-recipe.py": "5f4a7e00ad39161bc550efd9e5d90c194c7ba4165e481b1bc48cdb098a01aa1f",
+    "guarded-server.py": "0cedbb539ebf44b3caaee669eb21e73a0db95ef555d85ec2ae5deb0d7aba1b06",
     "preparation-recipe.py": "5664b1530559e72664a77191ddd263de71c34b71870f0b0a9364efc6801bb1f1"
   },
   "managed_executables": {
@@ -154,6 +157,18 @@
   "preflight": {
     "all_fixtures_match_original_baseline": true,
     "cross_arm_initial_message_difference": "exactly the one frozen batching sentence in system content",
+    "first_request_assertion": {
+      "api_probe_sha256": {
+        "control": "9b65a32344a5393555eb26cb4265ecdfa068b475e318e3a0a50011492bac4ea8",
+        "treatment": "7fd026c48ff7d33252f92ed517ee7dc82fb02fe9a4ac7f2ab3d4aaabc380ee5c"
+      },
+      "check_recipe_sha256": "5f4a7e00ad39161bc550efd9e5d90c194c7ba4165e481b1bc48cdb098a01aa1f",
+      "matching_inputs_forwarded_unchanged": true,
+      "mismatches_tested_without_forwarding": 8,
+      "policy": "Same evaluation-only wrapper in both arms; compare frozen first normalized request SHA and temperature=0 before forwarding; mismatch stops cohort, no input rewriting or retries.",
+      "scripted_check_sha256": "950d6ab325017b9d06f6a0c30ab15ed2df0a2a977ffcc048204da8a4b7dc7479",
+      "server_recipe_sha256": "0cedbb539ebf44b3caaee669eb21e73a0db95ef555d85ec2ae5deb0d7aba1b06"
+    },
     "instruction_and_raw_result_retention": "full; scripted real reads included complete root AGENTS.md",
     "probe_file_sha256": {
       "control": "692846813639b71a716d25ee2b67373fd9efb76815a891b9751f365b0c1d918b",
@@ -481,11 +496,11 @@
     "same_exposed_tool_schemas": true,
     "same_initial_output_allowance": 2048,
     "same_messages_within_arm_repeats": true,
-    "scope": "Shared configured runtime with fake provider and real tools; not a real-model or real-client coding trial.",
+    "scope": "Scripted shared-runtime and API probes with real tools, captures and keyed replay; no model inference or actual CLI coding trial.",
     "scripted_batch_size": 2,
     "status": "passed-scripted-no-inference"
   },
-  "preparation_corrections_sha256": "cbc00454b037493a1f9ef3f6c63776659b2b05cabd36a0d1337e9ec1c4656ae6",
+  "preparation_corrections_sha256": "a1fa09c87c80ca2ed3d64c318d998007ea8307c64a28183d2e869dc3f27f8785",
   "preparation_recipe_sha256": "5664b1530559e72664a77191ddd263de71c34b71870f0b0a9364efc6801bb1f1",
   "prepared_at_utc": "2026-10-20T05:43:01.965169+00:00",
   "review_status": "pending",

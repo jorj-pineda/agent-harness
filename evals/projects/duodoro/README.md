@@ -154,3 +154,17 @@ but no per-request usage was saved, so byte shares cannot attribute provider-tok
 cost or establish that shortening context would complete the task. No runtime,
 prompt, limits or historical outcome changed; per-request client evidence and a
 reviewed context experiment remain separate next work.
+
+## Prepared duration read-batching experiment (not run)
+
+The [new freeze](BATCH_READ_COMPARISON.md) prepares four CLI attempts, two per arm,
+with the original T01 request/criteria/limits and a single common workspace path.
+A local treatment patch adds one sentence encouraging independent read batches;
+all instruction and tool-result text stays intact. The production prompt is
+unchanged. New per-request budget evidence is available in both pinned runtimes.
+An identical evaluation-only provider-boundary assertion rejects unexpected first
+inputs before forwarding. Scripted shared-runtime/API probes validate the intended
+sentence-only difference, full instructions, real reads/captures and keyed replay.
+Both arms pass 1,342 offline tests, static checks and both 90/90 scripted matrices.
+Review and a subsequent execution instruction are required before inference.
+This is preparation, not a coding result, context-compaction gain or release claim.
