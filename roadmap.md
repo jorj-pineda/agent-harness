@@ -11,7 +11,8 @@ G3's 8/10 artifact target. This configuration is a **no-go for the frozen unatte
 task envelope**. Freeze feature batches; use the retained failures to choose a
 narrower envelope or a controlled investigation, rather than treating more features
 as release progress. The existing release/held-out criteria remain unchanged.
-A packaged panel release also needs the reproduced missing-wheel-assets fix.
+The missing-wheel-assets blocker is fixed; a packaged release still needs the
+remaining setup and release-gate validation.
 
 G1 agreement/review completed before authorized inference. Execution used the
 [freeze](evals/projects/duodoro/EXECUTION_FREEZE.md)'s runtime `cd98917`, approved
@@ -172,6 +173,18 @@ edit, paid call or Docker action occurred. This docs/data report does not rerun
 preparation's G0. Select a narrower workflow or separately reviewed context/request
 intervention with retention/activation criteria before more inference; this does
 not complete broader roadmap milestones or establish a general quality gain.
+
+**2026-10-20 — Wheel panel assets packaged:** wheels now place the static client
+under `api/ui`, which the API resolves before its source-checkout `ui/` fallback.
+An offline regression builds the sdist/wheel, installs the wheel into temporary
+storage and imports that API with isolated Python outside the checkout. It checks
+all four asset bytes, panel/static routes, API route precedence and coding-only
+startup without Chroma or inference. Existing installed dependencies are reused;
+this is not a clean dependency-install audit, a release publication, a coding-
+quality improvement or closure of G2–G5. The original missing-asset reproduction
+failed before the fix; its historical audit remains labeled separately.
+Validation: eight focused and 1,343 offline tests passed (five live deselected),
+Ruff/format/mypy passed. No evaluation behavior or model inference changed.
 
 ## Direction
 

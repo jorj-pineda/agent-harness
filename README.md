@@ -26,8 +26,10 @@ For the current go/no-go assessment, start with the
 task envelope. The selected [same-root read-batching comparison](evals/projects/duodoro/BATCH_READ_RESULTS.md)
 also completed no workflows (0/2 per arm); the batching hint never activated in
 available normalized history. Production prompts and release gates remain unchanged.
-The current wheel omits panel assets, so use the source checkout for the
-panel until packaged installation is fixed and validated.
+Built wheels include the panel assets. An offline packaging regression installs
+the wheel outside the checkout and exercises panel/API routes with the existing
+dependency environment; this does not complete a fresh dependency-install audit
+or the broader release gates.
 
 Read [roadmap.md](roadmap.md) for remaining acceptance criteria and
 [AGENTS.md](AGENTS.md) for development rules. Model observations in
