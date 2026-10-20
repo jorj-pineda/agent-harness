@@ -213,6 +213,21 @@ Ruff/format/mypy passed. Both installed-base scripted matrices passed 90/90 with
 Chroma absent and labels/metric limits inspected. No coding-quality, performance,
 full compatibility or release claim; no inference, paid calls or Duodoro edits.
 
+**2026-10-20 — Existing toolset comparison prepared, not run:** after no live
+batch activation, the [freeze](evals/projects/duodoro/TOOLSET_COMPARISON.md) prepares
+four original T01 CLI attempts comparing existing `full`/`whole_file` compact
+presets at one published runtime, common literal root and unchanged criteria/
+limits. Only `replace_text` removal and its existing matching edit instruction
+differ; no new prompt/code, compaction or default switch. First inputs match
+within repeats and guards reject drift before forwarding. Historical whole-file
+results remain mixed, and stale-hash protection/large rewrites remain explicit
+limits. Scripted API/read/capture/profile/keyed replay probes pass without inference
+or scheduled storage. The pinned runtime passes 71 focused and 1,344 offline tests
+(five live deselected), static gates and both scripted 90/90 matrices with labels/
+limits inspected. Review/merge precedes execution under the ongoing user instruction;
+no model-quality result or release-gate closure is implied. No inference, Duodoro
+working-checkout edits, paid calls or Docker actions.
+
 ## Direction
 
 Build a coding harness Jorge can use on real repositories with affordable hosted models and locally runnable models that struggle with coding-agent workflows. The harness should help those models inspect the right code, make focused edits, recover from errors, and verify their work within an explicit budget.
