@@ -1,0 +1,13 @@
+diff --git a/harness/prompts.py b/harness/prompts.py
+index 6047840..0f46248 100644
+--- a/harness/prompts.py
++++ b/harness/prompts.py
+@@ -34,6 +34,8 @@ COMPACT_SYSTEM_PROMPT = (
+     "You are a coding assistant. Complete the bounded task in this workspace.\n"
+     "- Inspect applicable repository instructions and relevant code. Narrow large or "
+     "incomplete reads/searches.\n"
++    "- Batch independent read-only tool calls in one response when their arguments "
++    "are already known.\n"
+     "- Preserve user edits and make focused changes.\n"
+     + _EXACT_EDIT_INSTRUCTION
+     + "- After edits, run the configured project check using run_command's argv array; "

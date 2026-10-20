@@ -136,6 +136,22 @@ decisions with contract labels/limits inspected. Real-file scripted HTTP/SSE,
 restart/keyed replay, cancellation, killed-process and storage-failure regressions
 preserve work and unknown usage; these are mechanics evidence, not model quality.
 
+**2026-10-20 — Same-root read-batching experiment prepared, not run:** the
+[freeze](evals/projects/duodoro/BATCH_READ_COMPARISON.md) pins four original T01
+CLI attempts, two per arm, unchanged acceptance/limits and a common literal
+workspace path. Local treatment adds one batching sentence; production prompts
+and complete instruction/tool text remain unchanged. Within-arm repeat inputs
+match; cross-arm initial inputs differ only by the intended sentence, with equal
+schemas and output allowance. Both arms share an evaluation-only first-request
+assertion that rejects drift before provider forwarding, plus durable budget
+observations. Scripted API/real-read/capture/keyed replay and eight mismatch checks
+pass without inference or scheduled-state creation. Both final pinned runtimes
+pass 1,342 offline tests (five live deselected), static gates and both 90/90
+scripted matrices with contract labels/limits inspected. This tests a future
+request-count hypothesis, not content removal or measured quality. Review/merge
+and a subsequent execution instruction remain required; historical results and
+release gates remain unchanged. No Duodoro working-checkout edits or paid calls.
+
 ## Direction
 
 Build a coding harness Jorge can use on real repositories with affordable hosted models and locally runnable models that struggle with coding-agent workflows. The harness should help those models inspect the right code, make focused edits, recover from errors, and verify their work within an explicit budget.
