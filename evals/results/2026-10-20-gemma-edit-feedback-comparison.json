@@ -2,7 +2,7 @@
   "schema_version": 1,
   "evidence_kind": "real-client-real-tools-paired-development-comparison",
   "status": "in_progress",
-  "reported_at_utc": "2026-10-20T03:35:23.988913+00:00",
+  "reported_at_utc": "2026-10-20T03:43:59.324012+00:00",
   "freeze_pr": "https://github.com/jorj-pineda/agent-harness/pull/152",
   "freeze_sha256": "208d8241cf9d2a20859aedd15e792f273d928b22fa54ab2261a43c784d5f13a8",
   "runtime_base": "5974d2201cb12829de2b593b602c649515e98b0d",
@@ -13,7 +13,7 @@
   },
   "scheduled_attempts": 12,
   "scheduled_per_arm": 6,
-  "graded_attempts": 1,
+  "graded_attempts": 2,
   "local_evidence_directory": "/Users/jorge/.local/share/agent-harness/trials/duodoro-edit-feedback-sgpr8sdv",
   "tasks": [
     {
@@ -70,17 +70,42 @@
       "repeat": 1,
       "runtime_revision": "5974d2201cb12829de2b593b602c649515e98b0d",
       "client": "CLI",
-      "execution_status": "submitted",
-      "artifact_acceptance": null,
-      "completed_and_accepted": null,
-      "completion_status": null,
-      "verification_status": null,
-      "run_status": null,
-      "run_id": null,
-      "token_usage": null,
+      "execution_status": "observed",
+      "artifact_acceptance": true,
+      "completed_and_accepted": false,
+      "completion_status": "budget_exhausted",
+      "verification_status": "not_run",
+      "run_status": "finished",
+      "run_id": "239ee99382434666bb212ad5a6ae69b9",
+      "token_usage": {
+        "prompt_tokens": 51679,
+        "completion_tokens": 1264
+      },
       "provider_failure": null,
-      "changed_paths": null,
-      "criteria_unchanged": null
+      "changed_paths": [
+        "client/src/lib/format.ts"
+      ],
+      "criteria_unchanged": true,
+      "unrelated_changes": [],
+      "completion_reason": "Estimated next request of ~12762 prompt tokens does not fit the remaining total token budget (64000 per turn).",
+      "tool_errors": [
+        "replace_text: Expected exactly one old_text match; found 0. old_text contains backslash-n and backslash-escaped double quotes where the file has line breaks and double quotes. Copy old_text exactly from read_file content, using real line breaks and double quotes at those positions. Check new_text for the same extra layer of JSON escaping. No edit was applied; arguments were not rewritten."
+      ],
+      "loop_latency_ms": 229729.43454104662,
+      "created_at": "2026-10-20T03:35:13.076718Z",
+      "finished_at": "2026-10-20T03:39:03.123220Z",
+      "manual_patch_repair": false,
+      "run_sha256": "4822dfb59372955a685ddf23845e3cdb3b31085b90814f0b104436fd31e65dd0",
+      "acceptance_sha256": "ca0707e2503e382304cf810dd6cd504bcf7ea51dc97e673373c254b2c8ab991b",
+      "tool_calls": 7,
+      "exact_edit_errors": [
+        {
+          "old_text_sha256": "b12e1031dcf8be71e205298ef7844f49a85d6dda15453ba502e21e0bb4986357",
+          "error": "Expected exactly one old_text match; found 0. old_text contains backslash-n and backslash-escaped double quotes where the file has line breaks and double quotes. Copy old_text exactly from read_file content, using real line breaks and double quotes at those positions. Check new_text for the same extra layer of JSON escaping. No edit was applied; arguments were not rewritten."
+        }
+      ],
+      "successful_exact_edits": 1,
+      "cli_response_timeout": true
     },
     {
       "id": "03-T04-r1-treatment",
@@ -89,7 +114,7 @@
       "repeat": 1,
       "runtime_revision": "5974d2201cb12829de2b593b602c649515e98b0d",
       "client": "panel",
-      "execution_status": "not_started",
+      "execution_status": "submitted",
       "artifact_acceptance": null,
       "completed_and_accepted": null,
       "completion_status": null,
@@ -288,13 +313,61 @@
     },
     "treatment": {
       "scheduled": 6,
-      "graded": 0,
-      "artifact_accepted": 0,
+      "graded": 1,
+      "artifact_accepted": 1,
       "completed_and_accepted": 0,
-      "completion_status_counts": {},
-      "check_status_counts": {}
+      "completion_status_counts": {
+        "budget_exhausted": 1
+      },
+      "check_status_counts": {
+        "not_run": 1
+      }
     }
   },
+  "pairs": [
+    {
+      "repeat": 1,
+      "task": "T01",
+      "control_artifact_acceptance": false,
+      "treatment_artifact_acceptance": true,
+      "tool_call_prefix_equal_through_first_mismatch": false
+    },
+    {
+      "repeat": 1,
+      "task": "T04",
+      "control_artifact_acceptance": null,
+      "treatment_artifact_acceptance": null,
+      "tool_call_prefix_equal_through_first_mismatch": null
+    },
+    {
+      "repeat": 1,
+      "task": "T09",
+      "control_artifact_acceptance": null,
+      "treatment_artifact_acceptance": null,
+      "tool_call_prefix_equal_through_first_mismatch": null
+    },
+    {
+      "repeat": 2,
+      "task": "T01",
+      "control_artifact_acceptance": null,
+      "treatment_artifact_acceptance": null,
+      "tool_call_prefix_equal_through_first_mismatch": null
+    },
+    {
+      "repeat": 2,
+      "task": "T04",
+      "control_artifact_acceptance": null,
+      "treatment_artifact_acceptance": null,
+      "tool_call_prefix_equal_through_first_mismatch": null
+    },
+    {
+      "repeat": 2,
+      "task": "T09",
+      "control_artifact_acceptance": null,
+      "treatment_artifact_acceptance": null,
+      "tool_call_prefix_equal_through_first_mismatch": null
+    }
+  ],
   "limits": [
     "Tasks selected after known failures; public development cohort, not held out.",
     "Two repeats per arm/task, six pairs; no general or causal quality gain implied.",
