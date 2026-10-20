@@ -151,6 +151,17 @@ task envelope**; choose a narrower envelope or controlled failure investigation.
 This follow-up preserves the point-in-time audit table above. No implementation
 or acceptance criteria changed, and no quality gain is claimed.
 
+## Selected feedback comparison follow-up — 2026-10-20 UTC
+
+The reviewed [twelve-attempt comparison](evals/projects/duodoro/EDIT_FEEDBACK_RESULTS.md)
+observed control **0/6 accepted, 0/6 completed-and-accepted** versus treatment
+**6/6 accepted, 4/6 completed-and-accepted** on three selected public tasks.
+All final artifact grades reproduced and protected-file checks passed. Differing
+rendered workspace paths with arm names, pre-feedback divergence and one pre-edit
+control block limit attribution. The original ten-task counts, no-go decision and
+G2–G5 remain unchanged. This comparison neither demonstrates real reversal nor
+supplies held-out/two-model evidence. No release approval follows from it.
+
 ## Concrete audit findings and scope decisions
 
 | Finding | Classification | Disposition |

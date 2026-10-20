@@ -1946,3 +1946,41 @@ held-out evaluation or evidence of quality improvement. G2 remains open, G3 was
 missed, and G4/G5 remain unmet. This docs/data report did not rerun G0: the frozen
 runtime's 1,291 offline tests/static checks/two scripted 90/90 matrices remain
 historical mechanics evidence, separate from these live results.
+
+## 2026-10-20 UTC — frozen Gemma exact-edit feedback comparison
+
+[Full report](projects/duodoro/EDIT_FEEDBACK_RESULTS.md) and
+[all twelve observations](results/2026-10-20-gemma-edit-feedback-comparison.json).
+The reviewed PR #152 freeze ran T01/T04/T09 twice per arm through eight actual
+CLI and four panel submissions. Treatment is published runtime
+`5974d2201cb12829de2b593b602c649515e98b0d`; local control
+`1c9249af2b5bcaad2e1628c130a9e879c934196f` restores only the old mismatch helper.
+Reporting commits were not inference runtimes. Both use the same frozen Gemma
+digest, Ollama 0.33.2, Node 24.22.0, Python 3.14.5, explicit compact/full profile,
+300-second dispatch allowance and unchanged token/tool/iteration limits.
+
+Control produced **0/6 accepted artifacts and 0/6 completed-and-accepted**;
+treatment produced **6/6 and 4/6**, respectively. Both treatment duration patches
+passed external acceptance but stopped before completion/checks. Five control
+attempts exhausted budgets; one blocked on repeated grep before any edit. Seven
+CLI response timeouts were resolved by saved-run inspection without resubmission.
+All twelve have known reported usage, totalling 616,347 prompt / 14,454 output
+tokens; this is not independent backend accounting or an efficiency comparison.
+
+Captured base profiles match, but rendered system prompts include differing frozen
+absolute workspace paths with arm names. Two of five comparable tool prefixes
+diverge before the changed feedback, and the sixth pair lacks a control mismatch.
+Selection after known failures, two repeats, fixed order and one model prevent a
+general causal/held-out claim. Original ten-task 2/10 and 1/10 results remain
+unchanged; G2's reversal and G3–G5 remain unmet.
+
+Final external rechecks reproduced all twelve saved artifact grades; single-run
+storage, profile/settings/criterion hashes and protected-file preservation passed.
+The report records four operator lookup/cleanup/probe corrections, no coding
+rescues, raw local evidence/scripts and audit hashes. The API stopped and Gemma
+was unloaded, preserving the existing Ollama service. No Duodoro working-checkout
+edits, paid calls, new models or Docker actions occurred. This docs/data report
+does not rerun preparation's G0: treatment's 1,330 offline passes and control's
+1,325 common passes (five explicit diagnostic exclusions, plus five live exclusions
+in each arm), static checks and both scripted 90/90 matrices per arm remain
+historical mechanics evidence. The public report is not a portable full-trace kit.

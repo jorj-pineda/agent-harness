@@ -129,12 +129,19 @@ tests deselected); Ruff, formatting and mypy passed. Both scripted matrices pass
 scripted-contract labels and metric limits. No inference or model comparison ran.
 
 
-## Prepared paired feedback follow-up (not run)
+## Completed paired feedback follow-up
 
-The [comparison freeze](EDIT_FEEDBACK_COMPARISON.md) prepares twelve attempts on
+The reviewed [comparison freeze](EDIT_FEEDBACK_COMPARISON.md) prepared twelve attempts on
 T01/T04/T09 with unchanged requests, clients, acceptance and per-task limits.
 Two repeats per arm counterbalance pair order. Control and treatment share the
 merged provider-failure reporting runtime; the only runtime difference is the
 old/new mismatch diagnostic. Both-arm offline checks and the declared five-case
-control exclusion are recorded. Review is pending before inference; this is not
-a result or held-out comparison, and the original trial counts remain unchanged.
+control exclusion are recorded. The [2026-10-20 results](EDIT_FEEDBACK_RESULTS.md)
+retain all twelve outcomes: control **0/6 accepted, 0/6 completed-and-accepted**;
+treatment **6/6 accepted, 4/6 completed-and-accepted**. All final grades reproduced
+and protected files remained unchanged. The rendered workspace paths differ,
+including arm names; prefix divergence and one pre-edit control block further
+limit attribution. This selected development comparison is not held out and does
+not establish a general causal gain. The original trial counts and release gates
+remain unchanged. No Duodoro working-checkout edits or paid calls occurred; the
+owned API stopped and evaluation-loaded Gemma was unloaded.
