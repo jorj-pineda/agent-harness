@@ -215,11 +215,13 @@ def create_app(
 
 # Mounted last so the explicit API routes (and FastAPI's /docs, /openapi.json)
 # resolve first; the catch-all "/" mount only serves the demo panel and assets.
-UI_DIR = Path(__file__).resolve().parent.parent / "ui"
+UI_DIR = Path(__file__).resolve().parent / "ui"
+if not UI_DIR.is_dir():
+    UI_DIR = Path(__file__).resolve().parent.parent / "ui"
 
 
 def _mount_ui(app: FastAPI) -> None:
-    """Serve the static demo panel at `/` when the `ui/` directory is present.
+    """Serve the packaged panel, falling back to `ui/` in a source checkout.
 
     The panel is a thin HTTP client (POST /sessions, POST /chat) — no agent
     logic lives in the frontend. Absent `ui/`, the API runs headless.
