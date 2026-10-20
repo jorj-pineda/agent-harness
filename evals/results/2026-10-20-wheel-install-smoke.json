@@ -1,0 +1,883 @@
+{
+  "schema_version": 1,
+  "evidence_kind": "manual-installed-distribution-smoke-no-inference",
+  "status": "passed_with_recorded_setup_corrections",
+  "runtime_revision": "326e69c865940419505cac9804a4769ef7ed7874",
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "local_evidence_directory": "/Users/jorge/.local/share/agent-harness/trials/wheel-install-6o2gi8i2",
+  "wheel_sha256": "cc4a2c7b2d18fe7073554de1f3feb51d15c49be2f76bc96a0b3c09bb163aa74f",
+  "sdist_sha256": "b48c4d1e8ba0277e2fbea317613c5e8c3f5ffc3599df1a428b1bd9e92dba3b20",
+  "constraints_sha256": "3c286aa53f188c99688f3d91e25a2d79b4af81738ffce3517cde9533b5518740",
+  "lock_sha256": "55e5f615fd59b081a9d42d2d117a4c75970a3de0a951dfa2dff4e813724237a0",
+  "dependency_policy": "Fresh virtual environments without system-site packages; wheel declared dependencies constrained by committed lock export, not unconstrained latest resolution. Registry access after offline cache misses.",
+  "environments": [
+    {
+      "python": "3.11.15 (main, Mar  3 2026, 00:52:57) [Clang 21.0.0 (clang-2100.0.123.102)]",
+      "label": "311",
+      "installed_paths": {
+        "api": "/Users/jorge/.local/share/agent-harness/trials/wheel-install-6o2gi8i2/venv311/lib/python3.11/site-packages/api/__init__.py",
+        "cli": "/Users/jorge/.local/share/agent-harness/trials/wheel-install-6o2gi8i2/venv311/lib/python3.11/site-packages/cli/__init__.py",
+        "harness": "/Users/jorge/.local/share/agent-harness/trials/wheel-install-6o2gi8i2/venv311/lib/python3.11/site-packages/harness/__init__.py"
+      },
+      "packages": [
+        [
+          "PyPika",
+          "0.51.1"
+        ],
+        [
+          "PyYAML",
+          "6.0.3"
+        ],
+        [
+          "Pygments",
+          "2.20.0"
+        ],
+        [
+          "agent-harness",
+          "0.1.0"
+        ],
+        [
+          "annotated-doc",
+          "0.0.4"
+        ],
+        [
+          "annotated-types",
+          "0.7.0"
+        ],
+        [
+          "anthropic",
+          "0.96.0"
+        ],
+        [
+          "anyio",
+          "4.13.0"
+        ],
+        [
+          "attrs",
+          "26.1.0"
+        ],
+        [
+          "bcrypt",
+          "5.0.0"
+        ],
+        [
+          "build",
+          "1.4.3"
+        ],
+        [
+          "certifi",
+          "2026.2.25"
+        ],
+        [
+          "charset-normalizer",
+          "3.4.7"
+        ],
+        [
+          "chromadb",
+          "1.5.8"
+        ],
+        [
+          "click",
+          "8.3.2"
+        ],
+        [
+          "distro",
+          "1.9.0"
+        ],
+        [
+          "docstring_parser",
+          "0.18.0"
+        ],
+        [
+          "durationpy",
+          "0.10"
+        ],
+        [
+          "fastapi",
+          "0.136.0"
+        ],
+        [
+          "filelock",
+          "3.28.0"
+        ],
+        [
+          "flatbuffers",
+          "25.12.19"
+        ],
+        [
+          "fsspec",
+          "2026.3.0"
+        ],
+        [
+          "googleapis-common-protos",
+          "1.74.0"
+        ],
+        [
+          "grpcio",
+          "1.80.0"
+        ],
+        [
+          "h11",
+          "0.16.0"
+        ],
+        [
+          "hf-xet",
+          "1.4.3"
+        ],
+        [
+          "httpcore",
+          "1.0.9"
+        ],
+        [
+          "httptools",
+          "0.7.1"
+        ],
+        [
+          "httpx",
+          "0.28.1"
+        ],
+        [
+          "huggingface_hub",
+          "1.11.0"
+        ],
+        [
+          "idna",
+          "3.11"
+        ],
+        [
+          "importlib_metadata",
+          "8.7.1"
+        ],
+        [
+          "importlib_resources",
+          "7.1.0"
+        ],
+        [
+          "jiter",
+          "0.14.0"
+        ],
+        [
+          "jsonschema",
+          "4.26.0"
+        ],
+        [
+          "jsonschema-specifications",
+          "2025.9.1"
+        ],
+        [
+          "kubernetes",
+          "35.0.0"
+        ],
+        [
+          "markdown-it-py",
+          "4.0.0"
+        ],
+        [
+          "mdurl",
+          "0.1.2"
+        ],
+        [
+          "mmh3",
+          "5.2.1"
+        ],
+        [
+          "mpmath",
+          "1.3.0"
+        ],
+        [
+          "numpy",
+          "2.4.4"
+        ],
+        [
+          "oauthlib",
+          "3.3.1"
+        ],
+        [
+          "onnxruntime",
+          "1.24.4"
+        ],
+        [
+          "openai",
+          "2.32.0"
+        ],
+        [
+          "opentelemetry-api",
+          "1.41.0"
+        ],
+        [
+          "opentelemetry-exporter-otlp-proto-common",
+          "1.41.0"
+        ],
+        [
+          "opentelemetry-exporter-otlp-proto-grpc",
+          "1.41.0"
+        ],
+        [
+          "opentelemetry-proto",
+          "1.41.0"
+        ],
+        [
+          "opentelemetry-sdk",
+          "1.41.0"
+        ],
+        [
+          "opentelemetry-semantic-conventions",
+          "0.62b0"
+        ],
+        [
+          "orjson",
+          "3.11.8"
+        ],
+        [
+          "overrides",
+          "7.7.0"
+        ],
+        [
+          "packaging",
+          "26.1"
+        ],
+        [
+          "protobuf",
+          "6.33.6"
+        ],
+        [
+          "pybase64",
+          "1.4.3"
+        ],
+        [
+          "pydantic",
+          "2.13.2"
+        ],
+        [
+          "pydantic-settings",
+          "2.13.1"
+        ],
+        [
+          "pydantic_core",
+          "2.46.2"
+        ],
+        [
+          "pyproject_hooks",
+          "1.2.0"
+        ],
+        [
+          "python-dateutil",
+          "2.9.0.post0"
+        ],
+        [
+          "python-dotenv",
+          "1.2.2"
+        ],
+        [
+          "referencing",
+          "0.37.0"
+        ],
+        [
+          "requests",
+          "2.33.1"
+        ],
+        [
+          "requests-oauthlib",
+          "2.0.0"
+        ],
+        [
+          "rich",
+          "15.0.0"
+        ],
+        [
+          "rpds-py",
+          "0.30.0"
+        ],
+        [
+          "shellingham",
+          "1.5.4"
+        ],
+        [
+          "six",
+          "1.17.0"
+        ],
+        [
+          "sniffio",
+          "1.3.1"
+        ],
+        [
+          "starlette",
+          "1.0.0"
+        ],
+        [
+          "structlog",
+          "25.5.0"
+        ],
+        [
+          "sympy",
+          "1.14.0"
+        ],
+        [
+          "tenacity",
+          "9.1.4"
+        ],
+        [
+          "tokenizers",
+          "0.22.2"
+        ],
+        [
+          "tqdm",
+          "4.67.3"
+        ],
+        [
+          "typer",
+          "0.24.1"
+        ],
+        [
+          "typing-inspection",
+          "0.4.2"
+        ],
+        [
+          "typing_extensions",
+          "4.15.0"
+        ],
+        [
+          "urllib3",
+          "2.6.3"
+        ],
+        [
+          "uvicorn",
+          "0.44.0"
+        ],
+        [
+          "uvloop",
+          "0.22.1"
+        ],
+        [
+          "watchfiles",
+          "1.1.1"
+        ],
+        [
+          "websocket-client",
+          "1.9.0"
+        ],
+        [
+          "websockets",
+          "16.0"
+        ],
+        [
+          "zipp",
+          "3.23.1"
+        ]
+      ],
+      "fresh_without_system_site_packages": true,
+      "dev_pytest_absent": true,
+      "console_help": true,
+      "actual_console_server_start_restart_stop": true,
+      "http_routes": {
+        "/": {
+          "sha256": "db27fffb6cfee9231f0cbd3ebfb1f51946d5dfd0916c5ccab196068c93bbbea0",
+          "bytes": 9318,
+          "content_type": "text/html; charset=utf-8"
+        },
+        "/app.js": {
+          "sha256": "17c4da8cd82eb0c8078245fa0fd3e9c9a34f65bb7fc147090cb30dc1bfc4947c",
+          "bytes": 61853,
+          "content_type": "text/javascript; charset=utf-8"
+        },
+        "/memory.js": {
+          "sha256": "08fa15732951486782c874cadcd53181c18318bc312dde45e888e51dd06698d9",
+          "bytes": 17634,
+          "content_type": "text/javascript; charset=utf-8"
+        },
+        "/style.css": {
+          "sha256": "bc7ddd42d2d6b43cd2e85aaafd55bd7a08d748fb5dda39d4d8947c1ce9102455",
+          "bytes": 9987,
+          "content_type": "text/css; charset=utf-8"
+        },
+        "/openapi.json": {
+          "sha256": "55e1fedb6f7c0a4d26722760768784cbb7044cf120598b6b5e0158badbec011f",
+          "bytes": 72824,
+          "content_type": "application/json"
+        },
+        "/docs": {
+          "sha256": "01ef3774825676e688fa01dab570534e8da708a43138e7f98faae3439e407623",
+          "bytes": 1012,
+          "content_type": "text/html; charset=utf-8"
+        }
+      },
+      "manual_checkpoint_survived_restart": true,
+      "workspace_content_mode_preserved": true,
+      "coding_runs": 0,
+      "support_storage_absent": true,
+      "api_listener_absent": true,
+      "server_logs": [
+        "first-server.log",
+        "restarted-server.log"
+      ],
+      "checkpoints_are_not_coding_recovery_evidence": true
+    },
+    {
+      "python": "3.14.5 (main, May 10 2026, 19:20:57) [Clang 22.1.3 ]",
+      "label": "314",
+      "installed_paths": {
+        "api": "/Users/jorge/.local/share/agent-harness/trials/wheel-install-6o2gi8i2/venv314/lib/python3.14/site-packages/api/__init__.py",
+        "cli": "/Users/jorge/.local/share/agent-harness/trials/wheel-install-6o2gi8i2/venv314/lib/python3.14/site-packages/cli/__init__.py",
+        "harness": "/Users/jorge/.local/share/agent-harness/trials/wheel-install-6o2gi8i2/venv314/lib/python3.14/site-packages/harness/__init__.py"
+      },
+      "packages": [
+        [
+          "PyPika",
+          "0.51.1"
+        ],
+        [
+          "PyYAML",
+          "6.0.3"
+        ],
+        [
+          "Pygments",
+          "2.20.0"
+        ],
+        [
+          "agent-harness",
+          "0.1.0"
+        ],
+        [
+          "annotated-doc",
+          "0.0.4"
+        ],
+        [
+          "annotated-types",
+          "0.7.0"
+        ],
+        [
+          "anthropic",
+          "0.96.0"
+        ],
+        [
+          "anyio",
+          "4.13.0"
+        ],
+        [
+          "attrs",
+          "26.1.0"
+        ],
+        [
+          "bcrypt",
+          "5.0.0"
+        ],
+        [
+          "build",
+          "1.4.3"
+        ],
+        [
+          "certifi",
+          "2026.2.25"
+        ],
+        [
+          "charset-normalizer",
+          "3.4.7"
+        ],
+        [
+          "chromadb",
+          "1.5.8"
+        ],
+        [
+          "click",
+          "8.3.2"
+        ],
+        [
+          "distro",
+          "1.9.0"
+        ],
+        [
+          "docstring_parser",
+          "0.18.0"
+        ],
+        [
+          "durationpy",
+          "0.10"
+        ],
+        [
+          "fastapi",
+          "0.136.0"
+        ],
+        [
+          "filelock",
+          "3.28.0"
+        ],
+        [
+          "flatbuffers",
+          "25.12.19"
+        ],
+        [
+          "fsspec",
+          "2026.3.0"
+        ],
+        [
+          "googleapis-common-protos",
+          "1.74.0"
+        ],
+        [
+          "grpcio",
+          "1.80.0"
+        ],
+        [
+          "h11",
+          "0.16.0"
+        ],
+        [
+          "hf-xet",
+          "1.4.3"
+        ],
+        [
+          "httpcore",
+          "1.0.9"
+        ],
+        [
+          "httptools",
+          "0.7.1"
+        ],
+        [
+          "httpx",
+          "0.28.1"
+        ],
+        [
+          "huggingface_hub",
+          "1.11.0"
+        ],
+        [
+          "idna",
+          "3.11"
+        ],
+        [
+          "importlib_metadata",
+          "8.7.1"
+        ],
+        [
+          "importlib_resources",
+          "7.1.0"
+        ],
+        [
+          "jiter",
+          "0.14.0"
+        ],
+        [
+          "jsonschema",
+          "4.26.0"
+        ],
+        [
+          "jsonschema-specifications",
+          "2025.9.1"
+        ],
+        [
+          "kubernetes",
+          "35.0.0"
+        ],
+        [
+          "markdown-it-py",
+          "4.0.0"
+        ],
+        [
+          "mdurl",
+          "0.1.2"
+        ],
+        [
+          "mmh3",
+          "5.2.1"
+        ],
+        [
+          "mpmath",
+          "1.3.0"
+        ],
+        [
+          "numpy",
+          "2.4.4"
+        ],
+        [
+          "oauthlib",
+          "3.3.1"
+        ],
+        [
+          "onnxruntime",
+          "1.24.4"
+        ],
+        [
+          "openai",
+          "2.32.0"
+        ],
+        [
+          "opentelemetry-api",
+          "1.41.0"
+        ],
+        [
+          "opentelemetry-exporter-otlp-proto-common",
+          "1.41.0"
+        ],
+        [
+          "opentelemetry-exporter-otlp-proto-grpc",
+          "1.41.0"
+        ],
+        [
+          "opentelemetry-proto",
+          "1.41.0"
+        ],
+        [
+          "opentelemetry-sdk",
+          "1.41.0"
+        ],
+        [
+          "opentelemetry-semantic-conventions",
+          "0.62b0"
+        ],
+        [
+          "orjson",
+          "3.11.8"
+        ],
+        [
+          "overrides",
+          "7.7.0"
+        ],
+        [
+          "packaging",
+          "26.1"
+        ],
+        [
+          "protobuf",
+          "6.33.6"
+        ],
+        [
+          "pybase64",
+          "1.4.3"
+        ],
+        [
+          "pydantic",
+          "2.13.2"
+        ],
+        [
+          "pydantic-settings",
+          "2.13.1"
+        ],
+        [
+          "pydantic_core",
+          "2.46.2"
+        ],
+        [
+          "pyproject_hooks",
+          "1.2.0"
+        ],
+        [
+          "python-dateutil",
+          "2.9.0.post0"
+        ],
+        [
+          "python-dotenv",
+          "1.2.2"
+        ],
+        [
+          "referencing",
+          "0.37.0"
+        ],
+        [
+          "requests",
+          "2.33.1"
+        ],
+        [
+          "requests-oauthlib",
+          "2.0.0"
+        ],
+        [
+          "rich",
+          "15.0.0"
+        ],
+        [
+          "rpds-py",
+          "0.30.0"
+        ],
+        [
+          "shellingham",
+          "1.5.4"
+        ],
+        [
+          "six",
+          "1.17.0"
+        ],
+        [
+          "sniffio",
+          "1.3.1"
+        ],
+        [
+          "starlette",
+          "1.0.0"
+        ],
+        [
+          "structlog",
+          "25.5.0"
+        ],
+        [
+          "sympy",
+          "1.14.0"
+        ],
+        [
+          "tenacity",
+          "9.1.4"
+        ],
+        [
+          "tokenizers",
+          "0.22.2"
+        ],
+        [
+          "tqdm",
+          "4.67.3"
+        ],
+        [
+          "typer",
+          "0.24.1"
+        ],
+        [
+          "typing-inspection",
+          "0.4.2"
+        ],
+        [
+          "typing_extensions",
+          "4.15.0"
+        ],
+        [
+          "urllib3",
+          "2.6.3"
+        ],
+        [
+          "uvicorn",
+          "0.44.0"
+        ],
+        [
+          "uvloop",
+          "0.22.1"
+        ],
+        [
+          "watchfiles",
+          "1.1.1"
+        ],
+        [
+          "websocket-client",
+          "1.9.0"
+        ],
+        [
+          "websockets",
+          "16.0"
+        ],
+        [
+          "zipp",
+          "3.23.1"
+        ]
+      ],
+      "fresh_without_system_site_packages": true,
+      "dev_pytest_absent": true,
+      "console_help": true,
+      "actual_console_server_start_restart_stop": true,
+      "http_routes": {
+        "/": {
+          "sha256": "db27fffb6cfee9231f0cbd3ebfb1f51946d5dfd0916c5ccab196068c93bbbea0",
+          "bytes": 9318,
+          "content_type": "text/html; charset=utf-8"
+        },
+        "/app.js": {
+          "sha256": "17c4da8cd82eb0c8078245fa0fd3e9c9a34f65bb7fc147090cb30dc1bfc4947c",
+          "bytes": 61853,
+          "content_type": "text/javascript; charset=utf-8"
+        },
+        "/memory.js": {
+          "sha256": "08fa15732951486782c874cadcd53181c18318bc312dde45e888e51dd06698d9",
+          "bytes": 17634,
+          "content_type": "text/javascript; charset=utf-8"
+        },
+        "/style.css": {
+          "sha256": "bc7ddd42d2d6b43cd2e85aaafd55bd7a08d748fb5dda39d4d8947c1ce9102455",
+          "bytes": 9987,
+          "content_type": "text/css; charset=utf-8"
+        },
+        "/openapi.json": {
+          "sha256": "55e1fedb6f7c0a4d26722760768784cbb7044cf120598b6b5e0158badbec011f",
+          "bytes": 72824,
+          "content_type": "application/json"
+        },
+        "/docs": {
+          "sha256": "01ef3774825676e688fa01dab570534e8da708a43138e7f98faae3439e407623",
+          "bytes": 1012,
+          "content_type": "text/html; charset=utf-8"
+        }
+      },
+      "manual_checkpoint_survived_restart": true,
+      "workspace_content_mode_preserved": true,
+      "coding_runs": 0,
+      "support_storage_absent": true,
+      "api_listener_absent": true,
+      "server_logs": [
+        "first-server.log",
+        "restarted-server.log"
+      ],
+      "checkpoints_are_not_coding_recovery_evidence": true
+    }
+  ],
+  "operator_corrections": {
+    "environment_cache_misses": [
+      "Python3.11 chromadb1.5.8 unavailable offline",
+      "Python3.14 pyyaml6.0.3 unavailable offline"
+    ],
+    "resolution": "Registry access using identical frozen wheel and lock-derived version constraints; no version changes",
+    "operator_cleanup_assertion": "Original script required exit0; Uvicorn completed graceful shutdown then propagated SIGTERM. Accept0 or-SIGTERM only with completed application shutdown log and listener absence. Original partial311 record preserved separately; no inference submitted.",
+    "original_script_sha256": "7ae444889dde4e035bd830d2003e1269a912f2659b69db50525f67d9bf01943e",
+    "corrected_script_sha256": "86b7a8a7afeb0fb6d849b9e83a83f8d69cfa743687bb60e47befa81f00463fe4"
+  },
+  "local_recipes_sha256": {
+    "setup-recipe.py": "92db12a83f85695fbca0bf468105a2d08ab5c82331c76803429cb81a4246f601",
+    "smoke-recipe.py": "86b7a8a7afeb0fb6d849b9e83a83f8d69cfa743687bb60e47befa81f00463fe4",
+    "smoke-recipe-original.py": "7ae444889dde4e035bd830d2003e1269a912f2659b69db50525f67d9bf01943e"
+  },
+  "logs_sha256": {
+    "build.log": "d766d280838878219477e83259d9c3fe2a278f3a90bdbf13c17dfe069bf5923c",
+    "check311.log": "d3a3787a58c997a4a6644f275fd24c292da1a1fdbf43522c06bf198953b9a058",
+    "check314.log": "272bb90be564e6507861d9b47dec1e25d18bcf05d15b13e7dee84a72109dc24b",
+    "constraints.log": "360f8aee0e2bff99b2a3d51a5c07794abdced100809414df82bd8db0eacad04e",
+    "install311-online.log": "f97284d051f25f214fd5dd1028b02029f1998bf9c9fa884e0aedb3877b87d928",
+    "install311.log": "6b1162e5a55a097566599898952f90c14ec9e1128264302c074cbca6406f72d7",
+    "install314-online.log": "feb575d9f07c662f58709611ebacbaeff3ff8cf2a31a335b8829d8925ad34fec",
+    "install314.log": "e8c87b17b2e076d30e559c30ba7b19beabbe36668811dcfe99ee2433c6b58a75",
+    "working311/chat-create-only.log": "637cc40e4b26dc7c1c06030e0df87cd2e2d5d3e1788d9e9f54ad928c6a246345",
+    "working311/checkpoint-after-restart.log": "b39ffd4b95470f3098d58983912c87aaf39e49d1dfea948dd2e1dcc4db5a5fd0",
+    "working311/checkpoint-create.log": "b39ffd4b95470f3098d58983912c87aaf39e49d1dfea948dd2e1dcc4db5a5fd0",
+    "working311/configuration-after.log": "eacb3e7f6d78b75bb6252a367d69836b4c476263ee426d05a6630345e084f1b9",
+    "working311/configuration-before.log": "eacb3e7f6d78b75bb6252a367d69836b4c476263ee426d05a6630345e084f1b9",
+    "working311/first-server.log": "2a7768040a2dff3d17cc69a1d3cf333d102866f8351eedc0969a54ce61e10d05",
+    "working311/help.log": "be345fa2f59b94863f98bbe90dc892da61551755d3b377c715f0d064bc0d6285",
+    "working311/no-support-import.log": "6b1b2ac29a4f19d2b77b9271e72114bd2509a853d0781835e78636f4aecc7aa9",
+    "working311/provenance.log": "b669edc2e5a300ecf6d93233500068e1f2f0c800fdfa4b1100598e4aa2c57e0b",
+    "working311/restarted-server.log": "199868c3e4f9e116be9e18a5d7a5542a7f8bf69bfa632174844a4dfe410b1775",
+    "working311-operator-probe/chat-create-only.log": "0cd63f53b80df3d602c21e0c13ececc3c6f3dff0ab40a32b6514523f2dc07e08",
+    "working311-operator-probe/checkpoint-create.log": "4be2a332927ce760a1245ba61afe6c5446b181caff1f4caa794594aabbe6ffeb",
+    "working311-operator-probe/configuration-before.log": "eacb3e7f6d78b75bb6252a367d69836b4c476263ee426d05a6630345e084f1b9",
+    "working311-operator-probe/first-server.log": "74d24fddf4264045b2c0d2204682993a7e32b8995d2ecd15d881ab1e16f7f3b0",
+    "working311-operator-probe/help.log": "be345fa2f59b94863f98bbe90dc892da61551755d3b377c715f0d064bc0d6285",
+    "working311-operator-probe/no-support-import.log": "6b1b2ac29a4f19d2b77b9271e72114bd2509a853d0781835e78636f4aecc7aa9",
+    "working311-operator-probe/provenance.log": "b669edc2e5a300ecf6d93233500068e1f2f0c800fdfa4b1100598e4aa2c57e0b",
+    "working314/chat-create-only.log": "dbf398c3f67fef52bdb040cdd43a23e6d29bf27e0dd9bba3ba6675cf4742d842",
+    "working314/checkpoint-after-restart.log": "ec9398788c3519953994dfca35dc21ea4133fbc99c7aa35d32613838b3ebfbc5",
+    "working314/checkpoint-create.log": "ec9398788c3519953994dfca35dc21ea4133fbc99c7aa35d32613838b3ebfbc5",
+    "working314/configuration-after.log": "eacb3e7f6d78b75bb6252a367d69836b4c476263ee426d05a6630345e084f1b9",
+    "working314/configuration-before.log": "eacb3e7f6d78b75bb6252a367d69836b4c476263ee426d05a6630345e084f1b9",
+    "working314/first-server.log": "85875ce2aa64aca3694d561927e7d967e5cd257f783720de2406f9532f2af3ca",
+    "working314/help.log": "be345fa2f59b94863f98bbe90dc892da61551755d3b377c715f0d064bc0d6285",
+    "working314/no-support-import.log": "6b1b2ac29a4f19d2b77b9271e72114bd2509a853d0781835e78636f4aecc7aa9",
+    "working314/provenance.log": "e221942125273072572bbcd8cac7dfe109082489bbade949cf9ad8dd8be9911d",
+    "working314/restarted-server.log": "f81865012923b70930d50f6dab613915f128ee9d3c7d4c6b987b80f72f96faf9"
+  },
+  "dependency_checks_passed": true,
+  "all_owned_api_listeners_absent": true,
+  "coding_runs": 0,
+  "inference_calls": 0,
+  "release_approved": false,
+  "limits": [
+    "macOS arm64 only; Python3.11.15 and3.14.5, not a full compatibility matrix.",
+    "Lock-constrained dependencies; unconstrained registry resolution was not tested.",
+    "Panel assets served and byte-checked; no fresh interactive browser or model coding trial.",
+    "Manual checkpoint review after restart is not partial-edit cancellation/continuation/reversal evidence.",
+    "Support retrieval resource startup was not exercised.",
+    "Registry/cache availability and future dependency changes remain external.",
+    "Raw environments/logs/recipes stay local, not a portable wheel/source bundle."
+  ]
+}

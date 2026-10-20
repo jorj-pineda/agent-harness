@@ -28,8 +28,9 @@ also completed no workflows (0/2 per arm); the batching hint never activated in
 available normalized history. Production prompts and release gates remain unchanged.
 Built wheels include the panel assets. An offline packaging regression installs
 the wheel outside the checkout and exercises panel/API routes with the existing
-dependency environment; this does not complete a fresh dependency-install audit
-or the broader release gates.
+dependency environment. Separate [fresh wheel-install observations](WHEEL_INSTALLATION.md)
+passed with lock-constrained dependencies on macOS/Python 3.11 and 3.14. Neither
+check completes the broader release gates or validates unconstrained future dependencies.
 
 Read [roadmap.md](roadmap.md) for remaining acceptance criteria and
 [AGENTS.md](AGENTS.md) for development rules. Model observations in

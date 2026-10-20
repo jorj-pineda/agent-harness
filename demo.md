@@ -131,9 +131,11 @@ roadmap work. Named
 profiles can already be configured and selected at server startup; see the
 [README profile configuration](README.md#named-startup-model-profiles).
 
-This walkthrough assumes a source checkout. The current wheel omits panel assets;
-a wheel-only API starts headless. See the [release-readiness audit](RELEASE_READINESS.md)
-for the current release gates and distribution limits.
+This walkthrough assumes a source checkout with development dependencies. Wheels
+now include the panel; [fresh installation observations](WHEEL_INSTALLATION.md)
+cover lock-constrained runtime installs outside the checkout on macOS/Python 3.11
+and 3.14. Project check dependencies still need separate installation. See the
+[release-readiness audit](RELEASE_READINESS.md) for the unmet release gates.
 
 Legacy Docker/support smoke observations remain in [evals/LIVE.md](evals/LIVE.md).
 They are historical environment observations, not a recommendation to spend money

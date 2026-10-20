@@ -186,6 +186,18 @@ failed before the fix; its historical audit remains labeled separately.
 Validation: eight focused and 1,343 offline tests passed (five live deselected),
 Ruff/format/mypy passed. No evaluation behavior or model inference changed.
 
+**2026-10-20 — Fresh lock-constrained wheel installations observed:** runtime
+`326e69c` passed fresh macOS arm64 installs on Python 3.11.15 and 3.14.5, with
+86 distributions per environment and no system-site packages. Actual installed
+CLI/API startup, panel assets, manual checkpoint/configuration inspection and
+checkpoint review after restart passed; fixture bytes/mode and cleanup were
+preserved. [Evidence](WHEEL_INSTALLATION.md) retains environment cache misses,
+registry retries using unchanged constraints and a corrected operator shutdown
+assertion. No coding runs, model inference, project-check dependencies, browser
+workflow or real partial-edit recovery were exercised. This docs/data validation
+does not close G2–G5, establish unconstrained future dependency compatibility or
+change the ten-task no-go. No release publication, Duodoro edits or paid calls.
+
 ## Direction
 
 Build a coding harness Jorge can use on real repositories with affordable hosted models and locally runnable models that struggle with coding-agent workflows. The harness should help those models inspect the right code, make focused edits, recover from errors, and verify their work within an explicit budget.
