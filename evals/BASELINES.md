@@ -2077,3 +2077,42 @@ ten-task/feedback/batching counts and G2–G5 remain unchanged/unmet. This docs/
 report did not rerun preparation's shared-runtime 71 focused/1,344 offline tests,
 static checks or two scripted 90/90 matrices; those remain historical mechanics
 evidence, separate from these real-tool coding observations.
+
+## 2026-10-21 UTC — one bounded live CLI recovery workflow
+
+[Report](projects/duodoro/RECOVERY_RESULTS.md) and
+[structured observations](results/2026-10-21-duodoro-recovery-workflow.json).
+Runtime `dacf072` used the reviewed PR #166 freeze: original Duodoro formatter
+behavior/scope/criteria/reference, explicit source/test-focused request variant,
+compact/whole-file and two identical reserved 150-second/32K-total-token phases.
+This is not an original-T01 repeat, new baseline cohort or quality comparison.
+
+The source made one real formatter write, then cancelled before check/answer
+completion. After actual API restart and CLI review, one guarded fork ran the
+configured pytest check and completed. External acceptance passed with two checks,
+and retained-artifact regrades reproduced it. Source/scored manifests match: the
+fork checked/reported the existing patch rather than repairing an incorrect one.
+Source: five requests/four responses, unknown total usage with known prefix
+9,592 prompt/439 output. Fork: two requests/two responses, reported 6,806/212.
+The combined known response prefix is not an aggregate total or token-compliance
+claim. No transfer, third phase, coding hint, patch rescue or replacement attempt.
+
+After grading, a declared later sentinel edit survived eligible source-file
+reversal; target bytes/mode returned to baseline. Fork target equality made it
+ineligible, so no reversal was submitted for it. Another API restart retained
+identical saved runs/archives and keyed reversal outcomes without execution.
+Audits cover frozen identity/profile/settings/recipes/criteria/reference, scoped
+files, root identity, exactly two runs, unchanged evidence and cleanup. All four
+owned API processes exited, listener released and Gemma unloaded; existing service
+preserved. The actual grader sources/interpreter match the pinned runtime/environment.
+The final answer's formatter/check statements have limited source/tool review,
+without a complete semantic rubric or model judge.
+
+Raw artifacts, profiles, journals, transcripts, client/server logs, recipes and
+regrades remain under the report's local root. No execution setup correction,
+manual patch repair, Duodoro working-checkout edit, paid/new model call or Docker.
+The retained initial scripted capture preparation error was not a live attempt.
+One public variant/sequence does not establish general recovery, browser workflows,
+held-out improvement or release readiness. Original ten-task/comparison counts,
+no-go and broader G2–G5 remain unchanged. Docs/data only; preparation's 41 focused,
+1,363 offline tests and two scripted 90/90 matrices were not rerun as model evidence.

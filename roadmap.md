@@ -20,9 +20,13 @@ limits and unchanged criteria in disposable copies. G0 passed there with concret
 Node 24; reporting commits were not the execution runtime. The committed ledger
 remains an unrun preparation template; the separate results retain every outcome.
 
-G2 remains open: real CLI/panel submission and review, cancellation, server restart
-and one guarded fork were exercised, but cancellation preceded any partial edit
-and the planned reversal was rejected. G3 was missed; G4's held-out/repeated
+G2 remains open. In that original trial, real CLI/panel submission and review,
+cancellation, server restart and one guarded fork were exercised, but cancellation
+preceded any partial edit and the planned reversal was rejected. A later separate
+[CLI recovery probe](evals/projects/duodoro/RECOVERY_RESULTS.md) exercised edit →
+cancel → restart → guarded fork/check and eligible source reversal with preservation;
+its one request variant and unknown aggregate usage do not close broader G2.
+G3 was missed; G4's held-out/repeated
 two-model comparison and G5's release decision remain unmet. No patch repair,
 hidden reruns, model switches or Duodoro working-checkout edits occurred. T08
 failed executable acceptance without a refactor; source review was not performed
@@ -294,6 +298,26 @@ fail/reference pass, scripted first-input/profile/capture/replay and four no-for
 guard mismatches pass without inference; one failed capture fixture is retained.
 Gemma remains unloaded. No Duodoro working-checkout edits or release-gate closure;
 original cohorts/no-go and G2–G5 remain unchanged.
+
+**2026-10-21 UTC — Frozen live CLI recovery observed:** the
+[one scheduled workflow](evals/projects/duodoro/RECOVERY_RESULTS.md) ran through
+actual clients at `dacf072`. Source/test-focused variant, unchanged formatter
+acceptance and fixed two-half allowances remained as reviewed. Gemma wrote the
+target, then one explicit CLI cancel retained a real edit and paired captures;
+after API restart/review a guarded fork ran the configured check and completed.
+Final independent acceptance and retained-artifact regrades passed. The fork did
+not change the source patch, so this is interrupted workflow completion, not repair
+of an incorrect artifact. Source cancellation usage is unknown (known prefix
+9,592 prompt/439 output); fork reports 6,806/212. No aggregate known token-compliance
+claim, allowance transfer, third phase, rescue or default change. Post-grade source
+reversal restored original target bytes/mode and preserved later sentinel work;
+fork had no target difference and was not submitted for reversal. Another API
+restart retained identical run/archive/reversal records without execution. Scope,
+criteria/reference/settings/recipes/identity/profile/root and two-run audits passed;
+owned APIs exited and Gemma unloaded. No Duodoro working-checkout edits, paid/new
+model calls or Docker. One public request variant/sequence does not close broader
+G2, ten-task G3, held-out/two-model G4 or release G5; original cohorts/no-go stay
+unchanged. Docs/data only, not a rerun of preparation G0 or a general quality gain.
 
 ## Direction
 
