@@ -2035,3 +2035,45 @@ two repeats per arm do not establish a general/causal or held-out gain. Original
 ten-task and feedback comparison results and G2–G5 remain unchanged/unmet. This
 docs/data report did not rerun preparation's two 1,342-test offline gates, static
 checks or both scripted 90/90 matrices per arm; those remain mechanics evidence.
+
+## 2026-10-20 — existing editing presets on the same duration task/root
+
+[Full report](projects/duodoro/TOOLSET_RESULTS.md) and
+[all four observations](results/2026-10-20-duodoro-toolset-comparison.json).
+The reviewed PR #162 cohort used one published runtime `ce5d54c`, original T01
+criteria and unchanged budgets. Both actual CLI repeats per compact preset used
+the same literal workspace root with frozen first-input assertions. Whole-file
+removes only `replace_text` and selects its existing matching edit instruction;
+retained schemas and other settings match. All instruction/tool text is retained.
+
+Full: **0/2 accepted artifacts, 0/2 completed-and-accepted**. Whole-file:
+**2/2 accepted, 2/2 completed-and-accepted**, with passing configured checks.
+Full's seven requests leave the second formatter unfixed after mismatch recovery
+and stop at the total-token estimate gate; whole-file's eight requests include one
+successful full-content write, the configured check and a final answer. Both
+whole-file answers also contain an unexecuted inaccurate Python test illustration;
+limited source/tool review records that issue separately from artifact acceptance.
+The actual unchanged visible test invokes Node and passed. No complete semantic
+answer score is claimed.
+
+All four have known reported usage: **220,580 prompt / 3,901 output tokens**.
+Whole-file did more completed work with more reported tokens; no equal-work
+efficiency ranking follows. All four CLI responses timed out while owned work
+continued; original-key read-only inspection retrieved final evidence without
+resubmission. Journal intervals range from 161.67 to 190.77 seconds, separately
+from pure inference, operator cleanup or hard return deadlines.
+
+Final external regrades reproduced all outcomes. Frozen runtime/environment,
+settings/criteria/reference/staging, first identities/profiles, checkpoint pairs,
+single-run stores, archives and protected files passed audit. Entire artifacts,
+traces, budget journals, client/server logs, recipes and hashes remain local at
+the report's path. Owned APIs exited/listeners stopped and Gemma was unloaded,
+retaining the existing Ollama service. No coding rescue, artifact repair, execution
+setup correction, Duodoro working-checkout edit, paid call or Docker action.
+
+Keep full as the default; stale-hash/large-write risks remain, and this selected
+public task/two repeats is not held-out or general causal evidence. Original
+ten-task/feedback/batching counts and G2–G5 remain unchanged/unmet. This docs/data
+report did not rerun preparation's shared-runtime 71 focused/1,344 offline tests,
+static checks or two scripted 90/90 matrices; those remain historical mechanics
+evidence, separate from these real-tool coding observations.

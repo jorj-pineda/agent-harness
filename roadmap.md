@@ -228,6 +228,25 @@ limits inspected. Review/merge precedes execution under the ongoing user instruc
 no model-quality result or release-gate closure is implied. No inference, Duodoro
 working-checkout edits, paid calls or Docker actions.
 
+**2026-10-20 — Existing toolset comparison observed:** all four frozen actual
+CLI T01 attempts ran at `ce5d54c` with unchanged criteria/limits and guarded
+same-root first inputs. [Results](evals/projects/duodoro/TOOLSET_RESULTS.md): full
+**0/2 accepted, 0/2 completed-and-accepted**; whole-file **2/2 accepted, 2/2
+completed-and-accepted**, with passing configured checks. Full used seven requests
+and stopped before the second formatter/check after exact-edit mismatch recovery;
+whole-file used eight, wrote both fixes once, checked and answered. Both successful
+answers also include an unexecuted inaccurate Python test illustration, retained
+as a separate limited answer-quality observation. Acceptance does not verify prose.
+External regrading reproduced every grade; scope/settings/criteria/profile/first
+identity/checkpoint/archive/single-run audits passed. All four CLI responses timed
+out, then read-only lookup retrieved outcomes without resubmission. Entire artifacts
+are archived, owned APIs exited and Gemma unloaded; no manual coding rescue or
+execution-setup correction. Full remains the default: one selected public task,
+two repeats, mixed historical whole-file outcomes and stale-hash/large-rewrite risks
+do not establish a general/causal gain. Original cohorts, ten-task no-go and G2–G5
+remain unchanged. Docs/data only; preparation G0 is historical, not rerun here.
+No Duodoro working-checkout edits, paid calls, new model or Docker actions.
+
 ## Direction
 
 Build a coding harness Jorge can use on real repositories with affordable hosted models and locally runnable models that struggle with coding-agent workflows. The harness should help those models inspect the right code, make focused edits, recover from errors, and verify their work within an explicit budget.
