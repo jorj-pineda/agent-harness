@@ -220,6 +220,19 @@ repeats and whole-file stale-hash/large-write risks do not meet G3/G4 or approve
 release. Original cohorts/no-go and G2–G5 remain unchanged; this is a narrow
 observed preset contrast, not compaction or a general quality claim.
 
+## Live recovery preparation — 2026-10-21 UTC
+
+The [frozen protocol](evals/projects/duodoro/RECOVERY_PROTOCOL.md) prepares one
+source/test-focused Duodoro request variant with unchanged external formatter
+acceptance. It reserves two identical half-budgets from Jorge's original total,
+observes a real edit before cancellation, then plans actual CLI restart/review/fork
+and eligible chained single-file reversal. The combined scripted regression and
+pinned preparation gates are mechanics evidence; no live phase has run. Missed
+cancellation, blocked/failed forks, unknown interrupted usage and rejected reversal
+remain possible outcomes, with no replacement or budget transfer. Original trial
+counts/no-go and G2–G5 remain unchanged; this does not approve a release or establish
+a new useful coding envelope.
+
 ## Concrete audit findings and scope decisions
 
 | Finding | Classification | Disposition |
