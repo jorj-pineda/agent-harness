@@ -262,6 +262,20 @@ Validation: 58 focused CLI tests and 1,362 offline tests passed (five live
 deselected), plus Ruff, formatting, mypy and CLI help inspection. Evaluation
 behavior is unchanged; scripted matrices were not rerun for this client-only slice.
 
+**2026-10-21 UTC — Combined scripted CLI recovery regression:** a real-file test joins
+partial-edit cancellation, fresh API lifecycle, saved review, guarded fork/check
+and two explicit single-file reversals through CLI entry points. Pre-existing
+target bytes/mode, later unrelated work, test bytes and saved run evidence survive;
+a third lifecycle inspects keyed reversal outcomes without execution. Identical
+reserved phase configurations and unknown cancellation usage remain explicit.
+The provider and lost response are scripted, so this does not prove live Gemma
+recovery, process-level client behavior, task quality or closure of G2. No runtime
+feature, inference, Duodoro edit, budget reset or historical-result change.
+Validation: 41 focused tests and 1,363 offline tests passed (five live deselected),
+Ruff/format/mypy passed. An initial scripted tool-name mistake and an assertion
+against summary-only check output were corrected before the final passing gate.
+No application/evaluator behavior changed; scripted matrices were not rerun.
+
 ## Direction
 
 Build a coding harness Jorge can use on real repositories with affordable hosted models and locally runnable models that struggle with coding-agent workflows. The harness should help those models inspect the right code, make focused edits, recover from errors, and verify their work within an explicit budget.
