@@ -1,0 +1,205 @@
+{
+  "client_user_id": "duodoro-recovery-cli",
+  "command_path": "/Users/jorge/Projects/agent-harness/.venv/bin:/Users/jorge/.vite-plus/js_runtime/node/24.22.0/bin:/Library/Frameworks/Python.framework/Versions/3.14/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Users/jorge/.vite-plus/bin:/Users/jorge/.vite-plus/packages/@openai/codex/84961cf0-d2e3-40e5-b06d-6bec42509ad3/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/codex-path:/Users/jorge/.codex/tmp/arg0-macos/codex-arg0JYuhaq:/Users/jorge/.vite-plus/js_runtime/node/24.22.0/bin:/Users/jorge/.opencode/bin:/Users/jorge/.bun/bin:/Users/jorge/Downloads/google-cloud-sdk/bin:/Users/jorge/.antigravity-ide/antigravity-ide/bin:/Users/jorge/.sdkman/candidates/java/current/bin:/Users/jorge/.sdkman/candidates/grails/current/bin:/Users/jorge/.sdkman/candidates/gradle/current/bin:/Users/jorge/.local/bin:/Library/Frameworks/Python.framework/Versions/3.14/bin:/Users/jorge/.cargo/bin:/Users/jorge/.docker/bin",
+  "continuation_message": "Continue the same requested formatter change, preserving existing work; report actual checks and limits.",
+  "continuation_sha256": "740d140b9a97dcbb688012937d4b909edb034c4e8475d4225070e1319c97de98",
+  "execution_authorization": "User: NEXT, WORK ON NEXT3TASKS AND MERGEYOURSELF; ongoing localGemma/Duodoro authorization and existing limits. Execute only after protocol/manifest review and merge, with unchanged preconditions; scripted success is not separate authorization.",
+  "execution_profile": {
+    "base_prompt_sha256": "8fc608bd7e89605c9fb4cefa96e2a0b06b0c4017748dc55fd15a440fe9fe22d9",
+    "configured_model": "gemma4:12b",
+    "context_limit_policy": "configured-min-v1",
+    "effective_max_context_tokens": 16384,
+    "endpoint_sha256": "b26993598dffd1f14aed97def57ef67f753518a9b773d8a12033c82b4fa545ca",
+    "inspection_only": false,
+    "memory_prompt_max_bytes": 8192,
+    "memory_scope_version": "workspace-path-v1",
+    "model_profile": null,
+    "ollama_num_ctx": 16384,
+    "ollama_think": false,
+    "project_check_sha256": "10b23b83a2ec688953329591406ea00c4018ac870b5b5e7d04bd535e95660e0b",
+    "prompt_version": "coding-v3-compact-whole-file-v1",
+    "provider": "ollama",
+    "provider_options_sha256": null,
+    "repository_instructions": null,
+    "schema_version": 1,
+    "scope_note": "Configured execution evidence, not backend attestation or resume permission. Excludes credentials, raw endpoints, check argv, injected facts, workspace contents, tool implementations, and provider/server defaults. Null identities are unknown. A special compatible transport recipe hash records public configured options only; null has no recorded recipe. Conversation IDs and constructor overrides are excluded. Memory prompt byte limits are recorded; null means the boundary was not recorded.",
+    "settings": {
+      "coding_toolset": "whole_file",
+      "confidence_escalation_threshold": 0.55,
+      "enable_support_tools": false,
+      "load_root_agents": false,
+      "max_completion_retries": 1,
+      "max_completion_tokens_per_turn": 4096,
+      "max_context_tokens": 16384,
+      "max_diff_file_bytes": 128000,
+      "max_diff_snapshot_bytes": 2000000,
+      "max_files_touched_per_turn": 2,
+      "max_identical_tool_calls": 2,
+      "max_request_output_tokens": 2048,
+      "max_tool_calls_per_turn": 12,
+      "max_tool_iterations": 6,
+      "max_total_tokens_per_turn": 32000,
+      "max_tracked_bytes": 256000000,
+      "max_tracked_files": 20000,
+      "max_turn_wall_seconds": 150.0,
+      "max_workspace_diff_bytes": 64000,
+      "min_request_output_tokens": 256,
+      "prompt_estimate_bytes_per_token": 3.0,
+      "request_timeout_seconds": 60,
+      "require_plan_before_edit": false,
+      "require_verification_before_finish": true,
+      "track_workspace_changes": true
+    },
+    "source": "configured_settings",
+    "tool_names": [
+      "remember_fact",
+      "recall_facts",
+      "read_file",
+      "grep_repo",
+      "list_dir",
+      "tree",
+      "git_status",
+      "git_diff",
+      "emit_plan",
+      "write_file",
+      "run_command"
+    ],
+    "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+  },
+  "execution_status": "not_started",
+  "g0": {
+    "focused": "41 passed",
+    "logs_sha256": {
+      "g0-coding.log": "afafae78c4ffb19918d1963f005e2f8ea32f3c3e4c334b2bedb3c994028cb930",
+      "g0-coding.md": "267c18c8384f9b74faa3090ed601aed0c0d6820191e71582fa20e93551fab3ce",
+      "g0-focused.log": "2972e2d48c593979cda048564306c1717f86a90219cdcc7529f2bf8057853e73",
+      "g0-format.log": "e04fbeb0bf86aad2e601f06f3e1b27816908b2f8b485406eefdf3977ffbb3cf5",
+      "g0-mypy.log": "caf4cb276b1b834b69b4a51aa776668a80ee64e1a2fd04bb890970c67d4fd7e7",
+      "g0-pytest.log": "7ca66efe397443f51c241489a0da891f17bfd710db1ea1f11b5da6aacf8f3e96",
+      "g0-ruff.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "g0-support.log": "9651d836651109a9326754b8bf50afb42ba664fb89fc897e1526fffad06b6ecf",
+      "g0-support.md": "79147ee40a89bf3b29d60630f671c75aa31f9eb59a711e6a0c4794a1f2b96af1"
+    },
+    "offline": "1363 passed, 5 live deselected; existing Chroma deprecation warning",
+    "scripted": "coding and support90/90 escalation decisions; contract labels and metric limits inspected",
+    "static": "Ruff, format260files, mypy57sources passed",
+    "status": "passed-pinned-runtime"
+  },
+  "guard_check_sha256": "c6083340b5bd901fa18e627cce00dc40ca57fa50555f32cbf244c95559793e85",
+  "inference": false,
+  "initial_target_sha256": "22d1c3647d9be8e6b1ad9c188a483dbf3a97070213ffc6565c0dd51d89bab90b",
+  "installed_distributions_sha256": "eccbb41fa7ff520b5ace5e33cc4da0f647268bc027050eb0d711b329eca3a8cf",
+  "kind": "unrun_bounded_cli_recovery_workflow",
+  "local_recipes_sha256": {
+    "finalization-recipe.py": "e2c2e9e1391bf261458d9142e5bfbfdb7a3761091153a1974c5739e79e06afeb",
+    "gates-recipe.py": "3ae6895f38e93499d12899fce0f649dff560213ba02e457d152fcf43b4385a20",
+    "guarded-server.py": "ac17a497be0630bff16cb82ebdd21373c672aaf5ba44325d306c50b60296ca44",
+    "preparation-recipe.py": "e9f3244a08711bf240193e901f480c75f98cf7a59a2b94851008f26a057485a3",
+    "recovery-ops.py": "bce3d37cf1d137306f4f1ecefa314c71600baab034ea9a628b8ac1f3943aec7e"
+  },
+  "local_root": "/Users/jorge/.local/share/agent-harness/trials/duodoro-recovery-cru8vt1w",
+  "managed_executables": {
+    "node": {
+      "path": "/Users/jorge/.vite-plus/js_runtime/node/24.22.0/bin/node",
+      "sha256": "b468fb9c67427c9d3aec07ee1105e63020923a631a9a2a00beb71a7ba3768bfd"
+    },
+    "python": {
+      "path": "/Users/jorge/Projects/agent-harness/.venv/bin/python",
+      "sha256": "c015ab131972822e27ed108cf353582af6ca2fd7daf6296789576c7e7d1ad61a"
+    }
+  },
+  "max_scheduled_workflows": 1,
+  "model": {
+    "digest": "4eb23ef187e2c5462566d6a1d3bbbc2f1346d0b4327cbb66d58fffbcc9b2b05c",
+    "name": "gemma4:12b",
+    "ollama_version": "0.33.2"
+  },
+  "phase_count": 2,
+  "phase_limits": {
+    "max_completion_tokens_per_turn": 4096,
+    "max_context_tokens": 16384,
+    "max_request_output_tokens": 2048,
+    "max_tool_calls_per_turn": 12,
+    "max_tool_iterations": 6,
+    "max_total_tokens_per_turn": 32000,
+    "max_turn_wall_seconds": 150,
+    "min_request_output_tokens": 256,
+    "request_timeout_seconds": 60
+  },
+  "preflight_sha256": "bc469b27533397adc620710e4d90d83725d1927f322c9bbf5421c2b3492dfaa8",
+  "preparation_corrections": [
+    {
+      "inference": false,
+      "kind": "scripted_fixture_missing_finish_reason",
+      "resolution": "Corrected scripted ProviderResponse boundary in a fresh preparation root; first failed root retained.",
+      "retained_root": "/Users/jorge/.local/share/agent-harness/trials/duodoro-recovery-j_hztki8",
+      "scheduled_live_attempt": false
+    }
+  ],
+  "prepared_at_utc": "2026-10-21T04:37:13.208757+00:00",
+  "request": "In Duodoro, harden formatDuration and formatTime in client/src/lib/format.ts against negative and non-finite numeric durations. Negative numbers, NaN, Infinity and -Infinity must render as zero (0m and 0:00). Preserve existing finite-positive formatting, fractional truncation and formatTag behavior. Inspect client/src/lib/format.ts and client/src/lib/format.test.ts first. Only modify client/src/lib/format.ts; preserve all other files, including pre-existing work and tests. For this disposable library-level evaluation, test_visible.py is an additional visible task check using the installed Node runtime's native TypeScript support; run [\"python\",\"-m\",\"pytest\",\"-q\",\"test_visible.py\"] after the edit. This adapter does not run the full Next/Vitest suite. Do not install dependencies, start services or touch Docker. Report the observed checks and any limits honestly.",
+  "request_sha256": "47b7416c1683ee19b5c09dd6d81af86f652b0ae30c85e6706cba87d91e49f0bb",
+  "request_variant": "Original T01 behavior/scope/check requirements, replacing mandatory AGENTS inspection with explicit target/test inspection. Full root instructions remain available; no runtime/tool-result truncation. Not an original-T01 repeat or quality comparison.",
+  "review_status": "pending",
+  "runtime_checkout": "/Users/jorge/.local/share/agent-harness/trials/duodoro-recovery-cru8vt1w/runtime",
+  "runtime_lock_sha256": "ee324d070d1a71a9bc162761c9628b01f2b3ecf76538d0d79deaf8480dac6ea8",
+  "runtime_revision": "dacf072c0a09546fdc69d2407091ab049ee1b520",
+  "runtime_tree": "7137229af61c1f863d814187f812be49c47c3526",
+  "schema_version": 1,
+  "settings_sha256": "93845116374568517dc49bfd4048016f318f99b19b343397a40088c2eafae521",
+  "source_initial_identity": {
+    "format": "normalized-chat-request-v1",
+    "messages_sha256": "1c0fa0010457f87caaac31135f133c327e6cd6c7810f952c948abdddc45c6381",
+    "request_sha256": "2eed9694936027fb4d231d49b431a26e60c44a97ae8421572258392f14ce7f9d",
+    "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+  },
+  "task": {
+    "acceptance_files_sha256": {
+      "baseline.json": "b9b094a6d2d7350e8f28ae6fa90efe2b6517c3da40adc3f9a8945527827debd0",
+      "test_acceptance.py": "eb658229d6ee00a8b870357c68458cb0dbd4ee05cc9e87caf8142c73bb763e2f"
+    },
+    "adapter": "duration_format",
+    "allowed_modified_paths": [
+      "client/src/lib/format.ts"
+    ],
+    "category": "bugfix",
+    "client": "CLI",
+    "id": "T01",
+    "offline_validation": "One fresh full-source fixture: initial visible/external fail, reference visible/external pass, unchanged original acceptance and reference.",
+    "original_request": "In Duodoro, harden formatDuration and formatTime in client/src/lib/format.ts against negative and non-finite numeric durations. Negative numbers, NaN, Infinity and -Infinity must render as zero (0m and 0:00). Preserve existing finite-positive formatting, fractional truncation and formatTag behavior. Inspect AGENTS.md and the existing format tests first. Only modify client/src/lib/format.ts; preserve all other files, including pre-existing work and tests. For this disposable library-level evaluation, test_visible.py is an additional visible task check using the installed Node runtime's native TypeScript support; run [\"python\",\"-m\",\"pytest\",\"-q\",\"test_visible.py\"] after the edit. This adapter does not run the full Next/Vitest suite. Do not install dependencies, start services or touch Docker. Report the observed checks and any limits honestly.",
+    "reference_files_sha256": {
+      "client/src/lib/format.ts": "7f3a802eed35e725cd05b45258fd0a08b28546ada21e13e849c3add5910adc0f"
+    },
+    "request_utf8_sha256": "15b7c2d1ba4548a7085c577f62dcd4de4b1a5974079659e39a8098f2a2236098",
+    "session_options": {
+      "checkpoint_turns": true,
+      "inspection_only": false,
+      "provider": "ollama"
+    },
+    "source_metadata_sha256": "86f3443fcf5f2313b5d9c724fd086ce5a9b1b2ba46a98c6f23a9de1d6ffa0dca",
+    "source_revision": "5324cabba4ad3c8ad2e1cd1480218cf087d9b741"
+  },
+  "total_reserved_limits": {
+    "completion_tokens": 8192,
+    "dispatch_seconds": 300,
+    "model_iterations": 12,
+    "tool_calls": 24,
+    "total_reported_tokens": 64000
+  },
+  "unused_allowance_transferred": false,
+  "workflow_id": "R01-duration-recovery-variant",
+  "workflow_rules": {
+    "continuation": "At most one pinned guarded fork only after cancelled source with an observed edit; identical settings/storage/root after server restart. Phase2 first request depends on retained live history and is not pre-frozen; native guards enforce source/workspace/profile/transcript/context.",
+    "phase_accounting": "At most2operator-submitted phases, each150s32Ktotal4096out12tools6iterations. Unused allowance not transferred; cancellation tail unknown; never certify known total if any phase unknown.",
+    "release": "One selected request variant/one workflow, no same-input comparison or original trial replacement. G2broadclient/ten-task, G3/G4/G5 unchanged; no causal/modelquality/heldout/release claim.",
+    "reversal": "Grade final artifact and retain copy first; then append one declared later sentinel line and reverse eligible fork then source target differences through CLI. Preserve rejection/unknown/missing pairs; no reset/bypass.",
+    "source_cancel_trigger": "First changed allowed target plus successful saved write_file end; CLI cancel once; no provider pause or model rewrite. Missed trigger/cancellation remains a failed workflow, never replaced."
+  },
+  "workspace_owner": {
+    "device": 16777233,
+    "inode": 20380755,
+    "path": "/Users/jorge/.local/share/agent-harness/trials/duodoro-recovery-cru8vt1w/workspace",
+    "purpose": "single evaluation-owned recovery workflow, never user checkout"
+  },
+  "workspace_owner_sha256": "85b437d6fd4972f6ceef317b155105f4d9f232278b8ccf944c7c3669b1bab7af"
+}
