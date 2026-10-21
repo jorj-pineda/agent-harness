@@ -276,6 +276,25 @@ Ruff/format/mypy passed. An initial scripted tool-name mistake and an assertion
 against summary-only check output were corrected before the final passing gate.
 No application/evaluator behavior changed; scripted matrices were not rerun.
 
+**2026-10-21 UTC — Bounded live recovery probe prepared, not run:** the
+[protocol](evals/projects/duodoro/RECOVERY_PROTOCOL.md) freezes one fresh Duodoro
+formatter workflow at `dacf072`, existing compact/whole-file tools and two identical
+reserved 150-second/32K-total-token phases. The explicit request variant names the
+source/test inspection instead of mandating a broad instruction read; original
+behavior/scope/acceptance/reference and full available source stay unchanged. It
+is a workflow probe, not an original-task repeat or quality comparison. Observe an
+actual write before one CLI cancellation, restart/review, submit at most one guarded
+fork, grade before later sentinel work and eligible fork/source reversal, then
+restart for read-only inspection. Missed triggers/blocked guards/unknown usage stay
+visible without replacements, budget transfer or repair. All execution remains
+unrun pending review/merge under Jorge's three-task authorization. Preparation at
+the pinned runtime passes 41 focused and 1,363 offline tests (five live deselected),
+static gates and both scripted 90/90 matrices with labels/limits inspected. Initial
+fail/reference pass, scripted first-input/profile/capture/replay and four no-forward
+guard mismatches pass without inference; one failed capture fixture is retained.
+Gemma remains unloaded. No Duodoro working-checkout edits or release-gate closure;
+original cohorts/no-go and G2–G5 remain unchanged.
+
 ## Direction
 
 Build a coding harness Jorge can use on real repositories with affordable hosted models and locally runnable models that struggle with coding-agent workflows. The harness should help those models inspect the right code, make focused edits, recover from errors, and verify their work within an explicit budget.
