@@ -1,0 +1,518 @@
+{
+  "schema_version": 1,
+  "kind": "real-model-real-tools-CLI-recovery-workflow",
+  "workflow_id": "R01-duration-recovery-variant",
+  "runtime_revision": "dacf072c0a09546fdc69d2407091ab049ee1b520",
+  "freeze_sha256": "95bed2f20e47cc5b518ffa0857db55a12d43f172a639fd0e68af92a1574aa620",
+  "local_evidence_root": "/Users/jorge/.local/share/agent-harness/trials/duodoro-recovery-cru8vt1w",
+  "model": {
+    "digest": "4eb23ef187e2c5462566d6a1d3bbbc2f1346d0b4327cbb66d58fffbcc9b2b05c",
+    "name": "gemma4:12b",
+    "ollama_version": "0.33.2"
+  },
+  "request_variant": "Original T01 behavior/scope/check requirements, replacing mandatory AGENTS inspection with explicit target/test inspection. Full root instructions remain available; no runtime/tool-result truncation. Not an original-T01 repeat or quality comparison.",
+  "request": "In Duodoro, harden formatDuration and formatTime in client/src/lib/format.ts against negative and non-finite numeric durations. Negative numbers, NaN, Infinity and -Infinity must render as zero (0m and 0:00). Preserve existing finite-positive formatting, fractional truncation and formatTag behavior. Inspect client/src/lib/format.ts and client/src/lib/format.test.ts first. Only modify client/src/lib/format.ts; preserve all other files, including pre-existing work and tests. For this disposable library-level evaluation, test_visible.py is an additional visible task check using the installed Node runtime's native TypeScript support; run [\"python\",\"-m\",\"pytest\",\"-q\",\"test_visible.py\"] after the edit. This adapter does not run the full Next/Vitest suite. Do not install dependencies, start services or touch Docker. Report the observed checks and any limits honestly.",
+  "continuation_message": "Continue the same requested formatter change, preserving existing work; report actual checks and limits.",
+  "phase_limits": {
+    "max_completion_tokens_per_turn": 4096,
+    "max_context_tokens": 16384,
+    "max_request_output_tokens": 2048,
+    "max_tool_calls_per_turn": 12,
+    "max_tool_iterations": 6,
+    "max_total_tokens_per_turn": 32000,
+    "max_turn_wall_seconds": 150,
+    "min_request_output_tokens": 256,
+    "request_timeout_seconds": 60
+  },
+  "total_reserved_limits": {
+    "completion_tokens": 8192,
+    "dispatch_seconds": 300,
+    "model_iterations": 12,
+    "tool_calls": 24,
+    "total_reported_tokens": 64000
+  },
+  "phase_count": 2,
+  "unused_allowance_transferred": false,
+  "rows": [
+    {
+      "phase": 1,
+      "run_id": "43b711553a5948e7a2aa361898ccb5bc",
+      "session_id": "b76181511162496585c96e146bee88d7",
+      "status": "cancelled",
+      "completion_status": "cancelled",
+      "verification_status": "not_run",
+      "completion_reason": "Cancellation requested; owned tool work has settled. Review partial work.",
+      "answer": "(turn cancelled before task completion)",
+      "token_usage": {
+        "prompt_tokens": null,
+        "completion_tokens": null
+      },
+      "known_response_prefix_usage": {
+        "prompt_tokens": 9592,
+        "completion_tokens": 439
+      },
+      "model_requests": 5,
+      "model_responses": 4,
+      "request_failures": 1,
+      "tool_names": [
+        "read_file",
+        "read_file",
+        "emit_plan",
+        "write_file"
+      ],
+      "created_at": "2026-10-21T04:56:56.136423Z",
+      "finished_at": "2026-10-21T04:58:02.725034Z",
+      "run_lifecycle_seconds": 66.588611,
+      "check_attempts": [],
+      "run_sha256": "876587e50dbbcb8ac4046722cf74d88b1a389d275b1e80c621561e5046c0c65f",
+      "session_sha256": "a723b02adf12217435f169b40018da409b2d1f0c79f9f195ba377f02bac9a090",
+      "budget_evidence": {
+        "events": [
+          {
+            "kind": "request",
+            "iteration": 0,
+            "message_count": 2,
+            "estimated_prompt_tokens": 2803,
+            "heuristic_prompt_tokens": 2803,
+            "anchor_adjustment_tokens": 0,
+            "max_tokens": 2048,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "1c0fa0010457f87caaac31135f133c327e6cd6c7810f952c948abdddc45c6381",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+              "request_sha256": "2eed9694936027fb4d231d49b431a26e60c44a97ae8421572258392f14ce7f9d"
+            },
+            "usage": null,
+            "prompt_tokens_used": 0,
+            "completion_tokens_used": 0
+          },
+          {
+            "kind": "response",
+            "iteration": 0,
+            "message_count": 2,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "anchor_adjustment_tokens": null,
+            "max_tokens": null,
+            "identity": null,
+            "usage": {
+              "prompt_tokens": 1741,
+              "completion_tokens": 23
+            },
+            "prompt_tokens_used": 1741,
+            "completion_tokens_used": 23
+          },
+          {
+            "kind": "request",
+            "iteration": 1,
+            "message_count": 4,
+            "estimated_prompt_tokens": 3058,
+            "heuristic_prompt_tokens": 3058,
+            "anchor_adjustment_tokens": 0,
+            "max_tokens": 2048,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "601c80dbbe9321316394e343cc26abb9535979e6b4444241c920ba6b932a19ff",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+              "request_sha256": "8f654e8e3142f007bbfe36859212bc2d17567d5e5b8ae215ad4c050e16a2b4c0"
+            },
+            "usage": null,
+            "prompt_tokens_used": 1741,
+            "completion_tokens_used": 23
+          },
+          {
+            "kind": "response",
+            "iteration": 1,
+            "message_count": 4,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "anchor_adjustment_tokens": null,
+            "max_tokens": null,
+            "identity": null,
+            "usage": {
+              "prompt_tokens": 2060,
+              "completion_tokens": 29
+            },
+            "prompt_tokens_used": 3801,
+            "completion_tokens_used": 52
+          },
+          {
+            "kind": "request",
+            "iteration": 2,
+            "message_count": 6,
+            "estimated_prompt_tokens": 3631,
+            "heuristic_prompt_tokens": 3631,
+            "anchor_adjustment_tokens": 0,
+            "max_tokens": 2048,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "9dd47aa7eae1cdaf12224dfc0011f07977f1e148beb757246087e80ba84a5d43",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+              "request_sha256": "a0657329e7e472bc41bb0939f463de1a5b14705eb471e0de1414c27be8e3c85b"
+            },
+            "usage": null,
+            "prompt_tokens_used": 3801,
+            "completion_tokens_used": 52
+          },
+          {
+            "kind": "response",
+            "iteration": 2,
+            "message_count": 6,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "anchor_adjustment_tokens": null,
+            "max_tokens": null,
+            "identity": null,
+            "usage": {
+              "prompt_tokens": 2787,
+              "completion_tokens": 113
+            },
+            "prompt_tokens_used": 6588,
+            "completion_tokens_used": 165
+          },
+          {
+            "kind": "request",
+            "iteration": 3,
+            "message_count": 8,
+            "estimated_prompt_tokens": 3881,
+            "heuristic_prompt_tokens": 3881,
+            "anchor_adjustment_tokens": 0,
+            "max_tokens": 2048,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "905eef15adb2e5eee2ea1bed5c98bdf0f910d7440f23535cd76f5b8f32054a91",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+              "request_sha256": "1cc1c5befdf5e986976079af6687c04b636d42143bb1110b2d44859b478df0be"
+            },
+            "usage": null,
+            "prompt_tokens_used": 6588,
+            "completion_tokens_used": 165
+          },
+          {
+            "kind": "response",
+            "iteration": 3,
+            "message_count": 8,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "anchor_adjustment_tokens": null,
+            "max_tokens": null,
+            "identity": null,
+            "usage": {
+              "prompt_tokens": 3004,
+              "completion_tokens": 274
+            },
+            "prompt_tokens_used": 9592,
+            "completion_tokens_used": 439
+          },
+          {
+            "kind": "request",
+            "iteration": 4,
+            "message_count": 10,
+            "estimated_prompt_tokens": 4176,
+            "heuristic_prompt_tokens": 4176,
+            "anchor_adjustment_tokens": 0,
+            "max_tokens": 2048,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "30243ab5a28690c105f859d88cf04020f1ebf42add6757f4424d5a5102b21018",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+              "request_sha256": "60b0ce0c915ccc62fe1e99d88460440f2da46422015b5f7a678561b831d4dbfa"
+            },
+            "usage": null,
+            "prompt_tokens_used": 9592,
+            "completion_tokens_used": 439
+          },
+          {
+            "kind": "request_failure",
+            "iteration": 4,
+            "message_count": 10,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "anchor_adjustment_tokens": null,
+            "max_tokens": null,
+            "identity": null,
+            "usage": null,
+            "prompt_tokens_used": null,
+            "completion_tokens_used": null
+          }
+        ],
+        "observed_events": 10,
+        "events_truncated": false,
+        "read_only": true,
+        "scope_note": "Bounded prefix of normalized request attempts, reported response usage and token-gate stops. Request precedes delivery; response usage is a provider report, not backend attestation. Failure usage is unknown; a request without a response may have consumed tokens. Missing/truncated evidence is not zero usage or proven budget compliance. No messages, paths, call IDs, tool arguments/results or exception text are stored here. Fingerprints cover normalized inputs only; see the separate configured profile for limits/provider identity. Wall/tool/iteration stops are not token-gate events. Not completion, acceptance, replay or permission to resume."
+      }
+    },
+    {
+      "phase": 2,
+      "run_id": "f4457a30932d47bda8b359a0042c8fb9",
+      "session_id": "53e6cc6edc0d5886aa29fee596d37a67",
+      "status": "finished",
+      "completion_status": "completed",
+      "verification_status": "passed",
+      "completion_reason": null,
+      "answer": "The `formatDuration` and `formatTime` functions in `client/src/lib/format.ts` have been hardened against non-finite (NaN, Infinity, -Infinity) and negative numeric inputs. These cases are now treated as 0, ensuring they render as \"0m\" and \"0:00\" respectively, while preserving existing logic for valid positive numbers.\n\nThe changes were verified by the `test_visible.py` check.\n\n### Changes:\n- **`formatDuration`**: Added a check to ensure `seconds` is finite and non-negative before calculation.\n- **`formatTime`**: Added a check to ensure `seconds` is finite and non-negative before calculation.\n\n### Verification Results:\n- `python -m pytest -q test_visible.py`: Passed.",
+      "token_usage": {
+        "prompt_tokens": 6806,
+        "completion_tokens": 212
+      },
+      "known_response_prefix_usage": {
+        "prompt_tokens": 6806,
+        "completion_tokens": 212
+      },
+      "model_requests": 2,
+      "model_responses": 2,
+      "request_failures": 0,
+      "tool_names": [
+        "run_command"
+      ],
+      "created_at": "2026-10-21T04:58:58.090811Z",
+      "finished_at": "2026-10-21T05:00:21.870069Z",
+      "run_lifecycle_seconds": 83.779258,
+      "check_attempts": [
+        {
+          "argv": [
+            "python",
+            "-m",
+            "pytest",
+            "-q",
+            "test_visible.py"
+          ],
+          "exit_code": 0,
+          "status": "passed",
+          "relevant": true,
+          "superseded_by_edit": false,
+          "error": null
+        }
+      ],
+      "run_sha256": "d779965fd86e4fe65d5e8cea7cf2306bafaccc3f4479cb4d79def493e6528d17",
+      "session_sha256": "28fecfac4fa7b51b42ca895193b55ab4c5f17f10d6c05ff4f9d2d6e16bce326f",
+      "budget_evidence": {
+        "events": [
+          {
+            "kind": "request",
+            "iteration": 0,
+            "message_count": 11,
+            "estimated_prompt_tokens": 4215,
+            "heuristic_prompt_tokens": 4215,
+            "anchor_adjustment_tokens": 0,
+            "max_tokens": 2048,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "e0c2dad738565fc2aae1563eeb97baf8fae411e90bdcb934c05af9bce25255f0",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+              "request_sha256": "ca72728242f1353786e36452aed2f037aa75a32496aaab39fa85b3a76cf6521f"
+            },
+            "usage": null,
+            "prompt_tokens_used": 0,
+            "completion_tokens_used": 0
+          },
+          {
+            "kind": "response",
+            "iteration": 0,
+            "message_count": 11,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "anchor_adjustment_tokens": null,
+            "max_tokens": null,
+            "identity": null,
+            "usage": {
+              "prompt_tokens": 3341,
+              "completion_tokens": 37
+            },
+            "prompt_tokens_used": 3341,
+            "completion_tokens_used": 37
+          },
+          {
+            "kind": "request",
+            "iteration": 1,
+            "message_count": 13,
+            "estimated_prompt_tokens": 4342,
+            "heuristic_prompt_tokens": 4342,
+            "anchor_adjustment_tokens": 0,
+            "max_tokens": 2048,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "467af9bb0b20e9fc1eb09fe0b2333b74100a9a754a9952982e7006dfc6478761",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+              "request_sha256": "ce76962770c857b5b6c81bebebb1f562d1f5e0e0fe48fc3aa4a51ec8e42e7c2b"
+            },
+            "usage": null,
+            "prompt_tokens_used": 3341,
+            "completion_tokens_used": 37
+          },
+          {
+            "kind": "response",
+            "iteration": 1,
+            "message_count": 13,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "anchor_adjustment_tokens": null,
+            "max_tokens": null,
+            "identity": null,
+            "usage": {
+              "prompt_tokens": 3465,
+              "completion_tokens": 175
+            },
+            "prompt_tokens_used": 6806,
+            "completion_tokens_used": 212
+          }
+        ],
+        "observed_events": 4,
+        "events_truncated": false,
+        "read_only": true,
+        "scope_note": "Bounded prefix of normalized request attempts, reported response usage and token-gate stops. Request precedes delivery; response usage is a provider report, not backend attestation. Failure usage is unknown; a request without a response may have consumed tokens. Missing/truncated evidence is not zero usage or proven budget compliance. No messages, paths, call IDs, tool arguments/results or exception text are stored here. Fingerprints cover normalized inputs only; see the separate configured profile for limits/provider identity. Wall/tool/iteration stops are not token-gate events. Not completion, acceptance, replay or permission to resume."
+      }
+    }
+  ],
+  "artifact_accepted": true,
+  "completed_and_accepted": true,
+  "partial_edit_cancelled": true,
+  "reversals": [
+    {
+      "phase": 2,
+      "status": "not_eligible-no_target_difference"
+    },
+    {
+      "phase": 1,
+      "status": "applied",
+      "request_id": "recovery-reverse-phase-1"
+    }
+  ],
+  "audit": {
+    "frozen_inputs_recipes_runtime_criteria_reference_match": true,
+    "saved_run_archive_evidence_unchanged": true,
+    "one_or_two_runs_only": true,
+    "checkpoint_root_identity_preserved": true,
+    "external_regrade_reproduced": true,
+    "artifact_scope_preserved": true,
+    "scored_changed_paths": [
+      "client/src/lib/format.ts"
+    ],
+    "target_bytes_and_mode_restored": true,
+    "later_sentinel_work_preserved": true,
+    "other_regular_files_preserved": true,
+    "final_changed_paths_vs_initial": [
+      "preexisting-user-work.txt"
+    ],
+    "owned_api_pids_absent": [
+      51526,
+      52372,
+      53511,
+      53523
+    ],
+    "listener_absent": true,
+    "gemma_unloaded": true,
+    "source_target_unchanged_in_fork": true,
+    "keyed_reversal_review_unchanged": true,
+    "aggregate_usage_known": false,
+    "known_within_total_token_budget_claim": false
+  },
+  "manual_patch_repair": false,
+  "frozen_execution_recipe_changed": false,
+  "preparation_corrections": [
+    {
+      "inference": false,
+      "kind": "scripted_fixture_missing_finish_reason",
+      "resolution": "Corrected scripted ProviderResponse boundary in a fresh preparation root; first failed root retained.",
+      "retained_root": "/Users/jorge/.local/share/agent-harness/trials/duodoro-recovery-j_hztki8",
+      "scheduled_live_attempt": false
+    }
+  ],
+  "limits": [
+    "One public request variant/one workflow, not original trial replacement or controlled quality comparison.",
+    "Cancellation usage may be unknown; no known aggregate budget-compliance claim.",
+    "Trusted host-local execution; no cross-process/external-writer isolation.",
+    "Historical check evidence does not certify reversed artifact.",
+    "No complete semantic answer score; source/tool review observations remain separate.",
+    "Original cohorts, release no-go and G2 broad/G3/G4/G5 unchanged."
+  ],
+  "evidence_sha256": {
+    "phase-2-workspace-review.txt": "a9eb0a8c78b63dbce52eb9ca970b88909e37a407bc9361d6b6e354817ecea786",
+    "phase-2-source-after.json": "876587e50dbbcb8ac4046722cf74d88b1a389d275b1e80c621561e5046c0c65f",
+    "phase-2-submission.txt": "0dabc5fa97ecdb51ee0cc3488921c4e7287c547321f74d075273be5eda5bcac1",
+    "phase-2-lookup-020.json": "c95c79aeeaaf60f872de9b53cfff3a4a362303efe665ec879250d2adeb2497c3",
+    "operator-events.jsonl": "347af33c939a37796cf2adc2b305f2ba417e6489b990468a1ee6e80c31e3a034",
+    "final-phase-2-run.json": "d779965fd86e4fe65d5e8cea7cf2306bafaccc3f4479cb4d79def493e6528d17",
+    "phase-1-after-edit-progress-000.txt": "fbeaaae7667e867e53a885e53f03e637609a464a8ea7f86c2839354fd5459488",
+    "phase-2-lookup-000.json": "a8666a4fd6114f6d45f2f86ba4285aeeac134456b3b5fa8ae97e812770b1d802",
+    "phase-1-chat.txt": "d3146f77100fe99d6084e06069e4c78b0dbb59090b8a8bd7934faa650d497fe5",
+    "reverse-1-after-checkpoint.json": "1dcb1fb31f57ce4d3cedaabf0feb2c435db349906f515adc0dad93534d8a9815",
+    "phase-2-lookup-016.json": "a8666a4fd6114f6d45f2f86ba4285aeeac134456b3b5fa8ae97e812770b1d802",
+    "phase-1-session.json": "a723b02adf12217435f169b40018da409b2d1f0c79f9f195ba377f02bac9a090",
+    "phase-1-key-lookup.txt": "f573ea423e97a73d60d909ed0fd494b73390702b2bee327f97eb519e336e5b51",
+    "phase-2-lookup-017.json": "4d6dfe7811b248ab05d32a320d560f5a38b82691bfc95eae0c1648b4cd2dd248",
+    "phase-2-lookup-001.json": "a8666a4fd6114f6d45f2f86ba4285aeeac134456b3b5fa8ae97e812770b1d802",
+    "phase-2-lookup-021.json": "c95c79aeeaaf60f872de9b53cfff3a4a362303efe665ec879250d2adeb2497c3",
+    "phase-3-server.log": "119f5d05d839ad79ef7f4c0248507a5feacaad2a597ed41bf46ae143a86b5d0d",
+    "acceptance-recheck.json": "0653671189ac09110dbadefe50e360af902bb91a9dd1fd1c53c79d32ab038ec7",
+    "acceptance.json": "cfeb89245d9b27797bf073998f07fc3cbc5fa688f41479a85fbcf7b6a4fa4823",
+    "phase-2-lookup-006.json": "a8666a4fd6114f6d45f2f86ba4285aeeac134456b3b5fa8ae97e812770b1d802",
+    "phase-2-lookup-010.json": "a8666a4fd6114f6d45f2f86ba4285aeeac134456b3b5fa8ae97e812770b1d802",
+    "reverse-2-before-checkpoint.json": "9fcec6142aa009d5552772967afd3b439bec609a9a2c00835ab62462812f750b",
+    "phase-1-manifest.json": "8733cca9c2ac5fdfa0ee99e6e4e650d031858d3d4843e5e3cb7fb0b6603ec414",
+    "phase-4-server.log": "c883a9f926b143a6220aadd8d4ced88577a338086675396803ed28c87018b6ae",
+    "scored-manifest.json": "8733cca9c2ac5fdfa0ee99e6e4e650d031858d3d4843e5e3cb7fb0b6603ec414",
+    "phase-1-run.json": "876587e50dbbcb8ac4046722cf74d88b1a389d275b1e80c621561e5046c0c65f",
+    "reverse-1-result.json": "895d4024a112d5aeec8d8f65d782cf05ce4ef8ab0fd1ecefc42ed647d3267b02",
+    "reverse-1-before-checkpoint.json": "dab038d918530c77ec5f12445b9b5fc874ea50255d0dba020a700f35140dd1e2",
+    "phase-2-lookup-011.json": "a8666a4fd6114f6d45f2f86ba4285aeeac134456b3b5fa8ae97e812770b1d802",
+    "phase-2-lookup-007.json": "a8666a4fd6114f6d45f2f86ba4285aeeac134456b3b5fa8ae97e812770b1d802",
+    "phase-1-server.log": "94a6eafd8266d97311b6e94b7b47cd56862f10794f1a392aa9be083d9498e641",
+    "phase-1-cancel.txt": "692007ae4b505fcf953d9d61043fb26dfea1754b261ee4502413a99d0606dbda",
+    "phase-2-lookup-012.json": "a8666a4fd6114f6d45f2f86ba4285aeeac134456b3b5fa8ae97e812770b1d802",
+    "phase-2-lookup-004.json": "a8666a4fd6114f6d45f2f86ba4285aeeac134456b3b5fa8ae97e812770b1d802",
+    "phase-2-transcript-review.txt": "cfb40c169fec5ebc5edf7b6b87b0367d431a039837e66cac3f81b6147bdaec63",
+    "phase-2-lookup-024.json": "c95c79aeeaaf60f872de9b53cfff3a4a362303efe665ec879250d2adeb2497c3",
+    "phase-2-server.log": "e1891f7ecc095fe0c5a7a8f1d9162bd2570674f584e7bba205dad197fd972c3f",
+    "phase-2-lookup-008.json": "a8666a4fd6114f6d45f2f86ba4285aeeac134456b3b5fa8ae97e812770b1d802",
+    "later-sentinel.json": "13ef753dde28c0e214544971910ccb96bbebcbb2507dd5cb148fb6566d052ead",
+    "final-phase-1-run.json": "876587e50dbbcb8ac4046722cf74d88b1a389d275b1e80c621561e5046c0c65f",
+    "phase-2-lookup-009.json": "a8666a4fd6114f6d45f2f86ba4285aeeac134456b3b5fa8ae97e812770b1d802",
+    "reverse-2-after-checkpoint.json": "328f1365e43a43a90efb52f49d28545ff7c97f4b3eed694a80bb949381316827",
+    "phase-2-lookup-025.json": "d779965fd86e4fe65d5e8cea7cf2306bafaccc3f4479cb4d79def493e6528d17",
+    "final-phase-1-reversal.json": "895d4024a112d5aeec8d8f65d782cf05ce4ef8ab0fd1ecefc42ed647d3267b02",
+    "after-reversal-manifest.json": "ca2ce9e3d1f733edc0c8ea24a1c9168340d868f187694279d56f8570bce17daa",
+    "phase-2-lookup-005.json": "a8666a4fd6114f6d45f2f86ba4285aeeac134456b3b5fa8ae97e812770b1d802",
+    "phase-2-lookup-013.json": "a8666a4fd6114f6d45f2f86ba4285aeeac134456b3b5fa8ae97e812770b1d802",
+    "phase-2-lookup-022.json": "c95c79aeeaaf60f872de9b53cfff3a4a362303efe665ec879250d2adeb2497c3",
+    "phase-2-pinned-submission.json": "6a7c9e895d8f6fcadc70de540fd0568d4da83c38e4dec4c3441c1f061fae92d0",
+    "reversals.json": "2ca0c5455ffac9a4a1b04bf728600ea4b22bad2a3a16b6efe2ae414e48506f9d",
+    "phase-2-lookup-018.json": "c95c79aeeaaf60f872de9b53cfff3a4a362303efe665ec879250d2adeb2497c3",
+    "phase-2-configuration-review.txt": "5ccc4320ea191ddc601477773dad3b01da5949ad5dc645e3cd6ec30d475669aa",
+    "phase-2-lookup-014.json": "a8666a4fd6114f6d45f2f86ba4285aeeac134456b3b5fa8ae97e812770b1d802",
+    "phase-2-session.json": "28fecfac4fa7b51b42ca895193b55ab4c5f17f10d6c05ff4f9d2d6e16bce326f",
+    "phase-2-lookup-002.json": "a8666a4fd6114f6d45f2f86ba4285aeeac134456b3b5fa8ae97e812770b1d802",
+    "phase-2-lookup-003.json": "a8666a4fd6114f6d45f2f86ba4285aeeac134456b3b5fa8ae97e812770b1d802",
+    "phase-2-lookup-015.json": "a8666a4fd6114f6d45f2f86ba4285aeeac134456b3b5fa8ae97e812770b1d802",
+    "final-audit.json": "3a335b838cdbd3c38e4b63c3970ed8aa92a76a5ff0515260283fe67d8da790f0",
+    "phase-2-run.json": "d779965fd86e4fe65d5e8cea7cf2306bafaccc3f4479cb4d79def493e6528d17",
+    "ledger.json": "f6d3f35e483c01615b84106d729e9c447b3f2c7cb3fdede3fb9046b8f9031032",
+    "phase-2-lookup-019.json": "c95c79aeeaaf60f872de9b53cfff3a4a362303efe665ec879250d2adeb2497c3",
+    "phase-2-lookup-023.json": "c95c79aeeaaf60f872de9b53cfff3a4a362303efe665ec879250d2adeb2497c3",
+    "answer-review.json": "dfd9b4836a6af1f18c3ac21cd3da3a5307bc1739967e1eaf2eeeb770786824c2",
+    "audit-recipe.py": "bda472a0bf15837a6ba47879b5400b3095134e31d91fb63bc49cc5a28d505ab3",
+    "audit-console.log": "140f7801b4ea8dda39092815ba1fa032a671dea054a4f63993df6a05ab1bb832"
+  },
+  "acceptance": {
+    "argv": [
+      "/Users/jorge/Projects/agent-harness/.venv/bin/python3",
+      "-I",
+      "-B",
+      "/Users/jorge/Projects/agent-harness/evals/acceptance_runner.py",
+      "/Users/jorge/.local/share/agent-harness/trials/duodoro-recovery-cru8vt1w/workspace",
+      "/Users/jorge/.local/share/agent-harness/trials/duodoro-recovery-cru8vt1w/prepared/acceptance"
+    ],
+    "exit_code": 0,
+    "stdout": "..                                                                       [100%]\n2 passed in 0.25s\n",
+    "stderr": "",
+    "stdout_truncated": false,
+    "stderr_truncated": false
+  },
+  "answer_review": {
+    "scope": "Limited human source/tool review, not a complete semantic-answer rubric or model judge.",
+    "source_target_equal_to_accepted_final": true,
+    "observed_final_check_supports_answer_pass_statement": true,
+    "final_answer_contains_unexecuted_test_illustration": false,
+    "does_not_establish_repair_of_incorrect_patch": true
+  }
+}
