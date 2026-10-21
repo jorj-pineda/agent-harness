@@ -405,7 +405,24 @@
     "source_target_unchanged_in_fork": true,
     "keyed_reversal_review_unchanged": true,
     "aggregate_usage_known": false,
-    "known_within_total_token_budget_claim": false
+    "known_within_total_token_budget_claim": false,
+    "owned_grader_sources_match_pinned_runtime": {
+      "evals/real_run.py": {
+        "reporting_checkout_sha256": "dd8b43af28e39522eca7c17081bc3df72e7ad0ebfd7ff879655eb956c8a0dd3e",
+        "pinned_runtime_sha256": "dd8b43af28e39522eca7c17081bc3df72e7ad0ebfd7ff879655eb956c8a0dd3e",
+        "matches": true
+      },
+      "evals/acceptance_runner.py": {
+        "reporting_checkout_sha256": "67be1aa3212f6c5fa941fcf6dd84ac0dcdcb5def9abf400e648de13d091b7bd6",
+        "pinned_runtime_sha256": "67be1aa3212f6c5fa941fcf6dd84ac0dcdcb5def9abf400e648de13d091b7bd6",
+        "matches": true
+      }
+    },
+    "acceptance_python_matches_frozen_binary": true,
+    "source_changed_paths": [
+      "client/src/lib/format.ts"
+    ],
+    "source_manifest_equals_scored_manifest": true
   },
   "manual_patch_repair": false,
   "frozen_execution_recipe_changed": false,
@@ -491,7 +508,9 @@
     "phase-2-lookup-023.json": "c95c79aeeaaf60f872de9b53cfff3a4a362303efe665ec879250d2adeb2497c3",
     "answer-review.json": "dfd9b4836a6af1f18c3ac21cd3da3a5307bc1739967e1eaf2eeeb770786824c2",
     "audit-recipe.py": "bda472a0bf15837a6ba47879b5400b3095134e31d91fb63bc49cc5a28d505ab3",
-    "audit-console.log": "140f7801b4ea8dda39092815ba1fa032a671dea054a4f63993df6a05ab1bb832"
+    "audit-console.log": "140f7801b4ea8dda39092815ba1fa032a671dea054a4f63993df6a05ab1bb832",
+    "grader-source-audit.json": "77549b5b16a6d27d5cee9abb1a7e9775b68081a1dd94254df75ca1e53faf8d65",
+    "source-scope-audit.json": "d22cfc3d37f2d680c596ac1ee9058786ff6f1881c915449f7916f602401c790d"
   },
   "acceptance": {
     "argv": [
