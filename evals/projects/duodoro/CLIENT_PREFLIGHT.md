@@ -116,6 +116,24 @@ stopped and the listener released; no evaluation-owned inference process started
 
 ## Remaining execution gates
 
+### Automated workflow follow-up — 2026-10-21 UTC
+
+The later `tests/test_cli_recovery_workflow.py` regression joins the CLI paths in
+one isolated real-file exercise: chat with a simulated lost response after an
+actual partial write, explicit cancellation, fresh API lifecycle, read-only
+workspace/transcript/configuration review, one guarded fork with a real pytest
+check, then explicit single-file reversal of the fork followed by its source.
+It preserves a pre-existing target line/mode, visible test bytes and later work in
+an unrelated file. A third API lifecycle reads both keyed reversal records and
+the unchanged run evidence without execution. Cancellation usage remains unknown
+despite a known prefix; both phases capture the same reserved 150-second/32K
+configuration. The phase count is controlled by the test, not a cross-turn budget
+feature. No actual Ollama adapter or inference runs: configured Gemma identity is
+used only to exercise the existing profile guard. The simulated transport loss
+does not measure socket timing, actual clients across process exit, or browser
+controls. This adds repeatable regression coverage, not live recovery/G2 acceptance
+or a model-quality result, and does not rewrite the original preflight observations.
+
 This covers representative CLI and panel paths plus the specifically assigned
 CLI recovery/reversal flows, not every task/client permutation or panel recovery
 control. Existing regression tests remain supporting mechanics evidence. No new
