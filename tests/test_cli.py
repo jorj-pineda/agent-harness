@@ -252,6 +252,65 @@ def test_chat_retains_key_and_blocks_new_message_after_error() -> None:
     assert instance.chat.call_args_list[0] == instance.chat.call_args_list[1]
 
 
+@pytest.mark.parametrize("seconds", ["0", "-1", "3601", "nan", "inf", "1.5"])
+def test_chat_invalid_response_wait_never_creates_session(seconds: str) -> None:
+    with patch("cli.main.AgentClient") as client:
+        result = runner.invoke(app, ["chat", "--response-timeout", seconds], input="fix\n")
+    assert result.exit_code == 2, result.output
+    client.assert_not_called()
+
+
+def test_chat_response_wait_is_client_only_and_timeout_does_not_cancel_or_resubmit() -> None:
+    requests = []
+
+    def post(url, **kwargs):
+        requests.append((url, kwargs))
+        if url.endswith("/sessions"):
+            return _ok_response({"session_id": "s-wait"})
+        raise httpx.ReadTimeout("No response")
+
+    with patch("httpx.post", side_effect=post):
+        result = runner.invoke(
+            app, ["chat", "--response-timeout", "360"], input="fix\nnew task\n/quit\n"
+        )
+    assert result.exit_code == 0, result.output
+    assert "Outcome unknown" in result.output
+    assert len(requests) == 2  # One session and one turn, no cancel or replacement turn.
+    assert requests[0][1] == {"json": {"user_id": "cli-user"}, "timeout": 30}
+    payload = requests[1][1]["json"]
+    assert payload == {
+        "user_id": "cli-user",
+        "session_id": "s-wait",
+        "message": "fix",
+        "request_id": payload["request_id"],
+    }
+    assert payload["request_id"] in result.output
+    assert requests[1][1]["timeout"].as_dict() == {
+        "connect": 120,
+        "read": 360,
+        "write": 120,
+        "pool": 120,
+    }
+
+
+@pytest.mark.parametrize("seconds", [120, 1, 3600])
+def test_agent_client_chat_wait_boundaries_and_owner_action_timeout(seconds: int) -> None:
+    client = AgentClient(response_timeout=seconds)
+    with patch("httpx.post", return_value=_ok_response({"answer": "Done"})) as post:
+        client.chat("dev", "s1", "fix", request_id="retained")
+        assert post.call_args.kwargs["timeout"].read == seconds
+        assert post.call_args.kwargs["json"]["request_id"] == "retained"
+        post.return_value = _ok_response({"detail": "Requested"})
+        client.cancel("dev", "s1")
+        assert post.call_args.kwargs["timeout"] == 30
+
+
+@pytest.mark.parametrize("seconds", [0, -1, 3601, True, 1.5, float("inf"), float("nan")])
+def test_agent_client_rejects_invalid_response_wait(seconds) -> None:
+    with pytest.raises(ValueError, match="1 to 3600"):
+        AgentClient(response_timeout=seconds)
+
+
 # ---------------------------------------------------------------------------
 # AgentClient — unit tests with mocked httpx.post
 # ---------------------------------------------------------------------------
@@ -476,7 +535,8 @@ def test_history_lookup_failure_does_not_start_work() -> None:
     client.chat.assert_not_called()
 
 
-def test_cli_lost_response_retry_reuses_one_real_tool_turn(tmp_path) -> None:
+@pytest.mark.parametrize("wait_option", [[], ["--response-timeout", "360"]])
+def test_cli_lost_response_retry_reuses_one_real_tool_turn(tmp_path, wait_option) -> None:
     from fastapi.testclient import TestClient
 
     from providers.base import ToolCall
@@ -500,25 +560,28 @@ def test_cli_lost_response_retry_reuses_one_real_tool_turn(tmp_path) -> None:
         make_response(content="Saved review"),
     )
     chat_requests = []
+    chat_timeouts = []
     with TestClient(make_app(tmp_path, provider)) as api_client:
 
         def post(url, **kwargs):
             response = api_client.post(url, json=kwargs["json"])
             if url.endswith("/chat"):
                 chat_requests.append(kwargs["json"])
+                chat_timeouts.append(kwargs["timeout"].read)
                 if len(chat_requests) == 1:
                     raise httpx.ReadTimeout("Lost final response after archive commit")
             return response
 
         with patch("httpx.post", side_effect=post):
             result = runner.invoke(
-                app, ["chat", "--workspace", str(repo)], input="Update a.py\n/retry\n"
+                app, ["chat", "--workspace", str(repo), *wait_option], input="Update a.py\n/retry\n"
             )
         assert result.exit_code == 0, result.output
         assert "Saved review" in result.output
         assert "Recovered result is for review" in result.output
         assert "--- a/a.py" in result.output
         assert chat_requests[0] == chat_requests[1]
+        assert chat_timeouts == ([360, 360] if wait_option else [120, 120])
         record = api_client.get(
             "/runs", params={"user_id": "cli-user", "request_id": chat_requests[0]["request_id"]}
         ).json()

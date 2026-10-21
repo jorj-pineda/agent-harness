@@ -247,6 +247,21 @@ do not establish a general/causal gain. Original cohorts, ten-task no-go and G2�
 remain unchanged. Docs/data only; preparation G0 is historical, not rerun here.
 No Duodoro working-checkout edits, paid calls, new model or Docker actions.
 
+**2026-10-20 — Explicit CLI chat response wait:** all four preset-comparison CLI
+responses hit the fixed 120-second client wait while server work continued. A new
+`chat --response-timeout` selects 1–3,600 seconds of HTTP read inactivity; 120
+remains the default. Only chat response waiting changes, including an explicit
+same-key retry. Server dispatch/provider/token/tool budgets, other owner requests,
+keyed recovery and cancellation retain their behavior. Timeout still means unknown
+outcome, with no automatic retry/cancel or new-work permission. Offline real-file
+API/CLI regression covers lost delivery, unchanged keyed input and one edit for
+both default and longer waits. This addresses configurable client waiting, not
+full timeout alignment, hard latency bounds, live recovery or model quality.
+No inference, Duodoro edits or historical-result changes. G2–G5 remain open/unmet.
+Validation: 58 focused CLI tests and 1,362 offline tests passed (five live
+deselected), plus Ruff, formatting, mypy and CLI help inspection. Evaluation
+behavior is unchanged; scripted matrices were not rerun for this client-only slice.
+
 ## Direction
 
 Build a coding harness Jorge can use on real repositories with affordable hosted models and locally runnable models that struggle with coding-agent workflows. The harness should help those models inspect the right code, make focused edits, recover from errors, and verify their work within an explicit budget.

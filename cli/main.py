@@ -75,9 +75,16 @@ def chat(
         "--provider",
         help="Provider override: ollama | anthropic | openai | openai_compatible.",
     ),
+    response_timeout: int = typer.Option(
+        120,
+        "--response-timeout",
+        min=1,
+        max=3600,
+        help="Seconds of HTTP read inactivity allowed for chat. Does not change server budgets.",
+    ),
 ) -> None:
     """Interactive REPL — connect to a running agent-harness server and chat."""
-    client = AgentClient(base_url)
+    client = AgentClient(base_url, response_timeout=response_timeout)
     try:
         options = {}
         if checkpoints:

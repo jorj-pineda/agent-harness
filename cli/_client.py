@@ -39,8 +39,15 @@ class TurnSummary:
 class AgentClient:
     """Synchronous client for /sessions and /chat endpoints."""
 
-    def __init__(self, base_url: str = "http://localhost:8000") -> None:
+    def __init__(
+        self, base_url: str = "http://localhost:8000", *, response_timeout: int = 120
+    ) -> None:
+        if type(response_timeout) is not int or not 1 <= response_timeout <= 3600:
+            raise ValueError("Response timeout must be an integer from 1 to 3600 seconds")
         self._base = base_url.rstrip("/")
+        # Only /chat's read wait changes. Other transport phases and owner actions
+        # keep their existing timeouts; this is not a server execution deadline.
+        self._chat_timeout = httpx.Timeout(120, read=response_timeout)
 
     def create_session(
         self,
@@ -138,7 +145,7 @@ class AgentClient:
         }
         if provider is not None:
             payload["provider"] = provider
-        resp = httpx.post(f"{self._base}/chat", json=payload, timeout=120)
+        resp = httpx.post(f"{self._base}/chat", json=payload, timeout=self._chat_timeout)
         resp.raise_for_status()
         return summarize(resp.json())
 
