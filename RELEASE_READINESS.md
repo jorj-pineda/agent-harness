@@ -233,6 +233,22 @@ remain possible outcomes, with no replacement or budget transfer. Original trial
 counts/no-go and G2–G5 remain unchanged; this does not approve a release or establish
 a new useful coding envelope.
 
+## Live recovery observation — 2026-10-21 UTC
+
+The [one frozen CLI probe](evals/projects/duodoro/RECOVERY_RESULTS.md) observed a
+real formatter edit followed by explicit cancellation, API restart, saved reviews,
+guarded fork/check/completion and passing external artifact acceptance. The fork
+did not alter the already-written patch. Eligible source reversal restored its
+before bytes/mode while preserving pre-existing/later unrelated work; another
+restart retained identical run/archive/reversal evidence without execution.
+The source has an unknown interrupted-request usage tail, so do not certify a known
+within-budget token success. Exactly two reserved half-budget phases ran, with no
+transfer, replacement or coding rescue. All owned APIs exited and Gemma unloaded.
+This supplies narrow live CLI partial-work/reversal evidence missing from the
+original cohort; one selected request variant is not broader G2 client/ten-task
+acceptance, general recovery/quality, G3/G4 success or G5 approval. Original
+trial/comparison outcomes and unattended no-go remain unchanged.
+
 ## Concrete audit findings and scope decisions
 
 | Finding | Classification | Disposition |

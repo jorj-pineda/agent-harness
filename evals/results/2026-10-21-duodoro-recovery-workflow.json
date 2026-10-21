@@ -510,7 +510,8 @@
     "audit-recipe.py": "bda472a0bf15837a6ba47879b5400b3095134e31d91fb63bc49cc5a28d505ab3",
     "audit-console.log": "140f7801b4ea8dda39092815ba1fa032a671dea054a4f63993df6a05ab1bb832",
     "grader-source-audit.json": "77549b5b16a6d27d5cee9abb1a7e9775b68081a1dd94254df75ca1e53faf8d65",
-    "source-scope-audit.json": "d22cfc3d37f2d680c596ac1ee9058786ff6f1881c915449f7916f602401c790d"
+    "source-scope-audit.json": "d22cfc3d37f2d680c596ac1ee9058786ff6f1881c915449f7916f602401c790d",
+    "report-finalization-recipe.py": "2e78375191d4d2fe6c843692d84de70f4a4f193147ba122fc8e28877d576969f"
   },
   "acceptance": {
     "argv": [

@@ -30,6 +30,12 @@ The subsequent [existing-preset comparison](evals/projects/duodoro/TOOLSET_RESUL
 completed and independently accepted T01 in 2/2 whole-file attempts versus 0/2
 full attempts. This one selected task does not justify a default switch or release;
 both successful answers also included an unexecuted inaccurate test illustration.
+A subsequent [live CLI recovery probe](evals/projects/duodoro/RECOVERY_RESULTS.md)
+cancelled after an edit, restarted, completed a guarded fork/check and passed
+independent acceptance, then reversed the source file while preserving later
+unrelated work. It used one source/test-focused request variant; cancellation
+left aggregate usage unknown. This validates that exercised sequence, not a
+within-budget quality gain or closure of broader release gates.
 Built wheels include the panel assets. An offline packaging regression installs
 the wheel outside the checkout and exercises panel/API routes with the existing
 dependency environment. Separate [fresh wheel-install observations](WHEEL_INSTALLATION.md)
