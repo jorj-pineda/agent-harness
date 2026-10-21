@@ -878,6 +878,30 @@ Explicit scoped checkpoints and guarded continuation are described above. Client
 through the review controls described below.
 Out-of-scope and busy rejections do not create runtime turns or archive responses.
 
+### Choose the CLI response wait
+
+The CLI defaults to 120 seconds of HTTP read inactivity while waiting for a chat
+response. That can expire while a longer-budget server turn is still running.
+For a configured 300-second dispatch allowance, an explicit longer client wait is:
+
+```sh
+agent-harness chat --workspace /absolute/path/to/repo --response-timeout 360
+```
+
+`--response-timeout` accepts integer seconds from 1 to 3,600 and applies to chat
+responses, including an explicit same-key `/retry`. It does not change server
+dispatch, provider, token or tool budgets; session creation, cancellation and review
+requests retain their existing timeouts. This is an HTTP read-inactivity timeout,
+not an end-to-end deadline. Cleanup, final review and storage can outlast dispatch,
+and a slowly arriving response can also exceed the selected total elapsed time.
+
+A client timeout does not cancel server-owned work; its outcome is unknown and it
+may still be running or already finished. Retain the printed request key and use
+`/check` for read-only inspection, `/retry`
+for the exact keyed submission, or explicitly cancel. No automatic retry or
+cancellation occurs. Increasing this wait does not make a recovered session safe
+to continue or prove that remote inference has stopped.
+
 ### Cancel an active turn
 
 Use `POST /sessions/<id>/cancel` with `{"user_id":"dev1"}`. A 202 response
