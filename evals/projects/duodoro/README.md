@@ -180,3 +180,10 @@ The unchanged eight-of-ten target is missed again. Keep no-go and feature freeze
 broader recovery, held-out/two-model and release gates remain open. Original
 cohort counts stay separate. Raw evidence, unknown usage, failed client outcomes,
 observation limits and cleanup are recorded in the report.
+
+
+The [three offline failure investigations](WHOLE_FILE_FAILURE_DIAGNOSIS.md) now
+bound the five read-timeout observations, reproduce T05's missing-usage stop and
+T06's unsafe-integer defect without inference or artifact repair. Original evidence,
+criteria, counts and no-go remain unchanged. Missing backend/wire evidence limits
+root-cause attribution; no larger timeout/budget or new trial follows automatically.

@@ -1,0 +1,82 @@
+{
+  "kind": "scripted-recorded-normalized-response-canned-tool-replay",
+  "inference": false,
+  "runtime_revision": "d1e5778c834da2165da47cb877dc0d0ced026061",
+  "task": "T05",
+  "run_id": "22896a6438e446e79a9f4c0e0ebf3d53",
+  "request_id": "5e86a45891b84b6a9eefb2f9d815d2a7",
+  "normalized_request_identities_matched": [
+    {
+      "format": "normalized-chat-request-v1",
+      "messages_sha256": "908e48f1829c76c604bc7999adfabb503a8c8d44e81478b4233af74037b4e1bd",
+      "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+      "request_sha256": "763a39b652b4106ab17d40d07b9e6a21d76ec12e69003df3c8e909fb367441f5"
+    },
+    {
+      "format": "normalized-chat-request-v1",
+      "messages_sha256": "259e403f6ceaf7e59a48f35fa2c3f33e30b48c3d46ec53bb42954b041d2e7048",
+      "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+      "request_sha256": "e539b4444ca6eef5999369c5d81e83187d9381419bdf3128b47c0b6576e1e3b2"
+    },
+    {
+      "format": "normalized-chat-request-v1",
+      "messages_sha256": "e1fcf8e8231bfab8d4c966c79ac462836e80ff6d9910e2a2ae57d456b23dcca9",
+      "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+      "request_sha256": "3309c3446030f3f779d61dc73b2f130709a2a5079bc646153ee601950584eca2"
+    },
+    {
+      "format": "normalized-chat-request-v1",
+      "messages_sha256": "9a9e2127ceb394235549d03bbffbb2e02db9dfaaa49dcedd593df21439b6dfb6",
+      "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+      "request_sha256": "577acf9cb054fd7502353fb39c56368e1a6303ae4c8e6e173e3ef2f780aa1501"
+    },
+    {
+      "format": "normalized-chat-request-v1",
+      "messages_sha256": "656d06f59186157aa8ebefb0e5aeaef8e3c839c04e2842cc1e21a7bc7b32d3c3",
+      "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+      "request_sha256": "1c5495cc57acf34d82ce2c806615fefa41b7c94a16571e81aae815a8546fe665"
+    }
+  ],
+  "all_request_allowances_matched": true,
+  "all_budget_observations_equal": true,
+  "normalized_messages_equal": true,
+  "provider_requests": 5,
+  "canned_tool_invocations": [
+    "tree",
+    "read_file",
+    "emit_plan"
+  ],
+  "actual_workspace_tool_invocations": 0,
+  "final_recorded_response": {
+    "content": "",
+    "tool_calls": [],
+    "usage": {
+      "prompt_tokens": null,
+      "completion_tokens": null
+    },
+    "raw_provider_payload": null
+  },
+  "known_four_response_prefix": {
+    "prompt_tokens": 14761,
+    "completion_tokens": 392
+  },
+  "aggregate_usage": {
+    "prompt_tokens": null,
+    "completion_tokens": null
+  },
+  "completion_status": "incomplete",
+  "completion_reason": "Provider did not report output-token usage; request cap cannot be checked.",
+  "completion_recovery_already_used": true,
+  "guard_changes": false,
+  "source_evidence_unchanged": true,
+  "scope": "Reconstructs normalized response finish categories consistent with saved loop flow; raw Ollama payload/finish metadata unavailable. Does not establish why response was empty or usage absent, raw field presence vs null, backend compliance, or success if guards were disabled. Timing and tool execution are simulated.",
+  "source_hashes": {
+    "outcomes/T05/settled-audit.json": "6f4f9af64cbecdd7571fcc4d6b8e43bf8602234f96617197bd5a9d0d49cadc1b",
+    "capture-state/T05/initial-capture.json": "41959a72c17de90734473de1a1d8301475e64c002d2175d9166d2a6463c3c4b8",
+    "runtime/harness/loop.py": "cabd107d0c8946bd66ea4f5f0ee009ee231abcf9caa75010ecac53fb901b4617",
+    "runtime/harness/context.py": "8b2e57b2b95ef403a0b8d87c0802ff1a9611335a2d1ec5484fadfff96fb1f1d6",
+    "runtime/providers/ollama.py": "fe37a9fe79f53ecd6d48fb1738a358f3de90fb90df25eda57890a4a97c861fd8"
+  },
+  "local_root": "/Users/jorge/.local/share/agent-harness/trials/duodoro-whole-file-diagnosis-hgezejz5",
+  "recipe_sha256": "cfad4506cdf8aa1262ba926481179876a5ce27c7216ad9fc4f527c3a89238083"
+}
