@@ -1,6 +1,8 @@
 # Two-task provider observation probe
 
-Status: preparation only; no inference or execution freeze in this PR.
+Status at protocol preparation: no inference or execution freeze in that PR.
+The later [launch report](PROVIDER_DIAGNOSTIC_RESULTS.md) records a setup blocker
+before inference; new reviewed preparation is required, without rerunning that freeze.
 
 After the whole-file cohort's five read timeouts and T05's missing-usage stop,
 PRs #176–#178 added bounded provider observations and saved client review. This

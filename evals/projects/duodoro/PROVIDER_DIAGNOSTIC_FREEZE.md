@@ -1,8 +1,13 @@
 # Provider diagnostic execution freeze
 
+**Historical freeze; launch subsequently blocked.** The
+[setup report](PROVIDER_DIAGNOSTIC_RESULTS.md) records a source-factory row-selection
+error before inference. Do not launch this freeze again; preserve it unchanged
+and require corrected preparation plus a new reviewed freeze.
+
 The [protocol](PROVIDER_DIAGNOSTIC_PROTOCOL.md) was reviewed in PR #179 and merged.
-This is the separate **unrun execution freeze**, not a diagnostic outcome or remedy.
-Independent review and merge of this exact manifest remain required before inference.
+At preparation this was the separate **unrun execution freeze**, not an outcome or remedy.
+The historical launch requirements below were reviewed before the failed setup.
 
 The [manifest](provider-diagnostic-freeze.json) pins two actual fresh full-source
 workspaces/stores, original T05/T09 requests/acceptance/references, owner/settings,
