@@ -1,6 +1,6 @@
 # Roadmap: a coding harness for lower-tier models
 
-Updated: 2026-10-20
+Updated: 2026-10-21
 
 ## Current release decision
 
@@ -318,6 +318,22 @@ owned APIs exited and Gemma unloaded. No Duodoro working-checkout edits, paid/ne
 model calls or Docker. One public request variant/sequence does not close broader
 G2, ten-task G3, held-out/two-model G4 or release G5; original cohorts/no-go stay
 unchanged. Docs/data only, not a rerun of preparation G0 or a general quality gain.
+
+**2026-10-21 — Panel recovery protocol prepared, not executed:** the
+[procedure](evals/projects/duodoro/PANEL_RECOVERY_PROTOCOL.md) and explicit unrun
+plan retain the CLI probe's request variant, criteria and two identical reserved
+half-budgets. Browser-specific steps cover SSE write observation/cancellation,
+same-owner reload/history, latest-turn pinning, guarded fork, post-grade reversal
+and retained-key inspection. Live history controls are disabled while streaming;
+the cancel trigger uses the completed non-error write card plus an independent
+target-hash change. Earlier forgotten reversal keys lack arbitrary panel lookup;
+record that coverage limit rather than substituting direct API calls. No runtime
+feature or acceptance criterion changes. Source/handler/control/hash/link and
+budget checks validate this docs/data protocol, not a browser workflow. A blank
+isolated tab confirmed automation availability and was closed; no server, model
+or coding run started. Fresh fixture, scripted browser preflight, pinned G0 and
+final execution-manifest review remain required; their plan fields stay unknown.
+No new suite/matrix result, inference, Duodoro edit or release-gate closure.
 
 ## Direction
 

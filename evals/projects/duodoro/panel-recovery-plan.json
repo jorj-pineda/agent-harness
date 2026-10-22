@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "kind": "unrun-panel-recovery-protocol-plan",
+  "status": "protocol-only-not-execution-freeze",
+  "planned_workflows": 1,
+  "max_model_turns": 2,
+  "runtime_candidate": "cd11e4c33fc89f4331b50891266a9c2fef57caef",
+  "prior_cli_freeze_sha256": "95bed2f20e47cc5b518ffa0857db55a12d43f172a639fd0e68af92a1574aa620",
+  "source_revision": "5324cabba4ad3c8ad2e1cd1480218cf087d9b741",
+  "criterion_task": "duration_format",
+  "allowed_modified_paths": [
+    "client/src/lib/format.ts"
+  ],
+  "acceptance_files_sha256": {
+    "baseline.json": "b9b094a6d2d7350e8f28ae6fa90efe2b6517c3da40adc3f9a8945527827debd0",
+    "test_acceptance.py": "eb658229d6ee00a8b870357c68458cb0dbd4ee05cc9e87caf8142c73bb763e2f"
+  },
+  "reference_files_sha256": {
+    "client/src/lib/format.ts": "7f3a802eed35e725cd05b45258fd0a08b28546ada21e13e849c3add5910adc0f"
+  },
+  "request": "In Duodoro, harden formatDuration and formatTime in client/src/lib/format.ts against negative and non-finite numeric durations. Negative numbers, NaN, Infinity and -Infinity must render as zero (0m and 0:00). Preserve existing finite-positive formatting, fractional truncation and formatTag behavior. Inspect client/src/lib/format.ts and client/src/lib/format.test.ts first. Only modify client/src/lib/format.ts; preserve all other files, including pre-existing work and tests. For this disposable library-level evaluation, test_visible.py is an additional visible task check using the installed Node runtime's native TypeScript support; run [\"python\",\"-m\",\"pytest\",\"-q\",\"test_visible.py\"] after the edit. This adapter does not run the full Next/Vitest suite. Do not install dependencies, start services or touch Docker. Report the observed checks and any limits honestly.",
+  "request_utf8_sha256": "3965fec0d1167bda0fec7a74c2a81470809d99d7f39401d62dca4ef620c7560b",
+  "continuation_message": "Continue the same requested formatter change, preserving existing work; report actual checks and limits.",
+  "continuation_utf8_sha256": "a672b9df5ad233531576042be95bc770856c2e0ab3bcea570e6609d5df5847ba",
+  "phase_limits": {
+    "max_completion_tokens_per_turn": 4096,
+    "max_context_tokens": 16384,
+    "max_request_output_tokens": 2048,
+    "max_tool_calls_per_turn": 12,
+    "max_tool_iterations": 6,
+    "max_total_tokens_per_turn": 32000,
+    "max_turn_wall_seconds": 150,
+    "min_request_output_tokens": 256,
+    "request_timeout_seconds": 60
+  },
+  "total_reserved_limits": {
+    "completion_tokens": 8192,
+    "dispatch_seconds": 300,
+    "model_iterations": 12,
+    "tool_calls": 24,
+    "total_reported_tokens": 64000
+  },
+  "other_settings": {
+    "coding_prompt_profile": "compact",
+    "coding_toolset": "whole_file",
+    "ollama_think": false,
+    "temperature": 0,
+    "ollama_num_ctx": 16384,
+    "require_verification_before_finish": true,
+    "project_check_argv": [
+      "python",
+      "-m",
+      "pytest",
+      "-q",
+      "test_visible.py"
+    ],
+    "max_completion_retries": 1,
+    "max_identical_tool_calls": 2,
+    "require_plan_before_edit": false,
+    "load_root_agents": false,
+    "enable_support_tools": false,
+    "checkpoint_turns": true,
+    "inspection_only": false
+  },
+  "proposed_model_identity": {
+    "digest": "4eb23ef187e2c5462566d6a1d3bbbc2f1346d0b4327cbb66d58fffbcc9b2b05c",
+    "name": "gemma4:12b",
+    "ollama_version": "0.33.2"
+  },
+  "browser": {
+    "control": "T3 collaborative browser",
+    "profile": "fresh evaluation-owned isolated profile/origin",
+    "owner_id": "panel-generated panel_user_id, record and retain; not frozen yet",
+    "source_transport": "native EventSource SSE; fallback is a recorded coverage failure",
+    "intended_origin": "http://127.0.0.1:18751",
+    "pending_keys": [
+      "panel_pending_request",
+      "panel_pending_reversal"
+    ],
+    "no_programmatic_API_workaround": true
+  },
+  "reviewed_source_sha256": {
+    "ui/index.html": "db27fffb6cfee9231f0cbd3ebfb1f51946d5dfd0916c5ccab196068c93bbbea0",
+    "ui/app.js": "17c4da8cd82eb0c8078245fa0fd3e9c9a34f65bb7fc147090cb30dc1bfc4947c",
+    "ui/style.css": "bc7ddd42d2d6b43cd2e85aaafd55bd7a08d748fb5dda39d4d8947c1ce9102455",
+    "ui/memory.js": "08fa15732951486782c874cadcd53181c18318bc312dde45e888e51dd06698d9",
+    "api/server.py": "3d97bc54d9fdf299abeb4bcbccc2706f78758a4ac67edc99fa27291a42a90ddc",
+    "harness/continuation.py": "38ede32d6cc54cd638f7e5ac5a2d7f40132baa173b6da310cf2775cbe8891858",
+    "harness/reverts.py": "397af8855cb6e48758bf23f50f8c11a007aed03b18c6c4a825ad63903f06d74c"
+  },
+  "execution_gates": [
+    "Fresh disposable full-source fixture with unchanged initial-fail/reference-pass checks and protected criteria",
+    "Real-browser scripted-provider preflight in separate stores/root/profile; real tools, explicit simulation labels, no inference",
+    "Pinned-runtime offline/static/scripted G0 and inspected evidence labels",
+    "Final immutable execution manifest with actual workspace/root identity, owner ID, empty scheduled stores, settings/recipe/environment/model hashes, UI asset hashes and source normalized first request guard",
+    "Commit final manifest and independently review inputs and preconditions before inference; changed runtime/model/criteria/procedure require protocol review",
+    "Exactly two reserved half-budgets, no transfer/replacement/coding rescue; unknown cancelled usage remains unknown"
+  ],
+  "execution_manifest": null,
+  "scripted_browser_preflight_result": null,
+  "g0_result": null,
+  "source_initial_request_identity": null,
+  "inference_ran": false,
+  "release_gate_closure_claim": false
+}

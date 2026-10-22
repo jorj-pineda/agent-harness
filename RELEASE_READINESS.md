@@ -249,6 +249,18 @@ original cohort; one selected request variant is not broader G2 client/ten-task
 acceptance, general recovery/quality, G3/G4 success or G5 approval. Original
 trial/comparison outcomes and unattended no-go remain unchanged.
 
+## Panel recovery protocol — 2026-10-21
+
+The [panel protocol](evals/projects/duodoro/PANEL_RECOVERY_PROTOCOL.md) specifies
+one browser workflow with the same source/test-focused request and five-minute
+total reservation as the CLI probe. The unrun plan is not an execution freeze:
+fresh preparation, real-browser scripted preflight, pinned G0 and independently
+reviewed final manifest remain required before inference. It names existing SSE,
+saved review, continuation and reversal controls plus their storage/timeout limits;
+an arbitrary forgotten reversal-key lookup is not available in the panel. No
+workflow result, runtime feature, task-quality gain or release approval is claimed.
+The original cohort/no-go and G2–G5 remain unchanged.
+
 ## Concrete audit findings and scope decisions
 
 | Finding | Classification | Disposition |
