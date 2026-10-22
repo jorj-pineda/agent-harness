@@ -1,0 +1,281 @@
+{
+  "browser": {
+    "allowed_operations": "Rendered clicks/types/selects; read-only DOM/network/localStorage observations. No JS app calls, state injection, fetch/EventSource or API/CLI workflow substitute.",
+    "bootstrap": "Static pinned UI only; API never started at scheduled origin. Bootstrap PID exited; listener stopped. Owned tab retained to preserve generated owner until execution. Owner/pending keys must be rechecked before any session; lost/changed owner blocks execution.",
+    "bootstrap_pid": 59583,
+    "origin": "http://127.0.0.1:18751",
+    "owned_tab_id": "tab_8_5f28ba09-3502-42c6-93f3-1e98b6d70c29",
+    "owner_capture_sha256": "a881aae058975b60af5c6cc668514580d3dbbb1167e287cc4c2f0839d3a576d7",
+    "owner_id": "panel-q8dle5lu",
+    "pending_keys_absent": true,
+    "profile_id": "incognito",
+    "served_asset_sha256": {
+      "app.js": "17c4da8cd82eb0c8078245fa0fd3e9c9a34f65bb7fc147090cb30dc1bfc4947c",
+      "index.html": "db27fffb6cfee9231f0cbd3ebfb1f51946d5dfd0916c5ccab196068c93bbbea0",
+      "memory.js": "08fa15732951486782c874cadcd53181c18318bc312dde45e888e51dd06698d9",
+      "style.css": "bc7ddd42d2d6b43cd2e85aaafd55bd7a08d748fb5dda39d4d8947c1ce9102455"
+    },
+    "session_created": false,
+    "transport": "native EventSource SSE only; fallback is recorded coverage failure, no replacement submission"
+  },
+  "command_path": "/Users/jorge/Projects/agent-harness/.venv/bin:/Users/jorge/.vite-plus/js_runtime/node/24.22.0/bin:/Library/Frameworks/Python.framework/Versions/3.14/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Users/jorge/.vite-plus/bin:/Users/jorge/.vite-plus/packages/@openai/codex/84961cf0-d2e3-40e5-b06d-6bec42509ad3/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/codex-path:/Users/jorge/.codex/tmp/arg0-macos/codex-arg0JYuhaq:/Users/jorge/.vite-plus/js_runtime/node/24.22.0/bin:/Users/jorge/.opencode/bin:/Users/jorge/.bun/bin:/Users/jorge/Downloads/google-cloud-sdk/bin:/Users/jorge/.antigravity-ide/antigravity-ide/bin:/Users/jorge/.sdkman/candidates/java/current/bin:/Users/jorge/.sdkman/candidates/grails/current/bin:/Users/jorge/.sdkman/candidates/gradle/current/bin:/Users/jorge/.local/bin:/Library/Frameworks/Python.framework/Versions/3.14/bin:/Users/jorge/.cargo/bin:/Users/jorge/.docker/bin",
+  "continuation_message": "Continue the same requested formatter change, preserving existing work; report actual checks and limits.",
+  "continuation_utf8_sha256": "a672b9df5ad233531576042be95bc770856c2e0ab3bcea570e6609d5df5847ba",
+  "execution_authorization": "Standing user local Gemma/Duodoro and next-work authorization; execute only after independent review and merge of this exact manifest, unchanged preconditions and owner/storage checks. No inference in this preparation slice.",
+  "execution_profile": {
+    "base_prompt_sha256": "8fc608bd7e89605c9fb4cefa96e2a0b06b0c4017748dc55fd15a440fe9fe22d9",
+    "configured_model": "gemma4:12b",
+    "context_limit_policy": "configured-min-v1",
+    "effective_max_context_tokens": 16384,
+    "endpoint_sha256": "b26993598dffd1f14aed97def57ef67f753518a9b773d8a12033c82b4fa545ca",
+    "inspection_only": false,
+    "memory_prompt_max_bytes": 8192,
+    "memory_scope_version": "workspace-path-v1",
+    "model_profile": null,
+    "ollama_num_ctx": 16384,
+    "ollama_think": false,
+    "project_check_sha256": "10b23b83a2ec688953329591406ea00c4018ac870b5b5e7d04bd535e95660e0b",
+    "prompt_version": "coding-v3-compact-whole-file-v1",
+    "provider": "ollama",
+    "provider_options_sha256": null,
+    "repository_instructions": null,
+    "schema_version": 1,
+    "scope_note": "Configured execution evidence, not backend attestation or resume permission. Excludes credentials, raw endpoints, check argv, injected facts, workspace contents, tool implementations, and provider/server defaults. Null identities are unknown. A special compatible transport recipe hash records public configured options only; null has no recorded recipe. Conversation IDs and constructor overrides are excluded. Memory prompt byte limits are recorded; null means the boundary was not recorded.",
+    "settings": {
+      "coding_toolset": "whole_file",
+      "confidence_escalation_threshold": 0.55,
+      "enable_support_tools": false,
+      "load_root_agents": false,
+      "max_completion_retries": 1,
+      "max_completion_tokens_per_turn": 4096,
+      "max_context_tokens": 16384,
+      "max_diff_file_bytes": 128000,
+      "max_diff_snapshot_bytes": 2000000,
+      "max_files_touched_per_turn": 2,
+      "max_identical_tool_calls": 2,
+      "max_request_output_tokens": 2048,
+      "max_tool_calls_per_turn": 12,
+      "max_tool_iterations": 6,
+      "max_total_tokens_per_turn": 32000,
+      "max_tracked_bytes": 256000000,
+      "max_tracked_files": 20000,
+      "max_turn_wall_seconds": 150.0,
+      "max_workspace_diff_bytes": 64000,
+      "min_request_output_tokens": 256,
+      "prompt_estimate_bytes_per_token": 3.0,
+      "request_timeout_seconds": 60,
+      "require_plan_before_edit": false,
+      "require_verification_before_finish": true,
+      "track_workspace_changes": true
+    },
+    "source": "configured_settings",
+    "tool_names": [
+      "remember_fact",
+      "recall_facts",
+      "read_file",
+      "grep_repo",
+      "list_dir",
+      "tree",
+      "git_status",
+      "git_diff",
+      "emit_plan",
+      "write_file",
+      "run_command"
+    ],
+    "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+  },
+  "execution_status": "not_started",
+  "g0": {
+    "focused": "53 passed",
+    "logs_sha256": {
+      "g0-coding.log": "e9e929597d81ca14f639b421cd1b7ba03b642111ee82fafdc9263595f5b7cc1d",
+      "g0-coding.md": "0bbbda9d02c386b0092dbb6fc3d1819f0b7d83a67d56e29c519917131d29abe3",
+      "g0-focused.log": "95abc709217a737f80dd1f368514d3c2685128acae8db068c3a1aa7418d48b04",
+      "g0-format.log": "e04fbeb0bf86aad2e601f06f3e1b27816908b2f8b485406eefdf3977ffbb3cf5",
+      "g0-mypy.log": "caf4cb276b1b834b69b4a51aa776668a80ee64e1a2fd04bb890970c67d4fd7e7",
+      "g0-pytest.log": "22f23090e1e9d66852c86a25c9854409da8b7789f24438ab87f513577b38378c",
+      "g0-ruff.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "g0-support.log": "8d7ded766300f8226a186c72a696c09f946a29c33e556451b10f60a4c4f473b5",
+      "g0-support.md": "d3514cce58d18499304613cefc678d1970ac382f9bb0614b7e6e5eb0f95b2ba2"
+    },
+    "offline": "1363 passed, 5 live deselected; existing Chroma deprecation warning",
+    "results_sha256": "664a028e6888a3cce65b4c40c8bbc5a6515b076bc058a2f66686e95d97cdebc4",
+    "scripted": "coding and support 90/90 escalation decisions; scripted-contract labels and metric limits inspected",
+    "static": "Ruff; 260 files formatted; mypy 57 source files passed",
+    "status": "passed-pinned-runtime"
+  },
+  "guard_check": {
+    "async_close_delegated": true,
+    "inference": false,
+    "matching_input_forwarded_without_rewriting": true,
+    "mismatches_rejected_without_forwarding": [
+      "messages",
+      "tools",
+      "allowance",
+      "temperature"
+    ],
+    "review_dispatch_rejected": true
+  },
+  "inference_ran": false,
+  "initial_manifest_sha256": "b9b094a6d2d7350e8f28ae6fa90efe2b6517c3da40adc3f9a8945527827debd0",
+  "initial_target_sha256": "22d1c3647d9be8e6b1ad9c188a483dbf3a97070213ffc6565c0dd51d89bab90b",
+  "installed_distributions_sha256": "eccbb41fa7ff520b5ace5e33cc4da0f647268bc027050eb0d711b329eca3a8cf",
+  "kind": "unrun-bounded-live-panel-recovery-execution-freeze",
+  "local_recipes_sha256": {
+    "capture-recipe.py": "44492bd546e59247055a5c0170fb4b4f713755cbf18d29fbee9b322b38662dc3",
+    "check-preconditions.py": "a7930e9401ce2bfbde46d8dbd9aa6971ad4fae3759897188fb101ec0fc90d422",
+    "finalization-recipe.py": "1ef96961783e49d44c6c082f85fe04c12287cde82a97ba39ba54c98ec01c1f06",
+    "fixture-recipe.py": "25f75df567f8549f142872ac2deb77080a4b02d078b86d99c4e70df16ba1f6cd",
+    "gates-recipe.py": "6e767b9512d55eb47c093ba480970367448f18b0297f60268efa6ce01bce4724",
+    "guard-check-recipe.py": "e1a4c2a1349d4501a197974624b58dc25a166f226603552a93ed1d3ae2589985",
+    "guarded-server.py": "acddeabd0b9ed5cc6ff7147a5ba9537b9b8a6caa4741f362a0062f0750b371e0",
+    "owner-bootstrap-recipe.py": "0bc11b6cdf444e32161d76a0da54a19a4be255ca8a7abe617164bfdcecddd61c",
+    "panel-ops.py": "b8e082c5bd5de0f6112fd587d76e3d5dab13ff7132308ff66d76ea4dd1c36b65",
+    "preparation-root-recipe.py": "66ce354077e0bd0d95dbe876ab6edd4b05d06894719539ef4a5c3989161f2d7c"
+  },
+  "local_root": "/Users/jorge/.local/share/agent-harness/trials/duodoro-panel-live-a8myab2u",
+  "managed_executables": {
+    "node": {
+      "path": "/Users/jorge/.vite-plus/js_runtime/node/24.22.0/bin/node",
+      "sha256": "b468fb9c67427c9d3aec07ee1105e63020923a631a9a2a00beb71a7ba3768bfd"
+    },
+    "python": {
+      "path": "/Users/jorge/Projects/agent-harness/.venv/bin/python",
+      "sha256": "c015ab131972822e27ed108cf353582af6ca2fd7daf6296789576c7e7d1ad61a"
+    }
+  },
+  "max_operator_submitted_phases": 2,
+  "max_scheduled_workflows": 1,
+  "model": {
+    "digest": "4eb23ef187e2c5462566d6a1d3bbbc2f1346d0b4327cbb66d58fffbcc9b2b05c",
+    "name": "gemma4:12b",
+    "ollama_version": "0.33.2"
+  },
+  "model_observation_sha256": "45ebb2d22a4ed5b4dccd2d285a0d107f35e4f09df679451997696f2d1a621e59",
+  "model_unloaded_at_preparation": true,
+  "operator_procedure_sha256": "52069bdc91ff8b9911cc4d56df6e002f34c69bdb679be53a4c50192bf55bc9d5",
+  "other_settings": {
+    "checkpoint_turns": true,
+    "coding_prompt_profile": "compact",
+    "coding_toolset": "whole_file",
+    "enable_support_tools": false,
+    "inspection_only": false,
+    "load_root_agents": false,
+    "max_completion_retries": 1,
+    "max_identical_tool_calls": 2,
+    "ollama_num_ctx": 16384,
+    "ollama_think": false,
+    "project_check_argv": [
+      "python",
+      "-m",
+      "pytest",
+      "-q",
+      "test_visible.py"
+    ],
+    "require_plan_before_edit": false,
+    "require_verification_before_finish": true,
+    "temperature": 0
+  },
+  "phase_limits": {
+    "max_completion_tokens_per_turn": 4096,
+    "max_context_tokens": 16384,
+    "max_request_output_tokens": 2048,
+    "max_tool_calls_per_turn": 12,
+    "max_tool_iterations": 6,
+    "max_total_tokens_per_turn": 32000,
+    "max_turn_wall_seconds": 150,
+    "min_request_output_tokens": 256,
+    "request_timeout_seconds": 60
+  },
+  "prepared_at_utc": "2026-10-22T00:30:58.013452+00:00",
+  "request": "In Duodoro, harden formatDuration and formatTime in client/src/lib/format.ts against negative and non-finite numeric durations. Negative numbers, NaN, Infinity and -Infinity must render as zero (0m and 0:00). Preserve existing finite-positive formatting, fractional truncation and formatTag behavior. Inspect client/src/lib/format.ts and client/src/lib/format.test.ts first. Only modify client/src/lib/format.ts; preserve all other files, including pre-existing work and tests. For this disposable library-level evaluation, test_visible.py is an additional visible task check using the installed Node runtime's native TypeScript support; run [\"python\",\"-m\",\"pytest\",\"-q\",\"test_visible.py\"] after the edit. This adapter does not run the full Next/Vitest suite. Do not install dependencies, start services or touch Docker. Report the observed checks and any limits honestly.",
+  "request_utf8_sha256": "3965fec0d1167bda0fec7a74c2a81470809d99d7f39401d62dca4ef620c7560b",
+  "request_variant": "Same source/test-focused variant as CLI recovery; not original T01 repeat or model-quality comparison. No runtime truncation or coding hints.",
+  "review_status": "pending-independent-review-and-merge",
+  "reviewed_source_sha256": {
+    "api/server.py": "3d97bc54d9fdf299abeb4bcbccc2706f78758a4ac67edc99fa27291a42a90ddc",
+    "harness/continuation.py": "38ede32d6cc54cd638f7e5ac5a2d7f40132baa173b6da310cf2775cbe8891858",
+    "harness/reverts.py": "397af8855cb6e48758bf23f50f8c11a007aed03b18c6c4a825ad63903f06d74c",
+    "ui/app.js": "17c4da8cd82eb0c8078245fa0fd3e9c9a34f65bb7fc147090cb30dc1bfc4947c",
+    "ui/index.html": "db27fffb6cfee9231f0cbd3ebfb1f51946d5dfd0916c5ccab196068c93bbbea0",
+    "ui/memory.js": "08fa15732951486782c874cadcd53181c18318bc312dde45e888e51dd06698d9",
+    "ui/style.css": "bc7ddd42d2d6b43cd2e85aaafd55bd7a08d748fb5dda39d4d8947c1ce9102455"
+  },
+  "runtime_checkout": "/Users/jorge/.local/share/agent-harness/trials/duodoro-panel-live-a8myab2u/runtime",
+  "runtime_lock_sha256": "ee324d070d1a71a9bc162761c9628b01f2b3ecf76538d0d79deaf8480dac6ea8",
+  "runtime_revision": "cd11e4c33fc89f4331b50891266a9c2fef57caef",
+  "runtime_tree": "ff74207851ab72a52608cc26454ca3b4ac85c899",
+  "scheduled_storage": {
+    "capture_state": "separate preparation-only capture-state; never scheduled state",
+    "directory": "/Users/jorge/.local/share/agent-harness/trials/duodoro-panel-live-a8myab2u/state",
+    "memory_db": "/Users/jorge/.local/share/agent-harness/trials/duodoro-panel-live-a8myab2u/state/memory.db",
+    "outcomes_directory_absent": true,
+    "session_db": "/Users/jorge/.local/share/agent-harness/trials/duodoro-panel-live-a8myab2u/state/sessions.db",
+    "status": "absent"
+  },
+  "schema_version": 1,
+  "scripted_browser_preflight": {
+    "inference": false,
+    "report": "evals/results/2026-10-21-duodoro-panel-preflight.json",
+    "report_sha256": "4c5661dd5562c4e9bac60f5e513d590d4500d899ce5e641c297107e3e24c9fef",
+    "result": "passed-scripted-mechanics-only",
+    "scope_note": "Preflight used a new preservation file; live procedure instead appends the frozen line to existing preexisting-user-work.txt. Prior initial capture/stores/artifacts are never reused as scheduled live state."
+  },
+  "settings_sha256": "06e353201ab2b221374de2f772e2300fb82e0166361ecc3ea390737eae369342",
+  "source_capture_scope": "Scripted native SSE TestClient capture in separate capture-state stores; no inference or edits. Not a browser action substitute or live result. First request guard rejects mismatch before forwarding; fork input depends on actual retained history and native guards.",
+  "source_capture_sha256": "d0643219610274d2133f395a90f0afc988d54565353555e166b528248af009a7",
+  "source_initial_identity": {
+    "format": "normalized-chat-request-v1",
+    "messages_sha256": "0748c940c7b9eac0acb56cf44c7feee3cff5a25e2e1844ea28aef1938666ce5a",
+    "request_sha256": "0ac422cb1213a494406121c6e129890bc4ce385010fc6c9e2e3ab036044a988b",
+    "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+  },
+  "task": {
+    "acceptance_files_sha256": {
+      "baseline.json": "b9b094a6d2d7350e8f28ae6fa90efe2b6517c3da40adc3f9a8945527827debd0",
+      "test_acceptance.py": "eb658229d6ee00a8b870357c68458cb0dbd4ee05cc9e87caf8142c73bb763e2f"
+    },
+    "allowed_modified_paths": [
+      "client/src/lib/format.ts"
+    ],
+    "criterion_task": "duration_format",
+    "id": "P01",
+    "offline_validation": "fresh initial visible/external fail; reference visible/external pass; protected original criteria and reference unchanged",
+    "reference_files_sha256": {
+      "client/src/lib/format.ts": "7f3a802eed35e725cd05b45258fd0a08b28546ada21e13e849c3add5910adc0f"
+    },
+    "source_revision": "5324cabba4ad3c8ad2e1cd1480218cf087d9b741"
+  },
+  "total_reserved_limits": {
+    "completion_tokens": 8192,
+    "dispatch_seconds": 300,
+    "model_iterations": 12,
+    "tool_calls": 24,
+    "total_reported_tokens": 64000
+  },
+  "unused_allowance_transferred": false,
+  "workflow_id": "P01-duration-recovery-variant",
+  "workflow_rules": {
+    "continuation": "One Load latest saved turn, exact frozen input/provider and risk acknowledgment, one Fork and submit. Check run/history reads only; no retry or API rescue. Native workspace/profile/transcript/context guards, phase2 unknown first input not pre-frozen.",
+    "final_review": "Restart in review-only mode, reload and Inspect saved outcome plus source/fork history. Zero coding/reversal resubmission; audit eligible baseline bytes/modes, later sentinel, immutable criteria, unchanged archives/journals. Close owned tab, stop API/listener and unload only owned model.",
+    "grading": "Stop/unload owned API/model. Preserve full scored workspace and independently grade with immutable criteria before later sentinel/reversal; record failures/unknown usage without repairs.",
+    "phase_count": "Exactly one workflow, at most two identical reserved half-budgets; no transfer, replacement, third turn, coding rescue or new model.",
+    "publication": "Original cohorts/no-go and G2-G5 unchanged; no causal, held-out, broad release or quality claim.",
+    "restart_review": "Settle owned work, stop API, unload only evaluation-owned Gemma, restart same root/settings/stores/origin; same owner reload submits nothing. Use history and saved workspace/transcript/config/context/tool progress controls.",
+    "reversal": "Review eligible fork then source target differences; one explicit reversal each; no no-op/equal pair. Stop on rejection/uncertainty. Inspect applied outcome and save key before Forget retained reversal; keep last key for reload, earlier-key browser lookup not claimed.",
+    "sentinel": {
+      "append_utf8": "Later recorded panel recovery preservation edit.\n",
+      "only_after_scoring": true,
+      "path": "preexisting-user-work.txt"
+    },
+    "source_cancel": "One Send; completed non-error target write_file card AND independent target hash change; one enabled Cancel turn. No provider hold/delay. Missed trigger stays failure; fork only after cancelled source with observed target change.",
+    "unknowns": "Cancelled in-flight usage remains unknown; provider prefixes are reported evidence, no total compliance certification. Dispatch limit excludes cleanup/final review/transport/storage."
+  },
+  "workspace_owner": {
+    "device": 16777233,
+    "inode": 20512554,
+    "path": "/Users/jorge/.local/share/agent-harness/trials/duodoro-panel-live-a8myab2u/workspace",
+    "purpose": "one scheduled panel workflow, disposable git archive, never user checkout"
+  },
+  "workspace_owner_sha256": "fb8a061c2666018b6376af9b90d2f7ed267c75fd9c5314801473c2c0450eac14"
+}
