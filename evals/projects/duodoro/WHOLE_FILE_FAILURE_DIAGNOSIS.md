@@ -51,3 +51,30 @@ Raw metadata, read-only recipe and subsequent investigation outputs remain at:
 The recipe verifies every original evidence-file hash before and after inspection;
 SQLite is opened read-only. This diagnosis adds evidence without changing the
 failed archives or treating restored history as permission to resume.
+
+## 2. T05 missing-usage stop
+
+[Recorded replay](../../results/2026-10-22-duodoro-missing-usage-diagnosis.json)
+feeds the five saved normalized responses and recorded usage through the pinned
+`run_turn`, with the exact captured tool schemas and canned saved tool results.
+All five normalized request identities/allowances, all eleven budget observations
+and the final normalized message history match the retained run. Timing and tool
+execution are simulated; no real workspace tools, provider HTTP calls or inference.
+
+The first response was empty but reported usage; the loop used its one permitted
+completion-recovery message. The next responses invoked tree, file read and plan.
+The fifth normalized response was again empty, had no tool calls, and had unknown
+prompt/output usage. The configured per-request output gate stopped it with the
+same `incomplete` reason: “Provider did not report output-token usage; request cap
+cannot be checked.” No write was dispatched, no check ran, and aggregate usage
+remained unknown. The known first-four response prefix is 14,761 prompt / 392
+output tokens; it is not the full task total.
+
+This is a reproduced preventive stop, not evidence that the gate caused an
+otherwise correct patch to fail. In the saved final response there is no proposed
+write to execute. The pinned adapter maps absent `prompt_eval_count`/`eval_count`
+to unknown; raw payloads are unavailable, so absent versus explicit null fields,
+the original wire finish metadata, and the cause of the empty response remain
+unknown. Replay reconstructs finish categories consistent with observed loop
+flow, without claiming a raw-payload replay. Disabling guards, guessing zero usage,
+adding retries or substituting a backend response is not supported by this evidence.
