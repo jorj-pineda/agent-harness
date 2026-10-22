@@ -56,6 +56,21 @@ stay unmet. **Retain no-go and feature freeze.** Next choose an explicit narrowe
 envelope or a bounded offline failure investigation, not an automatic feature,
 model, timeout or budget expansion. No release approval or milestone completion.
 
+**2026-10-22 UTC — Saved provider-observation client review:** CLI run review and
+collapsed panel saved-history details now present retained response/failure
+observations, unknown legacy/malformed fields, zero/false values and explicit
+prefix coverage/truncation. A separate final-failure observation can remain visible
+when its event was not retained. Both clients cap display at 100 saved events,
+apply no budget logic and submit no work to display metadata. Completion/check
+states stay separate; live envelopes do not fetch additional saved evidence.
+CLI and actual panel-control/DOM checks cover incomplete, failed, legacy, truncated,
+malformed and completed scripted records. Snapshot tooling and native fallback
+timed out; screenshot/visual coverage is unavailable. The GET-only fixture was
+corrected for synthetic failure status labels before the six-case walkthrough;
+both owned fixture servers stopped, port released and tab closed. No inference,
+new trial, semantic-success claim or change to no-go/G2–G5. This completes the
+three scoped observation slices, not the broader release milestones.
+
 **2026-10-22 UTC — Durable shared-runtime provider observations:** optional
 response/failure observations now flow through the shared loop to the existing
 100-event saved budget prefix and normalized traces. Empty-response metadata is

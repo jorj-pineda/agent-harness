@@ -1080,7 +1080,15 @@ The shared loop also includes them in normalized response/failure traces, so rea
 evaluations and API runs use the same observation path. Empty responses are saved
 before missing-usage guards stop the turn; unknown usage is never replaced with
 zero or inferred from field presence. Saved HTTP/SSE review survives restart
-without provider replay. Dedicated client presentation remains a separate slice.
+without provider replay. Inspect with `agent-harness run RUN_ID` or select a saved
+run in the panel's history. The panel keeps provider diagnostics in collapsed
+details; completion/check status remains separate. Live turn envelopes do not
+automatically fetch this saved metadata. Both clients label absent/unsupported
+values as unknown, preserve zero/false values, and show saved-prefix coverage and
+truncation. Native usage states are ordered prompt/output; `zero_length_content`
+means no characters (whitespace is not zero length). A separately saved final
+failure observation is labeled separately when its event is unavailable. Display
+is capped at 100 saved events and never estimates missing usage or resumes work.
 Legacy/other providers remain null. Parsing/validation failures, external cancellation
 and wall-time interruption do not gain a fabricated terminal observation. Old
 records are not backfilled; no raw payload/exception strings or new retry/timeout
