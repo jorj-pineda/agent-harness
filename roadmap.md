@@ -56,6 +56,20 @@ stay unmet. **Retain no-go and feature freeze.** Next choose an explicit narrowe
 envelope or a bounded offline failure investigation, not an automatic feature,
 model, timeout or budget expansion. No release approval or milestone completion.
 
+**2026-10-22 UTC — Bounded Ollama provider-call observations:** chat response
+normalization can retain HTTP post/status-check duration, absent/null/present native
+usage-field states, allowlisted terminal reason, zero-length content and normalized
+tool-call count. HTTP failures retain duration only through the existing nullable
+failure record. Other providers/legacy absence remain unknown; no raw payload,
+exception text, URL or arbitrary terminal string enters this metadata. Existing
+normalization, missing-usage guards, retry/default timeout and budgets are unchanged.
+Response observations are provider-internal until the separate bounded persistence
+slice; dedicated client presentation remains separate too. Parsing/validation
+failures and cancellation do not fabricate terminal observations. Offline mock/
+validation and HTTP/SSE restart-preservation regressions cover the new evidence;
+this is not backend timing/root-cause attestation, new inference, a remedy or a
+model-quality improvement. Original cohorts/no-go and G2–G5 remain unchanged.
+
 **2026-10-22 UTC — Three retained-failure investigations complete:** the
 [offline diagnosis](evals/projects/duodoro/WHOLE_FILE_FAILURE_DIAGNOSIS.md) bounds
 five read timeouts using saved budget/tool-progress metadata, reproduces T05's
