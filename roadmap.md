@@ -56,6 +56,22 @@ stay unmet. **Retain no-go and feature freeze.** Next choose an explicit narrowe
 envelope or a bounded offline failure investigation, not an automatic feature,
 model, timeout or budget expansion. No release approval or milestone completion.
 
+**2026-10-22 UTC — Three retained-failure investigations complete:** the
+[offline diagnosis](evals/projects/duodoro/WHOLE_FILE_FAILURE_DIAGNOSIS.md) bounds
+five read timeouts using saved budget/tool-progress metadata, reproduces T05's
+missing-usage stop through recorded normalized-response/canned-tool replay, and
+reproduces T06's visible pass/external rejection on an unchanged disposable copy.
+All five timeouts follow a completed plan with roughly 60-second tool-end-to-run-
+finish intervals; missing exact request/wire/backend evidence prevents root-cause
+attribution. T05 matches five request identities/allowances, eleven budget events
+and messages; its last response is empty with unknown usage and no proposed write.
+T06 admits unsafe integers using Number.isInteger; the frozen external criterion
+already catches the error. All 203 original evidence hashes remain unchanged.
+55 focused regressions passed. No inference, patch repair, criterion/runtime or
+limit changes; original counts/no-go and G2–G5 remain unchanged. Next consider
+minimal allowlisted provider diagnostics in a separately scoped PR, or an explicit
+narrower envelope; do not silently increase timeout/budgets or repeat the cohort.
+
 **2026-10-22 UTC — Whole-file cohort preflight and execution freeze prepared:** the
 [freeze](evals/projects/duodoro/WHOLE_FILE_EXECUTION_FREEZE.md) pins fresh actual
 roots/empty task stores, original ten exact requests/criteria/reference, per-task

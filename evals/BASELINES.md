@@ -2155,3 +2155,28 @@ preset, paths/client wait and one public sample/task preclude causal improvement
 or general quality claims. Docs/data only; preparation's 82 focused/1,363 offline
 and two scripted 90/90 matrices remain historical mechanics evidence. Fresh report
 checks validated all rows/counts/evidence hashes and reproduced all artifact grades.
+
+
+## 2026-10-22 UTC — three offline whole-file failure investigations
+
+[Diagnosis](projects/duodoro/WHOLE_FILE_FAILURE_DIAGNOSIS.md) and structured
+[timeouts](results/2026-10-22-duodoro-timeout-diagnosis.json),
+[missing usage](results/2026-10-22-duodoro-missing-usage-diagnosis.json), and
+[safe-integer counterexamples](results/2026-10-22-duodoro-safe-integer-diagnosis.json).
+Retained timeout metadata bounds the failure after plan completion, without raw
+failed requests/responses or backend timing/root-cause evidence. Synthetic transport
+probes validate classification/no-retry only. T05's canned-tool recorded-response
+replay matches five request identities/allowances, eleven budget events and saved
+messages, reproducing the same incomplete/unknown-usage stop. T06's unchanged
+artifact passes the visible NaN check but fails frozen external acceptance and
+three unsafe-integer probes in both waiting/ready states; its safe-integer answer
+claim is false. These are diagnosis/mechanics and artifact counterexamples, not
+new inference, model-quality improvement or evidence that changing limits fixes it.
+
+All 203 original evidence-file hashes match before/after each recipe. Local recipes
+and unchanged T06 copy remain at the diagnosis's path. Focused regressions passed
+25 provider/failure-review, two missing-usage and 28 criterion cases (55 total).
+No application/evaluator code, prompt/default, frozen criterion, model, retry,
+timeout or budget changed. No paid calls, services, Docker or Duodoro working-
+checkout edits. Original cohort counts/no-go and G2–G5 remain unchanged; minimal
+provider diagnostics or a narrower envelope require their own explicit next slice.

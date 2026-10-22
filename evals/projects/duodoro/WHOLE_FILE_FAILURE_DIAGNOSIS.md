@@ -78,3 +78,58 @@ the original wire finish metadata, and the cause of the empty response remain
 unknown. Replay reconstructs finish categories consistent with observed loop
 flow, without claiming a raw-payload replay. Disabling guards, guessing zero usage,
 adding retries or substituting a backend response is not supported by this evidence.
+
+## 3. T06 visible pass and false safe-integer claim
+
+[Counterexamples](../../results/2026-10-22-duodoro-safe-integer-diagnosis.json)
+run the actual retained source in a fresh full disposable copy with the pinned
+Node binary. The unchanged visible test passes again; unchanged independent
+acceptance rejects it again. Full eligible manifests/modes match before and after
+these checks, and every original evidence hash remains unchanged. No model,
+scripted patch injection or manual repair is involved in this artifact probe.
+
+The frozen visible adapter checks `NaN` only. The submitted implementation uses
+`!Number.isInteger(state.playerCount) || state.playerCount < 1`, which rejects
+`NaN` but admits unsafe integers. The external criterion already covers
+`Number.MAX_SAFE_INTEGER + 1`; no criterion change is needed to expose the defect.
+
+| Count | Integer? | Safe integer? | Actual waiting / ready | Required |
+|---|---|---|---|---|
+| 1, 2, `Number.MAX_SAFE_INTEGER` | yes | yes | start / again | start / again |
+| `Number.MAX_SAFE_INTEGER + 1` | yes | no | start / again | null / null |
+| `2 ** 54` | yes | no | start / again | null / null |
+| `Number.MAX_VALUE` | yes | no | start / again | null / null |
+| `NaN`, `Infinity`, 1.5, string `"1"` | no | no | null / null | null / null |
+
+The saved answer claims positive **safe** integer handling and no implementation
+issues. The safe-integer claim is contradicted by the actual source and these
+counterexamples. This is a specific false claim, not a complete semantic score
+for all answers. The harness's `completed` / `passed` fields report completion
+and the visible check actually run; they do not certify independent acceptance.
+No “verified” state is inferred. The existing external boundary did its job.
+
+Keep the original visible test, criterion and rejected artifact frozen. This
+finding does not justify weakening acceptance, treating visible pass as semantic
+proof, adding a model judge or silently applying a Duodoro patch. Any later
+supported-task envelope needs meaningful operator-owned checks and honest limits;
+these probes do not establish that another prompt or guard would fix this model
+error under the agreed budgets.
+
+## Validation and disposition
+
+All three tasks are complete as bounded offline investigations. The three local
+recipes are hashed in their corresponding structured results. Each verified all
+203 original evidence-file hashes before/after its work. Focused regressions passed:
+25 provider/failure-review tests, two missing-usage loop/API tests, and 28 Duodoro
+criterion regressions (**55 total**). No application/evaluator code, prompt,
+default, criterion, model, budget or timeout changed. This docs/data slice does not
+rerun the full offline/static gate or scripted matrices as model-quality evidence.
+
+The cohort remains no-go; G2–G5 and the original acceptance counts stay unchanged.
+The observations do not identify a backend root cause or demonstrate a successful
+remedy. The next bounded implementation candidate is minimal, allowlisted provider
+diagnostics for the missing evidence—such as request-settlement timing and terminal
+response/usage-field presence—without retaining raw contents or changing retry,
+budget or timeout semantics. That needs its own scoped design/review and offline
+regressions before any separately frozen live follow-up. Alternatively, Jorge can
+choose a narrower supported envelope. No new trial is implied by these diagnoses.
