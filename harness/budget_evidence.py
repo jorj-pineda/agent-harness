@@ -4,7 +4,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-from providers.base import TokenUsage
+from providers.base import ProviderCallObservation, TokenUsage
 
 from .trace import RequestIdentity
 
@@ -24,6 +24,7 @@ class BudgetObservation(BaseModel):
     max_tokens: int | None = Field(default=None, ge=0)
     identity: RequestIdentity | None = None
     usage: TokenUsage | None = None
+    call_observation: ProviderCallObservation | None = None
     prompt_tokens_used: int | None = Field(default=None, ge=0)
     completion_tokens_used: int | None = Field(default=None, ge=0)
 
@@ -42,6 +43,9 @@ class BudgetEvidence(BaseModel):
         "tokens. Missing/truncated evidence is not zero usage or proven budget compliance. "
         "No messages, paths, call IDs, tool arguments/results or exception text are stored here. "
         "Fingerprints cover normalized inputs only; see the separate configured profile for "
-        "limits/provider identity. Wall/tool/iteration stops are not token-gate events. "
+        "limits/provider identity. Optional call observations describe adapter HTTP timing and "
+        "allowlisted response fields, not backend causes or token compliance. Missing observations "
+        "stay unknown, including cancellation, parsing failures and unsupported providers. "
+        "Wall/tool/iteration stops are not token-gate events. "
         "Not completion, acceptance, replay or permission to resume."
     )

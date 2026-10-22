@@ -267,6 +267,7 @@ async def test_wall_timeout_records_request_failure() -> None:
     assert [r.kind for r in records] == ["request", "request_failure"]
     assert isinstance(records[-1], RequestFailureTrace)
     assert records[-1].exception_type == "TimeoutError"
+    assert records[-1].call_observation is None
 
 
 def test_footprint_uses_budget_math_and_caps_payload_free_rankings() -> None:
@@ -536,3 +537,63 @@ def test_old_budget_stop_record_defaults_to_pre_request():
     del payload["stage"], payload["requested_tool_count"]
     restored = BudgetStopTrace.model_validate(payload)
     assert restored.stage == "pre_request" and restored.requested_tool_count == 0
+
+
+@pytest.mark.parametrize("failure", [False, True])
+async def test_provider_call_observation_matches_trace_and_budget_without_payload(failure):
+    import httpx
+
+    from providers.base import ProviderError
+    from providers.ollama import OllamaProvider
+
+    def respond(request):
+        if failure:
+            raise httpx.ReadTimeout("private-error", request=request)
+        return httpx.Response(
+            200,
+            json={
+                "message": {"content": ""},
+                "prompt_eval_count": None,
+                "done_reason": "private-terminal",
+                "private-extra": "private-value",
+            },
+        )
+
+    provider = OllamaProvider(
+        host="http://offline.invalid",
+        model="fixture",
+        embed_model="unused",
+        transport=httpx.MockTransport(respond),
+    )
+    records = []
+    observations = []
+    session = Session()
+    try:
+        arguments = {
+            "session": session,
+            "user_input": "work",
+            "provider": provider,
+            "registry": ToolRegistry(),
+            "trace": records,
+            "on_budget_observation": observations.append,
+            "max_request_output_tokens": 2048,
+        }
+        if failure:
+            with pytest.raises(ProviderError) as raised:
+                await run_turn(**arguments)
+            assert isinstance(records[-1], RequestFailureTrace)
+            expected = raised.value.failure.call_observation
+        else:
+            result = await run_turn(**arguments)
+            assert result.completion_status == "incomplete"
+            assert result.token_usage.completion_tokens is None
+            assert isinstance(records[1], ResponseTrace)
+            expected = records[1].call_observation
+        assert expected is not None
+        assert observations[1].call_observation == expected
+        assert (records[-1] if failure else records[1]).call_observation == expected
+        assert expected.duration_ms >= 0
+        assert "private" not in json.dumps([r.model_dump(mode="json") for r in records])
+        assert all("call_observation" not in m.model_dump() for m in session.messages)
+    finally:
+        await provider.aclose()

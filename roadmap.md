@@ -56,6 +56,18 @@ stay unmet. **Retain no-go and feature freeze.** Next choose an explicit narrowe
 envelope or a bounded offline failure investigation, not an automatic feature,
 model, timeout or budget expansion. No release approval or milestone completion.
 
+**2026-10-22 UTC — Durable shared-runtime provider observations:** optional
+response/failure observations now flow through the shared loop to the existing
+100-event saved budget prefix and normalized traces. Empty-response metadata is
+retained before usage guards stop the turn; failed usage stays unknown and
+cancellation/wall/parsing failures without boundary observations remain null.
+HTTP/SSE real-file regressions preserve edits and unchanged saved evidence across
+restart/keyed retrieval without inference replay; legacy absence and event truncation
+remain explicit. No new table, raw payload collection, retry, timeout, prompt,
+budget or acceptance change. Client presentation remains the third separate slice.
+These offline regressions establish observation mechanics, not backend causes,
+model-quality improvement or release readiness; original no-go/G2–G5 stay unchanged.
+
 **2026-10-22 UTC — Bounded Ollama provider-call observations:** chat response
 normalization can retain HTTP post/status-check duration, absent/null/present native
 usage-field states, allowlisted terminal reason, zero-length content and normalized

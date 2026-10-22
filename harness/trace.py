@@ -13,7 +13,15 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-from providers.base import ChatMessage, FinishReason, Role, TokenUsage, ToolCall, ToolSpec
+from providers.base import (
+    ChatMessage,
+    FinishReason,
+    ProviderCallObservation,
+    Role,
+    TokenUsage,
+    ToolCall,
+    ToolSpec,
+)
 
 from .context import (
     TokenBudget,
@@ -160,6 +168,7 @@ class ResponseTrace(BaseModel):
     usage: TokenUsage
     model: str
     latency_ms: float
+    call_observation: ProviderCallObservation | None = None
 
 
 class MessageTrace(BaseModel):
@@ -172,6 +181,7 @@ class RequestFailureTrace(BaseModel):
     kind: Literal["request_failure"] = "request_failure"
     iteration: int
     exception_type: str
+    call_observation: ProviderCallObservation | None = None
 
 
 TurnTraceRecord = (
