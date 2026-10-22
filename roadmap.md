@@ -369,6 +369,23 @@ before the separate execution slice. No live workflow, Duodoro checkout edit,
 release-gate closure or new model-quality evidence; original cohorts/no-go and
 G2–G5 remain unchanged.
 
+**2026-10-22 UTC — Frozen live panel recovery observed:** the
+[single scheduled workflow](evals/projects/duodoro/PANEL_RECOVERY_RESULTS.md) used
+the reviewed `cd11e4c` runtime and frozen inputs. Actual panel/native SSE source
+write, explicit cancellation, API restart/saved review, guarded fork/check and
+eligible source-file reversal passed; independent final acceptance and regrade
+passed. The source patch already passed; the fork checked/answered without editing
+it, so its equal-state reversal was skipped. Another restart inspected the last
+retained outcome/history without replay. Eligible baseline bytes/modes and later
+sentinel work survived; saved run/session/response/journal evidence and criteria
+remained unchanged. Both CLI and panel now have one bounded real recovery
+observation, not broad reliability or original ten-task success. Source usage is
+unknown (known prefix 9,604 prompt/417 output); fork 6,768/301. No known aggregate
+token-compliance claim, quality/client comparison or incorrect-patch repair claim.
+All four APIs/tab closed, Gemma unloaded; no Duodoro checkout edits, paid calls,
+additional models or Docker actions. Docs/data reporting only; preparation G0 is
+historical. Original cohorts/release no-go and broad G2–G5 remain open/unchanged.
+
 ## Direction
 
 Build a coding harness Jorge can use on real repositories with affordable hosted models and locally runnable models that struggle with coding-agent workflows. The harness should help those models inspect the right code, make focused edits, recover from errors, and verify their work within an explicit budget.
