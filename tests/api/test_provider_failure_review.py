@@ -94,9 +94,16 @@ def test_failed_run_retains_safe_observation_after_edit_and_restart(
             else {
                 "kind": failure,
                 "http_status": 503 if failure == "http_status" else None,
+                "call_observation": record["provider_failure"]["call_observation"],
             }
         )
         assert record["provider_failure"] == expected
+        if failure in {"read_timeout", "http_status"}:
+            observation = record["provider_failure"]["call_observation"]
+            assert observation["duration_ms"] >= 0
+            assert all(value is None for key, value in observation.items() if key != "duration_ms")
+        elif expected is not None:
+            assert expected["call_observation"] is None
         if expected is not None:
             assert f"Provider failure: {failure}" in record["error"]
         assert "private" not in json.dumps(record)
