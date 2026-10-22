@@ -335,6 +335,23 @@ or coding run started. Fresh fixture, scripted browser preflight, pinned G0 and
 final execution-manifest review remain required; their plan fields stay unknown.
 No new suite/matrix result, inference, Duodoro edit or release-gate closure.
 
+**2026-10-21 UTC — Scripted real-browser recovery preflight observed:** the
+[results](evals/projects/duodoro/PANEL_PREFLIGHT_RESULTS.md) record actual panel
+controls, native SSE and real tools at `cd11e4c` with a fake provider. One partial
+write/cancel, process restart, saved review and guarded fork completed; the fork's
+visible check and independent final acceptance passed. Two explicit eligible
+reversals restored baseline bytes/modes while preserving a later sentinel; reload
+inspected the retained last outcome without replay. Earlier forgotten-key lookup
+remains audit-only. Exactly two runs/two reversals and unchanged saved run/session
+response evidence were audited; all owned processes/tab closed. This demonstrates
+scripted mechanics, not live Gemma recovery or quality. Fake usage is synthetic,
+cancelled aggregate unknown; configured model labels do not prove inference.
+Validation: 46 focused regressions passed; no runtime/evaluator behavior changes,
+full gate or matrices rerun. Fresh live fixture, pinned G0 and actual execution
+manifest/independent review remain next; the original plan stays historical and
+unmodified. No Duodoro working-checkout edits or release-gate closure; G2–G5 and
+original cohorts/no-go remain unchanged.
+
 ## Direction
 
 Build a coding harness Jorge can use on real repositories with affordable hosted models and locally runnable models that struggle with coding-agent workflows. The harness should help those models inspect the right code, make focused edits, recover from errors, and verify their work within an explicit budget.
