@@ -272,6 +272,17 @@ The original cohort/no-go and G2–G5 remain unchanged.
 | Guarded continuation/reversal and scope checks cannot reconcile all external writers, dependencies or arbitrary command side effects. | Known trusted-local boundary. | One process/writer and disposable copies for trial. Cross-process coordination, hostile-code isolation and atomic whole-workspace reversal stay out of this proposed trial, not secretly implemented. |
 | No demonstrated context compaction, ten-task client trial or completed held-out comparison. | Open acceptance, not something offline tests can close. | Track G2–G4 and the long-task limitation; do not create a release-success claim. |
 
+## Scripted panel preflight — 2026-10-21 UTC
+
+The [browser preflight](evals/projects/duodoro/PANEL_PREFLIGHT_RESULTS.md) passed
+cancel/restart/review/guarded fork, independent final acceptance, two eligible
+file reversals and retained-key inspection using a fake provider and real tools.
+No inference ran. Forty-six focused regressions passed; this is not a fresh full
+G0, live-model quality evidence or closure of G2. Configured `gemma4:12b` identity
+in the panel reflects settings, not the actual scripted provider implementation.
+The next prerequisite is pinned G0 and an independently reviewed actual live
+execution manifest. Original cohorts, release no-go and G2–G5 remain unchanged.
+
 ## Validation performed for this audit
 
 At the audited source revision, with only documentation being prepared:
