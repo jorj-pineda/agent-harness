@@ -493,6 +493,17 @@ client/restart preflight, exact runtime G0, actual frozen inputs and independent
 review/merge remain prerequisites. No inference, remedy, new supported envelope
 or release-gate closure is claimed; original counts/no-go/G2–G5 remain unchanged.
 
+**2026-10-22 UTC — Provider diagnostic inputs frozen, not executed:** the
+[freeze](evals/projects/duodoro/PROVIDER_DIAGNOSTIC_FREEZE.md) pins T05/T09 fresh
+CLI roots, original requests/criteria, approved limits, first-input guards and
+unloaded Gemma/environment at `594ac44`. Scripted real-file/CLI missing-usage and
+request-failure reviews survive restart without dispatch; eight drift probes
+block forwarding. Exact-runtime focused/offline/static gates and both 90/90
+scripted matrices passed with contract limits inspected. Scheduled stores remain
+absent. Independent exact-manifest review/merge precedes inference; no outcome,
+remedy, supported envelope or release-gate closure is claimed. Original counts,
+no-go and G2–G5 stay unchanged.
+
 ## Direction
 
 Build a coding harness Jorge can use on real repositories with affordable hosted models and locally runnable models that struggle with coding-agent workflows. The harness should help those models inspect the right code, make focused edits, recover from errors, and verify their work within an explicit budget.
