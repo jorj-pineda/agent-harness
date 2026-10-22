@@ -1,0 +1,874 @@
+{
+  "schema_version": 1,
+  "kind": "scripted-provider-real-tools-browser-preflight",
+  "inference_ran": false,
+  "result": "passed-scripted-mechanics-only",
+  "runtime_revision": "cd11e4c33fc89f4331b50891266a9c2fef57caef",
+  "plan_sha256": "7d76de83541deb6d6014d29100e607dc79c4369a2919877bd35b7d26be6e5a7a",
+  "local_evidence_root": "/Users/jorge/.local/share/agent-harness/trials/duodoro-panel-preflight-28yag9b3",
+  "browser": {
+    "origin": "http://127.0.0.1:18752",
+    "profile": "incognito",
+    "owner_id": "panel-tsr2voyi",
+    "transport": "native EventSource SSE",
+    "controls": "T3 collaborative browser clicks/types/selects; DOM/localStorage reads only; no injected API requests or app functions"
+  },
+  "provider_simulation": {
+    "name_for_configured_profile_guard": "ollama",
+    "configured_model_display": "gemma4:12b",
+    "actual_response_model": "SCRIPTED-NOT-Gemma",
+    "fake_usage_per_response": {
+      "prompt_tokens": 200,
+      "completion_tokens": 30
+    },
+    "source": "read target; write partial reference (formatDuration fixed, formatTime unchanged); await cancellation",
+    "fork": "write complete reference; real configured visible check; final scripted response",
+    "review": "assert on any provider call",
+    "total_fake_calls": 6,
+    "source_requests": 3,
+    "source_responses": 2,
+    "fork_requests": 3,
+    "fork_responses": 3,
+    "cancelled_usage": "unknown; numeric prefixes are synthetic, no real token/billing/compliance evidence"
+  },
+  "phase_limits": {
+    "max_completion_tokens_per_turn": 4096,
+    "max_context_tokens": 16384,
+    "max_request_output_tokens": 2048,
+    "max_tool_calls_per_turn": 12,
+    "max_tool_iterations": 6,
+    "max_total_tokens_per_turn": 32000,
+    "max_turn_wall_seconds": 150,
+    "min_request_output_tokens": 256,
+    "request_timeout_seconds": 60
+  },
+  "request_utf8_sha256": "3965fec0d1167bda0fec7a74c2a81470809d99d7f39401d62dca4ef620c7560b",
+  "continuation_utf8_sha256": "a672b9df5ad233531576042be95bc770856c2e0ab3bcea570e6609d5df5847ba",
+  "rows": [
+    {
+      "run_id": "2297634814fc4ba5b8789a604fc6915d",
+      "request": {
+        "user_id": "panel-tsr2voyi",
+        "session_id": "68120b11bc08470795b75b3d5f76b182",
+        "message": "In Duodoro, harden formatDuration and formatTime in client/src/lib/format.ts against negative and non-finite numeric durations. Negative numbers, NaN, Infinity and -Infinity must render as zero (0m and 0:00). Preserve existing finite-positive formatting, fractional truncation and formatTag behavior. Inspect client/src/lib/format.ts and client/src/lib/format.test.ts first. Only modify client/src/lib/format.ts; preserve all other files, including pre-existing work and tests. For this disposable library-level evaluation, test_visible.py is an additional visible task check using the installed Node runtime's native TypeScript support; run [\"python\",\"-m\",\"pytest\",\"-q\",\"test_visible.py\"] after the edit. This adapter does not run the full Next/Vitest suite. Do not install dependencies, start services or touch Docker. Report the observed checks and any limits honestly.",
+        "provider": "ollama",
+        "request_id": "1d5170ba-f2d9-4a64-b658-f4e870a344ec",
+        "continuation_source": null
+      },
+      "provider": "ollama",
+      "configured_model": "gemma4:12b",
+      "before_checkpoint_id": "a27b31958b5144c193c76c60fb974e4b",
+      "after_checkpoint_id": "a42b9ef5d5fd4aa7be94f3efccae2059",
+      "execution_profile": {
+        "schema_version": 1,
+        "source": "configured_settings",
+        "provider": "ollama",
+        "configured_model": "gemma4:12b",
+        "model_profile": null,
+        "inspection_only": false,
+        "repository_instructions": null,
+        "endpoint_sha256": "b26993598dffd1f14aed97def57ef67f753518a9b773d8a12033c82b4fa545ca",
+        "prompt_version": "coding-v3-compact-whole-file-v1",
+        "base_prompt_sha256": "8fc608bd7e89605c9fb4cefa96e2a0b06b0c4017748dc55fd15a440fe9fe22d9",
+        "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+        "tool_names": [
+          "remember_fact",
+          "recall_facts",
+          "read_file",
+          "grep_repo",
+          "list_dir",
+          "tree",
+          "git_status",
+          "git_diff",
+          "emit_plan",
+          "write_file",
+          "run_command"
+        ],
+        "project_check_sha256": "10b23b83a2ec688953329591406ea00c4018ac870b5b5e7d04bd535e95660e0b",
+        "provider_options_sha256": null,
+        "memory_prompt_max_bytes": 8192,
+        "memory_scope_version": "workspace-path-v1",
+        "settings": {
+          "coding_toolset": "whole_file",
+          "load_root_agents": false,
+          "enable_support_tools": false,
+          "max_tool_iterations": 6,
+          "max_tool_calls_per_turn": 12,
+          "max_turn_wall_seconds": 150.0,
+          "max_completion_tokens_per_turn": 4096,
+          "max_request_output_tokens": 2048,
+          "max_total_tokens_per_turn": 32000,
+          "max_context_tokens": 16384,
+          "min_request_output_tokens": 256,
+          "prompt_estimate_bytes_per_token": 3.0,
+          "max_identical_tool_calls": 2,
+          "max_completion_retries": 1,
+          "request_timeout_seconds": 60,
+          "require_verification_before_finish": true,
+          "require_plan_before_edit": false,
+          "max_files_touched_per_turn": 2,
+          "track_workspace_changes": true,
+          "max_tracked_files": 20000,
+          "max_tracked_bytes": 256000000,
+          "max_workspace_diff_bytes": 64000,
+          "max_diff_file_bytes": 128000,
+          "max_diff_snapshot_bytes": 2000000,
+          "confidence_escalation_threshold": 0.55
+        },
+        "context_limit_policy": "configured-min-v1",
+        "effective_max_context_tokens": 16384,
+        "ollama_num_ctx": 16384,
+        "ollama_think": false,
+        "scope_note": "Configured execution evidence, not backend attestation or resume permission. Excludes credentials, raw endpoints, check argv, injected facts, workspace contents, tool implementations, and provider/server defaults. Null identities are unknown. A special compatible transport recipe hash records public configured options only; null has no recorded recipe. Conversation IDs and constructor overrides are excluded. Memory prompt byte limits are recorded; null means the boundary was not recorded."
+      },
+      "status": "cancelled",
+      "created_at": "2026-10-22T00:17:40.247924Z",
+      "finished_at": "2026-10-22T00:17:50.250017Z",
+      "response": {
+        "answer": "(turn cancelled before task completion)",
+        "run_id": "2297634814fc4ba5b8789a604fc6915d",
+        "confidence": 1.0,
+        "citations": [
+          "client/src/lib/format.ts:1-15"
+        ],
+        "escalated": true,
+        "tool_calls": [
+          {
+            "name": "read_file",
+            "arguments": {
+              "path": "client/src/lib/format.ts"
+            },
+            "result": {
+              "path": "client/src/lib/format.ts",
+              "start_line": 1,
+              "end_line": 15,
+              "content": "export function formatDuration(seconds: number): string {\n  const h = Math.floor(seconds / 3600);\n  const m = Math.floor((seconds % 3600) / 60);\n  if (h > 0) return `${h}h ${m}m`;\n  return `${m}m`;\n}\n\nexport function formatTag(username: string, discriminator: string): string {\n  return `${username}#${discriminator}`;\n}\n\nexport function formatTime(seconds: number): string {\n  const s = Math.max(0, Math.floor(seconds));\n  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, \"0\")}`;\n}",
+              "total_lines": 15,
+              "sha256": "22d1c3647d9be8e6b1ad9c188a483dbf3a97070213ffc6565c0dd51d89bab90b"
+            },
+            "error": null,
+            "latency_ms": 0.6727499961853027,
+            "interrupted": false
+          },
+          {
+            "name": "write_file",
+            "arguments": {
+              "path": "client/src/lib/format.ts",
+              "content": "export function formatDuration(seconds: number): string {\n  seconds = Number.isFinite(seconds) ? Math.max(0, seconds) : 0;\n  const h = Math.floor(seconds / 3600);\n  const m = Math.floor((seconds % 3600) / 60);\n  if (h > 0) return `${h}h ${m}m`;\n  return `${m}m`;\n}\n\nexport function formatTag(username: string, discriminator: string): string {\n  return `${username}#${discriminator}`;\n}\n\nexport function formatTime(seconds: number): string {\n  const s = Math.max(0, Math.floor(seconds));\n  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, \"0\")}`;\n}\n"
+            },
+            "result": {
+              "path": "client/src/lib/format.ts",
+              "bytes_written": 558
+            },
+            "error": null,
+            "latency_ms": 1.5912500023841858,
+            "interrupted": false
+          }
+        ],
+        "memory_writes": [],
+        "files_touched": [
+          "client/src/lib/format.ts"
+        ],
+        "workspace_changes": {
+          "status": "tracked",
+          "added": [],
+          "modified": [
+            "client/src/lib/format.ts"
+          ],
+          "deleted": [],
+          "reason": null,
+          "diffs": [
+            {
+              "path": "client/src/lib/format.ts",
+              "diff": "--- a/client/src/lib/format.ts\n+++ b/client/src/lib/format.ts\n@@ -1,4 +1,5 @@\n export function formatDuration(seconds: number): string {\n+  seconds = Number.isFinite(seconds) ? Math.max(0, seconds) : 0;\n   const h = Math.floor(seconds / 3600);\n   const m = Math.floor((seconds % 3600) / 60);\n   if (h > 0) return `${h}h ${m}m`;\n",
+              "reason": null
+            }
+          ],
+          "ignored_entries": {
+            "status": "unchanged",
+            "added": [],
+            "modified": [],
+            "deleted": [],
+            "added_count": 0,
+            "modified_count": 0,
+            "deleted_count": 0,
+            "paths_truncated": false,
+            "scope_note": "Compares only lstat metadata for default ignored top-level entries; no contents are read and symlinks are not followed. Nested edits and rewriting existing children may leave this metadata unchanged. Matching metadata does not establish unchanged contents, dependency compatibility, source attribution, or permission to resume."
+          }
+        },
+        "verification_ran": false,
+        "verification_status": "not_run",
+        "check_attempts": [],
+        "tool_errors": [],
+        "token_usage": {
+          "prompt_tokens": null,
+          "completion_tokens": null
+        },
+        "completion_status": "cancelled",
+        "completion_reason": "Cancellation requested; owned tool work has settled. Review partial work.",
+        "patch_summary": [
+          "client/src/lib/format.ts (558 bytes written)"
+        ],
+        "provider": "ollama",
+        "latency_ms": 9780.549790978432,
+        "workspace_review_ms": 67.00000027194619
+      },
+      "budget_evidence": {
+        "events": [
+          {
+            "kind": "request",
+            "iteration": 0,
+            "message_count": 2,
+            "estimated_prompt_tokens": 2805,
+            "heuristic_prompt_tokens": 2805,
+            "anchor_adjustment_tokens": 0,
+            "max_tokens": 2048,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "bf7b240878757765a9b02c39d179713a34a999f3cb0f70f79a270a5ba970c7fe",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+              "request_sha256": "213fa2fd99f13362e8112e1fb0fad1387e422d7a8a0fad0ea6ceaa159b0c8e19"
+            },
+            "usage": null,
+            "prompt_tokens_used": 0,
+            "completion_tokens_used": 0
+          },
+          {
+            "kind": "response",
+            "iteration": 0,
+            "message_count": 2,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "anchor_adjustment_tokens": null,
+            "max_tokens": null,
+            "identity": null,
+            "usage": {
+              "prompt_tokens": 200,
+              "completion_tokens": 30
+            },
+            "prompt_tokens_used": 200,
+            "completion_tokens_used": 30
+          },
+          {
+            "kind": "request",
+            "iteration": 1,
+            "message_count": 4,
+            "estimated_prompt_tokens": 3061,
+            "heuristic_prompt_tokens": 3061,
+            "anchor_adjustment_tokens": 0,
+            "max_tokens": 2048,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "427971740d0011f8eb521d852da4b1a38bfd3b78f9bcb8814eb65802c1a0168f",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+              "request_sha256": "f709df7a170d4b21b71050675778cd46725f2a6940d13a1416e63bd4e2c11046"
+            },
+            "usage": null,
+            "prompt_tokens_used": 200,
+            "completion_tokens_used": 30
+          },
+          {
+            "kind": "response",
+            "iteration": 1,
+            "message_count": 4,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "anchor_adjustment_tokens": null,
+            "max_tokens": null,
+            "identity": null,
+            "usage": {
+              "prompt_tokens": 200,
+              "completion_tokens": 30
+            },
+            "prompt_tokens_used": 400,
+            "completion_tokens_used": 60
+          },
+          {
+            "kind": "request",
+            "iteration": 2,
+            "message_count": 6,
+            "estimated_prompt_tokens": 3304,
+            "heuristic_prompt_tokens": 3304,
+            "anchor_adjustment_tokens": 0,
+            "max_tokens": 2048,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "f838518eb9fe436ea1fc74b713a54b0f6202b1de09463979530fed57036dc3ea",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+              "request_sha256": "9d424348599a979b48d7c76c95fdda2c6acd5a6274a3dffc4a0839c3f3d04ad2"
+            },
+            "usage": null,
+            "prompt_tokens_used": 400,
+            "completion_tokens_used": 60
+          },
+          {
+            "kind": "request_failure",
+            "iteration": 2,
+            "message_count": 6,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "anchor_adjustment_tokens": null,
+            "max_tokens": null,
+            "identity": null,
+            "usage": null,
+            "prompt_tokens_used": null,
+            "completion_tokens_used": null
+          }
+        ],
+        "observed_events": 6,
+        "events_truncated": false,
+        "read_only": true,
+        "scope_note": "Bounded prefix of normalized request attempts, reported response usage and token-gate stops. Request precedes delivery; response usage is a provider report, not backend attestation. Failure usage is unknown; a request without a response may have consumed tokens. Missing/truncated evidence is not zero usage or proven budget compliance. No messages, paths, call IDs, tool arguments/results or exception text are stored here. Fingerprints cover normalized inputs only; see the separate configured profile for limits/provider identity. Wall/tool/iteration stops are not token-gate events. Not completion, acceptance, replay or permission to resume."
+      },
+      "error": null,
+      "provider_failure": null
+    },
+    {
+      "run_id": "5b96d7d0a9704eb6bf7a7c29f3accea9",
+      "request": {
+        "user_id": "panel-tsr2voyi",
+        "session_id": "a93918f1596250799d49ab21299e1721",
+        "message": "Continue the same requested formatter change, preserving existing work; report actual checks and limits.",
+        "provider": "ollama",
+        "request_id": "08ea21c9-1a5a-43f6-90b7-3f6c7f1a5add",
+        "continuation_source": {
+          "session_id": "68120b11bc08470795b75b3d5f76b182",
+          "turn_id": "a775c00811f3498e9be1ed03670ac379",
+          "acknowledge_uncaptured_state": true
+        }
+      },
+      "provider": "ollama",
+      "configured_model": "gemma4:12b",
+      "before_checkpoint_id": "a4a7d8d947ef497489f976206f613c4b",
+      "after_checkpoint_id": "8a4db0490c554b74a99d52b750b50570",
+      "execution_profile": {
+        "schema_version": 1,
+        "source": "configured_settings",
+        "provider": "ollama",
+        "configured_model": "gemma4:12b",
+        "model_profile": null,
+        "inspection_only": false,
+        "repository_instructions": null,
+        "endpoint_sha256": "b26993598dffd1f14aed97def57ef67f753518a9b773d8a12033c82b4fa545ca",
+        "prompt_version": "coding-v3-compact-whole-file-v1",
+        "base_prompt_sha256": "8fc608bd7e89605c9fb4cefa96e2a0b06b0c4017748dc55fd15a440fe9fe22d9",
+        "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+        "tool_names": [
+          "remember_fact",
+          "recall_facts",
+          "read_file",
+          "grep_repo",
+          "list_dir",
+          "tree",
+          "git_status",
+          "git_diff",
+          "emit_plan",
+          "write_file",
+          "run_command"
+        ],
+        "project_check_sha256": "10b23b83a2ec688953329591406ea00c4018ac870b5b5e7d04bd535e95660e0b",
+        "provider_options_sha256": null,
+        "memory_prompt_max_bytes": 8192,
+        "memory_scope_version": "workspace-path-v1",
+        "settings": {
+          "coding_toolset": "whole_file",
+          "load_root_agents": false,
+          "enable_support_tools": false,
+          "max_tool_iterations": 6,
+          "max_tool_calls_per_turn": 12,
+          "max_turn_wall_seconds": 150.0,
+          "max_completion_tokens_per_turn": 4096,
+          "max_request_output_tokens": 2048,
+          "max_total_tokens_per_turn": 32000,
+          "max_context_tokens": 16384,
+          "min_request_output_tokens": 256,
+          "prompt_estimate_bytes_per_token": 3.0,
+          "max_identical_tool_calls": 2,
+          "max_completion_retries": 1,
+          "request_timeout_seconds": 60,
+          "require_verification_before_finish": true,
+          "require_plan_before_edit": false,
+          "max_files_touched_per_turn": 2,
+          "track_workspace_changes": true,
+          "max_tracked_files": 20000,
+          "max_tracked_bytes": 256000000,
+          "max_workspace_diff_bytes": 64000,
+          "max_diff_file_bytes": 128000,
+          "max_diff_snapshot_bytes": 2000000,
+          "confidence_escalation_threshold": 0.55
+        },
+        "context_limit_policy": "configured-min-v1",
+        "effective_max_context_tokens": 16384,
+        "ollama_num_ctx": 16384,
+        "ollama_think": false,
+        "scope_note": "Configured execution evidence, not backend attestation or resume permission. Excludes credentials, raw endpoints, check argv, injected facts, workspace contents, tool implementations, and provider/server defaults. Null identities are unknown. A special compatible transport recipe hash records public configured options only; null has no recorded recipe. Conversation IDs and constructor overrides are excluded. Memory prompt byte limits are recorded; null means the boundary was not recorded."
+      },
+      "status": "finished",
+      "created_at": "2026-10-22T00:18:13.899782Z",
+      "finished_at": "2026-10-22T00:18:14.443234Z",
+      "response": {
+        "answer": "SCRIPTED browser preflight: reference completed and visible check passed. Not a Gemma result.",
+        "run_id": "5b96d7d0a9704eb6bf7a7c29f3accea9",
+        "confidence": null,
+        "citations": [],
+        "escalated": false,
+        "tool_calls": [
+          {
+            "name": "write_file",
+            "arguments": {
+              "path": "client/src/lib/format.ts",
+              "content": "export function formatDuration(seconds: number): string {\n  seconds = Number.isFinite(seconds) ? Math.max(0, seconds) : 0;\n  const h = Math.floor(seconds / 3600);\n  const m = Math.floor((seconds % 3600) / 60);\n  if (h > 0) return `${h}h ${m}m`;\n  return `${m}m`;\n}\n\nexport function formatTag(username: string, discriminator: string): string {\n  return `${username}#${discriminator}`;\n}\n\nexport function formatTime(seconds: number): string {\n  const s = Number.isFinite(seconds) ? Math.max(0, Math.floor(seconds)) : 0;\n  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, \"0\")}`;\n}\n"
+            },
+            "result": {
+              "path": "client/src/lib/format.ts",
+              "bytes_written": 589
+            },
+            "error": null,
+            "latency_ms": 0.7605000138282776,
+            "interrupted": false
+          },
+          {
+            "name": "run_command",
+            "arguments": {
+              "argv": [
+                "python",
+                "-m",
+                "pytest",
+                "-q",
+                "test_visible.py"
+              ]
+            },
+            "result": {
+              "argv": [
+                "python",
+                "-m",
+                "pytest",
+                "-q",
+                "test_visible.py"
+              ],
+              "exit_code": 0,
+              "stdout": ".                                                                        [100%]\n1 passed in 0.07s\n",
+              "stderr": "",
+              "stdout_truncated": false,
+              "stderr_truncated": false,
+              "success": true
+            },
+            "error": null,
+            "latency_ms": 349.5330830216408,
+            "interrupted": false
+          }
+        ],
+        "memory_writes": [],
+        "files_touched": [
+          "client/src/lib/format.ts"
+        ],
+        "workspace_changes": {
+          "status": "tracked",
+          "added": [],
+          "modified": [
+            "client/src/lib/format.ts"
+          ],
+          "deleted": [],
+          "reason": null,
+          "diffs": [
+            {
+              "path": "client/src/lib/format.ts",
+              "diff": "--- a/client/src/lib/format.ts\n+++ b/client/src/lib/format.ts\n@@ -11,6 +11,6 @@\n }\n \n export function formatTime(seconds: number): string {\n-  const s = Math.max(0, Math.floor(seconds));\n+  const s = Number.isFinite(seconds) ? Math.max(0, Math.floor(seconds)) : 0;\n   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, \"0\")}`;\n }\n",
+              "reason": null
+            }
+          ],
+          "ignored_entries": {
+            "status": "changed",
+            "added": [
+              ".pytest_cache",
+              "__pycache__"
+            ],
+            "modified": [],
+            "deleted": [],
+            "added_count": 2,
+            "modified_count": 0,
+            "deleted_count": 0,
+            "paths_truncated": false,
+            "scope_note": "Compares only lstat metadata for default ignored top-level entries; no contents are read and symlinks are not followed. Nested edits and rewriting existing children may leave this metadata unchanged. Matching metadata does not establish unchanged contents, dependency compatibility, source attribution, or permission to resume."
+          }
+        },
+        "verification_ran": true,
+        "verification_status": "passed",
+        "check_attempts": [
+          {
+            "argv": [
+              "python",
+              "-m",
+              "pytest",
+              "-q",
+              "test_visible.py"
+            ],
+            "exit_code": 0,
+            "status": "passed",
+            "relevant": true,
+            "superseded_by_edit": false,
+            "error": null
+          }
+        ],
+        "tool_errors": [],
+        "token_usage": {
+          "prompt_tokens": 600,
+          "completion_tokens": 90
+        },
+        "completion_status": "completed",
+        "completion_reason": null,
+        "patch_summary": [
+          "client/src/lib/format.ts (589 bytes written)"
+        ],
+        "provider": "ollama",
+        "latency_ms": 359.5489169359207,
+        "workspace_review_ms": 67.00000003911555
+      },
+      "budget_evidence": {
+        "events": [
+          {
+            "kind": "request",
+            "iteration": 0,
+            "message_count": 7,
+            "estimated_prompt_tokens": 3342,
+            "heuristic_prompt_tokens": 3342,
+            "anchor_adjustment_tokens": 0,
+            "max_tokens": 2048,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "5924f670b515d6cb5f009793fb5058eb03756edd1d01e30dd717b5bc45ee8ca8",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+              "request_sha256": "f87741b8457703b3ec8112f3ae2da815ce2b6592a60755333ef5f53bd3686563"
+            },
+            "usage": null,
+            "prompt_tokens_used": 0,
+            "completion_tokens_used": 0
+          },
+          {
+            "kind": "response",
+            "iteration": 0,
+            "message_count": 7,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "anchor_adjustment_tokens": null,
+            "max_tokens": null,
+            "identity": null,
+            "usage": {
+              "prompt_tokens": 200,
+              "completion_tokens": 30
+            },
+            "prompt_tokens_used": 200,
+            "completion_tokens_used": 30
+          },
+          {
+            "kind": "request",
+            "iteration": 1,
+            "message_count": 9,
+            "estimated_prompt_tokens": 3596,
+            "heuristic_prompt_tokens": 3596,
+            "anchor_adjustment_tokens": 0,
+            "max_tokens": 2048,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "7ef2970e1f4967b9df0711c225cc6389260102f14e914781b6dfc172a836028e",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+              "request_sha256": "f02aad17436d4c079185dfd66831bd71f43dc7a637822743ed76cf01e5f037fd"
+            },
+            "usage": null,
+            "prompt_tokens_used": 200,
+            "completion_tokens_used": 30
+          },
+          {
+            "kind": "response",
+            "iteration": 1,
+            "message_count": 9,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "anchor_adjustment_tokens": null,
+            "max_tokens": null,
+            "identity": null,
+            "usage": {
+              "prompt_tokens": 200,
+              "completion_tokens": 30
+            },
+            "prompt_tokens_used": 400,
+            "completion_tokens_used": 60
+          },
+          {
+            "kind": "request",
+            "iteration": 2,
+            "message_count": 11,
+            "estimated_prompt_tokens": 3723,
+            "heuristic_prompt_tokens": 3723,
+            "anchor_adjustment_tokens": 0,
+            "max_tokens": 2048,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "32308a22468ff94510cd5ced077a3fe2d5eff6a24dab276069b728a966da44cc",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+              "request_sha256": "5626eb5dafbcd977f3d7ca723b9e728e48b9a32ab5e10b65ec27e9758157912d"
+            },
+            "usage": null,
+            "prompt_tokens_used": 400,
+            "completion_tokens_used": 60
+          },
+          {
+            "kind": "response",
+            "iteration": 2,
+            "message_count": 11,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "anchor_adjustment_tokens": null,
+            "max_tokens": null,
+            "identity": null,
+            "usage": {
+              "prompt_tokens": 200,
+              "completion_tokens": 30
+            },
+            "prompt_tokens_used": 600,
+            "completion_tokens_used": 90
+          }
+        ],
+        "observed_events": 6,
+        "events_truncated": false,
+        "read_only": true,
+        "scope_note": "Bounded prefix of normalized request attempts, reported response usage and token-gate stops. Request precedes delivery; response usage is a provider report, not backend attestation. Failure usage is unknown; a request without a response may have consumed tokens. Missing/truncated evidence is not zero usage or proven budget compliance. No messages, paths, call IDs, tool arguments/results or exception text are stored here. Fingerprints cover normalized inputs only; see the separate configured profile for limits/provider identity. Wall/tool/iteration stops are not token-gate events. Not completion, acceptance, replay or permission to resume."
+      },
+      "error": null,
+      "provider_failure": null
+    }
+  ],
+  "reversals": [
+    {
+      "revert_id": "c14e04a9f90844d6b05270bc9defac23",
+      "request": {
+        "user_id": "panel-tsr2voyi",
+        "run_id": "5b96d7d0a9704eb6bf7a7c29f3accea9",
+        "path": "client/src/lib/format.ts",
+        "request_id": "b0c6fa9b-d63f-459d-b098-0c5d0178434d"
+      },
+      "before_checkpoint_id": "a4a7d8d947ef497489f976206f613c4b",
+      "after_checkpoint_id": "8a4db0490c554b74a99d52b750b50570",
+      "status": "applied",
+      "created_at": "2026-10-22T00:18:43.318046Z",
+      "finished_at": "2026-10-22T00:18:43.320296Z",
+      "reason": "Recorded before state applied to the selected path; run checks again.",
+      "scope_note": "Explicit reversal of one observed checkpoint difference, not agent attribution or independent acceptance. Requires current eligible file bytes/mode to match the after point. Other paths and Git index are untouched. No whole-checkpoint restore or resume. External writers can race final checks; process-local admission is not isolation. Replacement changes inode identity and does not restore ownership/ACLs/extended attributes. Pending/interrupted/uncertain requests are never automatically executed or retried."
+    },
+    {
+      "revert_id": "239617a8dd4a47b29d3fbd42c9478d29",
+      "request": {
+        "user_id": "panel-tsr2voyi",
+        "run_id": "2297634814fc4ba5b8789a604fc6915d",
+        "path": "client/src/lib/format.ts",
+        "request_id": "702fc3a0-27de-4b9d-b91b-66a3e26643c3"
+      },
+      "before_checkpoint_id": "a27b31958b5144c193c76c60fb974e4b",
+      "after_checkpoint_id": "a42b9ef5d5fd4aa7be94f3efccae2059",
+      "status": "applied",
+      "created_at": "2026-10-22T00:19:58.822809Z",
+      "finished_at": "2026-10-22T00:19:58.825555Z",
+      "reason": "Recorded before state applied to the selected path; run checks again.",
+      "scope_note": "Explicit reversal of one observed checkpoint difference, not agent attribution or independent acceptance. Requires current eligible file bytes/mode to match the after point. Other paths and Git index are untouched. No whole-checkpoint restore or resume. External writers can race final checks; process-local admission is not isolation. Replacement changes inode identity and does not restore ownership/ACLs/extended attributes. Pending/interrupted/uncertain requests are never automatically executed or retried."
+    }
+  ],
+  "http_request_counts": [
+    {
+      "method": "GET",
+      "path": "/",
+      "count": 3
+    },
+    {
+      "method": "GET",
+      "path": "/app.js",
+      "count": 3
+    },
+    {
+      "method": "GET",
+      "path": "/chat/stream",
+      "count": 1
+    },
+    {
+      "method": "GET",
+      "path": "/favicon.ico",
+      "count": 1
+    },
+    {
+      "method": "GET",
+      "path": "/file-reverts",
+      "count": 2
+    },
+    {
+      "method": "GET",
+      "path": "/memory.js",
+      "count": 3
+    },
+    {
+      "method": "GET",
+      "path": "/openapi.json",
+      "count": 5
+    },
+    {
+      "method": "GET",
+      "path": "/runs",
+      "count": 5
+    },
+    {
+      "method": "GET",
+      "path": "/runs/2297634814fc4ba5b8789a604fc6915d",
+      "count": 3
+    },
+    {
+      "method": "GET",
+      "path": "/runs/2297634814fc4ba5b8789a604fc6915d/tool-progress",
+      "count": 1
+    },
+    {
+      "method": "GET",
+      "path": "/runs/5b96d7d0a9704eb6bf7a7c29f3accea9",
+      "count": 1
+    },
+    {
+      "method": "GET",
+      "path": "/runs/5b96d7d0a9704eb6bf7a7c29f3accea9/tool-progress",
+      "count": 1
+    },
+    {
+      "method": "GET",
+      "path": "/sessions/68120b11bc08470795b75b3d5f76b182",
+      "count": 1
+    },
+    {
+      "method": "GET",
+      "path": "/sessions/68120b11bc08470795b75b3d5f76b182/transcript-review",
+      "count": 1
+    },
+    {
+      "method": "GET",
+      "path": "/sessions/68120b11bc08470795b75b3d5f76b182/workspace-review",
+      "count": 1
+    },
+    {
+      "method": "GET",
+      "path": "/style.css",
+      "count": 3
+    },
+    {
+      "method": "POST",
+      "path": "/runs/2297634814fc4ba5b8789a604fc6915d/revert-file",
+      "count": 1
+    },
+    {
+      "method": "POST",
+      "path": "/runs/5b96d7d0a9704eb6bf7a7c29f3accea9/revert-file",
+      "count": 1
+    },
+    {
+      "method": "POST",
+      "path": "/sessions",
+      "count": 1
+    },
+    {
+      "method": "POST",
+      "path": "/sessions/68120b11bc08470795b75b3d5f76b182/cancel",
+      "count": 1
+    },
+    {
+      "method": "POST",
+      "path": "/sessions/68120b11bc08470795b75b3d5f76b182/configuration-review",
+      "count": 1
+    },
+    {
+      "method": "POST",
+      "path": "/sessions/68120b11bc08470795b75b3d5f76b182/continue",
+      "count": 1
+    }
+  ],
+  "checks": {
+    "fresh_fixture_initial_fail_reference_pass": true,
+    "source_partial_external_acceptance_exit_code": 1,
+    "source_partial_grade_matches_saved_after_capture": true,
+    "fork_external_acceptance": {
+      "argv": [
+        "/Users/jorge/Projects/agent-harness/.venv/bin/python",
+        "-I",
+        "-B",
+        "/Users/jorge/Projects/agent-harness/evals/acceptance_runner.py",
+        "/Users/jorge/.local/share/agent-harness/trials/duodoro-panel-preflight-28yag9b3/scored-workspace",
+        "/Users/jorge/.local/share/agent-harness/trials/duodoro-panel-preflight-28yag9b3/prepared/acceptance"
+      ],
+      "exit_code": 0,
+      "stdout": "..                                                                       [100%]\n2 passed in 0.09s\n",
+      "stderr": "",
+      "stdout_truncated": false,
+      "stderr_truncated": false
+    },
+    "source_workspace_review": "unchanged",
+    "source_transcript_review": "valid",
+    "configuration_review": "matching; estimated_fit (heuristic only)",
+    "profiles_identical": true,
+    "run_records_unchanged_after_reversals": true,
+    "saved_session_and_response_evidence_unchanged": true,
+    "baseline_eligible_bytes_and_modes_restored": true,
+    "later_sentinel_preserved": true,
+    "acceptance_hashes_unchanged": true,
+    "no_reexecution_on_reload": true,
+    "final_run_count": 2,
+    "final_reversal_count": 2,
+    "focused_tests": {
+      "passed": 46,
+      "command": "uv run pytest -q tests/api/test_ui.py tests/api/test_cancellation.py tests/api/test_continuation.py tests/api/test_file_revert.py tests/api/test_session_persistence.py tests/api/test_tool_progress.py -m 'not live'"
+    }
+  },
+  "operator_observations": [
+    "Selecting another run preserves an open reversal disclosure. One redundant toggle closed it; hidden-field interaction attempts did not submit a file action. Reloaded and opened it from a fresh snapshot before the second reversal. This was an automation navigation error, not an application failure.",
+    "Forgot the inspected applied fork key explicitly before the source reversal. Only the last source key was restored/inspected after reload; earlier fork outcome is retained in the audit, not reopened through an arbitrary-key panel control.",
+    "Panel run identity shows configured gemma4:12b even though this custom preflight factory is fake; no inference adapter was constructed. Scripted final answer and report label simulation.",
+    "Source read only the target; deterministic responses do not demonstrate following task inspection instructions or choosing a repair."
+  ],
+  "cleanup": {
+    "owned_server_pids": [
+      16411,
+      16961,
+      16985,
+      17551,
+      18035
+    ],
+    "all_exited": true,
+    "listener_18752_stopped": true,
+    "owned_browser_tab_closed": true,
+    "inference_resources_started": false,
+    "duodoro_working_checkout_edits": false,
+    "docker_actions": false
+  },
+  "local_artifacts_sha256": {
+    "server.py": "c1642e1b20e643ae93cd5d4a99081a9d455c171946cb0d6662189bb49c7c9437",
+    "prepare-panel-preflight.py": "904729b8b51bb1f49a3ebd6ce6d36e1d6ebae7e5f5a6d01daa7e469e36a31628",
+    "manage-panel-preflight.py": "20b0b082c1c3aa7b1f4adffd88b01096224a9a628576087b8800d56f6bb115e0",
+    "score-panel-preflight.py": "c19e02f5a66277700fec7bd6e8cd8bc5e874d3967f27ff54e479ca525e90296e",
+    "audit-panel-preflight.py": "ae8d305a1bd4b0e28f72d4794c385f23c49ebe0bb343a6089fe3bb0ccfe0bcf6",
+    "plan.json": "7d76de83541deb6d6014d29100e607dc79c4369a2919877bd35b7d26be6e5a7a",
+    "settings.json": "ad16ceb15baea97f3d552a0288844bb62f0769b01c92a08ac12e6e9474fc5967",
+    "environment.json": "1f143d4da6dd2d179f399ed03f8b1229e9cdd3d4ef6d82c225f193bbafd42f97",
+    "provider-calls.jsonl": "5eb232a8db912d6d14e124694c1b8379c5043ec343d5980df39be9098bb62539",
+    "http-requests.jsonl": "cec663a464f9c4be97a6ddef899b3c62cc437498f92886e9e83e2bf01d43f218",
+    "browser-phase-evidence.json": "617963e94204f228b410eb88a0965382e5b066ebf13f96a9c217b7a9822dfbb6",
+    "browser-reversal-evidence.json": "960aaf508a9a4c1e67d16a0ac67a23e8748a891a0521afdac8e263c8e826bd6b",
+    "before-reversals-audit.json": "30c1cc98e203f0f85d23345e60528d68a1ee616c3f7961632850cf34bad589fd",
+    "final-audit.json": "1ce1cbce188de23e2fbee94913f5ffbef6757a1388d44fa7e773b6dd27627e55",
+    "acceptance-result.json": "7298e4d85d0fb81a30bad2d427b68d65bcbf8a19bf846207926bf67ec5bcde66",
+    "source-partial-acceptance.json": "1958ff3cd3fb9276e0f08e22204cf6f8bc15e2ccc8984706b0c6eb3751067a22",
+    "restored-manifest.json": "c250e9da5d615ec96c19c3cff31b7afa2348456e609dc758a78260ae55ffaf6f",
+    "cancel.png": "61bef982614b13aaef23eaf1c2973aa989df756e65197b94176921ebe2607dc9",
+    "reloaded-outcome.png": "f906c364825769de2d0a1361333a1da7d0eac23702bd59e064ed7a0270f548f0",
+    "reloaded-fork.png": "4d62173cdfb5014f0bf550f7848f83e046f7d8dae4e61c83ac30af918e2d914a"
+  },
+  "limits": [
+    "Not a live-model recovery result, quality comparison, release approval or G2 closure.",
+    "No actual live execution freeze or fresh full G0 in this slice. Original protocol remains historical plan-only with null execution fields.",
+    "Artifacts contain scoped plaintext outside Git; hashes identify retained local evidence, not remotely downloadable bundles.",
+    "Acceptance covers its eligible-file manifest and Node adapter, not ignored cache contents, full Next/Vitest, external writers or OS isolation.",
+    "The cancelled fake request has unknown usage; no total-token compliance claim."
+  ],
+  "next": "Prepare pinned-runtime G0 and a fresh actual panel execution manifest, independently review before live inference; original cohorts, release no-go and G2-G5 remain unchanged."
+}
