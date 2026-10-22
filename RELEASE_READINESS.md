@@ -354,3 +354,25 @@ At the audited source revision, with only documentation being prepared:
 - No new model calls, paid calls, Duodoro changes, Docker actions or release
   publication. Historical browser checks through #143 were inspected, not rerun
   as a fresh real-model/client workflow in this documentation audit.
+
+
+## Whole-file ten-task follow-up — 2026-10-22 UTC
+
+The reviewed [whole-file cohort](evals/projects/duodoro/WHOLE_FILE_TEN_TASK_RESULTS.md)
+ran all ten original tasks once at frozen `d1e5778`: **2/10 accepted artifacts,
+2/10 completed-and-accepted, 2/10 acceptable with known reported usage within
+nominal budgets**. Seven usage totals are unknown. Five provider read timeouts,
+a reserved-fork dispatch stop, missing output usage and unsafe-integer acceptance
+failure are retained without repair/replacement. All external grades reproduced;
+protected files/modes and stored evidence were preserved. T03 cancelled before
+an edit and its fork made no patch. T05 had no eligible reversal difference;
+its declared later sentinel survived restart. These controls do not close broader
+G2. Fifteen owned APIs stopped, Gemma unloaded and tab closed.
+
+G3 misses the unchanged eight-of-ten target; retain no-go and feature freeze.
+G4/G5 remain unmet. Original trial/comparison counts and this point-in-time audit
+remain unchanged. A narrower supported envelope or bounded offline investigation
+needs an explicit next decision; this cohort does not authorize a release or
+establish a causal/held-out gain. Snapshot observation failures and reporting
+corrections are documented, with native client submissions/SSE and read-only DOM
+observations retained. No application/evaluator behavior changed in this report.

@@ -35,20 +35,26 @@ failed executable acceptance without a refactor; source review was not performed
 or counted as passing. This cohort does not complete Milestones 2–6 or establish
 a model-quality improvement.
 
-**Next finite trial slice:** the
-[whole-file ten-task follow-up protocol](evals/projects/duodoro/WHOLE_FILE_TEN_TASK_PROTOCOL.md)
-applies the existing preset to the original ten verbatim tasks, client assignments,
-criteria and limits. It tests whether selected formatter observations carry to the
-agreed envelope; no feature/default/prompt-retention change or new model. All ten
-fresh initial-fail/reference-pass validations and original request/criterion/
-reference hashes match; 28 focused criterion regressions passed. This is protocol
-preparation only, with no inference, scheduled runtime/storage/owner freeze or G0
-claim. Independent protocol review, actual whole-file client preflight, pinned G0
-and reviewed execution manifest remain before any new cohort. T03 retains its two
-reserved halves and original cancellation rule; T05 post-grade reversal and T08
-independent source review remain. No failed-task replacement, budget reset or
-historical recount. G3's threshold/budget requirements and G4/G5 stay unchanged;
-another miss retains no-go instead of extending feature batches automatically.
+**2026-10-22 UTC — Whole-file ten-task follow-up complete:** the reviewed
+[cohort](evals/projects/duodoro/WHOLE_FILE_TEN_TASK_RESULTS.md) ran all ten original
+requests through their assigned clients at frozen `d1e5778`, with eleven coding
+turns and unchanged criteria/limits. **2/10 accepted artifacts, 2/10
+completed-and-accepted and 2/10 acceptable with known reported usage within nominal
+budgets** miss G3 again. Five tasks had provider read timeouts, T03's reserved fork
+hit its dispatch limit, T05 stopped on missing usage, and T06 passed its visible
+check but failed independent safe-integer acceptance. Seven task totals are
+unknown. Every saved artifact grade reproduced and protected-file/mode checks
+passed, with no patch repair/replacement or Duodoro working-checkout edit.
+T03 cancelled before any edit, restarted/reviewed/forked but produced no calendar
+patch. T05's unchanged target was ineligible for reversal; its later sentinel
+survived restart. Broader G2 remains open; no partial-edit recovery or eligible
+reversal is established here. Fifteen owned APIs exited, model unloaded and tab
+closed. Snapshot failures and reporting-helper corrections are retained separately.
+The original 2/10 artifact, 1/10 completed cohort and selected comparisons remain
+unchanged; this single public-task cohort is not causal/held-out evidence. G4/G5
+stay unmet. **Retain no-go and feature freeze.** Next choose an explicit narrower
+envelope or a bounded offline failure investigation, not an automatic feature,
+model, timeout or budget expansion. No release approval or milestone completion.
 
 **2026-10-22 UTC — Whole-file cohort preflight and execution freeze prepared:** the
 [freeze](evals/projects/duodoro/WHOLE_FILE_EXECUTION_FREEZE.md) pins fresh actual
