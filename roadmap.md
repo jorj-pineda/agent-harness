@@ -25,13 +25,30 @@ cancellation, server restart and one guarded fork were exercised, but cancellati
 preceded any partial edit and the planned reversal was rejected. A later separate
 [CLI recovery probe](evals/projects/duodoro/RECOVERY_RESULTS.md) exercised edit →
 cancel → restart → guarded fork/check and eligible source reversal with preservation;
-its one request variant and unknown aggregate usage do not close broader G2.
+its one request variant and unknown aggregate usage do not close broader G2. The
+later [panel recovery observation](evals/projects/duodoro/PANEL_RECOVERY_RESULTS.md)
+also passed that bounded sequence; neither replaces the original ten-task cohort.
 G3 was missed; G4's held-out/repeated
 two-model comparison and G5's release decision remain unmet. No patch repair,
 hidden reruns, model switches or Duodoro working-checkout edits occurred. T08
 failed executable acceptance without a refactor; source review was not performed
 or counted as passing. This cohort does not complete Milestones 2–6 or establish
 a model-quality improvement.
+
+**Next finite trial slice:** the
+[whole-file ten-task follow-up protocol](evals/projects/duodoro/WHOLE_FILE_TEN_TASK_PROTOCOL.md)
+applies the existing preset to the original ten verbatim tasks, client assignments,
+criteria and limits. It tests whether selected formatter observations carry to the
+agreed envelope; no feature/default/prompt-retention change or new model. All ten
+fresh initial-fail/reference-pass validations and original request/criterion/
+reference hashes match; 28 focused criterion regressions passed. This is protocol
+preparation only, with no inference, scheduled runtime/storage/owner freeze or G0
+claim. Independent protocol review, actual whole-file client preflight, pinned G0
+and reviewed execution manifest remain before any new cohort. T03 retains its two
+reserved halves and original cancellation rule; T05 post-grade reversal and T08
+independent source review remain. No failed-task replacement, budget reset or
+historical recount. G3's threshold/budget requirements and G4/G5 stay unchanged;
+another miss retains no-go instead of extending feature batches automatically.
 
 **2026-10-19 — Recorded exact-edit mismatch diagnosis:** offline replay reproduced
 nine dispatched failures across T01/T04/T09. Specific feedback now covers mixed

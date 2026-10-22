@@ -158,7 +158,7 @@ All ten fresh full-source adapters were validated offline: initial visible and
 external checks fail, references pass, original requests/criterion/reference hashes
 match exactly. The T08 source-review rubric is retained; passing the reference
 does not pre-approve a later patch. The preparation recipe and fixtures are retained
-at the local root recorded in the plan. No provider was constructed or called.
+at the local root recorded in the plan. No real-provider adapter or inference call ran.
 All 28 focused existing criterion regressions passed using the managed Node 24
 environment. No full suite/static/matrix rerun is claimed for this docs/data
 protocol; it is not future G0, actual client preflight or an execution freeze.

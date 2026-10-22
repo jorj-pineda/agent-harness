@@ -307,6 +307,18 @@ G2 reliability, ten-task acceptance, held-out quality or release approval. Origi
 cohorts/no-go and broad G2–G5 remain unchanged. No new application behavior or G0
 rerun is claimed by this docs/data report.
 
+## Whole-file envelope follow-up preparation — 2026-10-22 UTC
+
+The [new protocol](evals/projects/duodoro/WHOLE_FILE_TEN_TASK_PROTOCOL.md) keeps the
+original ten exact requests/clients/criteria and limits, selecting the existing
+whole-file preset to test the broader candidate envelope. All ten fresh initial-
+fail/reference-pass pairs and historical request/criterion/reference hashes match;
+28 focused criterion regressions passed. No inference or actual execution freeze.
+Whole-file client preflight, pinned G0 and independent execution-manifest review
+remain required. Original failed counts and G3 budget/source-review requirements
+are unchanged; no held-out/causal improvement or release approval follows. This
+is the next evidence-gathering slice, not another feature batch.
+
 ## Validation performed for this audit
 
 At the audited source revision, with only documentation being prepared:
