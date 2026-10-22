@@ -1,0 +1,241 @@
+{
+  "kind": "offline-retained-timeout-diagnosis",
+  "execution_runtime": "d1e5778c834da2165da47cb877dc0d0ced026061",
+  "inference": false,
+  "tasks": [
+    {
+      "task": "T02",
+      "run_id": "2ff9a1732a864e24aecc790b454fd453",
+      "provider_failure": {
+        "kind": "read_timeout",
+        "http_status": null
+      },
+      "failed_iteration_zero_based": 5,
+      "request_message_count": 12,
+      "estimated_prompt_tokens": 14979,
+      "request_output_allowance": 1405,
+      "configured_read_timeout_seconds": 60,
+      "last_completed_tool": "emit_plan",
+      "last_completed_tool_to_run_finish_seconds": 60.017531,
+      "interval_scope": "Observed tool-end to run-finalization; not exact failed-request latency, backend inference time or time-to-first-byte.",
+      "saved_tool_end_count": 5,
+      "saved_tool_errors": 0,
+      "progress_truncated": false,
+      "budget_events_truncated": false,
+      "final_response": null,
+      "saved_session_message_count": 0,
+      "saved_session_turn_count": 0,
+      "aggregate_token_usage": null,
+      "known_response_prefix": {
+        "prompt_tokens": 37350,
+        "completion_tokens": 167
+      },
+      "failed_request_identity": {
+        "format": "normalized-chat-request-v1",
+        "messages_sha256": "968ffcc197a937e78d26478aa0604964a20fcdf8b059f5ebcf4cbf8f34191530",
+        "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+        "request_sha256": "53e79e9728646b19773f1d28174039fe6cbfb7942a24385387ba4c68258618f0"
+      },
+      "synthetic_classifier_probe": {
+        "label": "scripted transport contract, not actual-request replay or timeout reproduction",
+        "calls": 1,
+        "classified": "read_timeout",
+        "stream": false,
+        "read_timeout_seconds": 60
+      },
+      "source_hashes": {
+        "tasks/T02/state/sessions.db": "de8bad44e741f8659ade595b03e6c982d3297b2da8b4f41480a5dcbfbe2a5fe0",
+        "outcomes/T02/settled-audit.json": "f76f54bd31ebb47ae4099e85e88f8323a2b58939b000029edffe9f9ca468d278"
+      }
+    },
+    {
+      "task": "T07",
+      "run_id": "652196e0138444d8967f37ffb6dddcf2",
+      "provider_failure": {
+        "kind": "read_timeout",
+        "http_status": null
+      },
+      "failed_iteration_zero_based": 5,
+      "request_message_count": 12,
+      "estimated_prompt_tokens": 10201,
+      "request_output_allowance": 2048,
+      "configured_read_timeout_seconds": 60,
+      "last_completed_tool": "emit_plan",
+      "last_completed_tool_to_run_finish_seconds": 60.035569,
+      "interval_scope": "Observed tool-end to run-finalization; not exact failed-request latency, backend inference time or time-to-first-byte.",
+      "saved_tool_end_count": 4,
+      "saved_tool_errors": 0,
+      "progress_truncated": false,
+      "budget_events_truncated": false,
+      "final_response": null,
+      "saved_session_message_count": 0,
+      "saved_session_turn_count": 0,
+      "aggregate_token_usage": null,
+      "known_response_prefix": {
+        "prompt_tokens": 25208,
+        "completion_tokens": 147
+      },
+      "failed_request_identity": {
+        "format": "normalized-chat-request-v1",
+        "messages_sha256": "6a7c57d81fa7ad7ed72d401736e7a717c692c72f879211d47bf7cec22458f61b",
+        "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+        "request_sha256": "6417888658fa8f607e1e344a2ca708ba61261d2714e1eebfa2bec792f1858ab3"
+      },
+      "synthetic_classifier_probe": {
+        "label": "scripted transport contract, not actual-request replay or timeout reproduction",
+        "calls": 1,
+        "classified": "read_timeout",
+        "stream": false,
+        "read_timeout_seconds": 60
+      },
+      "source_hashes": {
+        "tasks/T07/state/sessions.db": "bbfe9c5f176bea133a1f7b3e83d0a53ad760bb0f21ddbc9a3a0dd03efb095ce6",
+        "outcomes/T07/settled-audit.json": "f2aafa1028030f8fc719854449562d5c0d2ae156ecfb7ce0600c5fd1c8adc7d7"
+      }
+    },
+    {
+      "task": "T08",
+      "run_id": "6e650da405144753bd940ab62369c12f",
+      "provider_failure": {
+        "kind": "read_timeout",
+        "http_status": null
+      },
+      "failed_iteration_zero_based": 4,
+      "request_message_count": 10,
+      "estimated_prompt_tokens": 7747,
+      "request_output_allowance": 2048,
+      "configured_read_timeout_seconds": 60,
+      "last_completed_tool": "emit_plan",
+      "last_completed_tool_to_run_finish_seconds": 60.038438,
+      "interval_scope": "Observed tool-end to run-finalization; not exact failed-request latency, backend inference time or time-to-first-byte.",
+      "saved_tool_end_count": 3,
+      "saved_tool_errors": 0,
+      "progress_truncated": false,
+      "budget_events_truncated": false,
+      "final_response": null,
+      "saved_session_message_count": 0,
+      "saved_session_turn_count": 0,
+      "aggregate_token_usage": null,
+      "known_response_prefix": {
+        "prompt_tokens": 14255,
+        "completion_tokens": 171
+      },
+      "failed_request_identity": {
+        "format": "normalized-chat-request-v1",
+        "messages_sha256": "2f1f18cfda2b81641bf3b87f62075a73f04842e9ab238152b57eca52432942a0",
+        "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+        "request_sha256": "eb8731de3852ec11462b16b6f8ee5e1ead9753ba57ea3b253d32d5718b112d6d"
+      },
+      "synthetic_classifier_probe": {
+        "label": "scripted transport contract, not actual-request replay or timeout reproduction",
+        "calls": 1,
+        "classified": "read_timeout",
+        "stream": false,
+        "read_timeout_seconds": 60
+      },
+      "source_hashes": {
+        "tasks/T08/state/sessions.db": "c5029f7ab2dc66c012b63f75d7ec535dda164507444c6aac928513011b15d8c9",
+        "outcomes/T08/settled-audit.json": "f881c2b8a05016edaf0afdbac810cebdd75cce03dca027961bac5adcc0ef4a2d"
+      }
+    },
+    {
+      "task": "T09",
+      "run_id": "dfb4443c3305424094650fd8db364d94",
+      "provider_failure": {
+        "kind": "read_timeout",
+        "http_status": null
+      },
+      "failed_iteration_zero_based": 4,
+      "request_message_count": 10,
+      "estimated_prompt_tokens": 7104,
+      "request_output_allowance": 2048,
+      "configured_read_timeout_seconds": 60,
+      "last_completed_tool": "emit_plan",
+      "last_completed_tool_to_run_finish_seconds": 60.039713,
+      "interval_scope": "Observed tool-end to run-finalization; not exact failed-request latency, backend inference time or time-to-first-byte.",
+      "saved_tool_end_count": 3,
+      "saved_tool_errors": 0,
+      "progress_truncated": false,
+      "budget_events_truncated": false,
+      "final_response": null,
+      "saved_session_message_count": 0,
+      "saved_session_turn_count": 0,
+      "aggregate_token_usage": null,
+      "known_response_prefix": {
+        "prompt_tokens": 13560,
+        "completion_tokens": 206
+      },
+      "failed_request_identity": {
+        "format": "normalized-chat-request-v1",
+        "messages_sha256": "75893b453cd68d13f4fe2ab89f9b7b36a6fbf374ad31205d92c17b8eb472c032",
+        "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+        "request_sha256": "5b328c7431e8c58ee5e071361af7707604ef1d88ebb1518b10bd2774b1924f6b"
+      },
+      "synthetic_classifier_probe": {
+        "label": "scripted transport contract, not actual-request replay or timeout reproduction",
+        "calls": 1,
+        "classified": "read_timeout",
+        "stream": false,
+        "read_timeout_seconds": 60
+      },
+      "source_hashes": {
+        "tasks/T09/state/sessions.db": "7b071161d525eabf202fcb1d6542e6bbe19207bac171a58f39c82bd178b5ad4f",
+        "outcomes/T09/settled-audit.json": "962d9873dc19226b752f161a5a4d7c9a633c46c03ce76930d653e51d46c7d748"
+      }
+    },
+    {
+      "task": "T10",
+      "run_id": "e003ca1088824ec0998c4e3afe81658e",
+      "provider_failure": {
+        "kind": "read_timeout",
+        "http_status": null
+      },
+      "failed_iteration_zero_based": 3,
+      "request_message_count": 8,
+      "estimated_prompt_tokens": 5953,
+      "request_output_allowance": 2048,
+      "configured_read_timeout_seconds": 60,
+      "last_completed_tool": "emit_plan",
+      "last_completed_tool_to_run_finish_seconds": 60.033346,
+      "interval_scope": "Observed tool-end to run-finalization; not exact failed-request latency, backend inference time or time-to-first-byte.",
+      "saved_tool_end_count": 3,
+      "saved_tool_errors": 0,
+      "progress_truncated": false,
+      "budget_events_truncated": false,
+      "final_response": null,
+      "saved_session_message_count": 0,
+      "saved_session_turn_count": 0,
+      "aggregate_token_usage": null,
+      "known_response_prefix": {
+        "prompt_tokens": 10637,
+        "completion_tokens": 199
+      },
+      "failed_request_identity": {
+        "format": "normalized-chat-request-v1",
+        "messages_sha256": "29896b666ba1d79a968460e9a9438918eeb6dafb9a4e52c4d1af12468f1f22ca",
+        "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+        "request_sha256": "4c6deb434b835d39decc284595f62f06da01a138dd8e5dc5258d98d45116b97c"
+      },
+      "synthetic_classifier_probe": {
+        "label": "scripted transport contract, not actual-request replay or timeout reproduction",
+        "calls": 1,
+        "classified": "read_timeout",
+        "stream": false,
+        "read_timeout_seconds": 60
+      },
+      "source_hashes": {
+        "tasks/T10/state/sessions.db": "9a1f68532add17414fabc0d0701674143032fcfccc6ebd93d47f9cbce32ba6bc",
+        "outcomes/T10/settled-audit.json": "20f30863a8650ce2993d2bcda58e211301d5caa3772257fc4685a4c46571ce6f"
+      }
+    }
+  ],
+  "source_evidence_unchanged": true,
+  "limits": [
+    "No raw failed request/response, wire timing, backend logs, partial generation, queue or resource metrics were retained.",
+    "Plan completion precedes failure; it does not prove a write_file response was being generated.",
+    "ReadTimeout classification proves HTTP read-phase observation only; no claim all five failed at exact60seconds.",
+    "Unknown aggregate usage remains unknown. Existing cohort acceptance/completion counts are unchanged."
+  ],
+  "local_root": "/Users/jorge/.local/share/agent-harness/trials/duodoro-whole-file-diagnosis-hgezejz5",
+  "recipe_sha256": "d2d7d57f88100fdd5fc5bee6d64d6052be352b2d417ea00e627fae873412b208"
+}
