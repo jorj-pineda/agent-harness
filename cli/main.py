@@ -9,6 +9,7 @@ chat    Interactive REPL against a running server.
 from __future__ import annotations
 
 import json
+import math
 import os
 import re
 import stat
@@ -437,6 +438,86 @@ def show_run(record: dict) -> None:
         show_turn(summarize(record["response"]))
     else:
         typer.echo("No saved final response. Workspace edits may exist; inspect before new work.")
+    show_provider_observations(record)
+
+
+def provider_observation_text(observation: object) -> str:
+    """Format allowlisted saved metadata only; missing/unsupported values stay unknown."""
+    if not isinstance(observation, dict):
+        return "unrecorded"
+
+    def category(name: str, allowed: tuple[str, ...]) -> str:
+        value = observation.get(name)
+        return value if isinstance(value, str) and value in allowed else "unknown"
+
+    duration = observation.get("duration_ms")
+    valid_duration = (type(duration) is int and 0 <= duration <= 2**53 - 1) or (
+        type(duration) is float and math.isfinite(duration) and duration >= 0
+    )
+    duration_text = f"{duration:.1f}ms" if valid_duration else "unknown"
+    empty = observation.get("content_empty")
+    empty_text = "yes" if empty is True else "no" if empty is False else "unknown"
+    count = observation.get("tool_call_count")
+    count_text = str(count) if type(count) is int and 0 <= count <= 2**53 - 1 else "unknown"
+    usage_states = ("absent", "null", "present")
+    reasons = ("absent", "null", "stop", "length", "other")
+    return (
+        f"HTTP={duration_text} "
+        f"native_usage={category('prompt_usage_field', usage_states)}/"
+        f"{category('completion_usage_field', usage_states)} "
+        f"native_terminal={category('terminal_reason', reasons)} "
+        f"zero_length_content={empty_text} tool_calls={count_text}"
+    )
+
+
+def show_provider_observations(record: dict) -> None:
+    evidence = record.get("budget_evidence")
+    evidence = evidence if isinstance(evidence, dict) else {}
+    events = evidence.get("events")
+    events = events if isinstance(events, list) else []
+    rows = [
+        event
+        for event in events[:100]
+        if isinstance(event, dict) and event.get("kind") in ("response", "request_failure")
+    ]
+    typer.echo("Provider call observations (saved review only):")
+    count = evidence.get("observed_events")
+    observed = str(count) if type(count) is int and 0 <= count <= 2**53 - 1 else "unknown"
+    truncated = evidence.get("events_truncated")
+    coverage = "yes" if truncated is True else "no" if truncated is False else "unknown"
+    typer.echo(
+        f"  saved_events={min(len(events), 100)} observed_events={observed} "
+        f"prefix_truncated={coverage}"
+    )
+    for event in rows:
+        iteration = event.get("iteration")
+        request = (
+            str(iteration + 1)
+            if type(iteration) is int and 0 <= iteration < 2**53 - 1
+            else "unknown"
+        )
+        typer.echo(
+            f"  request={request} {event['kind']}: "
+            f"{provider_observation_text(event.get('call_observation'))}"
+        )
+    failure = record.get("provider_failure")
+    fallback = failure.get("call_observation") if isinstance(failure, dict) else None
+    has_failure = any(
+        event["kind"] == "request_failure" and isinstance(event.get("call_observation"), dict)
+        for event in rows
+    )
+    if isinstance(fallback, dict) and not has_failure:
+        typer.echo(f"  final failure (separate record): {provider_observation_text(fallback)}")
+    elif not rows:
+        typer.echo("  unrecorded")
+    if truncated is True or len(events) > 100:
+        typer.echo("  Saved/displayed prefix truncated; later observations may be absent.")
+    typer.echo(
+        "  HTTP adapter timing excludes parsing; not pure inference, first-byte timing or a hard "
+        "deadline. Native field presence is not valid usage or budget compliance. Missing metadata "
+        "stays unknown; observations do not establish backend cause, completion "
+        "or resume permission."
+    )
 
 
 def show_tool_policy(value: object) -> None:
