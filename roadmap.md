@@ -352,6 +352,23 @@ manifest/independent review remain next; the original plan stays historical and
 unmodified. No Duodoro working-checkout edits or release-gate closure; G2–G5 and
 original cohorts/no-go remain unchanged.
 
+**2026-10-21 UTC — Live panel execution inputs frozen, not run:** the
+[execution freeze](evals/projects/duodoro/PANEL_EXECUTION_FREEZE.md) pins one fresh
+full-source fixture, unchanged criteria/reference, actual workspace/owner identity,
+absent scheduled stores, recipes/settings/environment, verified unloaded local
+Gemma identity, served assets and normalized first-source-request guard at
+`cd11e4c`. The existing protocol and identical reserved half-budgets remain fixed;
+no runtime/prompt/toolset changes. A separate scripted SSE input capture and four
+no-forward mismatch checks ran without inference; the fork still uses native
+history/workspace/profile/transcript/context guards. Preparation G0 passed 53
+focused and 1,363 offline tests (five live deselected), Ruff/format/mypy and both
+scripted 90/90 matrices with labels/metric limits inspected. Static owner bootstrap
+stopped; its owned tab is retained solely to preserve generated identity, with no
+session/pending actions. Independent manifest review and merge remain required
+before the separate execution slice. No live workflow, Duodoro checkout edit,
+release-gate closure or new model-quality evidence; original cohorts/no-go and
+G2–G5 remain unchanged.
+
 ## Direction
 
 Build a coding harness Jorge can use on real repositories with affordable hosted models and locally runnable models that struggle with coding-agent workflows. The harness should help those models inspect the right code, make focused edits, recover from errors, and verify their work within an explicit budget.

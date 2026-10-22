@@ -283,6 +283,16 @@ in the panel reflects settings, not the actual scripted provider implementation.
 The next prerequisite is pinned G0 and an independently reviewed actual live
 execution manifest. Original cohorts, release no-go and G2–G5 remain unchanged.
 
+## Live panel execution preparation — 2026-10-21 UTC
+
+The [execution freeze](evals/projects/duodoro/PANEL_EXECUTION_FREEZE.md) now records
+fresh actual inputs and first-request guards for one bounded panel workflow.
+Pinned G0 passed 53 focused/1,363 offline tests (five live deselected), static
+checks and both scripted 90/90 matrices. Scheduled stores remain absent, model
+unloaded and no API running; the owned browser tab retains its generated owner.
+No inference ran. Independent review/merge and unchanged launch preconditions are
+required before the separate execution slice. G2–G5 and release no-go remain open.
+
 ## Validation performed for this audit
 
 At the audited source revision, with only documentation being prepared:
