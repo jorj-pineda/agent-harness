@@ -93,6 +93,7 @@ def test_cancel_persists_partial_review_and_retires_session(
     ]
     assert evidence["events"][1]["usage"] == {"prompt_tokens": 10, "completion_tokens": 5}
     assert evidence["events"][-1]["usage"] is None
+    assert evidence["events"][-1]["call_observation"] is None
     saved = harness.client.get(f"/sessions/{sid}", params={"user_id": "dev"}).json()
     assert saved["responses"][0]["response"] == response
     assert saved["session"]["turns"][0]["finished_at"] is not None

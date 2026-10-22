@@ -8,7 +8,7 @@ from fastapi.testclient import TestClient
 
 from harness.budget_evidence import MAX_SAVED_BUDGET_EVENTS, BudgetObservation
 from harness.session_store import SessionStore
-from providers.base import ProviderError, ToolCall
+from providers.base import ProviderCallObservation, ProviderError, ToolCall
 
 from .conftest import ScriptedProvider, make_response
 from .test_session_persistence import make_app
@@ -192,18 +192,27 @@ def test_storage_bound_and_legacy_unknown(tmp_path):
             record.run_id,
             capture_execution_profile(Settings(_env_file=None), "ollama", ToolRegistry()),
         )
-        event = BudgetObservation(kind="request_failure", iteration=0, message_count=1)
+        event = BudgetObservation(
+            kind="request_failure",
+            iteration=0,
+            message_count=1,
+            call_observation=ProviderCallObservation(duration_ms=12.5),
+        )
         for _ in range(MAX_SAVED_BUDGET_EVENTS + 1):
             store.record_budget_observation(record.run_id, event)
         evidence = store.get_run(record.run_id).budget_evidence
         assert len(evidence.events) == MAX_SAVED_BUDGET_EVENTS
         assert evidence.observed_events == MAX_SAVED_BUDGET_EVENTS + 1 and evidence.events_truncated
+        assert evidence.events[-1].call_observation.duration_ms == 12.5
         store.fail_run(record.run_id)
         with pytest.raises(ValueError):
             store.record_budget_observation(record.run_id, event)
         payload = store.get_run(record.run_id).model_dump()
         del payload["budget_evidence"]
         assert RunRecord.model_validate(payload).budget_evidence is None
+        legacy_event = event.model_dump()
+        del legacy_event["call_observation"]
+        assert BudgetObservation.model_validate(legacy_event).call_observation is None
 
 
 def test_missing_usage_remains_unknown_at_post_response_stop(tmp_path):

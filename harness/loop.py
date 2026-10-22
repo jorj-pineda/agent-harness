@@ -27,7 +27,15 @@ from collections.abc import Callable
 from datetime import UTC, datetime
 from typing import Any
 
-from providers.base import ChatMessage, ChatProvider, ProviderResponse, TokenUsage, ToolCall
+from providers.base import (
+    ChatMessage,
+    ChatProvider,
+    ProviderCallObservation,
+    ProviderError,
+    ProviderResponse,
+    TokenUsage,
+    ToolCall,
+)
 from tools import ToolError, ToolRegistry
 
 from .access import INSPECTION_BLOCK_REASON, INSPECTION_TOOL_NAMES, execution_registry
@@ -171,6 +179,7 @@ async def run_turn(
         *,
         usage: TokenUsage | None = None,
         max_tokens: int | None = None,
+        call_observation: ProviderCallObservation | None = None,
     ) -> None:
         if on_budget_observation is None:
             return
@@ -189,6 +198,9 @@ async def run_turn(
                 if kind == "request"
                 else None,
                 usage=usage.model_copy(deep=True) if usage is not None else None,
+                call_observation=call_observation.model_copy(deep=True)
+                if call_observation is not None
+                else None,
                 prompt_tokens_used=budget.prompt_used if kind != "request_failure" else None,
                 completion_tokens_used=budget.completion_used
                 if kind != "request_failure"
@@ -292,12 +304,16 @@ async def run_turn(
             completion_reason = wall_limit_reason
             break
         except (Exception, asyncio.CancelledError) as exc:
-            observe_budget("request_failure")
+            call_observation = (
+                exc.failure.call_observation if isinstance(exc, ProviderError) else None
+            )
+            observe_budget("request_failure", call_observation=call_observation)
             if trace is not None:
                 trace.append(
                     RequestFailureTrace(
                         iteration=iteration,
                         exception_type=type(exc).__name__,
+                        call_observation=call_observation,
                     )
                 )
             raise
@@ -311,10 +327,11 @@ async def run_turn(
                     usage=response.usage.model_copy(deep=True),
                     model=response.model,
                     latency_ms=response.latency_ms,
+                    call_observation=response.call_observation,
                 )
             )
         budget.record(response.usage, sent_count)
-        observe_budget("response", usage=response.usage)
+        observe_budget("response", usage=response.usage, call_observation=response.call_observation)
         if deadline is not None and asyncio.get_running_loop().time() >= deadline:
             final_answer = "(turn stopped before task completion)"
             completion_status = "budget_exhausted"
