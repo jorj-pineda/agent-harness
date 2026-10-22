@@ -2123,3 +2123,35 @@ One public variant/sequence does not establish general recovery, browser workflo
 held-out improvement or release readiness. Original ten-task/comparison counts,
 no-go and broader G2–G5 remain unchanged. Docs/data only; preparation's 41 focused,
 1,363 offline tests and two scripted 90/90 matrices were not rerun as model evidence.
+
+
+## 2026-10-22 UTC — frozen whole-file ten-task client cohort
+
+[Report](projects/duodoro/WHOLE_FILE_TEN_TASK_RESULTS.md) and
+[structured results](results/2026-10-22-duodoro-whole-file-ten-task.json).
+After PR #173 merged, runtime `d1e5778` ran all ten original tasks once through
+assigned CLI/panel clients with compact/whole-file, original criteria and limits.
+Eleven coding turns yielded **2/10 accepted artifacts, 2/10 completed-and-accepted,
+2/10 acceptable with known reported usage within nominal budgets**. T01/T04 pass;
+T06 completes/passes visible checks but accepts unsafe integers and fails external
+acceptance. Five tasks have provider read timeouts; T03's fork reaches its reserved
+150-second dispatch limit; T05 stops for missing output usage. Seven task totals
+remain unknown. Known response prefixes are retained separately, never as totals.
+
+All ten external grades reproduced. Frozen identities/profiles and protected-file/
+mode audits passed. T03's early cancellation/restart/reviews/fork preserved the
+source run but produced no patch; T05's unchanged target was ineligible for reversal
+and its declared later sentinel survived restart. No patch repair, replacement,
+paid/new-model call, dependency install, Docker or Duodoro working-checkout edit.
+Fifteen owned APIs exited, port released, Gemma unloaded and owned tab closed.
+Read-only DOM and actual controls/SSE worked despite snapshot/native-computer-use
+timeouts; screenshot coverage is unavailable. Local reporting-helper corrections,
+raw artifacts/journals/grades/recipes and hashes are retained in the report.
+
+G3 missed again: retain no-go for this unattended envelope and freeze feature
+batches. Broader G2, held-out/repeated/two-model G4 and Jorge's G5 remain open.
+Original 2/10 artifact, 1/10 completed results remain unchanged; differing runtime,
+preset, paths/client wait and one public sample/task preclude causal improvement
+or general quality claims. Docs/data only; preparation's 82 focused/1,363 offline
+and two scripted 90/90 matrices remain historical mechanics evidence. Fresh report
+checks validated all rows/counts/evidence hashes and reproduced all artifact grades.

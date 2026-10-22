@@ -1,0 +1,1310 @@
+{
+  "kind": "whole-file-ten-task-real-client-observations",
+  "observed_at_utc": "2026-10-22",
+  "runtime_revision": "d1e5778c834da2165da47cb877dc0d0ced026061",
+  "duodoro_revision": "5324cabba4ad3c8ad2e1cd1480218cf087d9b741",
+  "freeze_sha256": "0a5c3c0e2bf46604df4fbf25cfebf37a54cbe7b748ce8fdf37496c62ec4d219c",
+  "freeze_pr": 173,
+  "freeze_merge": "010c5ef9a7a74dfd6733047e746bd5a2c296e732",
+  "local_root": "/Users/jorge/.local/share/agent-harness/trials/duodoro-whole-file-live-elep2slp",
+  "model": {
+    "digest": "4eb23ef187e2c5462566d6a1d3bbbc2f1346d0b4327cbb66d58fffbcc9b2b05c",
+    "name": "gemma4:12b",
+    "ollama_version": "0.33.2"
+  },
+  "common_settings": {
+    "coding_prompt_profile": "compact",
+    "coding_toolset": "whole_file",
+    "enable_support_tools": false,
+    "load_root_agents": false,
+    "max_completion_retries": 1,
+    "max_context_tokens": 16384,
+    "max_files_touched_per_turn": 2,
+    "max_identical_tool_calls": 2,
+    "max_request_output_tokens": 2048,
+    "min_request_output_tokens": 256,
+    "ollama_num_ctx": 16384,
+    "ollama_think": false,
+    "project_check_argv": [
+      "python",
+      "-m",
+      "pytest",
+      "-q",
+      "test_visible.py"
+    ],
+    "prompt_estimate_bytes_per_token": 3,
+    "request_timeout_seconds": 60,
+    "require_plan_before_edit": false,
+    "require_verification_before_finish": true
+  },
+  "budget_plans": {
+    "one_turn": {
+      "max_operator_submitted_turns": 1,
+      "per_turn": {
+        "max_completion_tokens_per_turn": 8192,
+        "max_tool_calls_per_turn": 24,
+        "max_tool_iterations": 12,
+        "max_total_tokens_per_turn": 64000,
+        "max_turn_wall_seconds": 300
+      }
+    },
+    "two_reserved_phases": {
+      "max_operator_submitted_turns": 2,
+      "per_turn": {
+        "max_completion_tokens_per_turn": 4096,
+        "max_tool_calls_per_turn": 12,
+        "max_tool_iterations": 6,
+        "max_total_tokens_per_turn": 32000,
+        "max_turn_wall_seconds": 150
+      }
+    }
+  },
+  "summary": {
+    "tasks": 10,
+    "coding_turns": 11,
+    "artifact_accepted": 2,
+    "completed_and_accepted": 2,
+    "acceptable_and_known_within_nominal_budgets": 2,
+    "tasks_with_known_reported_totals": 3,
+    "tasks_with_unknown_totals": 7,
+    "read_timeout_tasks": 5,
+    "manual_patch_repairs": 0,
+    "replacement_attempts": 0,
+    "decision": "no-go-for-frozen-unattended-ten-task-envelope"
+  },
+  "tasks": [
+    {
+      "id": "T01",
+      "runs": [
+        {
+          "run_id": "dc0b512ddd7a45cb986d691de32480fa",
+          "status": "finished",
+          "completion_status": "completed",
+          "completion_reason": null,
+          "verification_status": "passed",
+          "usage": {
+            "prompt_tokens": 59031,
+            "completion_tokens": 908
+          },
+          "error": null
+        }
+      ],
+      "external_exit_code": 0,
+      "artifact_accepted": true,
+      "source_review_required": false,
+      "protected_preserved": true,
+      "modes_preserved": true,
+      "changed_paths": [
+        "client/src/lib/format.ts"
+      ],
+      "diff_sha256": "621e4e2f6c8c3bebfe0ecdc929e2bcce4b7e1d425826ea73e4c67554224234d5",
+      "criterion_hashes": {
+        "baseline.json": "b9b094a6d2d7350e8f28ae6fa90efe2b6517c3da40adc3f9a8945527827debd0",
+        "test_acceptance.py": "eb658229d6ee00a8b870357c68458cb0dbd4ee05cc9e87caf8142c73bb763e2f"
+      },
+      "phases": [
+        {
+          "run_id": "dc0b512ddd7a45cb986d691de32480fa",
+          "status": "finished",
+          "completion_status": "completed",
+          "completion_reason": null,
+          "verification_status": "passed",
+          "token_usage": {
+            "prompt_tokens": 59031,
+            "completion_tokens": 908
+          },
+          "usage_known": true,
+          "tool_calls": 7,
+          "tool_errors": [],
+          "request_count": 8,
+          "reported_response_count": 8,
+          "budget_evidence_truncated": false,
+          "provider_failure": null,
+          "error": null,
+          "known_response_usage_prefix": {
+            "prompt_tokens": 59031,
+            "completion_tokens": 908
+          },
+          "responses_with_complete_usage": 8,
+          "normalized_first_identity": {
+            "format": "normalized-chat-request-v1",
+            "messages_sha256": "cac85dd86badd2a0882c7d9e94f49f9ea7785bd4d31e3ae17c685856c46477bf",
+            "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+            "request_sha256": "f74a65af9fb004f2cb8f85f1a45e2518c1aaf9e3482d2e2a6b14c464b5308b91"
+          },
+          "latency_ms": 171588.78137499094,
+          "workspace_review_ms": 136.99999987147748
+        }
+      ],
+      "reported_total_tokens": 59939,
+      "reported_output_tokens": 908,
+      "usage_known": true,
+      "known_within_nominal_budgets": true,
+      "coding_submissions": 1,
+      "native_sse": false,
+      "completed_and_accepted": true,
+      "manual_patch_repairs": 0,
+      "client": "CLI",
+      "category": "bugfix",
+      "adapter": "duration_format",
+      "request_sha256": "15b7c2d1ba4548a7085c577f62dcd4de4b1a5974079659e39a8098f2a2236098",
+      "request_ids": [
+        "d0ad39d1c316441fa09f988ce949c57b"
+      ],
+      "artifact_manifest_sha256": "bf096692a0a3d4951fca62c9d18b9c1b1c8ddf3db7d32bcdd13f39f1bafc7120",
+      "source_review": "not_required",
+      "known_budget_scope": "Recorded totals/output, final-response tool count, request count and configured preventive dispatch/iteration gates; no end-to-end bound or backend attestation."
+    },
+    {
+      "id": "T02",
+      "runs": [
+        {
+          "run_id": "2ff9a1732a864e24aecc790b454fd453",
+          "status": "failed",
+          "completion_status": null,
+          "completion_reason": null,
+          "verification_status": null,
+          "usage": null,
+          "error": "Execution or final storage failed; workspace edits may exist. Review before new work. Provider failure: read_timeout."
+        }
+      ],
+      "external_exit_code": 1,
+      "artifact_accepted": false,
+      "source_review_required": false,
+      "protected_preserved": true,
+      "modes_preserved": true,
+      "changed_paths": [],
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "criterion_hashes": {
+        "baseline.json": "a2052accd1b601c157861a630fc5fa5169e7dcab1050dab62107c818ed8fafb7",
+        "test_acceptance.py": "71c615741d10b39668529f0b8e8cdab285e8a6f60bd97b8332717021e11f74ce"
+      },
+      "phases": [
+        {
+          "run_id": "2ff9a1732a864e24aecc790b454fd453",
+          "status": "failed",
+          "completion_status": null,
+          "completion_reason": null,
+          "verification_status": null,
+          "token_usage": null,
+          "usage_known": false,
+          "tool_calls": null,
+          "tool_errors": [],
+          "request_count": 6,
+          "reported_response_count": 5,
+          "budget_evidence_truncated": false,
+          "provider_failure": {
+            "kind": "read_timeout",
+            "http_status": null
+          },
+          "error": "Execution or final storage failed; workspace edits may exist. Review before new work. Provider failure: read_timeout.",
+          "known_response_usage_prefix": {
+            "prompt_tokens": 37350,
+            "completion_tokens": 167
+          },
+          "responses_with_complete_usage": 5,
+          "normalized_first_identity": {
+            "format": "normalized-chat-request-v1",
+            "messages_sha256": "239d4b8a1a73dd75ccac8ce977283a1e177852108c71655c1bff822e49d1877c",
+            "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+            "request_sha256": "98023f4352b4744c09d58ab194fcb1ee545b705e67527b8e1694a95d23232dcf"
+          },
+          "latency_ms": null,
+          "workspace_review_ms": null
+        }
+      ],
+      "reported_total_tokens": null,
+      "reported_output_tokens": null,
+      "usage_known": false,
+      "known_within_nominal_budgets": null,
+      "coding_submissions": 1,
+      "native_sse": true,
+      "completed_and_accepted": false,
+      "manual_patch_repairs": 0,
+      "client": "panel",
+      "category": "bugfix",
+      "adapter": "timer_normalization",
+      "request_sha256": "0824f29e080a293c6fdf0bba6b5f721a99084aa0ff2c67ba64e777ab09953680",
+      "request_ids": [
+        "e1e78907-9fb7-42bd-8421-c77e344bb787"
+      ],
+      "artifact_manifest_sha256": "fb84b6ff3a88f5f330112012b1527f024196fde5321ea2c1feacaf83a232ec07",
+      "source_review": "not_required",
+      "known_budget_scope": "Recorded totals/output, final-response tool count, request count and configured preventive dispatch/iteration gates; no end-to-end bound or backend attestation."
+    },
+    {
+      "id": "T03",
+      "runs": [
+        {
+          "run_id": "daf7ecf528d24ec0afa76906a4538568",
+          "status": "cancelled",
+          "completion_status": "cancelled",
+          "completion_reason": "Cancellation requested; owned tool work has settled. Review partial work.",
+          "verification_status": "not_run",
+          "usage": {
+            "prompt_tokens": null,
+            "completion_tokens": null
+          },
+          "error": null
+        },
+        {
+          "run_id": "be2d8f15bda443049d4928a07414c85a",
+          "status": "finished",
+          "completion_status": "budget_exhausted",
+          "completion_reason": "Turn wall-time budget of 150s reached.",
+          "verification_status": "not_run",
+          "usage": {
+            "prompt_tokens": null,
+            "completion_tokens": null
+          },
+          "error": null
+        }
+      ],
+      "external_exit_code": 1,
+      "artifact_accepted": false,
+      "source_review_required": false,
+      "protected_preserved": true,
+      "modes_preserved": true,
+      "changed_paths": [],
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "criterion_hashes": {
+        "baseline.json": "cb94db8e3dca8858f37dbbf2654032b8e08c0a2119cf1564aeb9e9379ae78e60",
+        "test_acceptance.py": "e446204d7c13efc57d400756a61371f07da27af429b9be1810c472f833813bdd"
+      },
+      "phases": [
+        {
+          "run_id": "daf7ecf528d24ec0afa76906a4538568",
+          "status": "cancelled",
+          "completion_status": "cancelled",
+          "completion_reason": "Cancellation requested; owned tool work has settled. Review partial work.",
+          "verification_status": "not_run",
+          "token_usage": {
+            "prompt_tokens": null,
+            "completion_tokens": null
+          },
+          "usage_known": false,
+          "tool_calls": 0,
+          "tool_errors": [],
+          "request_count": 1,
+          "reported_response_count": 0,
+          "budget_evidence_truncated": false,
+          "provider_failure": null,
+          "error": null,
+          "known_response_usage_prefix": {
+            "prompt_tokens": 0,
+            "completion_tokens": 0
+          },
+          "responses_with_complete_usage": 0,
+          "normalized_first_identity": {
+            "format": "normalized-chat-request-v1",
+            "messages_sha256": "5208bb5858b43bf407bafe6a1b84f55038d79fe1860b345d6c2e3afe4582e8ba",
+            "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+            "request_sha256": "fbde20b3307c0ea1195de7d8890901bff7128c4bec1a2be4a269809ac4d6d43e"
+          },
+          "latency_ms": 208.78270798921585,
+          "workspace_review_ms": 60.999999986961484
+        },
+        {
+          "run_id": "be2d8f15bda443049d4928a07414c85a",
+          "status": "finished",
+          "completion_status": "budget_exhausted",
+          "completion_reason": "Turn wall-time budget of 150s reached.",
+          "verification_status": "not_run",
+          "token_usage": {
+            "prompt_tokens": null,
+            "completion_tokens": null
+          },
+          "usage_known": false,
+          "tool_calls": 3,
+          "tool_errors": [],
+          "request_count": 4,
+          "reported_response_count": 3,
+          "budget_evidence_truncated": false,
+          "provider_failure": null,
+          "error": null,
+          "known_response_usage_prefix": {
+            "prompt_tokens": 15160,
+            "completion_tokens": 211
+          },
+          "responses_with_complete_usage": 3,
+          "normalized_first_identity": {
+            "format": "normalized-chat-request-v1",
+            "messages_sha256": "3d27e9f5099d2557631b5c24af076d93de560655ca03fdc529003aaaf9e81f7e",
+            "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+            "request_sha256": "a4510d5ade56500876cdb36119a5a919ef1371347ee1be76db048a5fe935c8ab"
+          },
+          "latency_ms": 149917.91008400917,
+          "workspace_review_ms": 106.99999984353781
+        }
+      ],
+      "reported_total_tokens": null,
+      "reported_output_tokens": null,
+      "usage_known": false,
+      "known_within_nominal_budgets": null,
+      "coding_submissions": 2,
+      "native_sse": false,
+      "completed_and_accepted": false,
+      "manual_patch_repairs": 0,
+      "client": "CLI",
+      "category": "feature",
+      "adapter": "calendar_layout",
+      "request_sha256": "a5fe6e4d4521bc53510dedfc302c3e043350cca6ee47af68ff6860c7d4446657",
+      "request_ids": [
+        "76645215ccad4ff496a60e403ffb364f",
+        "whole-file-frozen-T03-phase2"
+      ],
+      "artifact_manifest_sha256": "23a3264fbc409b5789dfa23b3d39414d39ad4a78824a701985f820c5edb6ab57",
+      "source_review": "not_required",
+      "known_budget_scope": "Recorded totals/output, final-response tool count, request count and configured preventive dispatch/iteration gates; no end-to-end bound or backend attestation."
+    },
+    {
+      "id": "T04",
+      "runs": [
+        {
+          "run_id": "bfaebf14bf3b4d0d8f09593814f1f359",
+          "status": "finished",
+          "completion_status": "completed",
+          "completion_reason": null,
+          "verification_status": "passed",
+          "usage": {
+            "prompt_tokens": 29038,
+            "completion_tokens": 936
+          },
+          "error": null
+        }
+      ],
+      "external_exit_code": 0,
+      "artifact_accepted": true,
+      "source_review_required": false,
+      "protected_preserved": true,
+      "modes_preserved": true,
+      "changed_paths": [
+        "client/src/lib/shareInvite.ts"
+      ],
+      "diff_sha256": "7fee210b01eeb7f646c2fb02aa50c2e7ef2b6c8f2524da515438e3d4565a5170",
+      "criterion_hashes": {
+        "baseline.json": "45738425c01ed6525a944618384197579806f24f835c1c6fda82b2cf3dd28f04",
+        "checks.mjs": "832eedcdc1c6c17e62d3f1a4d58f95cf391ffc451f253af54de720f581b70dd4",
+        "test_acceptance.py": "9395e0743c45e8d1568d8fe2898adea5c21d191dac2c9d69e51e6aef979e7af3"
+      },
+      "phases": [
+        {
+          "run_id": "bfaebf14bf3b4d0d8f09593814f1f359",
+          "status": "finished",
+          "completion_status": "completed",
+          "completion_reason": null,
+          "verification_status": "passed",
+          "token_usage": {
+            "prompt_tokens": 29038,
+            "completion_tokens": 936
+          },
+          "usage_known": true,
+          "tool_calls": 5,
+          "tool_errors": [],
+          "request_count": 7,
+          "reported_response_count": 7,
+          "budget_evidence_truncated": false,
+          "provider_failure": null,
+          "error": null,
+          "known_response_usage_prefix": {
+            "prompt_tokens": 29038,
+            "completion_tokens": 936
+          },
+          "responses_with_complete_usage": 7,
+          "normalized_first_identity": {
+            "format": "normalized-chat-request-v1",
+            "messages_sha256": "c05581a94709f8008e4cb28bebca965c6970f5afa2cd6ad235d4e6d88fa411fe",
+            "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+            "request_sha256": "b4778df1f86b6332ff77ddfe85fbe8e493a8758ca26e950e12018827c5a8e1a1"
+          },
+          "latency_ms": 124801.19479095936,
+          "workspace_review_ms": 101.99999995529652
+        }
+      ],
+      "reported_total_tokens": 29974,
+      "reported_output_tokens": 936,
+      "usage_known": true,
+      "known_within_nominal_budgets": true,
+      "coding_submissions": 1,
+      "native_sse": true,
+      "completed_and_accepted": true,
+      "manual_patch_repairs": 0,
+      "client": "panel",
+      "category": "bugfix",
+      "adapter": "share_storage",
+      "request_sha256": "93b8cde7f4ea0e097a87b1e59ee388d65acc43f17e5a861f739d6d87e4c4c318",
+      "request_ids": [
+        "892cf5dc-95a4-47b1-9dae-01d37db34583"
+      ],
+      "artifact_manifest_sha256": "9d838aa1574ad26d78b5b13e01170fad2c5131b392f7db5283fe238f45f9bf31",
+      "source_review": "not_required",
+      "known_budget_scope": "Recorded totals/output, final-response tool count, request count and configured preventive dispatch/iteration gates; no end-to-end bound or backend attestation."
+    },
+    {
+      "id": "T05",
+      "runs": [
+        {
+          "run_id": "22896a6438e446e79a9f4c0e0ebf3d53",
+          "status": "finished",
+          "completion_status": "incomplete",
+          "completion_reason": "Provider did not report output-token usage; request cap cannot be checked.",
+          "verification_status": "not_run",
+          "usage": {
+            "prompt_tokens": null,
+            "completion_tokens": null
+          },
+          "error": null
+        }
+      ],
+      "external_exit_code": 1,
+      "artifact_accepted": false,
+      "source_review_required": false,
+      "protected_preserved": true,
+      "modes_preserved": true,
+      "changed_paths": [],
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "criterion_hashes": {
+        "baseline.json": "0ebd946b7e7d7f6170420fa41a85047a1b14f742e900db8fb205b4b3fdbdbd98",
+        "checks.mjs": "81850f022c9ac2b7424fd44e7c986c4391907866b94ff1f9d0b6122450073d14",
+        "test_acceptance.py": "b9af5f55cf5455972ff18e2acecadb168ed6895106fe1b9adb5035067b046f5f"
+      },
+      "phases": [
+        {
+          "run_id": "22896a6438e446e79a9f4c0e0ebf3d53",
+          "status": "finished",
+          "completion_status": "incomplete",
+          "completion_reason": "Provider did not report output-token usage; request cap cannot be checked.",
+          "verification_status": "not_run",
+          "token_usage": {
+            "prompt_tokens": null,
+            "completion_tokens": null
+          },
+          "usage_known": false,
+          "tool_calls": 3,
+          "tool_errors": [],
+          "request_count": 5,
+          "reported_response_count": 5,
+          "budget_evidence_truncated": false,
+          "provider_failure": null,
+          "error": null,
+          "known_response_usage_prefix": {
+            "prompt_tokens": 14761,
+            "completion_tokens": 392
+          },
+          "responses_with_complete_usage": 4,
+          "normalized_first_identity": {
+            "format": "normalized-chat-request-v1",
+            "messages_sha256": "908e48f1829c76c604bc7999adfabb503a8c8d44e81478b4233af74037b4e1bd",
+            "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+            "request_sha256": "763a39b652b4106ab17d40d07b9e6a21d76ec12e69003df3c8e909fb367441f5"
+          },
+          "latency_ms": 113711.27783304453,
+          "workspace_review_ms": 130.00000012107193
+        }
+      ],
+      "reported_total_tokens": null,
+      "reported_output_tokens": null,
+      "usage_known": false,
+      "known_within_nominal_budgets": null,
+      "coding_submissions": 1,
+      "native_sse": false,
+      "completed_and_accepted": false,
+      "manual_patch_repairs": 0,
+      "client": "CLI",
+      "category": "bugfix",
+      "adapter": "timer_prefs",
+      "request_sha256": "43a9586f74551ab58bf69879c7ded6cd1aca002aaafc2dce9d1ab3137d6373ee",
+      "request_ids": [
+        "5e86a45891b84b6a9eefb2f9d815d2a7"
+      ],
+      "artifact_manifest_sha256": "64ec12d2410f4da1d9483649a45e7244feb88504dcba47d5abc695c55b6561bb",
+      "source_review": "not_required",
+      "known_budget_scope": "Recorded totals/output, final-response tool count, request count and configured preventive dispatch/iteration gates; no end-to-end bound or backend attestation."
+    },
+    {
+      "id": "T06",
+      "runs": [
+        {
+          "run_id": "ba545d02cdb943c6b19c0042b2f90f71",
+          "status": "finished",
+          "completion_status": "completed",
+          "completion_reason": null,
+          "verification_status": "passed",
+          "usage": {
+            "prompt_tokens": 28247,
+            "completion_tokens": 767
+          },
+          "error": null
+        }
+      ],
+      "external_exit_code": 1,
+      "artifact_accepted": false,
+      "source_review_required": false,
+      "protected_preserved": true,
+      "modes_preserved": true,
+      "changed_paths": [
+        "client/src/lib/keyboardShortcuts.ts"
+      ],
+      "diff_sha256": "fbe97eb332160f508d36e587b1266969e286465df3fb14383a391564edaca27f",
+      "criterion_hashes": {
+        "baseline.json": "1e65cf43d02e6ef93c22cf2d78ee6d2308ffe4b0dda11613362021df82d11244",
+        "checks.mjs": "dc675dc06f005f7a78f19c92b525cdfdce842e243b031f18dd3eac94e665f615",
+        "test_acceptance.py": "5f3eff8eb73a7e3abf238cc8cc3292e50e0ec138751a6450988f59f6eca83ef7"
+      },
+      "phases": [
+        {
+          "run_id": "ba545d02cdb943c6b19c0042b2f90f71",
+          "status": "finished",
+          "completion_status": "completed",
+          "completion_reason": null,
+          "verification_status": "passed",
+          "token_usage": {
+            "prompt_tokens": 28247,
+            "completion_tokens": 767
+          },
+          "usage_known": true,
+          "tool_calls": 5,
+          "tool_errors": [],
+          "request_count": 7,
+          "reported_response_count": 7,
+          "budget_evidence_truncated": false,
+          "provider_failure": null,
+          "error": null,
+          "known_response_usage_prefix": {
+            "prompt_tokens": 28247,
+            "completion_tokens": 767
+          },
+          "responses_with_complete_usage": 7,
+          "normalized_first_identity": {
+            "format": "normalized-chat-request-v1",
+            "messages_sha256": "fc9c7c550c8994727537c1f4913d88ff80c94c13b58f6f2be9e8ff575d9e7e36",
+            "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+            "request_sha256": "e9653d7610f1a5b9545fa5dede7b661fcfc40e5537423b89e1bb27a640864472"
+          },
+          "latency_ms": 110176.39695799351,
+          "workspace_review_ms": 108.99999993853271
+        }
+      ],
+      "reported_total_tokens": 29014,
+      "reported_output_tokens": 767,
+      "usage_known": true,
+      "known_within_nominal_budgets": true,
+      "coding_submissions": 1,
+      "native_sse": true,
+      "completed_and_accepted": false,
+      "manual_patch_repairs": 0,
+      "client": "panel",
+      "category": "bugfix",
+      "adapter": "shortcut_count",
+      "request_sha256": "3769f4ed5e733beed4cf1dd99bba776ee8b060da359a4e191209652a177f3669",
+      "request_ids": [
+        "2df97ff8-8fb6-41c4-b8e9-7540848d437b"
+      ],
+      "artifact_manifest_sha256": "e2de8fcf6acee8c5f5bd5d954fbf54eda274cc54895ec7f4b84fdd6bb04f84c0",
+      "source_review": "not_required",
+      "known_budget_scope": "Recorded totals/output, final-response tool count, request count and configured preventive dispatch/iteration gates; no end-to-end bound or backend attestation."
+    },
+    {
+      "id": "T07",
+      "runs": [
+        {
+          "run_id": "652196e0138444d8967f37ffb6dddcf2",
+          "status": "failed",
+          "completion_status": null,
+          "completion_reason": null,
+          "verification_status": null,
+          "usage": null,
+          "error": "Execution or final storage failed; workspace edits may exist. Review before new work. Provider failure: read_timeout."
+        }
+      ],
+      "external_exit_code": 1,
+      "artifact_accepted": false,
+      "source_review_required": false,
+      "protected_preserved": true,
+      "modes_preserved": true,
+      "changed_paths": [],
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "criterion_hashes": {
+        "baseline.json": "6bfe55ff5a679f42719c443f9aa5deca03907fa02f761e886ff0fba2e653cbe2",
+        "checks.mjs": "bde99f82a0b56ea245f69f3ca12c498a36cb3354e7071cee92085d0cba5f0893",
+        "golden.json": "83e30979018416d53605b146cf19156f0f1d61365b553754c0d1803b28b6db1b",
+        "test_acceptance.py": "da340c6fa52cabceda29436f40200137d7a6eb0d6a5cac839d86b408160ff502"
+      },
+      "phases": [
+        {
+          "run_id": "652196e0138444d8967f37ffb6dddcf2",
+          "status": "failed",
+          "completion_status": null,
+          "completion_reason": null,
+          "verification_status": null,
+          "token_usage": null,
+          "usage_known": false,
+          "tool_calls": null,
+          "tool_errors": [],
+          "request_count": 6,
+          "reported_response_count": 5,
+          "budget_evidence_truncated": false,
+          "provider_failure": {
+            "kind": "read_timeout",
+            "http_status": null
+          },
+          "error": "Execution or final storage failed; workspace edits may exist. Review before new work. Provider failure: read_timeout.",
+          "known_response_usage_prefix": {
+            "prompt_tokens": 25208,
+            "completion_tokens": 147
+          },
+          "responses_with_complete_usage": 5,
+          "normalized_first_identity": {
+            "format": "normalized-chat-request-v1",
+            "messages_sha256": "06487b0ef1e7d660f8763b9266340aec1c3ad7001386526596ee58bfaf41ef9e",
+            "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+            "request_sha256": "0331163ac3b091f2ba4abe1c7d078bd9fe03f05ca947a44e51448119c2f0fa41"
+          },
+          "latency_ms": null,
+          "workspace_review_ms": null
+        }
+      ],
+      "reported_total_tokens": null,
+      "reported_output_tokens": null,
+      "usage_known": false,
+      "known_within_nominal_budgets": null,
+      "coding_submissions": 1,
+      "native_sse": false,
+      "completed_and_accepted": false,
+      "manual_patch_repairs": 0,
+      "client": "CLI",
+      "category": "feature",
+      "adapter": "rotation_preview",
+      "request_sha256": "ea4efc1193ddeac46c0e60d862b0062c1e9269f7553b5116b3f791faf7a7c578",
+      "request_ids": [
+        "2a09b9cec98e4ac8974afd053406d16b"
+      ],
+      "artifact_manifest_sha256": "818174781e65431ea36675d0edf34f730b2e1acacfaaaeb6abb150de052169e1",
+      "source_review": "not_required",
+      "known_budget_scope": "Recorded totals/output, final-response tool count, request count and configured preventive dispatch/iteration gates; no end-to-end bound or backend attestation."
+    },
+    {
+      "id": "T08",
+      "runs": [
+        {
+          "run_id": "6e650da405144753bd940ab62369c12f",
+          "status": "failed",
+          "completion_status": null,
+          "completion_reason": null,
+          "verification_status": null,
+          "usage": null,
+          "error": "Execution or final storage failed; workspace edits may exist. Review before new work. Provider failure: read_timeout."
+        }
+      ],
+      "external_exit_code": 1,
+      "artifact_accepted": false,
+      "source_review_required": true,
+      "protected_preserved": true,
+      "modes_preserved": true,
+      "changed_paths": [],
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "criterion_hashes": {
+        "baseline.json": "bd1164ea4069327c0a0caed5cb01dec55545a9315e80d57dbe86f717e299c558",
+        "checks.mjs": "b53efa86e913731759ac3d786ccc5ef875b2514099289fbbba7d35a0101855f6",
+        "golden.json": "df3d2bd21984958ca1bc604300df67a6aca41e0a66823f9ea8d9140afc96b3f6",
+        "source-review.md": "f0f5d549e94ad1aeee3e568ec27e3704d5885b4c27a8aa362d3586b953b7a6a7",
+        "test_acceptance.py": "96f290ded070f1c566080c1892c27e91c7e3a6a26d64444ce32d996dcff8a87c"
+      },
+      "independent_source_review": {
+        "status": "not_performed",
+        "reason": "Executable acceptance failed; helper absent and no source changes. No structural pass claimed."
+      },
+      "phases": [
+        {
+          "run_id": "6e650da405144753bd940ab62369c12f",
+          "status": "failed",
+          "completion_status": null,
+          "completion_reason": null,
+          "verification_status": null,
+          "token_usage": null,
+          "usage_known": false,
+          "tool_calls": null,
+          "tool_errors": [],
+          "request_count": 5,
+          "reported_response_count": 4,
+          "budget_evidence_truncated": false,
+          "provider_failure": {
+            "kind": "read_timeout",
+            "http_status": null
+          },
+          "error": "Execution or final storage failed; workspace edits may exist. Review before new work. Provider failure: read_timeout.",
+          "known_response_usage_prefix": {
+            "prompt_tokens": 14255,
+            "completion_tokens": 171
+          },
+          "responses_with_complete_usage": 4,
+          "normalized_first_identity": {
+            "format": "normalized-chat-request-v1",
+            "messages_sha256": "be4bab4fb0ce01e1c85d2e36952ce70f4006200a6f84470ac1a7aa4a6fa3def0",
+            "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+            "request_sha256": "e366e5edbcfec5b44a6c66cac10bac792436a1f0e674fee8b436798ea7ec9c1d"
+          },
+          "latency_ms": null,
+          "workspace_review_ms": null
+        }
+      ],
+      "reported_total_tokens": null,
+      "reported_output_tokens": null,
+      "usage_known": false,
+      "known_within_nominal_budgets": null,
+      "coding_submissions": 1,
+      "native_sse": true,
+      "completed_and_accepted": false,
+      "manual_patch_repairs": 0,
+      "client": "panel",
+      "category": "refactor",
+      "adapter": "duration_refactor",
+      "request_sha256": "d360d89d7ea83b9968a89096cf44d1ebdd044d00dd46742c731fd85de45699ad",
+      "request_ids": [
+        "a55b0e25-ee9e-414a-b897-7b2f1813d9b1"
+      ],
+      "artifact_manifest_sha256": "3d6e49f6159bdeaf9dced9dc1a641d9385506e443ec2f34d3db63edd5761d4dc",
+      "source_review": "not_performed-executable-failure",
+      "known_budget_scope": "Recorded totals/output, final-response tool count, request count and configured preventive dispatch/iteration gates; no end-to-end bound or backend attestation."
+    },
+    {
+      "id": "T09",
+      "runs": [
+        {
+          "run_id": "dfb4443c3305424094650fd8db364d94",
+          "status": "failed",
+          "completion_status": null,
+          "completion_reason": null,
+          "verification_status": null,
+          "usage": null,
+          "error": "Execution or final storage failed; workspace edits may exist. Review before new work. Provider failure: read_timeout."
+        }
+      ],
+      "external_exit_code": 1,
+      "artifact_accepted": false,
+      "source_review_required": false,
+      "protected_preserved": true,
+      "modes_preserved": true,
+      "changed_paths": [],
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "criterion_hashes": {
+        "baseline.json": "8ee4ee3f84d8d4c407dc8fe659136619e552332f8b08e4d0cc3383268aa7d632",
+        "checks.mjs": "9ddbc81dbf7ef4029283258c7d89cc36aa57c535bbe5a0f16602f39fdbb660f0",
+        "test_acceptance.py": "419af666ea737d4a49b7f31017d54bdd811863ffcb07aea0009f1f546ee15f1a"
+      },
+      "phases": [
+        {
+          "run_id": "dfb4443c3305424094650fd8db364d94",
+          "status": "failed",
+          "completion_status": null,
+          "completion_reason": null,
+          "verification_status": null,
+          "token_usage": null,
+          "usage_known": false,
+          "tool_calls": null,
+          "tool_errors": [],
+          "request_count": 5,
+          "reported_response_count": 4,
+          "budget_evidence_truncated": false,
+          "provider_failure": {
+            "kind": "read_timeout",
+            "http_status": null
+          },
+          "error": "Execution or final storage failed; workspace edits may exist. Review before new work. Provider failure: read_timeout.",
+          "known_response_usage_prefix": {
+            "prompt_tokens": 13560,
+            "completion_tokens": 206
+          },
+          "responses_with_complete_usage": 4,
+          "normalized_first_identity": {
+            "format": "normalized-chat-request-v1",
+            "messages_sha256": "8098db3362b18707b4d03941ba899c116f6ccede4602d2a1f04571a7d79dac54",
+            "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+            "request_sha256": "ddef38dd654200466fbdf4adb598b6b9255467c03a40b233838e98d89c20e097"
+          },
+          "latency_ms": null,
+          "workspace_review_ms": null
+        }
+      ],
+      "reported_total_tokens": null,
+      "reported_output_tokens": null,
+      "usage_known": false,
+      "known_within_nominal_budgets": null,
+      "coding_submissions": 1,
+      "native_sse": false,
+      "completed_and_accepted": false,
+      "manual_patch_repairs": 0,
+      "client": "CLI",
+      "category": "feature",
+      "adapter": "tag_filter",
+      "request_sha256": "5d1da15f3c546162ca0fa34e4f3cba95b704ee0ceed992db6539f245f9ad446b",
+      "request_ids": [
+        "4995b43de655480181013aeb0bf84380"
+      ],
+      "artifact_manifest_sha256": "fe4226a05aa36f53c28bf2df7480eb90299a6092ebf2c1095ae2f83c4a6f814c",
+      "source_review": "not_required",
+      "known_budget_scope": "Recorded totals/output, final-response tool count, request count and configured preventive dispatch/iteration gates; no end-to-end bound or backend attestation."
+    },
+    {
+      "id": "T10",
+      "runs": [
+        {
+          "run_id": "e003ca1088824ec0998c4e3afe81658e",
+          "status": "failed",
+          "completion_status": null,
+          "completion_reason": null,
+          "verification_status": null,
+          "usage": null,
+          "error": "Execution or final storage failed; workspace edits may exist. Review before new work. Provider failure: read_timeout."
+        }
+      ],
+      "external_exit_code": 1,
+      "artifact_accepted": false,
+      "source_review_required": false,
+      "protected_preserved": true,
+      "modes_preserved": true,
+      "changed_paths": [],
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "criterion_hashes": {
+        "baseline.json": "06298b5e968890f6000897ee79d78ef1c799651589b116ffa2bb275336194fbb",
+        "checks.mjs": "ebb5d0eb876b1ea8f9f45c2f0d78c23c6d12958cb2a6ccf5321270069be796db",
+        "test_acceptance.py": "bd5a5ec5177fd134be9459c40fdb5f70d6762a52b8ce6a1962082043300744e4"
+      },
+      "phases": [
+        {
+          "run_id": "e003ca1088824ec0998c4e3afe81658e",
+          "status": "failed",
+          "completion_status": null,
+          "completion_reason": null,
+          "verification_status": null,
+          "token_usage": null,
+          "usage_known": false,
+          "tool_calls": null,
+          "tool_errors": [],
+          "request_count": 4,
+          "reported_response_count": 3,
+          "budget_evidence_truncated": false,
+          "provider_failure": {
+            "kind": "read_timeout",
+            "http_status": null
+          },
+          "error": "Execution or final storage failed; workspace edits may exist. Review before new work. Provider failure: read_timeout.",
+          "known_response_usage_prefix": {
+            "prompt_tokens": 10637,
+            "completion_tokens": 199
+          },
+          "responses_with_complete_usage": 3,
+          "normalized_first_identity": {
+            "format": "normalized-chat-request-v1",
+            "messages_sha256": "41e7b280d929e88ad6f0f057eb95fd134525355c7a4665772d1b27f2d1268a42",
+            "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a",
+            "request_sha256": "085540faadf2a719ef7c56cce91be1a5009009e265ccf39e335a2583a081e561"
+          },
+          "latency_ms": null,
+          "workspace_review_ms": null
+        }
+      ],
+      "reported_total_tokens": null,
+      "reported_output_tokens": null,
+      "usage_known": false,
+      "known_within_nominal_budgets": null,
+      "coding_submissions": 1,
+      "native_sse": true,
+      "completed_and_accepted": false,
+      "manual_patch_repairs": 0,
+      "client": "panel",
+      "category": "bugfix",
+      "adapter": "wrapup_intentions",
+      "request_sha256": "3cb7d9c01f60361dc7d660d7bb4701bda13778ba0f18f16f1d7b01b99115da8d",
+      "request_ids": [
+        "ec259914-cd9d-4f62-a356-f44f4b6db7f8"
+      ],
+      "artifact_manifest_sha256": "ba8b562b2b4e685cea61b6bbf8c94e701d430e514896d630e22cf36c141c6813",
+      "source_review": "not_required",
+      "known_budget_scope": "Recorded totals/output, final-response tool count, request count and configured preventive dispatch/iteration gates; no end-to-end bound or backend attestation."
+    }
+  ],
+  "final_audit": {
+    "kind": "post-cohort-read-only-audit-and-external-regrade",
+    "at": 1792638882.852471,
+    "rows": [
+      {
+        "id": "T01",
+        "external_grade_reproduced": true,
+        "artifact_manifest_unchanged": true,
+        "live_workspace_matches_scored_except_planned_T05_sentinel": true,
+        "saved_runs_sessions_and_reverts_equal": true,
+        "criterion_files_sha256": {
+          "baseline.json": "b9b094a6d2d7350e8f28ae6fa90efe2b6517c3da40adc3f9a8945527827debd0",
+          "test_acceptance.py": "eb658229d6ee00a8b870357c68458cb0dbd4ee05cc9e87caf8142c73bb763e2f"
+        },
+        "scored_manifest_sha256": "bf096692a0a3d4951fca62c9d18b9c1b1c8ddf3db7d32bcdd13f39f1bafc7120",
+        "scored_diff_sha256": "621e4e2f6c8c3bebfe0ecdc929e2bcce4b7e1d425826ea73e4c67554224234d5"
+      },
+      {
+        "id": "T02",
+        "external_grade_reproduced": true,
+        "artifact_manifest_unchanged": true,
+        "live_workspace_matches_scored_except_planned_T05_sentinel": true,
+        "saved_runs_sessions_and_reverts_equal": true,
+        "criterion_files_sha256": {
+          "baseline.json": "a2052accd1b601c157861a630fc5fa5169e7dcab1050dab62107c818ed8fafb7",
+          "test_acceptance.py": "71c615741d10b39668529f0b8e8cdab285e8a6f60bd97b8332717021e11f74ce"
+        },
+        "scored_manifest_sha256": "fb84b6ff3a88f5f330112012b1527f024196fde5321ea2c1feacaf83a232ec07",
+        "scored_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "id": "T03",
+        "external_grade_reproduced": true,
+        "artifact_manifest_unchanged": true,
+        "live_workspace_matches_scored_except_planned_T05_sentinel": true,
+        "saved_runs_sessions_and_reverts_equal": true,
+        "criterion_files_sha256": {
+          "baseline.json": "cb94db8e3dca8858f37dbbf2654032b8e08c0a2119cf1564aeb9e9379ae78e60",
+          "test_acceptance.py": "e446204d7c13efc57d400756a61371f07da27af429b9be1810c472f833813bdd"
+        },
+        "scored_manifest_sha256": "23a3264fbc409b5789dfa23b3d39414d39ad4a78824a701985f820c5edb6ab57",
+        "scored_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "id": "T04",
+        "external_grade_reproduced": true,
+        "artifact_manifest_unchanged": true,
+        "live_workspace_matches_scored_except_planned_T05_sentinel": true,
+        "saved_runs_sessions_and_reverts_equal": true,
+        "criterion_files_sha256": {
+          "baseline.json": "45738425c01ed6525a944618384197579806f24f835c1c6fda82b2cf3dd28f04",
+          "checks.mjs": "832eedcdc1c6c17e62d3f1a4d58f95cf391ffc451f253af54de720f581b70dd4",
+          "test_acceptance.py": "9395e0743c45e8d1568d8fe2898adea5c21d191dac2c9d69e51e6aef979e7af3"
+        },
+        "scored_manifest_sha256": "9d838aa1574ad26d78b5b13e01170fad2c5131b392f7db5283fe238f45f9bf31",
+        "scored_diff_sha256": "7fee210b01eeb7f646c2fb02aa50c2e7ef2b6c8f2524da515438e3d4565a5170"
+      },
+      {
+        "id": "T05",
+        "external_grade_reproduced": true,
+        "artifact_manifest_unchanged": true,
+        "live_workspace_matches_scored_except_planned_T05_sentinel": true,
+        "saved_runs_sessions_and_reverts_equal": true,
+        "criterion_files_sha256": {
+          "baseline.json": "0ebd946b7e7d7f6170420fa41a85047a1b14f742e900db8fb205b4b3fdbdbd98",
+          "checks.mjs": "81850f022c9ac2b7424fd44e7c986c4391907866b94ff1f9d0b6122450073d14",
+          "test_acceptance.py": "b9af5f55cf5455972ff18e2acecadb168ed6895106fe1b9adb5035067b046f5f"
+        },
+        "scored_manifest_sha256": "64ec12d2410f4da1d9483649a45e7244feb88504dcba47d5abc695c55b6561bb",
+        "scored_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "id": "T06",
+        "external_grade_reproduced": true,
+        "artifact_manifest_unchanged": true,
+        "live_workspace_matches_scored_except_planned_T05_sentinel": true,
+        "saved_runs_sessions_and_reverts_equal": true,
+        "criterion_files_sha256": {
+          "baseline.json": "1e65cf43d02e6ef93c22cf2d78ee6d2308ffe4b0dda11613362021df82d11244",
+          "checks.mjs": "dc675dc06f005f7a78f19c92b525cdfdce842e243b031f18dd3eac94e665f615",
+          "test_acceptance.py": "5f3eff8eb73a7e3abf238cc8cc3292e50e0ec138751a6450988f59f6eca83ef7"
+        },
+        "scored_manifest_sha256": "e2de8fcf6acee8c5f5bd5d954fbf54eda274cc54895ec7f4b84fdd6bb04f84c0",
+        "scored_diff_sha256": "fbe97eb332160f508d36e587b1266969e286465df3fb14383a391564edaca27f"
+      },
+      {
+        "id": "T07",
+        "external_grade_reproduced": true,
+        "artifact_manifest_unchanged": true,
+        "live_workspace_matches_scored_except_planned_T05_sentinel": true,
+        "saved_runs_sessions_and_reverts_equal": true,
+        "criterion_files_sha256": {
+          "baseline.json": "6bfe55ff5a679f42719c443f9aa5deca03907fa02f761e886ff0fba2e653cbe2",
+          "checks.mjs": "bde99f82a0b56ea245f69f3ca12c498a36cb3354e7071cee92085d0cba5f0893",
+          "golden.json": "83e30979018416d53605b146cf19156f0f1d61365b553754c0d1803b28b6db1b",
+          "test_acceptance.py": "da340c6fa52cabceda29436f40200137d7a6eb0d6a5cac839d86b408160ff502"
+        },
+        "scored_manifest_sha256": "818174781e65431ea36675d0edf34f730b2e1acacfaaaeb6abb150de052169e1",
+        "scored_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "id": "T08",
+        "external_grade_reproduced": true,
+        "artifact_manifest_unchanged": true,
+        "live_workspace_matches_scored_except_planned_T05_sentinel": true,
+        "saved_runs_sessions_and_reverts_equal": true,
+        "criterion_files_sha256": {
+          "baseline.json": "bd1164ea4069327c0a0caed5cb01dec55545a9315e80d57dbe86f717e299c558",
+          "checks.mjs": "b53efa86e913731759ac3d786ccc5ef875b2514099289fbbba7d35a0101855f6",
+          "golden.json": "df3d2bd21984958ca1bc604300df67a6aca41e0a66823f9ea8d9140afc96b3f6",
+          "source-review.md": "f0f5d549e94ad1aeee3e568ec27e3704d5885b4c27a8aa362d3586b953b7a6a7",
+          "test_acceptance.py": "96f290ded070f1c566080c1892c27e91c7e3a6a26d64444ce32d996dcff8a87c"
+        },
+        "scored_manifest_sha256": "3d6e49f6159bdeaf9dced9dc1a641d9385506e443ec2f34d3db63edd5761d4dc",
+        "scored_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "id": "T09",
+        "external_grade_reproduced": true,
+        "artifact_manifest_unchanged": true,
+        "live_workspace_matches_scored_except_planned_T05_sentinel": true,
+        "saved_runs_sessions_and_reverts_equal": true,
+        "criterion_files_sha256": {
+          "baseline.json": "8ee4ee3f84d8d4c407dc8fe659136619e552332f8b08e4d0cc3383268aa7d632",
+          "checks.mjs": "9ddbc81dbf7ef4029283258c7d89cc36aa57c535bbe5a0f16602f39fdbb660f0",
+          "test_acceptance.py": "419af666ea737d4a49b7f31017d54bdd811863ffcb07aea0009f1f546ee15f1a"
+        },
+        "scored_manifest_sha256": "fe4226a05aa36f53c28bf2df7480eb90299a6092ebf2c1095ae2f83c4a6f814c",
+        "scored_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "id": "T10",
+        "external_grade_reproduced": true,
+        "artifact_manifest_unchanged": true,
+        "live_workspace_matches_scored_except_planned_T05_sentinel": true,
+        "saved_runs_sessions_and_reverts_equal": true,
+        "criterion_files_sha256": {
+          "baseline.json": "06298b5e968890f6000897ee79d78ef1c799651589b116ffa2bb275336194fbb",
+          "checks.mjs": "ebb5d0eb876b1ea8f9f45c2f0d78c23c6d12958cb2a6ccf5321270069be796db",
+          "test_acceptance.py": "bd5a5ec5177fd134be9459c40fdb5f70d6762a52b8ce6a1962082043300744e4"
+        },
+        "scored_manifest_sha256": "ba8b562b2b4e685cea61b6bbf8c94e701d430e514896d630e22cf36c141c6813",
+        "scored_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "source_T03_run_equal_after_fork": true,
+    "owned_API_processes_exited": 15,
+    "port_18755_closed": true,
+    "owned_model_unloaded": true,
+    "existing_ollama_service_preserved": true,
+    "browser_tab_closed": true,
+    "post_run_recipe_sha256": {
+      "whole-file-T03.py": "773cbc3279a999773123c15c36091c9ab378f141476edf9ad91c10c8a2fbe15b",
+      "whole-file-live-cli.py": "988376b31f2e6d6d601d4b54716dfc5b12849c5912afa8970e7afd3cfcbac747",
+      "whole-file-wait.py": "c8e8d6ee3fe3784a6633c76ca97b2eeb1709dbc29cc8dcf6badf2ba91acda8df",
+      "whole-file-ledger.py": "46bc095a5abebbb3932f793c003c867427de7b8b09791a7daa18ac88616b9d35",
+      "whole-file-review-cli.py": "79e42d508ad6e89ea60c7b7df333d1a9b2d8fc75677176394a4369c7c7b52e39",
+      "whole-file-audit.py": "ed236f3e47859544fc15ec97f76e474261b54044bfa3fa9b3fdc8331658b4b87",
+      "whole-file-final-audit.py": "99c5b2d8dcc9ee7d9fb7cd91d5a6b0e5ddc8d8f355174c1dbc29c25b06d30465",
+      "whole-file-live-grade.py": "52888d8a1606e4c2fb9ce38fb73fe69d3258fdd10cfa4e132401b3dfe52ae94d"
+    }
+  },
+  "operator_corrections": [
+    {
+      "kind": "browser-observation-tool-failure",
+      "task": "T02-before-submission",
+      "detail": "T3 preview_snapshot timed out repeatedly (Preview automation snapshot timed out after 15000ms.); native computer-use fallback getApp timed out (Sky Computer Use request timed out). Same T3 tab owner/profile retained; actual preview_type/select/click and read-only DOM inspection worked. No injected workflow/HTTP calls, new browser identity or extra model submission. Screenshot/semantic-snapshot coverage unavailable for this cohort."
+    },
+    {
+      "kind": "report-helper-field-correction",
+      "detail": "Initial local grade summary read response.usage instead of response.token_usage. Corrected against raw immutable records before final metrics/report; no rerun or runtime change."
+    },
+    {
+      "kind": "report-helper-evidence-correction",
+      "detail": "Missing final response tool records are null, not zero actual tool calls. T08 executable failure is rejected despite unperformed source review. Final ledger maps accepted field explicitly. Corrections affect reporting only."
+    }
+  ],
+  "historical_limits": "Original cohort remains2/10 artifact1/10completed. Selected public development tasks, different runtime/paths/preset/client timeout and one sample/task preclude causal/held-out/general capability claims. Provider reports do not attest backend limit compliance. G2 broader workflow remains open; G3 missed, G4/G5 unmet. No release approval.",
+  "local_evidence_files_sha256": {
+    "run-ledger.json": "417375418c0b330d8c2a326ee4f77575732e50739e5da2c403fe4ee2f7faca11",
+    "outcomes/initial-ledger.json": "53d2a6f5b95b49b9e8710deba4eba588683205e23c3f193ff98040746e79c312",
+    "outcomes/final-audit.json": "abe1e2aafe1d0ab07da77f8dc52706407d9448bdc2dc984e50a03ddd2763f210",
+    "outcomes/lifecycle.jsonl": "913637dd6d91a9ffe56c853efdc530971b77365088b36bb0260de089e12908ae",
+    "outcomes/launch-assets.json": "e8c830981d28090a408b42ea14d8d6fe9242ef1b2fff31686fee0fc3a0058522",
+    "outcomes/T01/acceptance-regrade.json": "0f5a4c50a26c810e50edab4d628255a6300c4b5bde4bedbd954f196f90b8e331",
+    "outcomes/T01/acceptance.json": "ef8984a80bc8c3d6b713d5927e578f16da195366b0b1bed63808597d78d73f43",
+    "outcomes/T01/final-manifest.json": "bf096692a0a3d4951fca62c9d18b9c1b1c8ddf3db7d32bcdd13f39f1bafc7120",
+    "outcomes/T01/final.diff": "621e4e2f6c8c3bebfe0ecdc929e2bcce4b7e1d425826ea73e4c67554224234d5",
+    "outcomes/T01/http-requests.jsonl": "8731680c11a5ce766ac38c3ea87921ea89b7cfb91df96c49200713612b283f3f",
+    "outcomes/T01/metrics.json": "7b8f4398ba70d28959b295a3abe00d99f1919cd3b519191149ffcb112054a3b3",
+    "outcomes/T01/restart-configuration.txt": "e8b48ce91748385a74b565910e7b2315875db44e2c8f0a62be3366a01bb805bc",
+    "outcomes/T01/restart-original-key.txt": "654de981681400bbb4f2ab4ea7b7b404d7db6cf914332014a3dc02f23442ba74",
+    "outcomes/T01/restart-run.txt": "1079dc6526857c81ce239d5322fcf4742fd7ff8a615ed29d549d7f7c9d40434a",
+    "outcomes/T01/restart-transcript.txt": "9859be300951dc9d504f9d3d0c4cbe7c13f5e99f1c4f275f1f7f4818a8bab8f5",
+    "outcomes/T01/restart-workspace.txt": "8c2300f07fae20b6b7442d004da2fc3041810b48622a803fc790ab6ba5aa81d3",
+    "outcomes/T01/review-1792638729284179000.log": "937277fe31b753e0c47c713ce3c5c18ae4da5daeafc9897b5c43cfc5bce71aa8",
+    "outcomes/T01/settled-audit.json": "e00ab6d97d4ba2790a00c86383045351e9940ce36a5c1f655230dec95f290917",
+    "outcomes/T01/source-1792636506417282000.log": "c9fae0a48908e46c8373bf669bc4c5fff31daed9835b575f9dbc42b643cc8745",
+    "outcomes/T01/source-chat-exit.json": "e3759cde8132d476f777f3a70d3a154e53c6c8749ec0df5059d0af836f7b1f2e",
+    "outcomes/T01/source-chat-invocation.json": "006cc59d5073b6a1ae44a63871c4ee00d94186fac09aa8dea055af722af0c3a0",
+    "outcomes/T01/source-chat-pid": "f77c45b0d9b396d88e80b58be4a54c1a1394a7bbd839e2dcac20a69303708e7c",
+    "outcomes/T01/source-chat.txt": "e7732c82aac5aacc8ea6f59b6cde5abb47073f76bc5b705321d96da2ac66397e",
+    "outcomes/T01/summary.json": "e27b800ec6b3a6289e3829ff1073332122ecf0032c2cbac19c5e1912b992cd5b",
+    "tasks/T01/state/memory.db": "64bb3504417000cbe3f975ab8c67c8aa24ff39a413fdb68a538d19634f3d0b61",
+    "tasks/T01/state/sessions.db": "6d5cb1f145a7eef9487426ac0ff6f446faf74a54d8f08d2aac78d3455afbef08",
+    "outcomes/T02/acceptance-regrade.json": "4c9e3927e842e502b856a6395f114dcfaf54e3c76dd55d992f524519bd97cf96",
+    "outcomes/T02/acceptance.json": "f872923108913f23356391021e2549944fb102d8ace97753ee3f667df2d67585",
+    "outcomes/T02/browser-failed-review.json": "b5f7386d695e5397eab527c852a9bbf424bee352f9d22e874eb9fa8be74cc5cb",
+    "outcomes/T02/browser-launch.json": "74a7dc773fface83f5d15256a39e84d865f5a4625f9efdbb2524944fb0cb1b0c",
+    "outcomes/T02/final-manifest.json": "fb84b6ff3a88f5f330112012b1527f024196fde5321ea2c1feacaf83a232ec07",
+    "outcomes/T02/final.diff": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "outcomes/T02/http-requests.jsonl": "48bc84390941b5943450b8a3ae3dcb1b1bccb66d9ff6edaab8d6120289466d66",
+    "outcomes/T02/metrics.json": "9ef0103ffcb3c25e11923e3c1042be9852c878db8b51052c1ea711ebc8d88036",
+    "outcomes/T02/settled-audit.json": "f76f54bd31ebb47ae4099e85e88f8323a2b58939b000029edffe9f9ca468d278",
+    "outcomes/T02/source-1792636713814743000.log": "a36b18baf1fd55127dd7126991d60c1293357ffd5c8876308bd4e4e01d85a278",
+    "outcomes/T02/summary.json": "221205082264cfcedc8ad613d06c77d2708a8ecad72e2858bab385529311bd65",
+    "tasks/T02/state/memory.db": "64bb3504417000cbe3f975ab8c67c8aa24ff39a413fdb68a538d19634f3d0b61",
+    "tasks/T02/state/sessions.db": "de8bad44e741f8659ade595b03e6c982d3297b2da8b4f41480a5dcbfbe2a5fe0",
+    "outcomes/T03/acceptance-regrade.json": "c6d0eb92ff257a6595d8d409da678be8829915088e7f4acd597e85452143e5ce",
+    "outcomes/T03/acceptance.json": "e12881f625d1e75a3ff4d76a0e659bd43279305fadd47d4656b9e420685334b8",
+    "outcomes/T03/configuration-review.txt": "ab60c57453d8cd99832acee2b0fd77b1bbbf02bb4dc7eb81a5616b418f3ec1de",
+    "outcomes/T03/final-manifest.json": "23a3264fbc409b5789dfa23b3d39414d39ad4a78824a701985f820c5edb6ab57",
+    "outcomes/T03/final.diff": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "outcomes/T03/fork-1792637208668782000.log": "681c22a31d16411f85fd3865953d2d253ae0f94b74e7f393da9a9087e8ce36d4",
+    "outcomes/T03/fork-final-exit.json": "aae4c95a6339804e1e99ccaae9c4884c90e1e2d3fcfb6b60a69a52f743d9d4d2",
+    "outcomes/T03/fork-final-invocation.json": "d0e5eaae316e68a4d09b980500b8ec9cecb8ad218795dd98709d06d3bedf5e99",
+    "outcomes/T03/fork-final-pid": "570df8c7a9f77bb2889ba29eb35271e4e2340fd1709d075882800ac637643e15",
+    "outcomes/T03/fork-final.txt": "e00fcb6e08b18985c607055cb616ff254c97288d61c09f025c3685d4862c89d0",
+    "outcomes/T03/fork-submission.json": "ff85875d73f0594263b2acee4afcb2bc8479e0817077d51360088f3d025b9de5",
+    "outcomes/T03/http-requests.jsonl": "941f8fb80306a990d8f713f3ff00e0d5da8596413efe427776d18e5dcb939258",
+    "outcomes/T03/metrics.json": "22e0da3e2bbf7b0c845c7617907e397b5f86d662cf24ae8d81ea7dca909fef7f",
+    "outcomes/T03/settled-audit.json": "69d433cbd3a238215b76215553ace5cef4cbe91417bea4583ed6dbb410db6ec7",
+    "outcomes/T03/source-1792637197260219000.log": "14c84c6a63ade8a96f3c018a70e6efc8b868900f6de622c6d0b68e2e305eb869",
+    "outcomes/T03/source-after-fork-exit.json": "3b2eec3f5c9777ba00b4f99b38ccc8012f8f6836bc196342906d81ebd40e884c",
+    "outcomes/T03/source-after-fork-invocation.json": "2d157f6fdd4528c4b4d67c05bee9a319a15071cee5424576c84185046baf0b9a",
+    "outcomes/T03/source-after-fork-pid": "321ceeadc24ba2a88fba401927295f3c972429fcf3873d45a5cd9134279987cb",
+    "outcomes/T03/source-after-fork.txt": "0d3e0bebeb141f95913ff9789abd145f004509e9bd21dedecb1eec9736a0f24d",
+    "outcomes/T03/source-cancel.txt": "692007ae4b505fcf953d9d61043fb26dfea1754b261ee4502413a99d0606dbda",
+    "outcomes/T03/source-chat-exit.json": "3727f86782b5dc546e229488fa5993a8abbee4c948eb2778e53d30e634634c2f",
+    "outcomes/T03/source-chat-invocation.json": "44795959cb437e808c7dd04b0b5222bbc35069ae9400e25232e2ab9c9873dc13",
+    "outcomes/T03/source-chat-pid": "69eb9095756c06845316811e226188849e84f66d1ee1e354fd5d1ca3aae083ed",
+    "outcomes/T03/source-chat.txt": "8a4df1d4adcd7fcf9cf2c46d87b5c08d71ccc821a2d9785c7ddb9849d2203d62",
+    "outcomes/T03/source-identity.json": "edabbcde376befcb0073c4dfbbecf0dbe5c37944557c417b79c5b3e079291f72",
+    "outcomes/T03/source-key-lookup.txt": "427de8aa359f653b8f213968ce4009a3b2772b410565430a81ed77483352f4a0",
+    "outcomes/T03/source-run-exit.json": "25249a53119e8aa62d665bbc3c46faa49ebf419091bfb87713309b4d49d059f2",
+    "outcomes/T03/source-run-invocation.json": "6fb1af89c5d0d5a00d9e9b2c8296d430665fda29b00adc0a05fab46d338e3dff",
+    "outcomes/T03/source-run-pid": "6a49f7fee5bc916e7f430be977e86e30fed7bc979e5393661afa2c8cb2f8f7cb",
+    "outcomes/T03/source-run.txt": "0d3e0bebeb141f95913ff9789abd145f004509e9bd21dedecb1eec9736a0f24d",
+    "outcomes/T03/summary.json": "db9fa7d1de28b383301edd12e5130d0f64ae6555e3a657fb4596cd70818db9e0",
+    "outcomes/T03/transcript-review.txt": "6de0e77331a56417a633b9c0c4ab916d812be69f23ab39864e3fd4f87d7c8656",
+    "outcomes/T03/workspace-review.txt": "e7dd0213eb1a13482986386a3fe986e9ed3ef65752b9fe476ae536cc2d4c8d44",
+    "tasks/T03/state/memory.db": "64bb3504417000cbe3f975ab8c67c8aa24ff39a413fdb68a538d19634f3d0b61",
+    "tasks/T03/state/sessions.db": "0dd39770dd6513f64ae9d6d03697a461a49e8a43a577c77eaf5d82387f88a9f7",
+    "outcomes/T04/acceptance-regrade.json": "072e3ead5eb6ecdafe853f167fb72746372ffc2b48e0d16d2a968ac598f0a912",
+    "outcomes/T04/acceptance.json": "68823fc3a9d3e74336f483d5553664481388e82b3ca56caf887564723ad211ae",
+    "outcomes/T04/browser-launch.json": "d5dd53cb03d75eca2ddd8427e9b255845716fc25807da623b8bdffa26ed3d1a1",
+    "outcomes/T04/browser-review.json": "d3082978599466b2b2ec540e12769ded9244e13dddceee3ac0ee45b1aa62f427",
+    "outcomes/T04/final-manifest.json": "9d838aa1574ad26d78b5b13e01170fad2c5131b392f7db5283fe238f45f9bf31",
+    "outcomes/T04/final.diff": "7fee210b01eeb7f646c2fb02aa50c2e7ef2b6c8f2524da515438e3d4565a5170",
+    "outcomes/T04/http-requests.jsonl": "ab47b2fc0453ce0c4ac62d59a5ead2ad0010289aa5fabc595cea85567a088167",
+    "outcomes/T04/metrics.json": "2ae26ab6cc30bb51d535cee8992fff8d1465ba4dcdc25904f984934e10f015ed",
+    "outcomes/T04/settled-audit.json": "e4e27450648987d0dd2cc86e362fef9ded6724a9391757d917370ae6cffb20e3",
+    "outcomes/T04/source-1792637376958143000.log": "62d8d8097ed09c18c4a65dd88102190a4765d5689ce76bccb33a53dfdc1eaef1",
+    "outcomes/T04/summary.json": "11cfb6e2c612f81f6619aff1d22c7b47989056867e99e33599c6f4ddb8fad786",
+    "tasks/T04/state/memory.db": "64bb3504417000cbe3f975ab8c67c8aa24ff39a413fdb68a538d19634f3d0b61",
+    "tasks/T04/state/sessions.db": "f7e80982a1b0edebb0058dde819d8c0121ee52ae6af8c3b3f75a63b8e0ac8ffb",
+    "outcomes/T05/acceptance-regrade.json": "c33e90c57e49c304728736df8ae2b627ee81488c1a36885124e11d18d85931aa",
+    "outcomes/T05/acceptance.json": "2849b26ccffda00cdfa4038eee27e339665a1f5c74e81400b52dbc5ec89373d0",
+    "outcomes/T05/final-manifest.json": "64ec12d2410f4da1d9483649a45e7244feb88504dcba47d5abc695c55b6561bb",
+    "outcomes/T05/final.diff": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "outcomes/T05/http-requests.jsonl": "c7b8f882a9539453b67e262c7ab5f41783beabe40aa4494dc2754306d52598e0",
+    "outcomes/T05/metrics.json": "5b8fc73ab8d5958d6432bad37b2e190513fe9d5c666670cdff81441c79f40cf6",
+    "outcomes/T05/original-run-exit.json": "548bbad5de19a72ac7cc520efa92ac6e39b69192b5da3fa1d8159b8285188228",
+    "outcomes/T05/original-run-invocation.json": "d038aed4337e0d94108773a08ccaa0fa8f817b0e21b58a1a8283b7213f6089c4",
+    "outcomes/T05/original-run-pid": "76969fecdec38cef9cc7efe16de16bce45551811955cc800e6c72b0c3c8e44d0",
+    "outcomes/T05/original-run.txt": "0d98268db249a737669adb040c8cd1838e00c432032fbee7e9116d36af0a8f49",
+    "outcomes/T05/preservation.json": "0661e9e575e6bea09a7d9ae1d639e258315b68bad691676cb3773a0de4014ed2",
+    "outcomes/T05/restarted-run-exit.json": "6381170a75750f67ca4c8e4dcc395810966ddad777e5ea0fdb3ac5d642b9f9b2",
+    "outcomes/T05/restarted-run-invocation.json": "f45f98b611d07d70342bf122eca1e2037b463e5c0c00cfba003bcab510ee0218",
+    "outcomes/T05/restarted-run-pid": "fd83365f60d4ab964a2cd4db1372f21b2c6db8df4971ec7e859e52780a3df622",
+    "outcomes/T05/restarted-run.txt": "0d98268db249a737669adb040c8cd1838e00c432032fbee7e9116d36af0a8f49",
+    "outcomes/T05/reversal-ineligible.json": "a3271bddea713cd1f93375e28720e6b83c55f6e4cdbcd16cb28361207e71150a",
+    "outcomes/T05/review-1792637731037848000.log": "262a139bce7b53daa1fa4f95395674d0fdd81dbb90501648f44ddafd718f4b5f",
+    "outcomes/T05/settled-audit.json": "6f4f9af64cbecdd7571fcc4d6b8e43bf8602234f96617197bd5a9d0d49cadc1b",
+    "outcomes/T05/source-1792637572489508000.log": "830601b7c6971493f7a04433ad8d39cc1d0df14efba9afb8df5dd76b568caea4",
+    "outcomes/T05/source-chat-exit.json": "ac456c77d07749fbd2b04eb67d837101a4bac72c37b2d1e6c745709a5e727998",
+    "outcomes/T05/source-chat-invocation.json": "588ffd2489e0a76ea68705ff1fea20cf1a625407d11a58b6e0be91dc8433ecbe",
+    "outcomes/T05/source-chat-pid": "ebb2bd83d81f8da58bad1726e569d29417b9373a1a563cc5eff909e63a56b8e6",
+    "outcomes/T05/source-chat.txt": "e847cba987e1a5b90e2816b5a83edebfbf40cec98788f40e009f7fca97f3259b",
+    "outcomes/T05/summary.json": "d55df40d4ecbcc1cc6b1c6f0597af1ac5b6d42c759e296ea79470bd81944ee1a",
+    "tasks/T05/state/memory.db": "64bb3504417000cbe3f975ab8c67c8aa24ff39a413fdb68a538d19634f3d0b61",
+    "tasks/T05/state/sessions.db": "daef032488083e2a8fb262910b7a8ae1f4267903c77e5d8d0ec0208df2c87ff4",
+    "outcomes/T06/acceptance-regrade.json": "e729c2bb55a28523482b90c058a3eb019f74bf9a78ce76a234147897b7eea59c",
+    "outcomes/T06/acceptance.json": "abb2ff56372134f218acab4a4c684236c102db7da8ac0d9b6c2e3d5f2de0c061",
+    "outcomes/T06/browser-launch.json": "189f32e3bc5d00ec70d8654bd75337b6c8090d8b64aa59bbffc9e54e8d6f19db",
+    "outcomes/T06/browser-review.json": "a802db5f0dcb6d0efad50f9a4d13433a53ceaf055a1d01efa86dc2a765a38575",
+    "outcomes/T06/browser-settled.json": "f0132817aa55b586ab673c50c6e7eb2c160e9de7f4791dfc0fc1fff795d23929",
+    "outcomes/T06/final-manifest.json": "e2de8fcf6acee8c5f5bd5d954fbf54eda274cc54895ec7f4b84fdd6bb04f84c0",
+    "outcomes/T06/final.diff": "fbe97eb332160f508d36e587b1266969e286465df3fb14383a391564edaca27f",
+    "outcomes/T06/http-requests.jsonl": "42da1a8bcd77fdc1decb2756b17119e87245c09d8b4d674e6761c48be8faa7c4",
+    "outcomes/T06/metrics.json": "0b8fd53d6ef970903d65d558ec3836f30f7c19bfe770b463698171d2e1f422e8",
+    "outcomes/T06/settled-audit.json": "a21fde0722ede3d3ae4659e528ec244945cae9d52ec9e3c3e0ab666b136e1fa4",
+    "outcomes/T06/source-1792637733717099000.log": "c0b3f62e8f8b7b78c38890cebca2d286bf2a2b0c25cecb468256a911101362c0",
+    "outcomes/T06/summary.json": "eb4d08d1637581f79b7f86d47e757d325bf91392b26b370bc460764fa28c6f35",
+    "tasks/T06/state/memory.db": "64bb3504417000cbe3f975ab8c67c8aa24ff39a413fdb68a538d19634f3d0b61",
+    "tasks/T06/state/sessions.db": "a1cc5da722529bfacbd82747dc58131cb98920794e2373d05fa44a180e7c7539",
+    "outcomes/T07/acceptance-regrade.json": "4df1bc30d098e58ec34f82e7fd4a4a1861990f42cb292724714ff3d3fdab2f0e",
+    "outcomes/T07/acceptance.json": "a4320b1a3d5a96e6cc2ed58d8ed849f404844e9d7cc8cb6d016b4358defa08a1",
+    "outcomes/T07/final-manifest.json": "818174781e65431ea36675d0edf34f730b2e1acacfaaaeb6abb150de052169e1",
+    "outcomes/T07/final.diff": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "outcomes/T07/http-requests.jsonl": "702557fb1c3de26ea87d9941304b8356d16b49734d1adc9bd25ca2e701408ff8",
+    "outcomes/T07/metrics.json": "90b20eb74cc6634c54457b3af6c0ebd67487a0c04a6c811134ee463b171a17f6",
+    "outcomes/T07/restart-configuration.txt": "e1d52970c81b4419afc7fdfe525813685f4ec06cb2fa5ccaa6bccfbab78b7865",
+    "outcomes/T07/restart-original-key.txt": "c63b7e594b060b42e698758581de736eec478bc656e892bde4efa3b0a8e65831",
+    "outcomes/T07/restart-run.txt": "35d390f84a9e0b0cf6e0e30b995d95227c0d1415bfd02bf789cd8d433158883b",
+    "outcomes/T07/restart-transcript.txt": "ea2f77671bf67656ff33d73631859237a60a5873bfb10b5296f01756a38251cd",
+    "outcomes/T07/restart-workspace.txt": "81b40d29ad2178cbde40fa71f1e076e7b7473357dae1af26e700a85c375c743b",
+    "outcomes/T07/review-1792638732037503000.log": "17bfd79bcb59052545bc3d438e6d45854367659e835ba2657a2952ccef3b30e0",
+    "outcomes/T07/settled-audit.json": "f2aafa1028030f8fc719854449562d5c0d2ae156ecfb7ce0600c5fd1c8adc7d7",
+    "outcomes/T07/source-1792637905178686000.log": "41af16c4bb31a4ca15abcc2d7a05d3c79193ff3c89a3f6bd38e63b576e33226d",
+    "outcomes/T07/source-chat-exit.json": "b1c1e14e845cd11520bf09a1f2c674a5d4a6ef1ca9cba0108cfff1345c314a00",
+    "outcomes/T07/source-chat-invocation.json": "6dd22f3fcce1dc2098bcd213926e92ee01bf451714944494cfdeb370e554cdce",
+    "outcomes/T07/source-chat-pid": "7b64c167d214ce687f3c611fc58197734befd241dd059168cb1d88efb960759c",
+    "outcomes/T07/source-chat.txt": "0e82975cf9354a4380071b7d831dfc618429efd06f48c2b9f2047ceb960ce343",
+    "outcomes/T07/summary.json": "8dd079d5cd843c767ecdec5160523b756b9dfa8243731b8198fe9a52db951d2b",
+    "tasks/T07/state/memory.db": "64bb3504417000cbe3f975ab8c67c8aa24ff39a413fdb68a538d19634f3d0b61",
+    "tasks/T07/state/sessions.db": "bbfe9c5f176bea133a1f7b3e83d0a53ad760bb0f21ddbc9a3a0dd03efb095ce6",
+    "outcomes/T08/acceptance-regrade.json": "bca83aed20f9c75cc95b54b3cd2fa199adb71b28cfccafb64b60d363ea6d57ae",
+    "outcomes/T08/acceptance.json": "2c9bca161ad14f7d4d5a09a30a6e61e150b518c996088a30b372356b1a20dbc3",
+    "outcomes/T08/browser-failed-review.json": "2ab348d0d13a7d5ac5c1dbd5effcfa0c0919a4869f24a0054812cd6ef8f43c01",
+    "outcomes/T08/browser-launch.json": "5fef1f95f538b5834b8cc23afb8acbc3721e366e70875518f89f32491480c754",
+    "outcomes/T08/final-manifest.json": "3d6e49f6159bdeaf9dced9dc1a641d9385506e443ec2f34d3db63edd5761d4dc",
+    "outcomes/T08/final.diff": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "outcomes/T08/http-requests.jsonl": "1a5adbc789e5c13ea58042aa0b0f47e594add6facc893b8c0b624df74a61aebe",
+    "outcomes/T08/metrics.json": "2ab6dc03d9d5fafc2538ff91ed87d0e4d91b05316b080722be72222fa3eb8606",
+    "outcomes/T08/settled-audit.json": "f881c2b8a05016edaf0afdbac810cebdd75cce03dca027961bac5adcc0ef4a2d",
+    "outcomes/T08/source-1792638113008322000.log": "92e9ed941caeca072fe4c5a6ded10c98caf7e6e62a01f749894b555aafe6c982",
+    "outcomes/T08/summary.json": "7a97c2afe6c1550edd4b64d8c26be5af0eb3f0874fcf4272ad7cb42661840964",
+    "tasks/T08/state/memory.db": "64bb3504417000cbe3f975ab8c67c8aa24ff39a413fdb68a538d19634f3d0b61",
+    "tasks/T08/state/sessions.db": "c5029f7ab2dc66c012b63f75d7ec535dda164507444c6aac928513011b15d8c9",
+    "outcomes/T09/acceptance-regrade.json": "0029cfc964ffd4bbc1f7daa48c93efde27c6be58d942c00fe18eab12e5710765",
+    "outcomes/T09/acceptance.json": "410c22cdde80d32d56a15d171cd4235cf6d9341ae08a96a9f5070aae6e0015dd",
+    "outcomes/T09/final-manifest.json": "fe4226a05aa36f53c28bf2df7480eb90299a6092ebf2c1095ae2f83c4a6f814c",
+    "outcomes/T09/final.diff": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "outcomes/T09/http-requests.jsonl": "58b214ef13ab42f2795e9a161f5f582f3e7205b4f7d7f06ab9361a712f6e792d",
+    "outcomes/T09/metrics.json": "ab83d95bdb5ea054892d6580ffefe5c2939ea36f364888356ffd2dcc6cb298f5",
+    "outcomes/T09/restart-configuration.txt": "612b4d9b84d35e365a9c4588dd4a630e7e2921dd79ae97a189248ea289cb57cc",
+    "outcomes/T09/restart-original-key.txt": "81bfc4102144e1a90f68ef1c51d040a61a31f6c441766789ab871315f912e5b6",
+    "outcomes/T09/restart-run.txt": "8301892fe921a90d5d82dacee033b6992c8e408ff353f767edb34d6ce7ec8359",
+    "outcomes/T09/restart-transcript.txt": "ea2f77671bf67656ff33d73631859237a60a5873bfb10b5296f01756a38251cd",
+    "outcomes/T09/restart-workspace.txt": "81b40d29ad2178cbde40fa71f1e076e7b7473357dae1af26e700a85c375c743b",
+    "outcomes/T09/review-1792638734743519000.log": "91a1d2c71ba31289fa998db65141141eb2a6a7f81fd2cb416733b0f38ac34c3a",
+    "outcomes/T09/settled-audit.json": "962d9873dc19226b752f161a5a4d7c9a633c46c03ce76930d653e51d46c7d748",
+    "outcomes/T09/source-1792638311530647000.log": "5e46f8ecf229a1360d013fb43b32ca21c43de80c42cd94498681cef0567db5a5",
+    "outcomes/T09/source-chat-exit.json": "399ba7ef0e86119869bd8d1aaeb93577d73db30730d73dda71fed55db642c861",
+    "outcomes/T09/source-chat-invocation.json": "2a117f8d317aec8b29f137dc3f4caaf7849643b6670e7c434f68ff57395d5352",
+    "outcomes/T09/source-chat-pid": "6a18d14ed71a8ed98467544dd75fc29262d8a5b0539c0281cadf3a6824bf2930",
+    "outcomes/T09/source-chat.txt": "60e2d04483f577c3821aa856d03f527b51d879d3cde174e28153c1d4ee54abf5",
+    "outcomes/T09/summary.json": "e14b985da0c1df06a2792a112539787388829a4596c705a959e366be3a0abd71",
+    "tasks/T09/state/memory.db": "64bb3504417000cbe3f975ab8c67c8aa24ff39a413fdb68a538d19634f3d0b61",
+    "tasks/T09/state/sessions.db": "7b071161d525eabf202fcb1d6542e6bbe19207bac171a58f39c82bd178b5ad4f",
+    "outcomes/T10/acceptance-regrade.json": "8ab6331e508c645616b2b878dfd7d1271a64c63cf1adb046b77565470bd2d0b3",
+    "outcomes/T10/acceptance.json": "fe95bbea7eef7aab8d204ce984a27188eb6ff7cb3b0064117b115cb8fab5fe08",
+    "outcomes/T10/browser-failed-review.json": "0fa0855de6e0c133daa34881cca541930114d84fa2041fa8f9eef76545926dc9",
+    "outcomes/T10/browser-launch.json": "4f90c3264f35b43fe182bb13dc87482be5ef3334e6c08e95f483f3509a14c2f9",
+    "outcomes/T10/final-manifest.json": "ba8b562b2b4e685cea61b6bbf8c94e701d430e514896d630e22cf36c141c6813",
+    "outcomes/T10/final.diff": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "outcomes/T10/http-requests.jsonl": "73fa7a245b435ee0b77ec7e48dce67ae1d692039ea9e1a58e97405c2dd7eb830",
+    "outcomes/T10/metrics.json": "7d8e007378967797151d005029d6268db3285f5f079e37304f807f2cbf27c02d",
+    "outcomes/T10/settled-audit.json": "20f30863a8650ce2993d2bcda58e211301d5caa3772257fc4685a4c46571ce6f",
+    "outcomes/T10/source-1792638464842283000.log": "577366a64ddbd7cc0e7075bdfaafe59c36f2cfa52eb6c3b76f8f2661f8534c51",
+    "outcomes/T10/summary.json": "8ab4c9cbac8342975c9e08c03b6875b618fbc1aa71df986e2e8524164685fe41",
+    "tasks/T10/state/memory.db": "64bb3504417000cbe3f975ab8c67c8aa24ff39a413fdb68a538d19634f3d0b61",
+    "tasks/T10/state/sessions.db": "9a1f68532add17414fabc0d0701674143032fcfccc6ebd93d47f9cbce32ba6bc",
+    "outcomes/whole-file-T03.py": "773cbc3279a999773123c15c36091c9ab378f141476edf9ad91c10c8a2fbe15b",
+    "outcomes/whole-file-live-cli.py": "988376b31f2e6d6d601d4b54716dfc5b12849c5912afa8970e7afd3cfcbac747",
+    "outcomes/whole-file-wait.py": "c8e8d6ee3fe3784a6633c76ca97b2eeb1709dbc29cc8dcf6badf2ba91acda8df",
+    "outcomes/whole-file-ledger.py": "46bc095a5abebbb3932f793c003c867427de7b8b09791a7daa18ac88616b9d35",
+    "outcomes/whole-file-review-cli.py": "79e42d508ad6e89ea60c7b7df333d1a9b2d8fc75677176394a4369c7c7b52e39",
+    "outcomes/whole-file-audit.py": "ed236f3e47859544fc15ec97f76e474261b54044bfa3fa9b3fdc8331658b4b87",
+    "outcomes/whole-file-final-audit.py": "99c5b2d8dcc9ee7d9fb7cd91d5a6b0e5ddc8d8f355174c1dbc29c25b06d30465",
+    "outcomes/whole-file-live-grade.py": "52888d8a1606e4c2fb9ce38fb73fe69d3258fdd10cfa4e132401b3dfe52ae94d"
+  }
+}

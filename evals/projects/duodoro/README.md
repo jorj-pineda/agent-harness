@@ -168,3 +168,15 @@ sentence-only difference, full instructions, real reads/captures and keyed repla
 Both arms pass 1,342 offline tests, static checks and both 90/90 scripted matrices.
 Review and a subsequent execution instruction are required before inference.
 This is preparation, not a coding result, context-compaction gain or release claim.
+
+
+## Whole-file ten-task follow-up complete — 2026-10-22 UTC
+
+The [completed cohort](WHOLE_FILE_TEN_TASK_RESULTS.md) retains all ten original
+requests/clients/criteria under the reviewed freeze: **2/10 accepted artifacts,
+2/10 completed-and-accepted and 2/10 acceptable with known reported usage within
+nominal budgets**. All artifact grades reproduced; no patch repair or replacement.
+The unchanged eight-of-ten target is missed again. Keep no-go and feature freeze;
+broader recovery, held-out/two-model and release gates remain open. Original
+cohort counts stay separate. Raw evidence, unknown usage, failed client outcomes,
+observation limits and cleanup are recorded in the report.
