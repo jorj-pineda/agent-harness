@@ -504,6 +504,18 @@ absent. Independent exact-manifest review/merge precedes inference; no outcome,
 remedy, supported envelope or release-gate closure is claimed. Original counts,
 no-go and G2–G5 stay unchanged.
 
+**2026-10-22 UTC — Provider diagnostic execution blocked before inference:** the
+[results](evals/projects/duodoro/PROVIDER_DIAGNOSTIC_RESULTS.md) retain T05 API
+startup failure and T09 blocked by the same offline-reproduced recipe defect.
+The frozen source factory loads pre-capture rows lacking its first-input identity;
+scripted preflight/guard probes did not exercise that manifest selection path.
+Zero coding submissions/inference occurred; acceptance/completion/usage remain
+unobserved. Frozen inputs, both initial workspace manifests and Duodoro HEAD/index/
+refs/status fingerprints are unchanged; owned API exited, port released and model
+remains unloaded. No repair or hidden retry. A separate corrected source-factory
+preflight and fresh reviewed freeze are required before future inference; this
+setup failure does not change original coding counts/no-go or close G2–G5.
+
 ## Direction
 
 Build a coding harness Jorge can use on real repositories with affordable hosted models and locally runnable models that struggle with coding-agent workflows. The harness should help those models inspect the right code, make focused edits, recover from errors, and verify their work within an explicit budget.

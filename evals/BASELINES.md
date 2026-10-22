@@ -2180,3 +2180,22 @@ No application/evaluator code, prompt/default, frozen criterion, model, retry,
 timeout or budget changed. No paid calls, services, Docker or Duodoro working-
 checkout edits. Original cohort counts/no-go and G2–G5 remain unchanged; minimal
 provider diagnostics or a narrower envelope require their own explicit next slice.
+
+
+## 2026-10-22 UTC — provider diagnostic launch blocked, no inference
+
+[Setup report](projects/duodoro/PROVIDER_DIAGNOSTIC_RESULTS.md) and
+[structured audit](results/2026-10-22-duodoro-provider-diagnostic-blocked.json)
+retain the two scheduled outcomes at frozen runtime `594ac44`: T05 API startup
+failed before CLI submission; T09 was not launched after the same missing-identity
+recipe defect was reproduced offline. Zero coding/model requests; acceptance,
+completion and usage are unobserved, not two failed model artifacts. Scripted
+preflight used a different factory path and missed the live row-selection error.
+
+The frozen recipes/inputs/criteria/references, both initial workspace manifests and
+Duodoro HEAD/status/index/refs match. Owned API exited, port released and loaded
+models remain empty. No repair, replacement, rerun, dependency install, paid call
+or Docker action. Original cohorts/no-go and G2–G5 are unchanged. Correct source-
+factory validation and fresh independently reviewed preparation are required
+before any future inference. Preparation's 60 focused/1,397 offline/static and
+both 90/90 scripted matrices remain historical mechanics evidence, not model quality.
