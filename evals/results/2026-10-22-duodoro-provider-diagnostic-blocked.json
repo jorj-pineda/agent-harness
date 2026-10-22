@@ -1,0 +1,92 @@
+{
+  "T05_session_store_absent": true,
+  "T09_state_absent": true,
+  "cleanup": {
+    "existing_ollama_service_preserved": true,
+    "listener_released": true,
+    "model_ps": {
+      "models": []
+    },
+    "no_model_unload_needed": true,
+    "owned_api_exited": true
+  },
+  "coding_submissions": 0,
+  "criteria_reference_settings_recipes_preflight_evidence_unchanged": true,
+  "duodoro_head_status_index_refs_unchanged": true,
+  "empty_T05_tables": {
+    "memory.db": {
+      "memory_facts": 0,
+      "workspace_memory_facts": 0
+    }
+  },
+  "evidence_sha256": {
+    "blocked-audit.py": "0131c15fc843ac772011e320ab1b58f988a820370f1ab80515e7da3ad18f69e0",
+    "duodoro-after.json": "c5a027a782b95dc1ac21a3ea41a10bb0749a7d5d97a4ce8a9f4aacba5aca414d",
+    "duodoro-before.json": "c5a027a782b95dc1ac21a3ea41a10bb0749a7d5d97a4ce8a9f4aacba5aca414d",
+    "execution-lifecycle.json": "636f70a634b4dc9784f1236482b6cd6b52ab85d57a0b175d4dc05f7da6fe8778",
+    "failed-execution-recipe.py": "4bd56cf1927dcf4d629989fc0c7313129ca9c33cb5e22122a643f616730eaee8",
+    "outcomes/T05/launch-check.txt": "d9eeda57255f6c50b23597c3761f265bd1fabc863e09bfe48646e2e679a11e89",
+    "outcomes/T05/source-server.log": "53f0d2743735202d46e9f567382c959d602f8f518370ec02e88d83eab9892715"
+  },
+  "freeze_sha256": "9c2d09cdc975f97a511941c09468538282647fcf5aaf61ba0b4e08604629972a",
+  "inference_ran": false,
+  "kind": "provider-diagnostic-execution-setup-blocker-NOT-model-quality",
+  "lifecycle": [
+    {
+      "ended_at": 1792710888.999295,
+      "phase": "source",
+      "pid": 10290,
+      "returncode": 3,
+      "started_at": 1792710887.972754,
+      "task": "T05"
+    }
+  ],
+  "local_root": "/Users/jorge/.local/share/agent-harness/trials/duodoro-provider-probe-tuxlidi3",
+  "next_required_work": "Separate correction/fresh reviewed freeze and live-factory preflight before any future inference; no execution authorized by these results alone.",
+  "operator_corrections": [
+    "Execution stopped on startup failure; frozen files were not repaired or rerun.",
+    "T09 marked blocked rather than starting an API known to fail from the same raw rows."
+  ],
+  "release": "Original cohorts, no-go and G2\u2013G5 unchanged. No new accepted/failed coding artifact denominator or quality claim.",
+  "reproduction": [
+    {
+      "frozen_has_initial_identity": true,
+      "id": "T05",
+      "raw_has_initial_identity": false,
+      "same_request": true,
+      "same_workspace": true
+    },
+    {
+      "frozen_has_initial_identity": true,
+      "id": "T09",
+      "raw_has_initial_identity": false,
+      "same_request": true,
+      "same_workspace": true
+    }
+  ],
+  "rows": [
+    {
+      "artifact_acceptance": null,
+      "completion_status": null,
+      "execution_status": "setup_failed",
+      "id": "T05",
+      "model_observations": null,
+      "observed_check_status": null,
+      "reason": "Frozen server.py loads tasks.json, whose rows lack source_initial_identity; factory raises before API readiness or CLI submission.",
+      "usage": null
+    },
+    {
+      "artifact_acceptance": null,
+      "completion_status": null,
+      "execution_status": "blocked_by_same_setup_defect",
+      "id": "T09",
+      "model_observations": null,
+      "observed_check_status": null,
+      "reason": "Not launched after offline reproduction of the same missing frozen field. No replacement or hidden rerun.",
+      "usage": null
+    }
+  ],
+  "runtime_revision": "594ac447188b710eddb07cc930f6c6a496bc9c85",
+  "scheduled_tasks": 2,
+  "scheduled_workspace_manifests_unchanged": true
+}
