@@ -293,6 +293,20 @@ unloaded and no API running; the owned browser tab retains its generated owner.
 No inference ran. Independent review/merge and unchanged launch preconditions are
 required before the separate execution slice. G2–G5 and release no-go remain open.
 
+## Live panel recovery observation — 2026-10-22 UTC
+
+The [one frozen panel workflow](evals/projects/duodoro/PANEL_RECOVERY_RESULTS.md)
+passed native SSE write/cancel, API restart, saved review, guarded fork/check,
+independent final acceptance, eligible source reversal and restart lookup without
+replay. Original target bytes/mode and later preservation work survived; records
+and criteria stayed unchanged. The fork checked an already correct source patch,
+not an incorrect-patch repair. Source cancelled usage has an unknown tail; no
+known aggregate token-compliance claim. Owned APIs/tab stopped and Gemma unloaded.
+Together with the CLI result this is one observed workflow per client, not broad
+G2 reliability, ten-task acceptance, held-out quality or release approval. Original
+cohorts/no-go and broad G2–G5 remain unchanged. No new application behavior or G0
+rerun is claimed by this docs/data report.
+
 ## Validation performed for this audit
 
 At the audited source revision, with only documentation being prepared:

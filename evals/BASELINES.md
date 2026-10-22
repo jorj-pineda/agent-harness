@@ -1,5 +1,12 @@
 # Real-task baselines
 
+Latest recovery observation: [one bounded live panel workflow](projects/duodoro/PANEL_RECOVERY_RESULTS.md)
+at `cd11e4c` passed its exercised cancel/restart/review/fork/check/source-reversal
+sequence on 2026-10-22 UTC, with independent acceptance/regrade. Source patch was
+already correct; the fork checked/answered without edits. Cancelled usage is
+unknown. This is a request-variant workflow observation, not a quality comparison
+or replacement for historical cohorts; release no-go and broad G2–G5 stay unchanged.
+
 Real coding evaluations: a live model uses the application runtime and real
 tools on disposable copies of trusted fixtures in `evals/real_tasks/` and explicitly
 authorized pinned tasks in `evals/projects/`.
