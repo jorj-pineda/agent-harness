@@ -319,6 +319,19 @@ remain required. Original failed counts and G3 budget/source-review requirements
 are unchanged; no held-out/causal improvement or release approval follows. This
 is the next evidence-gathering slice, not another feature batch.
 
+## Whole-file execution preparation — 2026-10-22 UTC
+
+The [actual freeze](evals/projects/duodoro/WHOLE_FILE_EXECUTION_FREEZE.md) pins the
+ten fresh roots, absent scheduled stores, profiles/first-input guards, actual
+browser owner, environment/model/assets and recipes at `d1e5778`. Corrected
+scripted CLI T03/T05 and panel T04 preflight passed with real tools, separate
+stores and retained helper-error evidence. G0 passed 82 focused/1,363 offline tests
+(five live deselected), static checks and both scripted 90/90 matrices; forty
+initial-input mismatches were rejected without forwarding. No inference ran.
+Temporary servers stopped; only the session-free owner tab remains for execution.
+Independent review/merge and unchanged launch checks remain. This does not close
+G3/G4/G5 or change historical no-go/counts; actual ten-task outcomes are unknown.
+
 ## Validation performed for this audit
 
 At the audited source revision, with only documentation being prepared:

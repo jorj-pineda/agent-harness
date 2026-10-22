@@ -50,6 +50,24 @@ independent source review remain. No failed-task replacement, budget reset or
 historical recount. G3's threshold/budget requirements and G4/G5 stay unchanged;
 another miss retains no-go instead of extending feature batches automatically.
 
+**2026-10-22 UTC — Whole-file cohort preflight and execution freeze prepared:** the
+[freeze](evals/projects/duodoro/WHOLE_FILE_EXECUTION_FREEZE.md) pins fresh actual
+roots/empty task stores, original ten exact requests/criteria/reference, per-task
+settings/profiles/first-input guards, managed environment/model and served assets
+at published `d1e5778`. Corrected scripted real-client preflight passed CLI T05
+edit/check/grade/later-line reversal/restart inspection, CLI T03 original early
+cancel/no-edit/restart/review/identical-half guarded fork and panel T04 native SSE/
+saved review/restart. An unsupported CLI list flag in the first helper round is
+retained; fresh preflight copies corrected it without inference or scheduled state
+changes. All ten initial guards passed forty no-forward mismatches and unchanged
+matching forwarding/cleanup. Pinned G0 passed 82 focused/1,363 offline tests (five
+live deselected), Ruff/format/mypy and both scripted 90/90 matrices with labels/
+limits inspected. Nine preflight APIs and static owner bootstrap stopped; an
+otherwise session-free owned tab retains the scheduled panel owner. No inference
+or ten-task result; independent exact-freeze review/merge and unchanged launch
+preconditions remain required. Original cohorts/no-go, G3 budget/source-review
+requirements and G4/G5 remain unchanged; no feature/default/criterion change.
+
 **2026-10-19 — Recorded exact-edit mismatch diagnosis:** offline replay reproduced
 nine dispatched failures across T01/T04/T09. Specific feedback now covers mixed
 real/escaped newlines and escaped double quotes when a diagnostic candidate is

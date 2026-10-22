@@ -155,3 +155,4 @@ G4's held-out/repeated/two-model evidence and Jorge's G5 decision are unchanged.
 No release approval, causal improvement or useful ten-task envelope is established
 by scripted references. Whole-file overwrite/output risks, ignored contents,
 ACLs/ownership, external writers and trusted-host execution retain their limits.
+Library-level Node adapters do not establish full Next/Vitest or application coverage.
