@@ -1074,10 +1074,18 @@ The provider boundary also constructs bounded successful-response observations:
 native usage fields are `absent`, `null` or `present` (presence does not establish
 validity); terminal reason is `absent`, `null`, `stop`, `length` or `other`, separate
 from normalized tool-use finish; content emptiness and tool-call count omit contents.
-Successful observations are provider-internal at this stage; durable per-request
-review and client presentation are separate slices. Legacy/other providers remain
-null. Parsing/validation failures and external cancellation do not gain a fabricated
-terminal observation. No raw payload/exception strings or new retry/timeout behavior.
+`budget_evidence.events` retains these optional observations on response and
+request-failure events in its existing 100-event prefix; truncation stays explicit.
+The shared loop also includes them in normalized response/failure traces, so real
+evaluations and API runs use the same observation path. Empty responses are saved
+before missing-usage guards stop the turn; unknown usage is never replaced with
+zero or inferred from field presence. Saved HTTP/SSE review survives restart
+without provider replay. Dedicated client presentation remains a separate slice.
+Legacy/other providers remain null. Parsing/validation failures, external cancellation
+and wall-time interruption do not gain a fabricated terminal observation. Old
+records are not backfilled; no raw payload/exception strings or new retry/timeout
+behavior is introduced. Storage failures retain the existing stop-before-onward-work
+semantics; metadata does not repair failed storage or recover partial transcripts.
 
 This remains one API process per database/workspace, with process-local admission;
 there is no cross-process execution coordination or authenticated ownership.
