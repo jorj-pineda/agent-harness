@@ -1066,6 +1066,19 @@ Metadata depends on successful run-failure storage; it cannot repair a failed
 archive write or recover missing partial transcripts/diffs. Historical failed
 records are not backfilled, including the frozen Duodoro trial's unknown causes.
 
+Ollama chat HTTP failures now optionally include `provider_failure.call_observation`
+with the measured HTTP post/status-check duration. Other fields remain unknown on
+HTTP failure. Duration includes transport waiting; it is not pure inference time,
+first-byte timing, response parsing, a hard deadline or proof remote work stopped.
+The provider boundary also constructs bounded successful-response observations:
+native usage fields are `absent`, `null` or `present` (presence does not establish
+validity); terminal reason is `absent`, `null`, `stop`, `length` or `other`, separate
+from normalized tool-use finish; content emptiness and tool-call count omit contents.
+Successful observations are provider-internal at this stage; durable per-request
+review and client presentation are separate slices. Legacy/other providers remain
+null. Parsing/validation failures and external cancellation do not gain a fabricated
+terminal observation. No raw payload/exception strings or new retry/timeout behavior.
+
 This remains one API process per database/workspace, with process-local admission;
 there is no cross-process execution coordination or authenticated ownership.
 Runs retain input and final evidence in `SESSION_DB_PATH`, without full event journals,

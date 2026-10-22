@@ -40,7 +40,15 @@ async def test_ollama_transport_failure_omits_private_exception_text(exception, 
     try:
         with pytest.raises(ProviderError) as failed:
             await provider.chat([ChatMessage(role="user", content="private-message")])
-        assert failed.value.failure.model_dump() == {"kind": kind, "http_status": None}
+        assert failed.value.failure.model_dump(exclude={"call_observation"}) == {
+            "kind": kind,
+            "http_status": None,
+        }
+        observation = failed.value.failure.call_observation
+        assert observation is not None and observation.duration_ms >= 0
+        assert observation.prompt_usage_field is None
+        assert observation.completion_usage_field is None
+        assert observation.terminal_reason is None
         assert "private" not in failed.value.failure.model_dump_json()
         assert isinstance(failed.value.__cause__, exception)
         assert len(calls) == 1  # No new provider retry.
@@ -62,7 +70,10 @@ async def test_ollama_http_failure_retains_only_status_not_body_or_url(status):
     try:
         with pytest.raises(ProviderError) as failed:
             await provider.chat([ChatMessage(role="user", content="private-message")])
-        assert failed.value.failure.model_dump() == {"kind": "http_status", "http_status": status}
+        assert failed.value.failure.model_dump(exclude={"call_observation"}) == {
+            "kind": "http_status",
+            "http_status": status,
+        }
         assert "private" not in failed.value.failure.model_dump_json()
     finally:
         await provider.aclose()

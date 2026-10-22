@@ -49,6 +49,33 @@ class TokenUsage(BaseModel):
     completion_tokens: int | None = Field(default=None, ge=0)
 
 
+UsageFieldState = Literal["absent", "null", "present"]
+
+
+class ProviderCallObservation(BaseModel):
+    """Allowlisted boundary metadata, never payload text or backend attestation."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    duration_ms: float = Field(
+        ge=0,
+        allow_inf_nan=False,
+        strict=True,
+        description=(
+            "Adapter HTTP post/status-check duration; includes transport waiting, not pure "
+            "inference, first-byte latency, response parsing or a hard return deadline."
+        ),
+    )
+    prompt_usage_field: UsageFieldState | None = None
+    completion_usage_field: UsageFieldState | None = None
+    terminal_reason: Literal["absent", "null", "stop", "length", "other"] | None = Field(
+        default=None,
+        description="Allowlisted native terminal field; separate from normalized finish reason.",
+    )
+    content_empty: bool | None = Field(default=None, strict=True)
+    tool_call_count: int | None = Field(default=None, ge=0, strict=True)
+
+
 class ProviderResponse(BaseModel):
     content: str
     tool_calls: list[ToolCall] = Field(default_factory=list)
@@ -57,6 +84,7 @@ class ProviderResponse(BaseModel):
     model: str
     latency_ms: float
     raw: dict[str, Any] = Field(default_factory=dict)
+    call_observation: ProviderCallObservation | None = None
 
 
 @runtime_checkable
@@ -103,6 +131,7 @@ class ProviderFailure(BaseModel):
         "unknown",
     ] = "unknown"
     http_status: int | None = Field(default=None, strict=True, ge=100, le=599)
+    call_observation: ProviderCallObservation | None = None
 
 
 class ProviderError(Exception):

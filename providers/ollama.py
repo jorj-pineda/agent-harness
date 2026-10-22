@@ -12,19 +12,21 @@ from __future__ import annotations
 
 import time
 import uuid
-from typing import Any
+from typing import Any, Literal
 
 import httpx
 
 from .base import (
     ChatMessage,
     FinishReason,
+    ProviderCallObservation,
     ProviderError,
     ProviderFailure,
     ProviderResponse,
     TokenUsage,
     ToolCall,
     ToolSpec,
+    UsageFieldState,
 )
 
 
@@ -84,9 +86,14 @@ class OllamaProvider:
             response = await self._client.post("/api/chat", json=body)
             response.raise_for_status()
         except httpx.HTTPError as exc:
-            raise ProviderError(
-                f"Ollama chat request failed: {exc}", failure=_http_failure(exc)
-            ) from exc
+            failure = _http_failure(exc).model_copy(
+                update={
+                    "call_observation": ProviderCallObservation(
+                        duration_ms=(time.perf_counter() - start) * 1000
+                    )
+                }
+            )
+            raise ProviderError(f"Ollama chat request failed: {exc}", failure=failure) from exc
         latency_ms = (time.perf_counter() - start) * 1000
         return _response_from_ollama(
             response.json(), fallback_model=self._model, latency_ms=latency_ms
@@ -186,4 +193,33 @@ def _response_from_ollama(
         model=payload.get("model") or fallback_model,
         latency_ms=latency_ms,
         raw=payload,
+        call_observation=ProviderCallObservation(
+            duration_ms=latency_ms,
+            prompt_usage_field=_field_state(payload, "prompt_eval_count"),
+            completion_usage_field=_field_state(payload, "eval_count"),
+            terminal_reason=_terminal_reason(payload),
+            content_empty=not bool(message.get("content", "") or ""),
+            tool_call_count=len(tool_calls),
+        ),
     )
+
+
+def _field_state(payload: dict[str, Any], key: str) -> UsageFieldState:
+    if key not in payload:
+        return "absent"
+    return "null" if payload[key] is None else "present"
+
+
+def _terminal_reason(
+    payload: dict[str, Any],
+) -> Literal["absent", "null", "stop", "length", "other"]:
+    if "done_reason" not in payload:
+        return "absent"
+    value = payload["done_reason"]
+    if value is None:
+        return "null"
+    if value == "stop":
+        return "stop"
+    if value == "length":
+        return "length"
+    return "other"
