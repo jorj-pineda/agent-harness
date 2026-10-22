@@ -484,6 +484,15 @@ All four APIs/tab closed, Gemma unloaded; no Duodoro checkout edits, paid calls,
 additional models or Docker actions. Docs/data reporting only; preparation G0 is
 historical. Original cohorts/release no-go and broad G2–G5 remain open/unchanged.
 
+**2026-10-22 UTC — Two-task provider diagnostic protocol prepared:** the
+[protocol](evals/projects/duodoro/PROVIDER_DIAGNOSTIC_PROTOCOL.md) selects original
+CLI T05/T09 once each to observe the new bounded metadata after historical missing
+usage/read timeout. Exact requests/criteria and approved limits stay fixed; this
+subset excludes recovery/reversal and cannot close the ten-task gates. Scripted
+client/restart preflight, exact runtime G0, actual frozen inputs and independent
+review/merge remain prerequisites. No inference, remedy, new supported envelope
+or release-gate closure is claimed; original counts/no-go/G2–G5 remain unchanged.
+
 ## Direction
 
 Build a coding harness Jorge can use on real repositories with affordable hosted models and locally runnable models that struggle with coding-agent workflows. The harness should help those models inspect the right code, make focused edits, recover from errors, and verify their work within an explicit budget.
