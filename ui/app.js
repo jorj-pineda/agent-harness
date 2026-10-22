@@ -271,6 +271,48 @@ function listSection(label, items) {
   return section;
 }
 
+function providerObservationText(observation) {
+  if (!observation || typeof observation !== "object" || Array.isArray(observation)) return "unrecorded";
+  const category = (key, allowed) => allowed.includes(observation[key]) ? observation[key] : "unknown";
+  const duration = observation.duration_ms;
+  const durationText = typeof duration === "number" && Number.isFinite(duration) && duration >= 0 ? `${duration.toFixed(1)}ms` : "unknown";
+  const empty = observation.content_empty;
+  const count = observation.tool_call_count;
+  const usageStates = ["absent", "null", "present"];
+  return `HTTP=${durationText} native_usage=${category("prompt_usage_field", usageStates)}/${category("completion_usage_field", usageStates)} ` +
+    `native_terminal=${category("terminal_reason", ["absent", "null", "stop", "length", "other"])} ` +
+    `zero_length_content=${empty === true ? "yes" : empty === false ? "no" : "unknown"} ` +
+    `tool_calls=${Number.isSafeInteger(count) && count >= 0 ? count : "unknown"}`;
+}
+
+function providerObservationSection(record) {
+  const section = el("details", "env-section");
+  section.appendChild(el("summary", null, "Provider call observations (saved review only)"));
+  const evidence = record.budget_evidence || {};
+  const events = Array.isArray(evidence.events) ? evidence.events : [];
+  const rows = events.slice(0, 100).filter((event) => event && ["response", "request_failure"].includes(event.kind));
+  const count = evidence.observed_events;
+  const observed = Number.isSafeInteger(count) && count >= 0 ? count : "unknown";
+  const truncated = evidence.events_truncated;
+  section.appendChild(el("p", "review-note", `saved_events=${Math.min(events.length, 100)} observed_events=${observed} prefix_truncated=${truncated === true ? "yes" : truncated === false ? "no" : "unknown"}`));
+  const items = rows.map((event) => {
+    const iteration = event.iteration;
+    const request = Number.isSafeInteger(iteration) && iteration >= 0 && iteration < Number.MAX_SAFE_INTEGER ? iteration + 1 : "unknown";
+    return `request=${request} ${event.kind}: ${providerObservationText(event.call_observation)}`;
+  });
+  const fallback = record.provider_failure?.call_observation;
+  const hasFailure = rows.some((event) => event.kind === "request_failure" && event.call_observation && typeof event.call_observation === "object" && !Array.isArray(event.call_observation));
+  if (fallback && typeof fallback === "object" && !Array.isArray(fallback) && !hasFailure) {
+    items.push(`final failure (separate record): ${providerObservationText(fallback)}`);
+  }
+  section.appendChild(listSection("Retained response/failure events", items.length ? items : ["unrecorded"]));
+  if (truncated === true || events.length > 100) {
+    section.appendChild(el("p", "review-note", "Saved/displayed prefix truncated; later observations may be absent."));
+  }
+  section.appendChild(el("p", "review-note", "HTTP adapter timing excludes parsing; not pure inference, first-byte timing or a hard deadline. Native field presence is not valid usage or budget compliance. Missing metadata stays unknown; observations do not establish backend cause, completion or resume permission."));
+  return section;
+}
+
 function workspaceChangeItems(changes) {
   if (!changes || changes.status === "not_tracked") return [];
   if (changes.status === "unavailable") return [`unavailable: ${changes.reason || "unknown"}`];
@@ -1120,6 +1162,7 @@ function showRun(record) {
   } else {
     addErrorMessage(record.error || "No saved final response yet; workspace edits may exist.");
   }
+  els.envelope.appendChild(providerObservationSection(record));
   els.envelope.prepend(listSection("run identity", [
     record.run_id, `lifecycle: ${record.status}`, `request: ${record.request.request_id}`,
     `model: ${record.configured_model || "unrecorded"}`,
