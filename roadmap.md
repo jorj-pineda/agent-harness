@@ -16,6 +16,17 @@ cohort is not a retry queue. That transport experiment’s preparation, results 
 disposition are complete; no additional inference, default/limit change or release
 approval follows from that closed experiment.
 
+**2026-10-23 — Actual provider-timeout freeze prepared, unrun:** the
+[execution freeze](evals/projects/duodoro/PROVIDER_WAIT_FREEZE.md) pins fresh
+same-root C1/W1/W2/C2 original-T09 cells at runtime `6721cc9`, with provider
+60/180 as the only configuration variable and unchanged 300-second task limits.
+Exact G0 passed 116 focused/1,453 offline tests, static checks and both 90/90
+scripted matrices. Four actual-CLI scripted flows and twelve owned API shutdowns
+validated capture, grade/regrade and GET-only restart; negative input/staging
+checks passed. Missing input evidence blocks later staging without replacement.
+These are preparation checks, not model results. Independent exact-freeze review
+and merge remain required; no inference, default promotion or gate closure.
+
 **2026-10-23 — Provider-timeout comparison scoped, unrun:** the
 [offline analysis](evals/projects/duodoro/PROVIDER_WAIT_ANALYSIS.md) records the
 retained run's roughly 70-second age at plan end and separate 60-second call stop;

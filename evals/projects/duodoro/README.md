@@ -267,3 +267,8 @@ five-minute per-task/token/tool limits, source and acceptance. This changes all 
 HTTP timeout phases, not production defaults or the global task budget. Shared-log
 metadata is only time-window evidence. Actual fresh same-root preflight, exact G0
 and an independently reviewed freeze remain required; no inference ran here.
+
+The [provider-timeout execution freeze](PROVIDER_WAIT_FREEZE.md) pins four fresh
+original-T09 CLI cells (60/180/180/60), unchanged five-minute task limits and
+completed offline/client preflight. It remains unrun pending independent review
+and merge; no model-quality or release-gate claim follows from preparation.
