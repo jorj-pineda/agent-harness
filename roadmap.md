@@ -16,6 +16,18 @@ cohort is not a retry queue. That transport experiment’s preparation, results 
 disposition are complete; no additional inference, default/limit change or release
 approval follows from that closed experiment.
 
+**2026-10-23 — Frozen provider-timeout comparison complete:** the
+[results](evals/projects/duodoro/PROVIDER_WAIT_RESULTS.md) retain C1/W1/W2/C2
+at runtime `6721cc9`: **60 seconds 0/2 accepted and completed-and-accepted;
+180 seconds 2/2 accepted and completed-and-accepted**, with passed checks and
+independent acceptance inside unchanged 300-second task allowances. Call five
+returned after roughly 95.6/95.9 seconds in the successful cells; controls stopped
+at roughly 60 seconds. All 24 input pairs, archive/regrade/restart gates and eight
+owned API shutdowns passed; Gemma is unloaded and Duodoro unchanged. Failed-call
+total usage remains unknown. This supports the bounded selected-task hypothesis,
+not backend cause or general quality; no production/default promotion, extra
+inference, original-cohort replacement, narrower envelope or G2–G5 closure.
+
 **2026-10-23 — Actual provider-timeout freeze prepared, unrun:** the
 [execution freeze](evals/projects/duodoro/PROVIDER_WAIT_FREEZE.md) pins fresh
 same-root C1/W1/W2/C2 original-T09 cells at runtime `6721cc9`, with provider
