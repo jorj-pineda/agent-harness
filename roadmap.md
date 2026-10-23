@@ -15,6 +15,20 @@ explicit narrower-envelope proposal with independent acceptance; the completed
 cohort is not a retry queue. Preparation, results and disposition are complete;
 no additional inference, default/limit change or release approval follows.
 
+**2026-10-23 — Bounded failed-input diagnostic prepared:** the
+[protocol](evals/projects/duodoro/REQUEST_INPUT_PROTOCOL.md) investigates the
+post-plan request boundary: prior captures fingerprint but cannot reconstruct
+exact failed inputs. Evaluation-only provider/transport wrappers now save bounded
+normalized inputs and exact wire JSON before unchanged forwarding, with fresh
+private files, twelve-request/1-MiB-file/8-MiB-total ceilings and fail-closed
+pairing/storage checks. Synthetic fifth-call timeout, real-file API failure/restart,
+byte/count/overlap/cleanup and missing-evidence regressions pass. Validation:
+60 focused/1,453 offline tests (five live deselected), Ruff/format/mypy and both
+scripted 90/90 matrices with labels/limits inspected. No inference or production
+setting/default/limit change. Actual CLI preflight and independently reviewed fresh
+one-attempt freeze remain separate prerequisites; the completed cohort is intact.
+This supplies input recording, not backend diagnosis, a remedy or G2–G5 closure.
+
 The [release-readiness audit](RELEASE_READINESS.md) defines the release gates.
 The reviewed, frozen [ten-task Duodoro client trial](evals/projects/duodoro/TRIAL_RESULTS.md)
 is complete: **2/10 accepted artifacts and 1/10 completed-and-accepted**, below

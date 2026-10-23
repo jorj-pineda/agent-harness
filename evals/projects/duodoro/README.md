@@ -231,3 +231,15 @@ numeric timing only and retains unchanged task limits. Synthetic HTTP/API tests
 are mechanics evidence; fresh same-input/client preparation and an independently
 reviewed execution freeze remain prerequisites for inference. Original no-go and
 all cohorts remain unchanged.
+
+## Post-plan input diagnostic: preparation only
+
+The [bounded input protocol](REQUEST_INPUT_PROTOCOL.md) follows the completed
+zero-chunk transport comparison. Evaluation-only wrappers retain normalized
+inputs and exact wire JSON before forwarding, including a later failed request,
+with fresh private storage and fixed count/byte bounds. Raw model-visible content
+is plaintext and remains local; this is not redaction, backend receipt evidence,
+a production setting or a replay permission. The proposed next slice is one fresh
+original T09 buffered CLI attempt at unchanged limits after actual-client preflight,
+pinned G0 and independent execution-freeze review. No inference ran during this
+implementation; the old cohort, no-go and G2–G5 remain unchanged.
