@@ -540,6 +540,19 @@ reruns. Scheduled stores remain absent; model unloaded. Independent exact-freeze
 review/merge and unchanged preconditions remain before inference. Original failed
 freeze/cohorts, no-go and G2–G5 are unchanged; no new quality result is claimed.
 
+**2026-10-23 UTC — Fresh provider diagnostic attempts observed:** the
+[results](evals/projects/duodoro/PROVIDER_DIAGNOSTIC_LIVE_RESULTS.md) retain exactly
+T05/T09 through actual CLI at reviewed `a9d6072`: 0/2 accepted and completed-
+and-accepted, both read timeouts with no edits. All ten response/failure events
+retain untruncated observations across restart, including approximately 60-second
+HTTP failure durations; aggregate usage/backend cause remain unknown. T05's
+historical missing usage did not recur in this attempt. Independent regrades,
+frozen hashes/first inputs/profiles, one-run counts and preservation audits pass;
+four owned APIs stopped, model unloaded and Duodoro unchanged. No replacement,
+rescue or execution correction. Observation coverage is established for these
+selected attempts, not a remedy, causal quality gain or release readiness.
+Original cohorts/failed preparation, no-go and G2–G5 remain unchanged.
+
 ## Direction
 
 Build a coding harness Jorge can use on real repositories with affordable hosted models and locally runnable models that struggle with coding-agent workflows. The harness should help those models inspect the right code, make focused edits, recover from errors, and verify their work within an explicit budget.

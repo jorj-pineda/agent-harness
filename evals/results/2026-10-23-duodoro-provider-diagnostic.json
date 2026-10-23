@@ -1,0 +1,405 @@
+{
+  "artifact_accepted": 0,
+  "cleanup": {
+    "all_shutdown_logs_complete": true,
+    "existing_service_responds": true,
+    "historical_failed_freeze_stores_unchanged": true,
+    "ollama_ps": {
+      "models": []
+    },
+    "owned_APIs_exited": 4,
+    "port_released": true
+  },
+  "completed_and_accepted": 0,
+  "diagnostic_findings": {
+    "backend_cause": "unknown",
+    "expected_response_or_failure_events": 10,
+    "historical_missing_usage_symptom_reproduced": false,
+    "request_failure_HTTP_duration_ms": [
+      60015.958082978614,
+      60004.90037491545
+    ],
+    "retained_observations": 10,
+    "successful_response_usage_fields": "present in all eight responses"
+  },
+  "duodoro_head_status_index_refs_unchanged": true,
+  "evidence_sha256": {
+    "final-cleanup.json": "f1470f8df47c861b2596c4059c890cd8b5255a03081022abefddf3a77e5f0a0a",
+    "outcomes/T05/acceptance.json": "33efce1c32c7dcc095b5de175379267446c2af1490600b1675ee94424486c088",
+    "outcomes/T05/chat-wrapper.txt": "c0743994a2fae1f9d16161c6994cb1a031eb229f7d8a2b53f448b9892d72bff6",
+    "outcomes/T05/final-manifest.json": "64ec12d2410f4da1d9483649a45e7244feb88504dcba47d5abc695c55b6561bb",
+    "outcomes/T05/final-tool-progress.json": "a6925272d8cc7c60c7250f129e3785444a3bf591ddfdc40e75d5bc7c1b7efe75",
+    "outcomes/T05/final.diff": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "outcomes/T05/grade-recipe.log": "dc850f02690829a184de16095dbfd5bc164acb32852cc6d2fb6dbdb593c856c7",
+    "outcomes/T05/http.jsonl": "393a8468bd525bb83c49369d6529b31e4c602421dd33890e5d0440e1bcc46b2d",
+    "outcomes/T05/launch-check.txt": "d9eeda57255f6c50b23597c3761f265bd1fabc863e09bfe48646e2e679a11e89",
+    "outcomes/T05/regrade.json": "2e740c2c844f97173aefd5d9d9e88c0f877fea1db557785e588beb7f56aa9c74",
+    "outcomes/T05/restarted-run-human.txt": "0eb81442d5404e1cd791d821331e21e640ce3c09950a8ee6572812d81279a7ec",
+    "outcomes/T05/restarted-run.json": "a0cbdf3b8900af04d6f7d9a794002d4b878e3e5c0857208316a240a9bde99683",
+    "outcomes/T05/review-preconditions.txt": "d9eeda57255f6c50b23597c3761f265bd1fabc863e09bfe48646e2e679a11e89",
+    "outcomes/T05/review-server.log": "26efbc95b935cd8ea5124ba94f6ec0634adbc63dd3102927d7090b38fae673a9",
+    "outcomes/T05/saved-run.json": "c235cb1c24991021356403b23465a45a87dab06326c6a9fb68ca825d6d75cbe3",
+    "outcomes/T05/settled-audit.json": "65b910e01239c8ae013dce757817f4987804f9784dccfdeaea1e6cf84b43c20d",
+    "outcomes/T05/source-chat-exit.json": "7b2f24e2f10ac26ce7a347d08b3fcb4365c4f33fb6ce32a80edaff0c12f0547e",
+    "outcomes/T05/source-chat-invocation.json": "9b2777feccbd4c3fe28997439f681f91ae15d59c9068aaf8158857ea96251ae8",
+    "outcomes/T05/source-chat-pid": "cf987ddfe8820c7c931a227261806c59f1ff8bc8bab531b697007ae0c152156b",
+    "outcomes/T05/source-chat.txt": "beef009b1bc75e074af61d5fa195930e8dad685b9bf7820f342d6f8092c1a34f",
+    "outcomes/T05/source-run-000.json": "a0cbdf3b8900af04d6f7d9a794002d4b878e3e5c0857208316a240a9bde99683",
+    "outcomes/T05/source-run-human.txt": "0eb81442d5404e1cd791d821331e21e640ce3c09950a8ee6572812d81279a7ec",
+    "outcomes/T05/source-runs.txt": "a8a93d37192acb1c40d2b7941bee28986fff9599636068faf9b79dc06201e8da",
+    "outcomes/T05/source-server.log": "04730686bc22ec3db7df3c663ba496e4802ffaaa491825981157b16a80e217bc",
+    "outcomes/T05/summary.json": "034a2b41278a9c2ed0c9c82c1aea733289064f9a2432c68c9f2643afe3477d9e",
+    "outcomes/T05/unload.json": "f06133a0e7039a42e98eebbc6c194fd2c0799ec199fb8870cd021c6258683464",
+    "outcomes/T09/acceptance.json": "48418344f43ef22a0d1671af3cccb217fed90da3997fa6e377612d09f5f79797",
+    "outcomes/T09/chat-wrapper.txt": "3a1d6102696531245fed8e4bcb3b84c12b52fd6ebe1882c7258bb19a85a72bc3",
+    "outcomes/T09/final-manifest.json": "fe4226a05aa36f53c28bf2df7480eb90299a6092ebf2c1095ae2f83c4a6f814c",
+    "outcomes/T09/final-tool-progress.json": "80dc35f30075e6524224c56e4793ea94bb31e03ba093ebb5599a90624b29a0ae",
+    "outcomes/T09/final.diff": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "outcomes/T09/grade-recipe.log": "871e2ab3824d6e10911f596aa7b21642da76f2f6bc3c37f3bc02dbb3c377fc67",
+    "outcomes/T09/http.jsonl": "c9997acb3a56456c9dc081fe757dfffffbbdc9b7181cfd5b356787ce8f03c942",
+    "outcomes/T09/launch-check.txt": "d9eeda57255f6c50b23597c3761f265bd1fabc863e09bfe48646e2e679a11e89",
+    "outcomes/T09/regrade.json": "177d56d4615314554e4e74c17ad878d9145d00d693963e8906b38f1dbec11444",
+    "outcomes/T09/restarted-run-human.txt": "10ba4f298542fa654dc388d111a6be49649a812546067c3ff538edf39fd16f97",
+    "outcomes/T09/restarted-run.json": "5db7ad3507f26f02829b93e069d0ae7e4a13a4021fd98a3976dfb371171342fd",
+    "outcomes/T09/review-preconditions.txt": "d9eeda57255f6c50b23597c3761f265bd1fabc863e09bfe48646e2e679a11e89",
+    "outcomes/T09/review-server.log": "56c53f82f7f41712125fbbde1377685453161a3d9212ed2258e91e3dcc1d24f9",
+    "outcomes/T09/saved-run.json": "3828d2d3d3744d07a04c1f1c52ac77e2e821bf20bde1a2da1ed1938a497aa0de",
+    "outcomes/T09/settled-audit.json": "b2eb45d8a665659f23d57a91346b11a502605397e9453842e0ae6d1ae1ab5935",
+    "outcomes/T09/source-chat-exit.json": "8fb915913a42db269db368d4f2b86d6469e01fc31285f3695ed8c84707a8a13b",
+    "outcomes/T09/source-chat-invocation.json": "15f5af8a47ed2da8eaadaaf73c9d66abfe370c1e90a241aa1d7a15e84be7420f",
+    "outcomes/T09/source-chat-pid": "f56a244a00a1f297043d520835fee63402e187c6033ed2eec8f0c4d83fb9a1a3",
+    "outcomes/T09/source-chat.txt": "ec2c84cd28eb51582657415a193b9a1f9b06ae93f2669999b2107430448a04d8",
+    "outcomes/T09/source-run-000.json": "5db7ad3507f26f02829b93e069d0ae7e4a13a4021fd98a3976dfb371171342fd",
+    "outcomes/T09/source-run-human.txt": "10ba4f298542fa654dc388d111a6be49649a812546067c3ff538edf39fd16f97",
+    "outcomes/T09/source-runs.txt": "a26c2cb1e695a85460034755adf8687aad2a9358c9bf8f38a4a8c5187a523a6a",
+    "outcomes/T09/source-server.log": "5ad7b225081d06834e3637ac84049bac5d3232818f2ba24fa244c72010132cc4",
+    "outcomes/T09/summary.json": "237c610f2ced7bde22a95f1f5559a4bf2951fc62ede33f8b477238f9e5b811fe",
+    "outcomes/T09/unload.json": "e1d0d40de8eb40e299cb7ffeaef7f64e516e227480645047c185e40790024d40"
+  },
+  "execution_lifecycle": [
+    {
+      "ended_at": 1792720131.9807239,
+      "phase": "source",
+      "pid": 44219,
+      "returncode": -15,
+      "started_at": 1792719986.960124,
+      "task": "T05"
+    },
+    {
+      "ended_at": 1792720135.1326778,
+      "phase": "review",
+      "pid": 47105,
+      "returncode": -15,
+      "started_at": 1792720133.888831,
+      "task": "T05"
+    },
+    {
+      "ended_at": 1792720273.65135,
+      "phase": "source",
+      "pid": 47111,
+      "returncode": -15,
+      "started_at": 1792720135.496521,
+      "task": "T09"
+    },
+    {
+      "ended_at": 1792720276.665431,
+      "phase": "review",
+      "pid": 65198,
+      "returncode": -15,
+      "started_at": 1792720275.5562081,
+      "task": "T09"
+    }
+  ],
+  "execution_progress": [
+    {
+      "ended_at": 1792720135.134023,
+      "id": "T05",
+      "operator_corrections": [],
+      "request_id": "c5c1b228fad144af974c12b83fb2152b",
+      "restart_json_identical": true,
+      "run_id": "d64d4c2242a149aaa17e9d3c5d7c8311",
+      "source_settled_at": 1792720131.782173,
+      "started_at": 1792719986.9580429,
+      "status": "failed"
+    },
+    {
+      "ended_at": 1792720276.666292,
+      "id": "T09",
+      "operator_corrections": [],
+      "request_id": "0c0182ab776741ad91ab5cfe75e127f9",
+      "restart_json_identical": true,
+      "run_id": "0244c1eaf88d460c90c2e1a0c036f694",
+      "source_settled_at": 1792720273.464322,
+      "started_at": 1792720135.494625,
+      "status": "failed"
+    }
+  ],
+  "freeze_sha256": "9041df1653636e41fd2c670ee52648a50872dd6ce505e73c0c7d13e52af596d1",
+  "frozen_recipes_inputs_preflight_evidence_unchanged": true,
+  "kind": "real-model-real-tools-selected-provider-diagnostic-probe",
+  "limits": [
+    "Two selected public tasks, one attempt each; no causal comparison or unattended-envelope/release claim.",
+    "HTTP duration excludes parsing and is not pure inference, first-byte timing or backend-cause evidence.",
+    "Unknown usage remains unknown; saved observation prefixes do not attest tokenizer/billing or hard deadline compliance.",
+    "No new retry, prompt, timeout, budget, default or acceptance change; G2\u2013G5/no-go remain unchanged."
+  ],
+  "local_root": "/Users/jorge/.local/share/agent-harness/trials/duodoro-provider-probe-fresh-_f7lehs6",
+  "model": {
+    "digest": "4eb23ef187e2c5462566d6a1d3bbbc2f1346d0b4327cbb66d58fffbcc9b2b05c",
+    "name": "gemma4:12b",
+    "ollama_version": "0.33.2"
+  },
+  "operator_corrections": [],
+  "original_cohorts_unchanged": true,
+  "recipe_sha256": {
+    "audit.py": "a2fc2594039af9e22efef78ab71f386b6a537a9c77fa876a8ba35e8664bbda98",
+    "execution.py": "8f459aef0b489e2f1def51cf78390066a22a8c993bbbe6e283f643faf4de23cd",
+    "finalize-results.py": "2031a334390ed4fbf8eea0f9a1dfc410d581ed8111ad5b4878880f3507f8c959"
+  },
+  "rows": [
+    {
+      "artifact_accepted": false,
+      "budget_evidence_truncated": false,
+      "changed_paths": [],
+      "completed_and_accepted": false,
+      "completion_reason": null,
+      "completion_status": null,
+      "criterion_sha256": {
+        "baseline.json": "0ebd946b7e7d7f6170420fa41a85047a1b14f742e900db8fb205b4b3fdbdbd98",
+        "checks.mjs": "81850f022c9ac2b7424fd44e7c986c4391907866b94ff1f9d0b6122450073d14",
+        "test_acceptance.py": "b9af5f55cf5455972ff18e2acecadb168ed6895106fe1b9adb5035067b046f5f"
+      },
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "id": "T05",
+      "known_response_prefix": {
+        "completion_tokens": 115,
+        "prompt_tokens": 14761
+      },
+      "modes_preserved": true,
+      "observations": [
+        {
+          "call_observation": {
+            "completion_usage_field": "present",
+            "content_empty": true,
+            "duration_ms": 22199.511499959044,
+            "prompt_usage_field": "present",
+            "terminal_reason": "stop",
+            "tool_call_count": 0
+          },
+          "iteration": 0,
+          "kind": "response"
+        },
+        {
+          "call_observation": {
+            "completion_usage_field": "present",
+            "content_empty": true,
+            "duration_ms": 1344.6112088859081,
+            "prompt_usage_field": "present",
+            "terminal_reason": "stop",
+            "tool_call_count": 1
+          },
+          "iteration": 1,
+          "kind": "response"
+        },
+        {
+          "call_observation": {
+            "completion_usage_field": "present",
+            "content_empty": true,
+            "duration_ms": 25967.94616698753,
+            "prompt_usage_field": "present",
+            "terminal_reason": "stop",
+            "tool_call_count": 1
+          },
+          "iteration": 2,
+          "kind": "response"
+        },
+        {
+          "call_observation": {
+            "completion_usage_field": "present",
+            "content_empty": true,
+            "duration_ms": 33445.727583020926,
+            "prompt_usage_field": "present",
+            "terminal_reason": "stop",
+            "tool_call_count": 1
+          },
+          "iteration": 3,
+          "kind": "response"
+        },
+        {
+          "call_observation": {
+            "completion_usage_field": null,
+            "content_empty": null,
+            "duration_ms": 60015.958082978614,
+            "prompt_usage_field": null,
+            "terminal_reason": null,
+            "tool_call_count": null
+          },
+          "iteration": 4,
+          "kind": "request_failure"
+        }
+      ],
+      "observed_call_events": 5,
+      "one_run_no_reversal": true,
+      "protected_preserved": true,
+      "provider_failure": {
+        "call_observation": {
+          "completion_usage_field": null,
+          "content_empty": null,
+          "duration_ms": 60015.958082978614,
+          "prompt_usage_field": null,
+          "terminal_reason": null,
+          "tool_call_count": null
+        },
+        "http_status": null,
+        "kind": "read_timeout"
+      },
+      "regrade_exit_code": 1,
+      "request_count": 5,
+      "request_failure_count": 1,
+      "request_id": "c5c1b228fad144af974c12b83fb2152b",
+      "response_count": 4,
+      "restart_review_identical": true,
+      "run_id": "d64d4c2242a149aaa17e9d3c5d7c8311",
+      "status": "failed",
+      "tool_progress": {
+        "all_ends_no_error_observed": true,
+        "coverage": "recorded",
+        "events_truncated": false,
+        "observed_events": 6,
+        "started_and_ended_tools": [
+          "tree",
+          "read_file",
+          "emit_plan"
+        ]
+      },
+      "usage": {
+        "completion_tokens": null,
+        "prompt_tokens": null
+      },
+      "verification_status": null
+    },
+    {
+      "artifact_accepted": false,
+      "budget_evidence_truncated": false,
+      "changed_paths": [],
+      "completed_and_accepted": false,
+      "completion_reason": null,
+      "completion_status": null,
+      "criterion_sha256": {
+        "baseline.json": "8ee4ee3f84d8d4c407dc8fe659136619e552332f8b08e4d0cc3383268aa7d632",
+        "checks.mjs": "9ddbc81dbf7ef4029283258c7d89cc36aa57c535bbe5a0f16602f39fdbb660f0",
+        "test_acceptance.py": "419af666ea737d4a49b7f31017d54bdd811863ffcb07aea0009f1f546ee15f1a"
+      },
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "id": "T09",
+      "known_response_prefix": {
+        "completion_tokens": 201,
+        "prompt_tokens": 13560
+      },
+      "modes_preserved": true,
+      "observations": [
+        {
+          "call_observation": {
+            "completion_usage_field": "present",
+            "content_empty": true,
+            "duration_ms": 21367.306915926747,
+            "prompt_usage_field": "present",
+            "terminal_reason": "stop",
+            "tool_call_count": 0
+          },
+          "iteration": 0,
+          "kind": "response"
+        },
+        {
+          "call_observation": {
+            "completion_usage_field": "present",
+            "content_empty": true,
+            "duration_ms": 1272.1119580091909,
+            "prompt_usage_field": "present",
+            "terminal_reason": "stop",
+            "tool_call_count": 1
+          },
+          "iteration": 1,
+          "kind": "response"
+        },
+        {
+          "call_observation": {
+            "completion_usage_field": "present",
+            "content_empty": true,
+            "duration_ms": 27023.642124957405,
+            "prompt_usage_field": "present",
+            "terminal_reason": "stop",
+            "tool_call_count": 1
+          },
+          "iteration": 2,
+          "kind": "response"
+        },
+        {
+          "call_observation": {
+            "completion_usage_field": "present",
+            "content_empty": true,
+            "duration_ms": 26263.889041962102,
+            "prompt_usage_field": "present",
+            "terminal_reason": "stop",
+            "tool_call_count": 1
+          },
+          "iteration": 3,
+          "kind": "response"
+        },
+        {
+          "call_observation": {
+            "completion_usage_field": null,
+            "content_empty": null,
+            "duration_ms": 60004.90037491545,
+            "prompt_usage_field": null,
+            "terminal_reason": null,
+            "tool_call_count": null
+          },
+          "iteration": 4,
+          "kind": "request_failure"
+        }
+      ],
+      "observed_call_events": 5,
+      "one_run_no_reversal": true,
+      "protected_preserved": true,
+      "provider_failure": {
+        "call_observation": {
+          "completion_usage_field": null,
+          "content_empty": null,
+          "duration_ms": 60004.90037491545,
+          "prompt_usage_field": null,
+          "terminal_reason": null,
+          "tool_call_count": null
+        },
+        "http_status": null,
+        "kind": "read_timeout"
+      },
+      "regrade_exit_code": 1,
+      "request_count": 5,
+      "request_failure_count": 1,
+      "request_id": "0c0182ab776741ad91ab5cfe75e127f9",
+      "response_count": 4,
+      "restart_review_identical": true,
+      "run_id": "0244c1eaf88d460c90c2e1a0c036f694",
+      "status": "failed",
+      "tool_progress": {
+        "all_ends_no_error_observed": true,
+        "coverage": "recorded",
+        "events_truncated": false,
+        "observed_events": 6,
+        "started_and_ended_tools": [
+          "tree",
+          "read_file",
+          "emit_plan"
+        ]
+      },
+      "usage": {
+        "completion_tokens": null,
+        "prompt_tokens": null
+      },
+      "verification_status": null
+    }
+  ],
+  "runtime_revision": "a9d60720481703ad5ea0a54dc032f5ce6032f9c3",
+  "task_count": 2
+}
