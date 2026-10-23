@@ -277,3 +277,8 @@ The [completed provider-timeout comparison](PROVIDER_WAIT_RESULTS.md) records
 0/2 accepted at 60 seconds and 2/2 completed-and-accepted at 180 seconds on original
 T09, within unchanged task budgets. These selected public-task results do not
 promote a production default or close release gates.
+
+The [ten-task provider-timeout follow-up protocol](PROVIDER_WAIT_TEN_TASK_PROTOCOL.md)
+prepares broader candidate validation at the existing 180-second provider setting.
+Original tasks, clients, criteria and total/phase budgets remain; no inference
+or production promotion precedes fresh preflight and reviewed execution freeze.
