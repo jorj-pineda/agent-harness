@@ -1,0 +1,4274 @@
+{
+  "arm_counts": {
+    "180": {
+      "artifact_accepted": 2,
+      "completed_and_accepted": 2,
+      "executed": 2,
+      "planned": 2
+    },
+    "60": {
+      "artifact_accepted": 0,
+      "completed_and_accepted": 0,
+      "executed": 2,
+      "planned": 2
+    }
+  },
+  "duodoro_head_status_index_refs_unchanged": true,
+  "evidence_sha256": {
+    "outcomes/C1/acceptance.json": "3fe72853e39c9adaa983fa967233787e1d0671d8d4ba716a1ec20c5b1c24575d",
+    "outcomes/C1/cell-audit.json": "c7563438a504df8b0604d8f4a3a38abe7947f3b3cae5069d7fdbc390ac1c9359",
+    "outcomes/C1/chat.txt": "7d5dd201e66239a31f4140689526724cb57dde8856e9d68a62751c6b3590fced",
+    "outcomes/C1/final.diff": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "outcomes/C1/full-final-tree.json": "03647fada969c4d49ddd5b93cbd4c3f73b11de0eb18b9156a6e4f7e588389afe",
+    "outcomes/C1/input-analysis.json": "1929b1757fd469df4effee808a97e3738a76f46b7657242109102800d813f78a",
+    "outcomes/C1/lookup-000.json": "f4b75d471ba95173c639193d7c068172d0cc81276c970bb86fedb9d68c660ecc",
+    "outcomes/C1/regrade.json": "062762b19b99272901958fb3cb9ef4ccd6314f0f9ddc0bebff255d76697e70e5",
+    "outcomes/C1/restarted-human.txt": "cc5337200bef89eb22361c701d1bb4ad2665f0ce668bb2ae7b821e2dd1f20d0f",
+    "outcomes/C1/restarted-run.json": "f4b75d471ba95173c639193d7c068172d0cc81276c970bb86fedb9d68c660ecc",
+    "outcomes/C1/review-server.log": "52b158cd7c80dc3d2970b4150483b03df35ff3465e65f2fefd399bb7e2857bfb",
+    "outcomes/C1/review/http.jsonl": "7d7631db0bda865e0d1787582afda4e5fab5a127ce3ea2dfcf0189f6135ed257",
+    "outcomes/C1/review/provider-construction.json": "f607992752b9f4d2d2725e718f115541a4b8306da806478217b69032bb571c96",
+    "outcomes/C1/run-human.txt": "cc5337200bef89eb22361c701d1bb4ad2665f0ce668bb2ae7b821e2dd1f20d0f",
+    "outcomes/C1/runs.txt": "492278fb6ba680b6e6b491e7c65a6304723ab3fba4ffa1e65993c88e65fb684c",
+    "outcomes/C1/saved-run.json": "5548df6174102889e784819099b0bd431067764769c358943155382494b2ee2d",
+    "outcomes/C1/source-server.log": "a8907550f2a858abcd373c4376fd1c46ead84b1528c66699c3000e0cc02a538d",
+    "outcomes/C1/source/http.jsonl": "031d9b55bce6e28f108a38b91147fd2a0ae1a36fefd0cedf88874f018bb38212",
+    "outcomes/C1/source/provider-construction.json": "72f1541cabb6b70a1fa942c1887e19f44257cbc64bb1e5daf13c627c4b3b0789",
+    "outcomes/C1/staging.json": "20fbead95d1e15c71ffb542267cdcd2637407e90d8ae388d9aef56d8e3206413",
+    "outcomes/C1/submission.json": "7a8bc0fde287b0ee226ed90fdb76dec339de3a8a0529f34815fedfd49bd7a886",
+    "outcomes/C1/summary.json": "9d37a6a9add8a23567323110f64bd25c9a7dddfb7c01f4b792456fca59976d74",
+    "outcomes/C1/unload.json": "e3617cad42f29ce26c545d2a564055db270bea99cce1ee8cf8faf3acd1e6ad90",
+    "outcomes/C2/acceptance.json": "13cb33cc15152dc315efcf31e3937e95514b3531643701148465eae3e56cf603",
+    "outcomes/C2/cell-audit.json": "7b4dbacca485b5921663e6bb83766be8a1bb0737c8ba03cbc1d7de876b783cf5",
+    "outcomes/C2/chat.txt": "1fae8ed350761db0fbe7e2c2dc3a60ce69f45f9b6e3fe0292bb2213dc9f176f4",
+    "outcomes/C2/final.diff": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "outcomes/C2/full-final-tree.json": "03647fada969c4d49ddd5b93cbd4c3f73b11de0eb18b9156a6e4f7e588389afe",
+    "outcomes/C2/input-analysis.json": "8f999a7415ccee448cd61fa8be39d1ee13a78f23ff07b5cc390362c01b0eedac",
+    "outcomes/C2/lookup-000.json": "531130ad8c46f6eae6dc527b59ab7f15ac67a6d059b6526f5f3c071937c29445",
+    "outcomes/C2/regrade.json": "c89cac4a59fcc0ed39a8a528d923cdd95c6b9d456e32bb71b7d1af0306935352",
+    "outcomes/C2/restarted-human.txt": "1e67d73f0b94fca977498dfe5829d6c48e1550f8925b318d8b2597a5c6b44665",
+    "outcomes/C2/restarted-run.json": "531130ad8c46f6eae6dc527b59ab7f15ac67a6d059b6526f5f3c071937c29445",
+    "outcomes/C2/review-server.log": "ff7ef69cee6b8a82b57118c7d71c237f25da36d92ddf2a73d4cc5f635412784e",
+    "outcomes/C2/review/http.jsonl": "a1e92ce16ff9b7b69680723a3022378d7dfde6b90b6179fa287b84e3a49c330f",
+    "outcomes/C2/review/provider-construction.json": "2caffe519137321454d8e2055e87a4a6e4391885b0120f123e4cacbd6337d393",
+    "outcomes/C2/run-human.txt": "1e67d73f0b94fca977498dfe5829d6c48e1550f8925b318d8b2597a5c6b44665",
+    "outcomes/C2/runs.txt": "3512c6dab9bdb222829f7e6ca8de41131eddd37acc419ff125d77d241c9ca1d3",
+    "outcomes/C2/saved-run.json": "a88644180f4c8eb60d6374a84b6cfe77dcb5381e59dcfb8921355177fd83e0a0",
+    "outcomes/C2/source-server.log": "89994a36b338beee0fba216adf536632417d2f71b8810ca85d97cac63bc19329",
+    "outcomes/C2/source/http.jsonl": "b8792c56fb4bb79fa166662c8e7f778503d410b1ab0c889c0d26d0e47ef5178e",
+    "outcomes/C2/source/provider-construction.json": "6ad0365d8b5f931edd6a5cd5cf49792d61ac3efc5c37dff8d76a1c338ef7007e",
+    "outcomes/C2/staging.json": "a7fb82dce31dd3bcd76f82b950f740d9cbfac7c94b2e37289a4b669e1e18a3c5",
+    "outcomes/C2/submission.json": "6846e90a36c770c7ecc1bfc5b6627356d3b86a45e38ebdd97371e3b6b2999685",
+    "outcomes/C2/summary.json": "6d2e018f5b69ceaf3a055611c949eb27fe28ca37442ed4cda0f50954c5ac15bb",
+    "outcomes/C2/unload.json": "8f64bcc7e64a26e53681912ec65f0e2b9ae004bea66db86118fc22c216b85dba",
+    "outcomes/W1/acceptance.json": "1f947a8cea597aa3f18c2062a6387cc7168a7f4c02aa8a059045e4dba9ecab1f",
+    "outcomes/W1/cell-audit.json": "199619701826ba9d5f71773d616a2b188bb9c3db63d4b006d4f2f10e63446b5f",
+    "outcomes/W1/chat.txt": "6afc13d8b040e881e6c527e371552231bedfde91182a6008e3aa2fc7ebc6ecd5",
+    "outcomes/W1/final.diff": "aa62e83cce6d9ac081eeff28d2781ce0e4f89a17d12d2678fb9b0a1bbc774e93",
+    "outcomes/W1/full-final-tree.json": "511b5c111c280e8647138daf2e8bbb4dde23a7a19686a7757d78072325948f15",
+    "outcomes/W1/input-analysis.json": "b49348f350dfd1a2a38216bc9af41f31fb024c5a98b67112979da09679518493",
+    "outcomes/W1/lookup-000.json": "aade8527b81dda89207ebd9eeab9b243b66c7d990f0e5625fb45a096f3f7b8b4",
+    "outcomes/W1/regrade.json": "aedbe60a91012481038ba7ba207c5abdab65d99d9c403bbeab503ebcd3fe8263",
+    "outcomes/W1/restarted-human.txt": "489cba000c38cf63c6f2b148cf931fd2f26c253a9278327681c7cc507dcfc5bf",
+    "outcomes/W1/restarted-run.json": "aade8527b81dda89207ebd9eeab9b243b66c7d990f0e5625fb45a096f3f7b8b4",
+    "outcomes/W1/review-server.log": "f0b625e9f37fded445188b4f4a78e260927a65570df9e4015b13affd9d32e3d3",
+    "outcomes/W1/review/http.jsonl": "cdb52d5570148c71defa8439882e9a75dbb35fd1e88bf6f18e6ba6d1729e5e3c",
+    "outcomes/W1/review/provider-construction.json": "ee503a0f22ce55df2a840c3b1b1293afaf22b1a8e19f7517c14f2f0174ddf230",
+    "outcomes/W1/run-human.txt": "489cba000c38cf63c6f2b148cf931fd2f26c253a9278327681c7cc507dcfc5bf",
+    "outcomes/W1/runs.txt": "4adc29592aef8674759a480797fe611c37e746a8f968d7db1e51c96f87c419b5",
+    "outcomes/W1/saved-run.json": "54f30b78ae3063aee804f8b9ce2cd63544de43f1e5a09a3ad015c826dac85722",
+    "outcomes/W1/source-server.log": "cacbc5ba5914fd8483c9ea5928f0802611b004e5ca866b2f1b83f8954e722d8d",
+    "outcomes/W1/source/http.jsonl": "376c60c4e8fc245d6c884b569e74b9a11a3dad2956267f6b587d0d2b82a783bc",
+    "outcomes/W1/source/provider-construction.json": "31354cfcd38435265f80e70e05caf61773c6f8ff1120e24734bbb66ea6fda3e3",
+    "outcomes/W1/staging.json": "19879fdc0c563503bec91f0bcdda47812105eb96334e5990bfb480fe30b6fb34",
+    "outcomes/W1/submission.json": "eccdd266d27f9298ba654cd8e699d9dbe72c1e71c324fa428b0748d5fc0c9c51",
+    "outcomes/W1/summary.json": "bf433f415c4d6ff7493f067128211e3cc31879baf3fb0e23d925759f54b9d33e",
+    "outcomes/W1/unload.json": "7cff2254ec630e2ff95047f3a27420a2329c10dced28dbeec1fabad932344f2a",
+    "outcomes/W2/acceptance.json": "17c355371f66aa094320f9bf0de96fe90d0277a57cc56b5a21731a3933a69cbe",
+    "outcomes/W2/cell-audit.json": "3781dc5a308d682e4a00adf10626fa42cf495adea08ac0a983ac304a306782f8",
+    "outcomes/W2/chat.txt": "9429659748d1ce65ff1d22e2fdf445643cdacefa6b59f4c2a06d9927b77bfceb",
+    "outcomes/W2/final.diff": "f774ef40ef69be6d4e6a6bdc8e6e18b816f6defbb4eccb3663cb159bf45e0096",
+    "outcomes/W2/full-final-tree.json": "77712029ba9e787544017cf1de22f728cdc0daf85d55529dd0d9465da0ee10de",
+    "outcomes/W2/input-analysis.json": "70eac30434be50eac6860445ad899edc0e63a6b1b7d0429212675412b584a260",
+    "outcomes/W2/lookup-000.json": "da6caef0003e2b4ac988588a0a9febb65205e95f3f9d05aaa0293ef4e9957f9b",
+    "outcomes/W2/regrade.json": "5e63028265257ebdf0eb042113a610d81b6d4593972a0e97234ccbeaed671ca6",
+    "outcomes/W2/restarted-human.txt": "01db72c6560fca10fbd0afbf966e25d9792c529ee4e7e0946a8fd4f97d7000ff",
+    "outcomes/W2/restarted-run.json": "da6caef0003e2b4ac988588a0a9febb65205e95f3f9d05aaa0293ef4e9957f9b",
+    "outcomes/W2/review-server.log": "3747f25c7ac4365e437f8e7fd3646d3b13bbb77e3ea3d0bd1fd0dd72ecf77fa2",
+    "outcomes/W2/review/http.jsonl": "225ebe27e99a4570beb11e57470d4f3e6f1692a1a1c5f46b95522803dbc36ba5",
+    "outcomes/W2/review/provider-construction.json": "09496577a1653392bb1b92977e9c4815b46ec271d8565a267a990405b7a0ebd8",
+    "outcomes/W2/run-human.txt": "01db72c6560fca10fbd0afbf966e25d9792c529ee4e7e0946a8fd4f97d7000ff",
+    "outcomes/W2/runs.txt": "ab1d58b0f98489ceabe626c97e932af2ab724d6ed4a49ed46d1b6ac0d9a754b1",
+    "outcomes/W2/saved-run.json": "c05f0f3197566d6e6ec9c917209e3e39ebaa0be332b2941c6205851304448092",
+    "outcomes/W2/source-server.log": "7f460ea5cd31d6d5454f45743be02389f6d672f3edb630b822024fcf39329d47",
+    "outcomes/W2/source/http.jsonl": "c240fb2875d5537bab0416ba22c7b60aa3e0ecf01f91a8e3efd892e0d35a6346",
+    "outcomes/W2/source/provider-construction.json": "b3cb5e8ec3aaca0cb16996d467a101480c386a240635617f1510ce26bba5975c",
+    "outcomes/W2/staging.json": "f33bbb409819aeaebc46e30cf5f81655ed43842e6f1975a816c14ff6b4e2242a",
+    "outcomes/W2/submission.json": "9aa56b767b89d436feba09ef724e71cc7507b2a82f275eff894d0efac46312f6",
+    "outcomes/W2/summary.json": "0ca290357919fa99fb5e824a808e624baa1802f4b93df5fa47b5457a2824ad31",
+    "outcomes/W2/unload.json": "29781a464b34b0bb124ac60168149942dcd672e3d98ca87749e3a93e22cecad3"
+  },
+  "execution_lifecycle": [
+    {
+      "cell": "C1",
+      "ended_at": 1792795251.332095,
+      "listener_released": true,
+      "pid": 41408,
+      "purpose": "source",
+      "returncode": -15,
+      "shutdown_complete": true,
+      "started_at": 1792795114.934359
+    },
+    {
+      "cell": "C1",
+      "ended_at": 1792795254.554755,
+      "listener_released": true,
+      "pid": 43236,
+      "purpose": "review",
+      "returncode": -15,
+      "shutdown_complete": true,
+      "started_at": 1792795253.252338
+    },
+    {
+      "cell": "W1",
+      "ended_at": 1792795467.805471,
+      "listener_released": true,
+      "pid": 43260,
+      "purpose": "source",
+      "returncode": -15,
+      "shutdown_complete": true,
+      "started_at": 1792795255.631857
+    },
+    {
+      "cell": "W1",
+      "ended_at": 1792795470.875078,
+      "listener_released": true,
+      "pid": 63078,
+      "purpose": "review",
+      "returncode": -15,
+      "shutdown_complete": true,
+      "started_at": 1792795469.524388
+    },
+    {
+      "cell": "W2",
+      "ended_at": 1792795676.548883,
+      "listener_released": true,
+      "pid": 63970,
+      "purpose": "source",
+      "returncode": -15,
+      "shutdown_complete": true,
+      "started_at": 1792795471.936394
+    },
+    {
+      "cell": "W2",
+      "ended_at": 1792795679.585911,
+      "listener_released": true,
+      "pid": 83716,
+      "purpose": "review",
+      "returncode": -15,
+      "shutdown_complete": true,
+      "started_at": 1792795678.2204769
+    },
+    {
+      "cell": "C2",
+      "ended_at": 1792795815.457389,
+      "listener_released": true,
+      "pid": 83740,
+      "purpose": "source",
+      "returncode": -15,
+      "shutdown_complete": true,
+      "started_at": 1792795680.6289248
+    },
+    {
+      "cell": "C2",
+      "ended_at": 1792795818.788435,
+      "listener_released": true,
+      "pid": 85793,
+      "purpose": "review",
+      "returncode": -15,
+      "shutdown_complete": true,
+      "started_at": 1792795817.335977
+    }
+  ],
+  "freeze_sha256": "826cbbedd5fa9631919df963cfeb6d7ec000f017ea82ab4eeed9e4f4783cb6aa",
+  "kind": "real-model-real-tools-provider-timeout-comparison",
+  "limits": [
+    "Four selected public-task cells, one model, not a held-out/general quality or release result.",
+    "Longer scalar changes all HTTP phases inside unchanged300-second task allowance; wire I/O is inside post.",
+    "Unknown in-flight usage stays unknown; input presence is not backend receipt or generation progress.",
+    "Incomplete evidence blocks further staging; no automatic replacement, repair, production promotion or G2-G5 closure."
+  ],
+  "local_root": "/Users/jorge/.local/share/agent-harness/trials/duodoro-provider-wait-ph07ytu3",
+  "model": {
+    "details": {
+      "context_length": 262144,
+      "embedding_length": 3840,
+      "families": [
+        "gemma4"
+      ],
+      "family": "gemma4",
+      "format": "gguf",
+      "parameter_size": "11.9B",
+      "parent_model": "",
+      "quantization_level": "Q4_K_M"
+    },
+    "digest": "4eb23ef187e2c5462566d6a1d3bbbc2f1346d0b4327cbb66d58fffbcc9b2b05c",
+    "name": "gemma4:12b",
+    "ollama_version": "0.33.2",
+    "size": 7556508396
+  },
+  "model_unloaded": true,
+  "not_executed_cells": [],
+  "operator_execution_corrections": [],
+  "planned_order": [
+    "C1",
+    "W1",
+    "W2",
+    "C2"
+  ],
+  "post_execution_audit": {
+    "all_92_outcome_hashes_match": true,
+    "all_frozen_inputs_match": true,
+    "all_full_archives_grade_regrade_and_saved_restart_match": true,
+    "all_private_input_hashes_and_0700_0600_permissions_match": true,
+    "audit_recipe_sha256": "241ddee6569cdff89c8389f77ab93a430ffe24ac3a46b0a5b9203b5f80894f1f",
+    "duodoro_head_status_index_refs_unchanged": true,
+    "eight_owned_APIs_stopped_listener_released_model_unloaded": true,
+    "first_normalized_and_wire_equal": true,
+    "kind": "read-only-post-execution-audit-NOT-an-additional-model-attempt",
+    "profiles_only_timeout_scalar_differs": true,
+    "raw_results_sha256": "70040f0d7f9926b58e055e9aab3ea17b0f9ed06fa4f6effe041ccdda988b91d8",
+    "response_evidence": [
+      {
+        "call_observations": [
+          {
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": true,
+              "duration_ms": 21732.01295803301,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 0
+            },
+            "iteration": 0,
+            "kind": "response"
+          },
+          {
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": true,
+              "duration_ms": 1318.1182919070125,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 1
+            },
+            "iteration": 1,
+            "kind": "response"
+          },
+          {
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": true,
+              "duration_ms": 25633.146584033966,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 1
+            },
+            "iteration": 2,
+            "kind": "response"
+          },
+          {
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": true,
+              "duration_ms": 25513.82945792284,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 1
+            },
+            "iteration": 3,
+            "kind": "response"
+          },
+          {
+            "call_observation": {
+              "completion_usage_field": null,
+              "content_empty": null,
+              "duration_ms": 60053.32095804624,
+              "prompt_usage_field": null,
+              "terminal_reason": null,
+              "tool_call_count": null
+            },
+            "iteration": 4,
+            "kind": "request_failure"
+          }
+        ],
+        "cell": "C1",
+        "check_attempts": null,
+        "configured_tool_calls": null,
+        "final_response_present": false,
+        "latency_ms": null,
+        "workspace_review_ms": null
+      },
+      {
+        "call_observations": [
+          {
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": true,
+              "duration_ms": 20416.0146251088,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 0
+            },
+            "iteration": 0,
+            "kind": "response"
+          },
+          {
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": true,
+              "duration_ms": 1247.1687919460237,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 1
+            },
+            "iteration": 1,
+            "kind": "response"
+          },
+          {
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": true,
+              "duration_ms": 25668.034792062826,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 1
+            },
+            "iteration": 2,
+            "kind": "response"
+          },
+          {
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": true,
+              "duration_ms": 25498.696041991934,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 1
+            },
+            "iteration": 3,
+            "kind": "response"
+          },
+          {
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": true,
+              "duration_ms": 95628.04733298253,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 1
+            },
+            "iteration": 4,
+            "kind": "response"
+          },
+          {
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": true,
+              "duration_ms": 17954.284916981123,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 1
+            },
+            "iteration": 5,
+            "kind": "response"
+          },
+          {
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": false,
+              "duration_ms": 23260.821250034496,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 0
+            },
+            "iteration": 6,
+            "kind": "response"
+          }
+        ],
+        "cell": "W1",
+        "check_attempts": [
+          {
+            "argv": [
+              "python",
+              "-m",
+              "pytest",
+              "-q",
+              "test_visible.py"
+            ],
+            "error": null,
+            "exit_code": 0,
+            "relevant": true,
+            "status": "passed",
+            "superseded_by_edit": false
+          }
+        ],
+        "configured_tool_calls": 5,
+        "final_response_present": true,
+        "latency_ms": 210363.2463749647,
+        "workspace_review_ms": 104.00000005029142
+      },
+      {
+        "call_observations": [
+          {
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": true,
+              "duration_ms": 17882.4183329707,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 0
+            },
+            "iteration": 0,
+            "kind": "response"
+          },
+          {
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": true,
+              "duration_ms": 1264.8997079813853,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 1
+            },
+            "iteration": 1,
+            "kind": "response"
+          },
+          {
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": true,
+              "duration_ms": 26636.84541604016,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 1
+            },
+            "iteration": 2,
+            "kind": "response"
+          },
+          {
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": true,
+              "duration_ms": 26484.886749996804,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 1
+            },
+            "iteration": 3,
+            "kind": "response"
+          },
+          {
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": true,
+              "duration_ms": 95871.55358295422,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 1
+            },
+            "iteration": 4,
+            "kind": "response"
+          },
+          {
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": true,
+              "duration_ms": 17985.090916976333,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 1
+            },
+            "iteration": 5,
+            "kind": "response"
+          },
+          {
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": false,
+              "duration_ms": 15992.162708076648,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 0
+            },
+            "iteration": 6,
+            "kind": "response"
+          }
+        ],
+        "cell": "W2",
+        "check_attempts": [
+          {
+            "argv": [
+              "python",
+              "-m",
+              "pytest",
+              "-q",
+              "test_visible.py"
+            ],
+            "error": null,
+            "exit_code": 0,
+            "relevant": true,
+            "status": "passed",
+            "superseded_by_edit": false
+          }
+        ],
+        "configured_tool_calls": 5,
+        "final_response_present": true,
+        "latency_ms": 202794.49516701698,
+        "workspace_review_ms": 111.00000003352761
+      },
+      {
+        "call_observations": [
+          {
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": true,
+              "duration_ms": 18293.49483293481,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 0
+            },
+            "iteration": 0,
+            "kind": "response"
+          },
+          {
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": true,
+              "duration_ms": 1318.9845000160858,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 1
+            },
+            "iteration": 1,
+            "kind": "response"
+          },
+          {
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": true,
+              "duration_ms": 26771.97758294642,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 1
+            },
+            "iteration": 2,
+            "kind": "response"
+          },
+          {
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": true,
+              "duration_ms": 26571.847334038466,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 1
+            },
+            "iteration": 3,
+            "kind": "response"
+          },
+          {
+            "call_observation": {
+              "completion_usage_field": null,
+              "content_empty": null,
+              "duration_ms": 60023.83674995508,
+              "prompt_usage_field": null,
+              "terminal_reason": null,
+              "tool_call_count": null
+            },
+            "iteration": 4,
+            "kind": "request_failure"
+          }
+        ],
+        "cell": "C2",
+        "check_attempts": null,
+        "configured_tool_calls": null,
+        "final_response_present": false,
+        "latency_ms": null,
+        "workspace_review_ms": null
+      }
+    ]
+  },
+  "raw_inputs_local_only": true,
+  "rows": [
+    {
+      "archive_tree_sha256": "03647fada969c4d49ddd5b93cbd4c3f73b11de0eb18b9156a6e4f7e588389afe",
+      "artifact_accepted": false,
+      "audit_complete": true,
+      "budget_evidence": {
+        "events": [
+          {
+            "anchor_adjustment_tokens": 0,
+            "call_observation": null,
+            "completion_tokens_used": 0,
+            "estimated_prompt_tokens": 2841,
+            "heuristic_prompt_tokens": 2841,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "87b0b9f5b24177f89d4678ceef097f4750c3a0a0272c20c17d47c705b89bd40d",
+              "request_sha256": "185b166bb585e379da5bc60624b2ab2ce3543c80490d8e94079f92fa5839eef9",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 0,
+            "kind": "request",
+            "max_tokens": 2048,
+            "message_count": 2,
+            "prompt_tokens_used": 0,
+            "usage": null
+          },
+          {
+            "anchor_adjustment_tokens": null,
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": true,
+              "duration_ms": 21732.01295803301,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 0
+            },
+            "completion_tokens_used": 7,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "identity": null,
+            "iteration": 0,
+            "kind": "response",
+            "max_tokens": null,
+            "message_count": 2,
+            "prompt_tokens_used": 1748,
+            "usage": {
+              "completion_tokens": 7,
+              "prompt_tokens": 1748
+            }
+          },
+          {
+            "anchor_adjustment_tokens": 0,
+            "call_observation": null,
+            "completion_tokens_used": 7,
+            "estimated_prompt_tokens": 2897,
+            "heuristic_prompt_tokens": 2897,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "09dadddb209b842eb487979e19f8ad23c72858b8ed821d3eab847bd4e72eb82f",
+              "request_sha256": "d7c048140cfbdcc26bc53c1ea70f0f84ac8ae358b80717eab54014bfc62409a0",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 1,
+            "kind": "request",
+            "max_tokens": 2048,
+            "message_count": 4,
+            "prompt_tokens_used": 1748,
+            "usage": null
+          },
+          {
+            "anchor_adjustment_tokens": null,
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": true,
+              "duration_ms": 1318.1182919070125,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 1
+            },
+            "completion_tokens_used": 14,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "identity": null,
+            "iteration": 1,
+            "kind": "response",
+            "max_tokens": null,
+            "message_count": 4,
+            "prompt_tokens_used": 3534,
+            "usage": {
+              "completion_tokens": 7,
+              "prompt_tokens": 1786
+            }
+          },
+          {
+            "anchor_adjustment_tokens": 0,
+            "call_observation": null,
+            "completion_tokens_used": 14,
+            "estimated_prompt_tokens": 5304,
+            "heuristic_prompt_tokens": 5304,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "36021658ce1119a07cbcae76eec09280c7c7fedeac069278a50d08e3e7c30bb3",
+              "request_sha256": "f45ca9d8300d84f66ca74c7689bf2041e5c506192c062b1c0c17e55c6c8fc295",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 2,
+            "kind": "request",
+            "max_tokens": 2048,
+            "message_count": 6,
+            "prompt_tokens_used": 3534,
+            "usage": null
+          },
+          {
+            "anchor_adjustment_tokens": null,
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": true,
+              "duration_ms": 25633.146584033966,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 1
+            },
+            "completion_tokens_used": 42,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "identity": null,
+            "iteration": 2,
+            "kind": "response",
+            "max_tokens": null,
+            "message_count": 6,
+            "prompt_tokens_used": 7863,
+            "usage": {
+              "completion_tokens": 28,
+              "prompt_tokens": 4329
+            }
+          },
+          {
+            "anchor_adjustment_tokens": 0,
+            "call_observation": null,
+            "completion_tokens_used": 42,
+            "estimated_prompt_tokens": 6716,
+            "heuristic_prompt_tokens": 6716,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "11f5a201e6d80f460d0ada04fafd5c4ce317613b02f9deaee23fedefa5f89a59",
+              "request_sha256": "d771478d72c309e2bd7dd6b0fd7f8b6566151f35b122853a8fb64d477ebb4b1b",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 3,
+            "kind": "request",
+            "max_tokens": 2048,
+            "message_count": 8,
+            "prompt_tokens_used": 7863,
+            "usage": null
+          },
+          {
+            "anchor_adjustment_tokens": null,
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": true,
+              "duration_ms": 25513.82945792284,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 1
+            },
+            "completion_tokens_used": 199,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "identity": null,
+            "iteration": 3,
+            "kind": "response",
+            "max_tokens": null,
+            "message_count": 8,
+            "prompt_tokens_used": 13528,
+            "usage": {
+              "completion_tokens": 157,
+              "prompt_tokens": 5665
+            }
+          },
+          {
+            "anchor_adjustment_tokens": 0,
+            "call_observation": null,
+            "completion_tokens_used": 199,
+            "estimated_prompt_tokens": 7087,
+            "heuristic_prompt_tokens": 7087,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "0db52a65f7ae3e3355e1f2e4863a623d3fb00fe852bc367355ad605fee83cf84",
+              "request_sha256": "8dc8f86ffa2aac4fe3c4631bcbe670d4c783474c4d7e52b19ec4323f8e7369df",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 4,
+            "kind": "request",
+            "max_tokens": 2048,
+            "message_count": 10,
+            "prompt_tokens_used": 13528,
+            "usage": null
+          },
+          {
+            "anchor_adjustment_tokens": null,
+            "call_observation": {
+              "completion_usage_field": null,
+              "content_empty": null,
+              "duration_ms": 60053.32095804624,
+              "prompt_usage_field": null,
+              "terminal_reason": null,
+              "tool_call_count": null
+            },
+            "completion_tokens_used": null,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "identity": null,
+            "iteration": 4,
+            "kind": "request_failure",
+            "max_tokens": null,
+            "message_count": 10,
+            "prompt_tokens_used": null,
+            "usage": null
+          }
+        ],
+        "events_truncated": false,
+        "observed_events": 10,
+        "read_only": true,
+        "scope_note": "Bounded prefix of normalized request attempts, reported response usage and token-gate stops. Request precedes delivery; response usage is a provider report, not backend attestation. Failure usage is unknown; a request without a response may have consumed tokens. Missing/truncated evidence is not zero usage or proven budget compliance. No messages, paths, call IDs, tool arguments/results or exception text are stored here. Fingerprints cover normalized inputs only; see the separate configured profile for limits/provider identity. Optional call observations describe adapter HTTP timing and allowlisted response fields, not backend causes or token compliance. Missing observations stay unknown, including cancellation, parsing failures and unsupported providers. Wall/tool/iteration stops are not token-gate events. Not completion, acceptance, replay or permission to resume."
+      },
+      "cell": "C1",
+      "changed_paths": [],
+      "completed_and_accepted": false,
+      "completion_reason": null,
+      "completion_status": null,
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_truncated": false,
+      "external_exit_code": 1,
+      "failure_count": 1,
+      "full_tree_sha256": "03647fada969c4d49ddd5b93cbd4c3f73b11de0eb18b9156a6e4f7e588389afe",
+      "input_analysis": {
+        "inputs_sha256": {
+          "request-0001-normalized.json": "e25ad91fcd1e326f963d128ed53a01c8d793330c3327a2049cd5a964cb930a8a",
+          "request-0001-wire.json": "f80d49f2c5e7afb82991b061bd64988fbf544968f8901572532b6827ebedc201",
+          "request-0002-normalized.json": "f3afef5fd238018695267231551d563c487d1e3a655bbba6d71c0660f450f91d",
+          "request-0002-wire.json": "19ca789cb913844ac56736e2489a4d2cb8b1b7f9c7b01565a7169c413aa4b7b3",
+          "request-0003-normalized.json": "82cb209168061400d924f9c52864791215cbd887f4fe821cf5ae45bbe9d35672",
+          "request-0003-wire.json": "2d369288de1c0be7e327c7261fb8024cf3f924f2e671ad65218626aa495302f0",
+          "request-0004-normalized.json": "0e9523284df8d4daadb601547c23de3f69aa07a77df4466d4eddb54c78299b63",
+          "request-0004-wire.json": "c606edbf3b92272ad240c7e9342c00af90caa32735f7e27e42361f4e49f3fa3c",
+          "request-0005-normalized.json": "4ef1590db68fc2f95c7d5cb2509b33f395d485d3cf70d4c29d7666f4ffb28ca2",
+          "request-0005-wire.json": "b46568a3a9e71e816672343d0a93a303532a4a23252153175c1e6ae42f00f3f6"
+        },
+        "kind": "offline-input-pairing-and-mock-serialization-NOT-inference",
+        "limits": [
+          "Input presence before forwarding is not backend receipt or execution.",
+          "Mock serialization uses no HTTP network/inference and is not failed-request model replay.",
+          "Heuristic footprint is not provider tokenization/backend compliance; saved estimate may use calibration.",
+          "Valid role/tool/option continuity does not prove semantic correctness, absence of all malformed values or backend cause."
+        ],
+        "request_count": 5,
+        "rows": [
+          {
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "87b0b9f5b24177f89d4678ceef097f4750c3a0a0272c20c17d47c705b89bd40d",
+              "request_sha256": "185b166bb585e379da5bc60624b2ab2ce3543c80490d8e94079f92fa5839eef9",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 0,
+            "max_tokens": 2048,
+            "message_roles": [
+              "system",
+              "user"
+            ],
+            "normalized_bytes": 9152,
+            "normalized_sha256": "e25ad91fcd1e326f963d128ed53a01c8d793330c3327a2049cd5a964cb930a8a",
+            "production_adapter_mock_serialization_byte_equal": true,
+            "saved_prompt_estimate": 2841,
+            "sequence": 1,
+            "tool_reply_id_name_continuity": true,
+            "tool_result_names": [],
+            "uncalibrated_heuristic_footprint": {
+              "anchor_adjustment_tokens": 0,
+              "estimated_prompt_tokens": 2841,
+              "heuristic_prompt_tokens": 2841,
+              "largest_messages": [
+                {
+                  "message_index": 1,
+                  "payload_bytes": 983,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 0,
+                  "payload_bytes": 829,
+                  "role": "system",
+                  "tool_name": null
+                }
+              ],
+              "largest_messages_truncated": false,
+              "message_estimate_tokens": 612,
+              "prompt_estimate_bytes_per_token": 3.0,
+              "tool_schema_estimate_tokens": 2229
+            },
+            "wire_bytes": 8661,
+            "wire_sha256": "f80d49f2c5e7afb82991b061bd64988fbf544968f8901572532b6827ebedc201"
+          },
+          {
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "09dadddb209b842eb487979e19f8ad23c72858b8ed821d3eab847bd4e72eb82f",
+              "request_sha256": "d7c048140cfbdcc26bc53c1ea70f0f84ac8ae358b80717eab54014bfc62409a0",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 1,
+            "max_tokens": 2048,
+            "message_roles": [
+              "system",
+              "user",
+              "assistant",
+              "user"
+            ],
+            "normalized_bytes": 9483,
+            "normalized_sha256": "f3afef5fd238018695267231551d563c487d1e3a655bbba6d71c0660f450f91d",
+            "production_adapter_mock_serialization_byte_equal": true,
+            "saved_prompt_estimate": 2897,
+            "sequence": 2,
+            "tool_reply_id_name_continuity": true,
+            "tool_result_names": [],
+            "uncalibrated_heuristic_footprint": {
+              "anchor_adjustment_tokens": 0,
+              "estimated_prompt_tokens": 2897,
+              "heuristic_prompt_tokens": 2897,
+              "largest_messages": [
+                {
+                  "message_index": 1,
+                  "payload_bytes": 983,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 0,
+                  "payload_bytes": 829,
+                  "role": "system",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 3,
+                  "payload_bytes": 142,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 2,
+                  "payload_bytes": 0,
+                  "role": "assistant",
+                  "tool_name": null
+                }
+              ],
+              "largest_messages_truncated": false,
+              "message_estimate_tokens": 668,
+              "prompt_estimate_bytes_per_token": 3.0,
+              "tool_schema_estimate_tokens": 2229
+            },
+            "wire_bytes": 8866,
+            "wire_sha256": "19ca789cb913844ac56736e2489a4d2cb8b1b7f9c7b01565a7169c413aa4b7b3"
+          },
+          {
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "36021658ce1119a07cbcae76eec09280c7c7fedeac069278a50d08e3e7c30bb3",
+              "request_sha256": "f45ca9d8300d84f66ca74c7689bf2041e5c506192c062b1c0c17e55c6c8fc295",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 2,
+            "max_tokens": 2048,
+            "message_roles": [
+              "system",
+              "user",
+              "assistant",
+              "user",
+              "assistant",
+              "tool"
+            ],
+            "normalized_bytes": 18258,
+            "normalized_sha256": "82cb209168061400d924f9c52864791215cbd887f4fe821cf5ae45bbe9d35672",
+            "production_adapter_mock_serialization_byte_equal": true,
+            "saved_prompt_estimate": 5304,
+            "sequence": 3,
+            "tool_reply_id_name_continuity": true,
+            "tool_result_names": [
+              "tree"
+            ],
+            "uncalibrated_heuristic_footprint": {
+              "anchor_adjustment_tokens": 0,
+              "estimated_prompt_tokens": 5304,
+              "heuristic_prompt_tokens": 5304,
+              "largest_messages": [
+                {
+                  "message_index": 5,
+                  "payload_bytes": 7193,
+                  "role": "tool",
+                  "tool_name": "tree"
+                },
+                {
+                  "message_index": 1,
+                  "payload_bytes": 983,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 0,
+                  "payload_bytes": 829,
+                  "role": "system",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 3,
+                  "payload_bytes": 142,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 4,
+                  "payload_bytes": 6,
+                  "role": "assistant",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 2,
+                  "payload_bytes": 0,
+                  "role": "assistant",
+                  "tool_name": null
+                }
+              ],
+              "largest_messages_truncated": false,
+              "message_estimate_tokens": 3075,
+              "prompt_estimate_bytes_per_token": 3.0,
+              "tool_schema_estimate_tokens": 2229
+            },
+            "wire_bytes": 17534,
+            "wire_sha256": "2d369288de1c0be7e327c7261fb8024cf3f924f2e671ad65218626aa495302f0"
+          },
+          {
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "11f5a201e6d80f460d0ada04fafd5c4ce317613b02f9deaee23fedefa5f89a59",
+              "request_sha256": "d771478d72c309e2bd7dd6b0fd7f8b6566151f35b122853a8fb64d477ebb4b1b",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 3,
+            "max_tokens": 2048,
+            "message_roles": [
+              "system",
+              "user",
+              "assistant",
+              "user",
+              "assistant",
+              "tool",
+              "assistant",
+              "tool"
+            ],
+            "normalized_bytes": 22992,
+            "normalized_sha256": "0e9523284df8d4daadb601547c23de3f69aa07a77df4466d4eddb54c78299b63",
+            "production_adapter_mock_serialization_byte_equal": true,
+            "saved_prompt_estimate": 6716,
+            "sequence": 4,
+            "tool_reply_id_name_continuity": true,
+            "tool_result_names": [
+              "tree",
+              "read_file"
+            ],
+            "uncalibrated_heuristic_footprint": {
+              "anchor_adjustment_tokens": 0,
+              "estimated_prompt_tokens": 6716,
+              "heuristic_prompt_tokens": 6716,
+              "largest_messages": [
+                {
+                  "message_index": 5,
+                  "payload_bytes": 7193,
+                  "role": "tool",
+                  "tool_name": "tree"
+                },
+                {
+                  "message_index": 7,
+                  "payload_bytes": 4163,
+                  "role": "tool",
+                  "tool_name": "read_file"
+                },
+                {
+                  "message_index": 1,
+                  "payload_bytes": 983,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 0,
+                  "payload_bytes": 829,
+                  "role": "system",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 3,
+                  "payload_bytes": 142,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 6,
+                  "payload_bytes": 48,
+                  "role": "assistant",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 4,
+                  "payload_bytes": 6,
+                  "role": "assistant",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 2,
+                  "payload_bytes": 0,
+                  "role": "assistant",
+                  "tool_name": null
+                }
+              ],
+              "largest_messages_truncated": false,
+              "message_estimate_tokens": 4487,
+              "prompt_estimate_bytes_per_token": 3.0,
+              "tool_schema_estimate_tokens": 2229
+            },
+            "wire_bytes": 22160,
+            "wire_sha256": "c606edbf3b92272ad240c7e9342c00af90caa32735f7e27e42361f4e49f3fa3c"
+          },
+          {
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "0db52a65f7ae3e3355e1f2e4863a623d3fb00fe852bc367355ad605fee83cf84",
+              "request_sha256": "8dc8f86ffa2aac4fe3c4631bcbe670d4c783474c4d7e52b19ec4323f8e7369df",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 4,
+            "max_tokens": 2048,
+            "message_roles": [
+              "system",
+              "user",
+              "assistant",
+              "user",
+              "assistant",
+              "tool",
+              "assistant",
+              "tool",
+              "assistant",
+              "tool"
+            ],
+            "normalized_bytes": 24365,
+            "normalized_sha256": "4ef1590db68fc2f95c7d5cb2509b33f395d485d3cf70d4c29d7666f4ffb28ca2",
+            "production_adapter_mock_serialization_byte_equal": true,
+            "saved_prompt_estimate": 7087,
+            "sequence": 5,
+            "tool_reply_id_name_continuity": true,
+            "tool_result_names": [
+              "tree",
+              "read_file",
+              "emit_plan"
+            ],
+            "uncalibrated_heuristic_footprint": {
+              "anchor_adjustment_tokens": 0,
+              "estimated_prompt_tokens": 7087,
+              "heuristic_prompt_tokens": 7087,
+              "largest_messages": [
+                {
+                  "message_index": 5,
+                  "payload_bytes": 7193,
+                  "role": "tool",
+                  "tool_name": "tree"
+                },
+                {
+                  "message_index": 7,
+                  "payload_bytes": 4163,
+                  "role": "tool",
+                  "tool_name": "read_file"
+                },
+                {
+                  "message_index": 1,
+                  "payload_bytes": 983,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 0,
+                  "payload_bytes": 829,
+                  "role": "system",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 9,
+                  "payload_bytes": 553,
+                  "role": "tool",
+                  "tool_name": "emit_plan"
+                },
+                {
+                  "message_index": 8,
+                  "payload_bytes": 536,
+                  "role": "assistant",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 3,
+                  "payload_bytes": 142,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 6,
+                  "payload_bytes": 48,
+                  "role": "assistant",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 4,
+                  "payload_bytes": 6,
+                  "role": "assistant",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 2,
+                  "payload_bytes": 0,
+                  "role": "assistant",
+                  "tool_name": null
+                }
+              ],
+              "largest_messages_truncated": false,
+              "message_estimate_tokens": 4858,
+              "prompt_estimate_bytes_per_token": 3.0,
+              "tool_schema_estimate_tokens": 2229
+            },
+            "wire_bytes": 23420,
+            "wire_sha256": "b46568a3a9e71e816672343d0a93a303532a4a23252153175c1e6ae42f00f3f6"
+          }
+        ],
+        "total_input_bytes": 164891
+      },
+      "input_analysis_complete": true,
+      "known_response_prefix_usage": {
+        "completion_tokens": 199,
+        "prompt_tokens": 13528
+      },
+      "local_input_files_sha256": {
+        "request-0001-normalized.json": "e25ad91fcd1e326f963d128ed53a01c8d793330c3327a2049cd5a964cb930a8a",
+        "request-0001-wire.json": "f80d49f2c5e7afb82991b061bd64988fbf544968f8901572532b6827ebedc201",
+        "request-0002-normalized.json": "f3afef5fd238018695267231551d563c487d1e3a655bbba6d71c0660f450f91d",
+        "request-0002-wire.json": "19ca789cb913844ac56736e2489a4d2cb8b1b7f9c7b01565a7169c413aa4b7b3",
+        "request-0003-normalized.json": "82cb209168061400d924f9c52864791215cbd887f4fe821cf5ae45bbe9d35672",
+        "request-0003-wire.json": "2d369288de1c0be7e327c7261fb8024cf3f924f2e671ad65218626aa495302f0",
+        "request-0004-normalized.json": "0e9523284df8d4daadb601547c23de3f69aa07a77df4466d4eddb54c78299b63",
+        "request-0004-wire.json": "c606edbf3b92272ad240c7e9342c00af90caa32735f7e27e42361f4e49f3fa3c",
+        "request-0005-normalized.json": "4ef1590db68fc2f95c7d5cb2509b33f395d485d3cf70d4c29d7666f4ffb28ca2",
+        "request-0005-wire.json": "b46568a3a9e71e816672343d0a93a303532a4a23252153175c1e6ae42f00f3f6"
+      },
+      "modes_preserved": true,
+      "one_saved_run_no_reversal_or_replacement": true,
+      "protected_preserved": true,
+      "provider_failure": {
+        "call_observation": {
+          "completion_usage_field": null,
+          "content_empty": null,
+          "duration_ms": 60053.32095804624,
+          "prompt_usage_field": null,
+          "terminal_reason": null,
+          "tool_call_count": null
+        },
+        "http_status": null,
+        "kind": "read_timeout"
+      },
+      "provider_timeout_seconds": 60,
+      "request_count": 5,
+      "request_id": "c91da8a1608c41c3aad72f912da2aafe",
+      "response_count": 4,
+      "restart_identical": true,
+      "run_id": "ea82bd6a107648aa8974cdd6c134ef3b",
+      "status": "failed",
+      "tool_progress": [
+        {
+          "coverage": "recorded",
+          "events": [
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-23T22:38:58.989454Z",
+              "sequence": 1,
+              "tool": "tree",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 8.648792028427124,
+              "observed_at": "2026-10-23T22:38:59.004003Z",
+              "sequence": 2,
+              "tool": "tree",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-23T22:39:24.645216Z",
+              "sequence": 3,
+              "tool": "read_file",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 3.289500117301941,
+              "observed_at": "2026-10-23T22:39:24.649417Z",
+              "sequence": 4,
+              "tool": "read_file",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-23T22:39:50.180145Z",
+              "sequence": 5,
+              "tool": "emit_plan",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 1.7510839700698853,
+              "observed_at": "2026-10-23T22:39:50.182620Z",
+              "sequence": 6,
+              "tool": "emit_plan",
+              "type": "tool_end"
+            }
+          ],
+          "events_truncated": false,
+          "observed_events": 6,
+          "read_only": true,
+          "run_id": "ea82bd6a107648aa8974cdd6c134ef3b",
+          "scope_note": "Bounded prefix of observed tool-start/end metadata; arguments, results, error text, model messages and tool-call IDs are not stored here. Start precedes tool gates, so it does not prove dispatch or mutation. End/error presence is not patch acceptance or verification. A missing end may mean interrupted work or unsaved evidence; file changes may exist. This is not a transcript, checkpoint, replay, repair, or permission to resume. Unknown tool names are recorded as unknown_tool.",
+          "updated_at": "2026-10-23T22:39:50.182620Z"
+        }
+      ],
+      "usage": null,
+      "verification_status": null,
+      "workspace_identity": {
+        "device": 16777233,
+        "inode": 21389221
+      }
+    },
+    {
+      "archive_tree_sha256": "511b5c111c280e8647138daf2e8bbb4dde23a7a19686a7757d78072325948f15",
+      "artifact_accepted": true,
+      "audit_complete": true,
+      "budget_evidence": {
+        "events": [
+          {
+            "anchor_adjustment_tokens": 0,
+            "call_observation": null,
+            "completion_tokens_used": 0,
+            "estimated_prompt_tokens": 2841,
+            "heuristic_prompt_tokens": 2841,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "87b0b9f5b24177f89d4678ceef097f4750c3a0a0272c20c17d47c705b89bd40d",
+              "request_sha256": "185b166bb585e379da5bc60624b2ab2ce3543c80490d8e94079f92fa5839eef9",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 0,
+            "kind": "request",
+            "max_tokens": 2048,
+            "message_count": 2,
+            "prompt_tokens_used": 0,
+            "usage": null
+          },
+          {
+            "anchor_adjustment_tokens": null,
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": true,
+              "duration_ms": 20416.0146251088,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 0
+            },
+            "completion_tokens_used": 7,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "identity": null,
+            "iteration": 0,
+            "kind": "response",
+            "max_tokens": null,
+            "message_count": 2,
+            "prompt_tokens_used": 1748,
+            "usage": {
+              "completion_tokens": 7,
+              "prompt_tokens": 1748
+            }
+          },
+          {
+            "anchor_adjustment_tokens": 0,
+            "call_observation": null,
+            "completion_tokens_used": 7,
+            "estimated_prompt_tokens": 2897,
+            "heuristic_prompt_tokens": 2897,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "09dadddb209b842eb487979e19f8ad23c72858b8ed821d3eab847bd4e72eb82f",
+              "request_sha256": "d7c048140cfbdcc26bc53c1ea70f0f84ac8ae358b80717eab54014bfc62409a0",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 1,
+            "kind": "request",
+            "max_tokens": 2048,
+            "message_count": 4,
+            "prompt_tokens_used": 1748,
+            "usage": null
+          },
+          {
+            "anchor_adjustment_tokens": null,
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": true,
+              "duration_ms": 1247.1687919460237,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 1
+            },
+            "completion_tokens_used": 14,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "identity": null,
+            "iteration": 1,
+            "kind": "response",
+            "max_tokens": null,
+            "message_count": 4,
+            "prompt_tokens_used": 3534,
+            "usage": {
+              "completion_tokens": 7,
+              "prompt_tokens": 1786
+            }
+          },
+          {
+            "anchor_adjustment_tokens": 0,
+            "call_observation": null,
+            "completion_tokens_used": 14,
+            "estimated_prompt_tokens": 5304,
+            "heuristic_prompt_tokens": 5304,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "edeedb5a924826193f4d215c9b5923fa8798b6b148ead586639c43eae2263e75",
+              "request_sha256": "a4222f672e224579918f2654283d95934c09a062e648e0e6c6273ee24724cdb1",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 2,
+            "kind": "request",
+            "max_tokens": 2048,
+            "message_count": 6,
+            "prompt_tokens_used": 3534,
+            "usage": null
+          },
+          {
+            "anchor_adjustment_tokens": null,
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": true,
+              "duration_ms": 25668.034792062826,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 1
+            },
+            "completion_tokens_used": 42,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "identity": null,
+            "iteration": 2,
+            "kind": "response",
+            "max_tokens": null,
+            "message_count": 6,
+            "prompt_tokens_used": 7863,
+            "usage": {
+              "completion_tokens": 28,
+              "prompt_tokens": 4329
+            }
+          },
+          {
+            "anchor_adjustment_tokens": 0,
+            "call_observation": null,
+            "completion_tokens_used": 42,
+            "estimated_prompt_tokens": 6716,
+            "heuristic_prompt_tokens": 6716,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "d30eaaebad50bbeb50d7262fbe6964ee9f6d9abec9e2b2cc425feecbcd1f4541",
+              "request_sha256": "46eb02c643f98160ac311d770e3c632a6df8462f0b9c7b299bb64b7ee7f00b33",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 3,
+            "kind": "request",
+            "max_tokens": 2048,
+            "message_count": 8,
+            "prompt_tokens_used": 7863,
+            "usage": null
+          },
+          {
+            "anchor_adjustment_tokens": null,
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": true,
+              "duration_ms": 25498.696041991934,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 1
+            },
+            "completion_tokens_used": 199,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "identity": null,
+            "iteration": 3,
+            "kind": "response",
+            "max_tokens": null,
+            "message_count": 8,
+            "prompt_tokens_used": 13528,
+            "usage": {
+              "completion_tokens": 157,
+              "prompt_tokens": 5665
+            }
+          },
+          {
+            "anchor_adjustment_tokens": 0,
+            "call_observation": null,
+            "completion_tokens_used": 199,
+            "estimated_prompt_tokens": 7087,
+            "heuristic_prompt_tokens": 7087,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "6f9e2709f0571bfcc13c7330ce888f04f5771d351b2d378c1b223a4f7f14e898",
+              "request_sha256": "883960d3215ae917a17f56534771a49cf7bb74852cf08b2cc9196b396b697372",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 4,
+            "kind": "request",
+            "max_tokens": 2048,
+            "message_count": 10,
+            "prompt_tokens_used": 13528,
+            "usage": null
+          },
+          {
+            "anchor_adjustment_tokens": null,
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": true,
+              "duration_ms": 95628.04733298253,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 1
+            },
+            "completion_tokens_used": 1442,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "identity": null,
+            "iteration": 4,
+            "kind": "response",
+            "max_tokens": null,
+            "message_count": 10,
+            "prompt_tokens_used": 19500,
+            "usage": {
+              "completion_tokens": 1243,
+              "prompt_tokens": 5972
+            }
+          },
+          {
+            "anchor_adjustment_tokens": 0,
+            "call_observation": null,
+            "completion_tokens_used": 1442,
+            "estimated_prompt_tokens": 8515,
+            "heuristic_prompt_tokens": 8515,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "eea26dd4fde25d97d10612898e85195cd09fd67b1aec9cc5360fe5ca97bb6dae",
+              "request_sha256": "10b95818548a5094626c25f0b34bc3ce7e968c028057528282cb4e18bbcfd86e",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 5,
+            "kind": "request",
+            "max_tokens": 2048,
+            "message_count": 12,
+            "prompt_tokens_used": 19500,
+            "usage": null
+          },
+          {
+            "anchor_adjustment_tokens": null,
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": true,
+              "duration_ms": 17954.284916981123,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 1
+            },
+            "completion_tokens_used": 1483,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "identity": null,
+            "iteration": 5,
+            "kind": "response",
+            "max_tokens": null,
+            "message_count": 12,
+            "prompt_tokens_used": 26748,
+            "usage": {
+              "completion_tokens": 41,
+              "prompt_tokens": 7248
+            }
+          },
+          {
+            "anchor_adjustment_tokens": 0,
+            "call_observation": null,
+            "completion_tokens_used": 1483,
+            "estimated_prompt_tokens": 8643,
+            "heuristic_prompt_tokens": 8643,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "d55910597da650ae281580735c87db49f6bd89169c1778b1bd2ac5e40d6db733",
+              "request_sha256": "46e83810bee618d3f56003953023e0bfb4c082c6b45c8e10c570cb8deb4c1b1e",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 6,
+            "kind": "request",
+            "max_tokens": 2048,
+            "message_count": 14,
+            "prompt_tokens_used": 26748,
+            "usage": null
+          },
+          {
+            "anchor_adjustment_tokens": null,
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": false,
+              "duration_ms": 23260.821250034496,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 0
+            },
+            "completion_tokens_used": 1771,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "identity": null,
+            "iteration": 6,
+            "kind": "response",
+            "max_tokens": null,
+            "message_count": 14,
+            "prompt_tokens_used": 34124,
+            "usage": {
+              "completion_tokens": 288,
+              "prompt_tokens": 7376
+            }
+          }
+        ],
+        "events_truncated": false,
+        "observed_events": 14,
+        "read_only": true,
+        "scope_note": "Bounded prefix of normalized request attempts, reported response usage and token-gate stops. Request precedes delivery; response usage is a provider report, not backend attestation. Failure usage is unknown; a request without a response may have consumed tokens. Missing/truncated evidence is not zero usage or proven budget compliance. No messages, paths, call IDs, tool arguments/results or exception text are stored here. Fingerprints cover normalized inputs only; see the separate configured profile for limits/provider identity. Optional call observations describe adapter HTTP timing and allowlisted response fields, not backend causes or token compliance. Missing observations stay unknown, including cancellation, parsing failures and unsupported providers. Wall/tool/iteration stops are not token-gate events. Not completion, acceptance, replay or permission to resume."
+      },
+      "cell": "W1",
+      "changed_paths": [
+        "client/src/lib/focusTags.ts"
+      ],
+      "completed_and_accepted": true,
+      "completion_reason": null,
+      "completion_status": "completed",
+      "diff_sha256": "aa62e83cce6d9ac081eeff28d2781ce0e4f89a17d12d2678fb9b0a1bbc774e93",
+      "diff_truncated": false,
+      "external_exit_code": 0,
+      "failure_count": 0,
+      "full_tree_sha256": "511b5c111c280e8647138daf2e8bbb4dde23a7a19686a7757d78072325948f15",
+      "input_analysis": {
+        "inputs_sha256": {
+          "request-0001-normalized.json": "e25ad91fcd1e326f963d128ed53a01c8d793330c3327a2049cd5a964cb930a8a",
+          "request-0001-wire.json": "f80d49f2c5e7afb82991b061bd64988fbf544968f8901572532b6827ebedc201",
+          "request-0002-normalized.json": "f3afef5fd238018695267231551d563c487d1e3a655bbba6d71c0660f450f91d",
+          "request-0002-wire.json": "19ca789cb913844ac56736e2489a4d2cb8b1b7f9c7b01565a7169c413aa4b7b3",
+          "request-0003-normalized.json": "2e161b780244052d96f3103d7e580e12f461a2bb295f6d807120b0d11251a5e8",
+          "request-0003-wire.json": "2d369288de1c0be7e327c7261fb8024cf3f924f2e671ad65218626aa495302f0",
+          "request-0004-normalized.json": "0ea91c49b80f48a8722819da68186596ef93c07a469d915d868cc54a11ef3990",
+          "request-0004-wire.json": "c606edbf3b92272ad240c7e9342c00af90caa32735f7e27e42361f4e49f3fa3c",
+          "request-0005-normalized.json": "3e7bd85a4d55ba84eb849628295d7bfee947f41444ff45f9bafe7c2a10f35e7b",
+          "request-0005-wire.json": "b46568a3a9e71e816672343d0a93a303532a4a23252153175c1e6ae42f00f3f6",
+          "request-0006-normalized.json": "e78f462a005e6c3250a1b2dcfa926a4a5490da7b9f389ac4b24debd167e30b12",
+          "request-0006-wire.json": "0a2efabef7025f4b56ea2ef0f7cb9e0d1dadf1aa10e888736a686c8d07d2f140",
+          "request-0007-normalized.json": "8965ee7f0759de3fcf354b05a1c4d90c0e0ce11472ff857b51db8e2b058ffaf9",
+          "request-0007-wire.json": "cb8daa324957fb367d70f94f168d98dd9a4a98616e7ef1f062d6002fa9a1554b"
+        },
+        "kind": "offline-input-pairing-and-mock-serialization-NOT-inference",
+        "limits": [
+          "Input presence before forwarding is not backend receipt or execution.",
+          "Mock serialization uses no HTTP network/inference and is not failed-request model replay.",
+          "Heuristic footprint is not provider tokenization/backend compliance; saved estimate may use calibration.",
+          "Valid role/tool/option continuity does not prove semantic correctness, absence of all malformed values or backend cause."
+        ],
+        "request_count": 7,
+        "rows": [
+          {
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "87b0b9f5b24177f89d4678ceef097f4750c3a0a0272c20c17d47c705b89bd40d",
+              "request_sha256": "185b166bb585e379da5bc60624b2ab2ce3543c80490d8e94079f92fa5839eef9",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 0,
+            "max_tokens": 2048,
+            "message_roles": [
+              "system",
+              "user"
+            ],
+            "normalized_bytes": 9152,
+            "normalized_sha256": "e25ad91fcd1e326f963d128ed53a01c8d793330c3327a2049cd5a964cb930a8a",
+            "production_adapter_mock_serialization_byte_equal": true,
+            "saved_prompt_estimate": 2841,
+            "sequence": 1,
+            "tool_reply_id_name_continuity": true,
+            "tool_result_names": [],
+            "uncalibrated_heuristic_footprint": {
+              "anchor_adjustment_tokens": 0,
+              "estimated_prompt_tokens": 2841,
+              "heuristic_prompt_tokens": 2841,
+              "largest_messages": [
+                {
+                  "message_index": 1,
+                  "payload_bytes": 983,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 0,
+                  "payload_bytes": 829,
+                  "role": "system",
+                  "tool_name": null
+                }
+              ],
+              "largest_messages_truncated": false,
+              "message_estimate_tokens": 612,
+              "prompt_estimate_bytes_per_token": 3.0,
+              "tool_schema_estimate_tokens": 2229
+            },
+            "wire_bytes": 8661,
+            "wire_sha256": "f80d49f2c5e7afb82991b061bd64988fbf544968f8901572532b6827ebedc201"
+          },
+          {
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "09dadddb209b842eb487979e19f8ad23c72858b8ed821d3eab847bd4e72eb82f",
+              "request_sha256": "d7c048140cfbdcc26bc53c1ea70f0f84ac8ae358b80717eab54014bfc62409a0",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 1,
+            "max_tokens": 2048,
+            "message_roles": [
+              "system",
+              "user",
+              "assistant",
+              "user"
+            ],
+            "normalized_bytes": 9483,
+            "normalized_sha256": "f3afef5fd238018695267231551d563c487d1e3a655bbba6d71c0660f450f91d",
+            "production_adapter_mock_serialization_byte_equal": true,
+            "saved_prompt_estimate": 2897,
+            "sequence": 2,
+            "tool_reply_id_name_continuity": true,
+            "tool_result_names": [],
+            "uncalibrated_heuristic_footprint": {
+              "anchor_adjustment_tokens": 0,
+              "estimated_prompt_tokens": 2897,
+              "heuristic_prompt_tokens": 2897,
+              "largest_messages": [
+                {
+                  "message_index": 1,
+                  "payload_bytes": 983,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 0,
+                  "payload_bytes": 829,
+                  "role": "system",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 3,
+                  "payload_bytes": 142,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 2,
+                  "payload_bytes": 0,
+                  "role": "assistant",
+                  "tool_name": null
+                }
+              ],
+              "largest_messages_truncated": false,
+              "message_estimate_tokens": 668,
+              "prompt_estimate_bytes_per_token": 3.0,
+              "tool_schema_estimate_tokens": 2229
+            },
+            "wire_bytes": 8866,
+            "wire_sha256": "19ca789cb913844ac56736e2489a4d2cb8b1b7f9c7b01565a7169c413aa4b7b3"
+          },
+          {
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "edeedb5a924826193f4d215c9b5923fa8798b6b148ead586639c43eae2263e75",
+              "request_sha256": "a4222f672e224579918f2654283d95934c09a062e648e0e6c6273ee24724cdb1",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 2,
+            "max_tokens": 2048,
+            "message_roles": [
+              "system",
+              "user",
+              "assistant",
+              "user",
+              "assistant",
+              "tool"
+            ],
+            "normalized_bytes": 18258,
+            "normalized_sha256": "2e161b780244052d96f3103d7e580e12f461a2bb295f6d807120b0d11251a5e8",
+            "production_adapter_mock_serialization_byte_equal": true,
+            "saved_prompt_estimate": 5304,
+            "sequence": 3,
+            "tool_reply_id_name_continuity": true,
+            "tool_result_names": [
+              "tree"
+            ],
+            "uncalibrated_heuristic_footprint": {
+              "anchor_adjustment_tokens": 0,
+              "estimated_prompt_tokens": 5304,
+              "heuristic_prompt_tokens": 5304,
+              "largest_messages": [
+                {
+                  "message_index": 5,
+                  "payload_bytes": 7193,
+                  "role": "tool",
+                  "tool_name": "tree"
+                },
+                {
+                  "message_index": 1,
+                  "payload_bytes": 983,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 0,
+                  "payload_bytes": 829,
+                  "role": "system",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 3,
+                  "payload_bytes": 142,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 4,
+                  "payload_bytes": 6,
+                  "role": "assistant",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 2,
+                  "payload_bytes": 0,
+                  "role": "assistant",
+                  "tool_name": null
+                }
+              ],
+              "largest_messages_truncated": false,
+              "message_estimate_tokens": 3075,
+              "prompt_estimate_bytes_per_token": 3.0,
+              "tool_schema_estimate_tokens": 2229
+            },
+            "wire_bytes": 17534,
+            "wire_sha256": "2d369288de1c0be7e327c7261fb8024cf3f924f2e671ad65218626aa495302f0"
+          },
+          {
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "d30eaaebad50bbeb50d7262fbe6964ee9f6d9abec9e2b2cc425feecbcd1f4541",
+              "request_sha256": "46eb02c643f98160ac311d770e3c632a6df8462f0b9c7b299bb64b7ee7f00b33",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 3,
+            "max_tokens": 2048,
+            "message_roles": [
+              "system",
+              "user",
+              "assistant",
+              "user",
+              "assistant",
+              "tool",
+              "assistant",
+              "tool"
+            ],
+            "normalized_bytes": 22992,
+            "normalized_sha256": "0ea91c49b80f48a8722819da68186596ef93c07a469d915d868cc54a11ef3990",
+            "production_adapter_mock_serialization_byte_equal": true,
+            "saved_prompt_estimate": 6716,
+            "sequence": 4,
+            "tool_reply_id_name_continuity": true,
+            "tool_result_names": [
+              "tree",
+              "read_file"
+            ],
+            "uncalibrated_heuristic_footprint": {
+              "anchor_adjustment_tokens": 0,
+              "estimated_prompt_tokens": 6716,
+              "heuristic_prompt_tokens": 6716,
+              "largest_messages": [
+                {
+                  "message_index": 5,
+                  "payload_bytes": 7193,
+                  "role": "tool",
+                  "tool_name": "tree"
+                },
+                {
+                  "message_index": 7,
+                  "payload_bytes": 4163,
+                  "role": "tool",
+                  "tool_name": "read_file"
+                },
+                {
+                  "message_index": 1,
+                  "payload_bytes": 983,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 0,
+                  "payload_bytes": 829,
+                  "role": "system",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 3,
+                  "payload_bytes": 142,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 6,
+                  "payload_bytes": 48,
+                  "role": "assistant",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 4,
+                  "payload_bytes": 6,
+                  "role": "assistant",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 2,
+                  "payload_bytes": 0,
+                  "role": "assistant",
+                  "tool_name": null
+                }
+              ],
+              "largest_messages_truncated": false,
+              "message_estimate_tokens": 4487,
+              "prompt_estimate_bytes_per_token": 3.0,
+              "tool_schema_estimate_tokens": 2229
+            },
+            "wire_bytes": 22160,
+            "wire_sha256": "c606edbf3b92272ad240c7e9342c00af90caa32735f7e27e42361f4e49f3fa3c"
+          },
+          {
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "6f9e2709f0571bfcc13c7330ce888f04f5771d351b2d378c1b223a4f7f14e898",
+              "request_sha256": "883960d3215ae917a17f56534771a49cf7bb74852cf08b2cc9196b396b697372",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 4,
+            "max_tokens": 2048,
+            "message_roles": [
+              "system",
+              "user",
+              "assistant",
+              "user",
+              "assistant",
+              "tool",
+              "assistant",
+              "tool",
+              "assistant",
+              "tool"
+            ],
+            "normalized_bytes": 24365,
+            "normalized_sha256": "3e7bd85a4d55ba84eb849628295d7bfee947f41444ff45f9bafe7c2a10f35e7b",
+            "production_adapter_mock_serialization_byte_equal": true,
+            "saved_prompt_estimate": 7087,
+            "sequence": 5,
+            "tool_reply_id_name_continuity": true,
+            "tool_result_names": [
+              "tree",
+              "read_file",
+              "emit_plan"
+            ],
+            "uncalibrated_heuristic_footprint": {
+              "anchor_adjustment_tokens": 0,
+              "estimated_prompt_tokens": 7087,
+              "heuristic_prompt_tokens": 7087,
+              "largest_messages": [
+                {
+                  "message_index": 5,
+                  "payload_bytes": 7193,
+                  "role": "tool",
+                  "tool_name": "tree"
+                },
+                {
+                  "message_index": 7,
+                  "payload_bytes": 4163,
+                  "role": "tool",
+                  "tool_name": "read_file"
+                },
+                {
+                  "message_index": 1,
+                  "payload_bytes": 983,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 0,
+                  "payload_bytes": 829,
+                  "role": "system",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 9,
+                  "payload_bytes": 553,
+                  "role": "tool",
+                  "tool_name": "emit_plan"
+                },
+                {
+                  "message_index": 8,
+                  "payload_bytes": 536,
+                  "role": "assistant",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 3,
+                  "payload_bytes": 142,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 6,
+                  "payload_bytes": 48,
+                  "role": "assistant",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 4,
+                  "payload_bytes": 6,
+                  "role": "assistant",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 2,
+                  "payload_bytes": 0,
+                  "role": "assistant",
+                  "tool_name": null
+                }
+              ],
+              "largest_messages_truncated": false,
+              "message_estimate_tokens": 4858,
+              "prompt_estimate_bytes_per_token": 3.0,
+              "tool_schema_estimate_tokens": 2229
+            },
+            "wire_bytes": 23420,
+            "wire_sha256": "b46568a3a9e71e816672343d0a93a303532a4a23252153175c1e6ae42f00f3f6"
+          },
+          {
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "eea26dd4fde25d97d10612898e85195cd09fd67b1aec9cc5360fe5ca97bb6dae",
+              "request_sha256": "10b95818548a5094626c25f0b34bc3ce7e968c028057528282cb4e18bbcfd86e",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 5,
+            "max_tokens": 2048,
+            "message_roles": [
+              "system",
+              "user",
+              "assistant",
+              "user",
+              "assistant",
+              "tool",
+              "assistant",
+              "tool",
+              "assistant",
+              "tool",
+              "assistant",
+              "tool"
+            ],
+            "normalized_bytes": 28888,
+            "normalized_sha256": "e78f462a005e6c3250a1b2dcfa926a4a5490da7b9f389ac4b24debd167e30b12",
+            "production_adapter_mock_serialization_byte_equal": true,
+            "saved_prompt_estimate": 8515,
+            "sequence": 6,
+            "tool_reply_id_name_continuity": true,
+            "tool_result_names": [
+              "tree",
+              "read_file",
+              "emit_plan",
+              "write_file"
+            ],
+            "uncalibrated_heuristic_footprint": {
+              "anchor_adjustment_tokens": 0,
+              "estimated_prompt_tokens": 8515,
+              "heuristic_prompt_tokens": 8515,
+              "largest_messages": [
+                {
+                  "message_index": 5,
+                  "payload_bytes": 7193,
+                  "role": "tool",
+                  "tool_name": "tree"
+                },
+                {
+                  "message_index": 10,
+                  "payload_bytes": 4189,
+                  "role": "assistant",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 7,
+                  "payload_bytes": 4163,
+                  "role": "tool",
+                  "tool_name": "read_file"
+                },
+                {
+                  "message_index": 1,
+                  "payload_bytes": 983,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 0,
+                  "payload_bytes": 829,
+                  "role": "system",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 9,
+                  "payload_bytes": 553,
+                  "role": "tool",
+                  "tool_name": "emit_plan"
+                },
+                {
+                  "message_index": 8,
+                  "payload_bytes": 536,
+                  "role": "assistant",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 3,
+                  "payload_bytes": 142,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 11,
+                  "payload_bytes": 72,
+                  "role": "tool",
+                  "tool_name": "write_file"
+                },
+                {
+                  "message_index": 6,
+                  "payload_bytes": 48,
+                  "role": "assistant",
+                  "tool_name": null
+                }
+              ],
+              "largest_messages_truncated": true,
+              "message_estimate_tokens": 6286,
+              "prompt_estimate_bytes_per_token": 3.0,
+              "tool_schema_estimate_tokens": 2229
+            },
+            "wire_bytes": 27833,
+            "wire_sha256": "0a2efabef7025f4b56ea2ef0f7cb9e0d1dadf1aa10e888736a686c8d07d2f140"
+          },
+          {
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "d55910597da650ae281580735c87db49f6bd89169c1778b1bd2ac5e40d6db733",
+              "request_sha256": "46e83810bee618d3f56003953023e0bfb4c082c6b45c8e10c570cb8deb4c1b1e",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 6,
+            "max_tokens": 2048,
+            "message_roles": [
+              "system",
+              "user",
+              "assistant",
+              "user",
+              "assistant",
+              "tool",
+              "assistant",
+              "tool",
+              "assistant",
+              "tool",
+              "assistant",
+              "tool",
+              "assistant",
+              "tool"
+            ],
+            "normalized_bytes": 29533,
+            "normalized_sha256": "8965ee7f0759de3fcf354b05a1c4d90c0e0ce11472ff857b51db8e2b058ffaf9",
+            "production_adapter_mock_serialization_byte_equal": true,
+            "saved_prompt_estimate": 8643,
+            "sequence": 7,
+            "tool_reply_id_name_continuity": true,
+            "tool_result_names": [
+              "tree",
+              "read_file",
+              "emit_plan",
+              "write_file",
+              "run_command"
+            ],
+            "uncalibrated_heuristic_footprint": {
+              "anchor_adjustment_tokens": 0,
+              "estimated_prompt_tokens": 8643,
+              "heuristic_prompt_tokens": 8643,
+              "largest_messages": [
+                {
+                  "message_index": 5,
+                  "payload_bytes": 7193,
+                  "role": "tool",
+                  "tool_name": "tree"
+                },
+                {
+                  "message_index": 10,
+                  "payload_bytes": 4189,
+                  "role": "assistant",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 7,
+                  "payload_bytes": 4163,
+                  "role": "tool",
+                  "tool_name": "read_file"
+                },
+                {
+                  "message_index": 1,
+                  "payload_bytes": 983,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 0,
+                  "payload_bytes": 829,
+                  "role": "system",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 9,
+                  "payload_bytes": 553,
+                  "role": "tool",
+                  "tool_name": "emit_plan"
+                },
+                {
+                  "message_index": 8,
+                  "payload_bytes": 536,
+                  "role": "assistant",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 13,
+                  "payload_bytes": 287,
+                  "role": "tool",
+                  "tool_name": "run_command"
+                },
+                {
+                  "message_index": 3,
+                  "payload_bytes": 142,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 11,
+                  "payload_bytes": 72,
+                  "role": "tool",
+                  "tool_name": "write_file"
+                }
+              ],
+              "largest_messages_truncated": true,
+              "message_estimate_tokens": 6414,
+              "prompt_estimate_bytes_per_token": 3.0,
+              "tool_schema_estimate_tokens": 2229
+            },
+            "wire_bytes": 28366,
+            "wire_sha256": "cb8daa324957fb367d70f94f168d98dd9a4a98616e7ef1f062d6002fa9a1554b"
+          }
+        ],
+        "total_input_bytes": 279511
+      },
+      "input_analysis_complete": true,
+      "known_response_prefix_usage": {
+        "completion_tokens": 1771,
+        "prompt_tokens": 34124
+      },
+      "local_input_files_sha256": {
+        "request-0001-normalized.json": "e25ad91fcd1e326f963d128ed53a01c8d793330c3327a2049cd5a964cb930a8a",
+        "request-0001-wire.json": "f80d49f2c5e7afb82991b061bd64988fbf544968f8901572532b6827ebedc201",
+        "request-0002-normalized.json": "f3afef5fd238018695267231551d563c487d1e3a655bbba6d71c0660f450f91d",
+        "request-0002-wire.json": "19ca789cb913844ac56736e2489a4d2cb8b1b7f9c7b01565a7169c413aa4b7b3",
+        "request-0003-normalized.json": "2e161b780244052d96f3103d7e580e12f461a2bb295f6d807120b0d11251a5e8",
+        "request-0003-wire.json": "2d369288de1c0be7e327c7261fb8024cf3f924f2e671ad65218626aa495302f0",
+        "request-0004-normalized.json": "0ea91c49b80f48a8722819da68186596ef93c07a469d915d868cc54a11ef3990",
+        "request-0004-wire.json": "c606edbf3b92272ad240c7e9342c00af90caa32735f7e27e42361f4e49f3fa3c",
+        "request-0005-normalized.json": "3e7bd85a4d55ba84eb849628295d7bfee947f41444ff45f9bafe7c2a10f35e7b",
+        "request-0005-wire.json": "b46568a3a9e71e816672343d0a93a303532a4a23252153175c1e6ae42f00f3f6",
+        "request-0006-normalized.json": "e78f462a005e6c3250a1b2dcfa926a4a5490da7b9f389ac4b24debd167e30b12",
+        "request-0006-wire.json": "0a2efabef7025f4b56ea2ef0f7cb9e0d1dadf1aa10e888736a686c8d07d2f140",
+        "request-0007-normalized.json": "8965ee7f0759de3fcf354b05a1c4d90c0e0ce11472ff857b51db8e2b058ffaf9",
+        "request-0007-wire.json": "cb8daa324957fb367d70f94f168d98dd9a4a98616e7ef1f062d6002fa9a1554b"
+      },
+      "modes_preserved": true,
+      "one_saved_run_no_reversal_or_replacement": true,
+      "protected_preserved": true,
+      "provider_failure": null,
+      "provider_timeout_seconds": 180,
+      "request_count": 7,
+      "request_id": "5ff85964ba194034a94e9163d1da74df",
+      "response_count": 7,
+      "restart_identical": true,
+      "run_id": "0e42f03171df423d8a19f93baa522638",
+      "status": "finished",
+      "tool_progress": [
+        {
+          "coverage": "recorded",
+          "events": [
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-23T22:41:18.243685Z",
+              "sequence": 1,
+              "tool": "tree",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 11.381500005722046,
+              "observed_at": "2026-10-23T22:41:18.256730Z",
+              "sequence": 2,
+              "tool": "tree",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-23T22:41:43.933177Z",
+              "sequence": 3,
+              "tool": "read_file",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 2.557124972343445,
+              "observed_at": "2026-10-23T22:41:43.936677Z",
+              "sequence": 4,
+              "tool": "read_file",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-23T22:42:09.448899Z",
+              "sequence": 5,
+              "tool": "emit_plan",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 1.198875069618225,
+              "observed_at": "2026-10-23T22:42:09.451006Z",
+              "sequence": 6,
+              "tool": "emit_plan",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-23T22:43:45.099938Z",
+              "sequence": 7,
+              "tool": "write_file",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 7.4863340854644775,
+              "observed_at": "2026-10-23T22:43:45.108671Z",
+              "sequence": 8,
+              "tool": "write_file",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-23T22:44:03.089401Z",
+              "sequence": 9,
+              "tool": "run_command",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 557.6789170503616,
+              "observed_at": "2026-10-23T22:44:03.647901Z",
+              "sequence": 10,
+              "tool": "run_command",
+              "type": "tool_end"
+            }
+          ],
+          "events_truncated": false,
+          "observed_events": 10,
+          "read_only": true,
+          "run_id": "0e42f03171df423d8a19f93baa522638",
+          "scope_note": "Bounded prefix of observed tool-start/end metadata; arguments, results, error text, model messages and tool-call IDs are not stored here. Start precedes tool gates, so it does not prove dispatch or mutation. End/error presence is not patch acceptance or verification. A missing end may mean interrupted work or unsaved evidence; file changes may exist. This is not a transcript, checkpoint, replay, repair, or permission to resume. Unknown tool names are recorded as unknown_tool.",
+          "updated_at": "2026-10-23T22:44:03.647901Z"
+        }
+      ],
+      "usage": {
+        "completion_tokens": 1771,
+        "prompt_tokens": 34124
+      },
+      "verification_status": "passed",
+      "workspace_identity": {
+        "device": 16777233,
+        "inode": 21445524
+      }
+    },
+    {
+      "archive_tree_sha256": "77712029ba9e787544017cf1de22f728cdc0daf85d55529dd0d9465da0ee10de",
+      "artifact_accepted": true,
+      "audit_complete": true,
+      "budget_evidence": {
+        "events": [
+          {
+            "anchor_adjustment_tokens": 0,
+            "call_observation": null,
+            "completion_tokens_used": 0,
+            "estimated_prompt_tokens": 2841,
+            "heuristic_prompt_tokens": 2841,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "87b0b9f5b24177f89d4678ceef097f4750c3a0a0272c20c17d47c705b89bd40d",
+              "request_sha256": "185b166bb585e379da5bc60624b2ab2ce3543c80490d8e94079f92fa5839eef9",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 0,
+            "kind": "request",
+            "max_tokens": 2048,
+            "message_count": 2,
+            "prompt_tokens_used": 0,
+            "usage": null
+          },
+          {
+            "anchor_adjustment_tokens": null,
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": true,
+              "duration_ms": 17882.4183329707,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 0
+            },
+            "completion_tokens_used": 7,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "identity": null,
+            "iteration": 0,
+            "kind": "response",
+            "max_tokens": null,
+            "message_count": 2,
+            "prompt_tokens_used": 1748,
+            "usage": {
+              "completion_tokens": 7,
+              "prompt_tokens": 1748
+            }
+          },
+          {
+            "anchor_adjustment_tokens": 0,
+            "call_observation": null,
+            "completion_tokens_used": 7,
+            "estimated_prompt_tokens": 2897,
+            "heuristic_prompt_tokens": 2897,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "09dadddb209b842eb487979e19f8ad23c72858b8ed821d3eab847bd4e72eb82f",
+              "request_sha256": "d7c048140cfbdcc26bc53c1ea70f0f84ac8ae358b80717eab54014bfc62409a0",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 1,
+            "kind": "request",
+            "max_tokens": 2048,
+            "message_count": 4,
+            "prompt_tokens_used": 1748,
+            "usage": null
+          },
+          {
+            "anchor_adjustment_tokens": null,
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": true,
+              "duration_ms": 1264.8997079813853,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 1
+            },
+            "completion_tokens_used": 14,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "identity": null,
+            "iteration": 1,
+            "kind": "response",
+            "max_tokens": null,
+            "message_count": 4,
+            "prompt_tokens_used": 3534,
+            "usage": {
+              "completion_tokens": 7,
+              "prompt_tokens": 1786
+            }
+          },
+          {
+            "anchor_adjustment_tokens": 0,
+            "call_observation": null,
+            "completion_tokens_used": 14,
+            "estimated_prompt_tokens": 5304,
+            "heuristic_prompt_tokens": 5304,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "80d176ef3ae4b1016f31129dcc4a05f88e8e59ecf96c4e1fa0a6f68a012f56d7",
+              "request_sha256": "cf53c33e4e66de7c1694e7506d5f69922ee62d582b1655d6313bc297f9a84269",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 2,
+            "kind": "request",
+            "max_tokens": 2048,
+            "message_count": 6,
+            "prompt_tokens_used": 3534,
+            "usage": null
+          },
+          {
+            "anchor_adjustment_tokens": null,
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": true,
+              "duration_ms": 26636.84541604016,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 1
+            },
+            "completion_tokens_used": 42,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "identity": null,
+            "iteration": 2,
+            "kind": "response",
+            "max_tokens": null,
+            "message_count": 6,
+            "prompt_tokens_used": 7863,
+            "usage": {
+              "completion_tokens": 28,
+              "prompt_tokens": 4329
+            }
+          },
+          {
+            "anchor_adjustment_tokens": 0,
+            "call_observation": null,
+            "completion_tokens_used": 42,
+            "estimated_prompt_tokens": 6716,
+            "heuristic_prompt_tokens": 6716,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "4729e5268fe2dd3edb4cca52af64222679e9dd0c303e3ffc4e5a8c703f310586",
+              "request_sha256": "e07ee5ee08cd64e7b49b8b4fa8d119f29000b92df900407cf82755a1f02b4853",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 3,
+            "kind": "request",
+            "max_tokens": 2048,
+            "message_count": 8,
+            "prompt_tokens_used": 7863,
+            "usage": null
+          },
+          {
+            "anchor_adjustment_tokens": null,
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": true,
+              "duration_ms": 26484.886749996804,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 1
+            },
+            "completion_tokens_used": 205,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "identity": null,
+            "iteration": 3,
+            "kind": "response",
+            "max_tokens": null,
+            "message_count": 8,
+            "prompt_tokens_used": 13528,
+            "usage": {
+              "completion_tokens": 163,
+              "prompt_tokens": 5665
+            }
+          },
+          {
+            "anchor_adjustment_tokens": 0,
+            "call_observation": null,
+            "completion_tokens_used": 205,
+            "estimated_prompt_tokens": 7099,
+            "heuristic_prompt_tokens": 7099,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "a9c43949e7c17b9433d704da3d8db3ee5d396499da64f1042539c72122d0ad72",
+              "request_sha256": "122131b3f0454d5c3ae4ff996c063610984de5035cabbc1d39ba7fa9a9de7154",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 4,
+            "kind": "request",
+            "max_tokens": 2048,
+            "message_count": 10,
+            "prompt_tokens_used": 13528,
+            "usage": null
+          },
+          {
+            "anchor_adjustment_tokens": null,
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": true,
+              "duration_ms": 95871.55358295422,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 1
+            },
+            "completion_tokens_used": 1447,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "identity": null,
+            "iteration": 4,
+            "kind": "response",
+            "max_tokens": null,
+            "message_count": 10,
+            "prompt_tokens_used": 19512,
+            "usage": {
+              "completion_tokens": 1242,
+              "prompt_tokens": 5984
+            }
+          },
+          {
+            "anchor_adjustment_tokens": 0,
+            "call_observation": null,
+            "completion_tokens_used": 1447,
+            "estimated_prompt_tokens": 8526,
+            "heuristic_prompt_tokens": 8526,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "c58c8afbca37b433916880a1933fde10e6a4d0f0bf1c9b7e85ba045ee35b2c51",
+              "request_sha256": "4d96cf47b754ea98ab0858bd5dd4a4c31907dc95c5fa9d78033f771f84315fe9",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 5,
+            "kind": "request",
+            "max_tokens": 2048,
+            "message_count": 12,
+            "prompt_tokens_used": 19512,
+            "usage": null
+          },
+          {
+            "anchor_adjustment_tokens": null,
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": true,
+              "duration_ms": 17985.090916976333,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 1
+            },
+            "completion_tokens_used": 1488,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "identity": null,
+            "iteration": 5,
+            "kind": "response",
+            "max_tokens": null,
+            "message_count": 12,
+            "prompt_tokens_used": 26771,
+            "usage": {
+              "completion_tokens": 41,
+              "prompt_tokens": 7259
+            }
+          },
+          {
+            "anchor_adjustment_tokens": 0,
+            "call_observation": null,
+            "completion_tokens_used": 1488,
+            "estimated_prompt_tokens": 8653,
+            "heuristic_prompt_tokens": 8653,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "f0ae80a62e5506a5d482956ba343eae1549103cbaeeac336803e3375e2ba3be7",
+              "request_sha256": "ee37164b31d277db286eb9d52abc13b5364c1ae313d250b3eeb24cc9b4b23d9c",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 6,
+            "kind": "request",
+            "max_tokens": 2048,
+            "message_count": 14,
+            "prompt_tokens_used": 26771,
+            "usage": null
+          },
+          {
+            "anchor_adjustment_tokens": null,
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": false,
+              "duration_ms": 15992.162708076648,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 0
+            },
+            "completion_tokens_used": 1678,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "identity": null,
+            "iteration": 6,
+            "kind": "response",
+            "max_tokens": null,
+            "message_count": 14,
+            "prompt_tokens_used": 34158,
+            "usage": {
+              "completion_tokens": 190,
+              "prompt_tokens": 7387
+            }
+          }
+        ],
+        "events_truncated": false,
+        "observed_events": 14,
+        "read_only": true,
+        "scope_note": "Bounded prefix of normalized request attempts, reported response usage and token-gate stops. Request precedes delivery; response usage is a provider report, not backend attestation. Failure usage is unknown; a request without a response may have consumed tokens. Missing/truncated evidence is not zero usage or proven budget compliance. No messages, paths, call IDs, tool arguments/results or exception text are stored here. Fingerprints cover normalized inputs only; see the separate configured profile for limits/provider identity. Optional call observations describe adapter HTTP timing and allowlisted response fields, not backend causes or token compliance. Missing observations stay unknown, including cancellation, parsing failures and unsupported providers. Wall/tool/iteration stops are not token-gate events. Not completion, acceptance, replay or permission to resume."
+      },
+      "cell": "W2",
+      "changed_paths": [
+        "client/src/lib/focusTags.ts"
+      ],
+      "completed_and_accepted": true,
+      "completion_reason": null,
+      "completion_status": "completed",
+      "diff_sha256": "f774ef40ef69be6d4e6a6bdc8e6e18b816f6defbb4eccb3663cb159bf45e0096",
+      "diff_truncated": false,
+      "external_exit_code": 0,
+      "failure_count": 0,
+      "full_tree_sha256": "77712029ba9e787544017cf1de22f728cdc0daf85d55529dd0d9465da0ee10de",
+      "input_analysis": {
+        "inputs_sha256": {
+          "request-0001-normalized.json": "e25ad91fcd1e326f963d128ed53a01c8d793330c3327a2049cd5a964cb930a8a",
+          "request-0001-wire.json": "f80d49f2c5e7afb82991b061bd64988fbf544968f8901572532b6827ebedc201",
+          "request-0002-normalized.json": "f3afef5fd238018695267231551d563c487d1e3a655bbba6d71c0660f450f91d",
+          "request-0002-wire.json": "19ca789cb913844ac56736e2489a4d2cb8b1b7f9c7b01565a7169c413aa4b7b3",
+          "request-0003-normalized.json": "c0e820afaa846fac16f42ac582b72469dbf9e60b5dd19fa844d0b47dc2cd68a1",
+          "request-0003-wire.json": "2d369288de1c0be7e327c7261fb8024cf3f924f2e671ad65218626aa495302f0",
+          "request-0004-normalized.json": "89d19cb2d3326f06cdbd516ba065dd0f4a6a31eebd501174936991d741291024",
+          "request-0004-wire.json": "c606edbf3b92272ad240c7e9342c00af90caa32735f7e27e42361f4e49f3fa3c",
+          "request-0005-normalized.json": "7d3d5ac10d1743550260523d4565ba74ea0b0fd72bab51e06c06e178f2b8f1b8",
+          "request-0005-wire.json": "af5a1a19bd2430ba27d096e1a45c4dce9c5b74ad13e325bdc3aabd0e06f06298",
+          "request-0006-normalized.json": "fe55dac6c352ad3215afee3233963bcc7f9b9ee06dccc9a759a4ee8162e74f80",
+          "request-0006-wire.json": "4f37d90699ee3767f54ee762259731aa8c89ddd2c8f959d18e770966bf675b96",
+          "request-0007-normalized.json": "33305bd74174fba3c90868e684fccde41f78b4665036d603b3ad6ec87e30d053",
+          "request-0007-wire.json": "25131bcc76f0d042fb9936681f5e6fa90cc38c58514525bf5b3f4f2488a1490c"
+        },
+        "kind": "offline-input-pairing-and-mock-serialization-NOT-inference",
+        "limits": [
+          "Input presence before forwarding is not backend receipt or execution.",
+          "Mock serialization uses no HTTP network/inference and is not failed-request model replay.",
+          "Heuristic footprint is not provider tokenization/backend compliance; saved estimate may use calibration.",
+          "Valid role/tool/option continuity does not prove semantic correctness, absence of all malformed values or backend cause."
+        ],
+        "request_count": 7,
+        "rows": [
+          {
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "87b0b9f5b24177f89d4678ceef097f4750c3a0a0272c20c17d47c705b89bd40d",
+              "request_sha256": "185b166bb585e379da5bc60624b2ab2ce3543c80490d8e94079f92fa5839eef9",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 0,
+            "max_tokens": 2048,
+            "message_roles": [
+              "system",
+              "user"
+            ],
+            "normalized_bytes": 9152,
+            "normalized_sha256": "e25ad91fcd1e326f963d128ed53a01c8d793330c3327a2049cd5a964cb930a8a",
+            "production_adapter_mock_serialization_byte_equal": true,
+            "saved_prompt_estimate": 2841,
+            "sequence": 1,
+            "tool_reply_id_name_continuity": true,
+            "tool_result_names": [],
+            "uncalibrated_heuristic_footprint": {
+              "anchor_adjustment_tokens": 0,
+              "estimated_prompt_tokens": 2841,
+              "heuristic_prompt_tokens": 2841,
+              "largest_messages": [
+                {
+                  "message_index": 1,
+                  "payload_bytes": 983,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 0,
+                  "payload_bytes": 829,
+                  "role": "system",
+                  "tool_name": null
+                }
+              ],
+              "largest_messages_truncated": false,
+              "message_estimate_tokens": 612,
+              "prompt_estimate_bytes_per_token": 3.0,
+              "tool_schema_estimate_tokens": 2229
+            },
+            "wire_bytes": 8661,
+            "wire_sha256": "f80d49f2c5e7afb82991b061bd64988fbf544968f8901572532b6827ebedc201"
+          },
+          {
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "09dadddb209b842eb487979e19f8ad23c72858b8ed821d3eab847bd4e72eb82f",
+              "request_sha256": "d7c048140cfbdcc26bc53c1ea70f0f84ac8ae358b80717eab54014bfc62409a0",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 1,
+            "max_tokens": 2048,
+            "message_roles": [
+              "system",
+              "user",
+              "assistant",
+              "user"
+            ],
+            "normalized_bytes": 9483,
+            "normalized_sha256": "f3afef5fd238018695267231551d563c487d1e3a655bbba6d71c0660f450f91d",
+            "production_adapter_mock_serialization_byte_equal": true,
+            "saved_prompt_estimate": 2897,
+            "sequence": 2,
+            "tool_reply_id_name_continuity": true,
+            "tool_result_names": [],
+            "uncalibrated_heuristic_footprint": {
+              "anchor_adjustment_tokens": 0,
+              "estimated_prompt_tokens": 2897,
+              "heuristic_prompt_tokens": 2897,
+              "largest_messages": [
+                {
+                  "message_index": 1,
+                  "payload_bytes": 983,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 0,
+                  "payload_bytes": 829,
+                  "role": "system",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 3,
+                  "payload_bytes": 142,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 2,
+                  "payload_bytes": 0,
+                  "role": "assistant",
+                  "tool_name": null
+                }
+              ],
+              "largest_messages_truncated": false,
+              "message_estimate_tokens": 668,
+              "prompt_estimate_bytes_per_token": 3.0,
+              "tool_schema_estimate_tokens": 2229
+            },
+            "wire_bytes": 8866,
+            "wire_sha256": "19ca789cb913844ac56736e2489a4d2cb8b1b7f9c7b01565a7169c413aa4b7b3"
+          },
+          {
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "80d176ef3ae4b1016f31129dcc4a05f88e8e59ecf96c4e1fa0a6f68a012f56d7",
+              "request_sha256": "cf53c33e4e66de7c1694e7506d5f69922ee62d582b1655d6313bc297f9a84269",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 2,
+            "max_tokens": 2048,
+            "message_roles": [
+              "system",
+              "user",
+              "assistant",
+              "user",
+              "assistant",
+              "tool"
+            ],
+            "normalized_bytes": 18258,
+            "normalized_sha256": "c0e820afaa846fac16f42ac582b72469dbf9e60b5dd19fa844d0b47dc2cd68a1",
+            "production_adapter_mock_serialization_byte_equal": true,
+            "saved_prompt_estimate": 5304,
+            "sequence": 3,
+            "tool_reply_id_name_continuity": true,
+            "tool_result_names": [
+              "tree"
+            ],
+            "uncalibrated_heuristic_footprint": {
+              "anchor_adjustment_tokens": 0,
+              "estimated_prompt_tokens": 5304,
+              "heuristic_prompt_tokens": 5304,
+              "largest_messages": [
+                {
+                  "message_index": 5,
+                  "payload_bytes": 7193,
+                  "role": "tool",
+                  "tool_name": "tree"
+                },
+                {
+                  "message_index": 1,
+                  "payload_bytes": 983,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 0,
+                  "payload_bytes": 829,
+                  "role": "system",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 3,
+                  "payload_bytes": 142,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 4,
+                  "payload_bytes": 6,
+                  "role": "assistant",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 2,
+                  "payload_bytes": 0,
+                  "role": "assistant",
+                  "tool_name": null
+                }
+              ],
+              "largest_messages_truncated": false,
+              "message_estimate_tokens": 3075,
+              "prompt_estimate_bytes_per_token": 3.0,
+              "tool_schema_estimate_tokens": 2229
+            },
+            "wire_bytes": 17534,
+            "wire_sha256": "2d369288de1c0be7e327c7261fb8024cf3f924f2e671ad65218626aa495302f0"
+          },
+          {
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "4729e5268fe2dd3edb4cca52af64222679e9dd0c303e3ffc4e5a8c703f310586",
+              "request_sha256": "e07ee5ee08cd64e7b49b8b4fa8d119f29000b92df900407cf82755a1f02b4853",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 3,
+            "max_tokens": 2048,
+            "message_roles": [
+              "system",
+              "user",
+              "assistant",
+              "user",
+              "assistant",
+              "tool",
+              "assistant",
+              "tool"
+            ],
+            "normalized_bytes": 22992,
+            "normalized_sha256": "89d19cb2d3326f06cdbd516ba065dd0f4a6a31eebd501174936991d741291024",
+            "production_adapter_mock_serialization_byte_equal": true,
+            "saved_prompt_estimate": 6716,
+            "sequence": 4,
+            "tool_reply_id_name_continuity": true,
+            "tool_result_names": [
+              "tree",
+              "read_file"
+            ],
+            "uncalibrated_heuristic_footprint": {
+              "anchor_adjustment_tokens": 0,
+              "estimated_prompt_tokens": 6716,
+              "heuristic_prompt_tokens": 6716,
+              "largest_messages": [
+                {
+                  "message_index": 5,
+                  "payload_bytes": 7193,
+                  "role": "tool",
+                  "tool_name": "tree"
+                },
+                {
+                  "message_index": 7,
+                  "payload_bytes": 4163,
+                  "role": "tool",
+                  "tool_name": "read_file"
+                },
+                {
+                  "message_index": 1,
+                  "payload_bytes": 983,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 0,
+                  "payload_bytes": 829,
+                  "role": "system",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 3,
+                  "payload_bytes": 142,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 6,
+                  "payload_bytes": 48,
+                  "role": "assistant",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 4,
+                  "payload_bytes": 6,
+                  "role": "assistant",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 2,
+                  "payload_bytes": 0,
+                  "role": "assistant",
+                  "tool_name": null
+                }
+              ],
+              "largest_messages_truncated": false,
+              "message_estimate_tokens": 4487,
+              "prompt_estimate_bytes_per_token": 3.0,
+              "tool_schema_estimate_tokens": 2229
+            },
+            "wire_bytes": 22160,
+            "wire_sha256": "c606edbf3b92272ad240c7e9342c00af90caa32735f7e27e42361f4e49f3fa3c"
+          },
+          {
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "a9c43949e7c17b9433d704da3d8db3ee5d396499da64f1042539c72122d0ad72",
+              "request_sha256": "122131b3f0454d5c3ae4ff996c063610984de5035cabbc1d39ba7fa9a9de7154",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 4,
+            "max_tokens": 2048,
+            "message_roles": [
+              "system",
+              "user",
+              "assistant",
+              "user",
+              "assistant",
+              "tool",
+              "assistant",
+              "tool",
+              "assistant",
+              "tool"
+            ],
+            "normalized_bytes": 24401,
+            "normalized_sha256": "7d3d5ac10d1743550260523d4565ba74ea0b0fd72bab51e06c06e178f2b8f1b8",
+            "production_adapter_mock_serialization_byte_equal": true,
+            "saved_prompt_estimate": 7099,
+            "sequence": 5,
+            "tool_reply_id_name_continuity": true,
+            "tool_result_names": [
+              "tree",
+              "read_file",
+              "emit_plan"
+            ],
+            "uncalibrated_heuristic_footprint": {
+              "anchor_adjustment_tokens": 0,
+              "estimated_prompt_tokens": 7099,
+              "heuristic_prompt_tokens": 7099,
+              "largest_messages": [
+                {
+                  "message_index": 5,
+                  "payload_bytes": 7193,
+                  "role": "tool",
+                  "tool_name": "tree"
+                },
+                {
+                  "message_index": 7,
+                  "payload_bytes": 4163,
+                  "role": "tool",
+                  "tool_name": "read_file"
+                },
+                {
+                  "message_index": 1,
+                  "payload_bytes": 983,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 0,
+                  "payload_bytes": 829,
+                  "role": "system",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 9,
+                  "payload_bytes": 571,
+                  "role": "tool",
+                  "tool_name": "emit_plan"
+                },
+                {
+                  "message_index": 8,
+                  "payload_bytes": 554,
+                  "role": "assistant",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 3,
+                  "payload_bytes": 142,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 6,
+                  "payload_bytes": 48,
+                  "role": "assistant",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 4,
+                  "payload_bytes": 6,
+                  "role": "assistant",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 2,
+                  "payload_bytes": 0,
+                  "role": "assistant",
+                  "tool_name": null
+                }
+              ],
+              "largest_messages_truncated": false,
+              "message_estimate_tokens": 4870,
+              "prompt_estimate_bytes_per_token": 3.0,
+              "tool_schema_estimate_tokens": 2229
+            },
+            "wire_bytes": 23456,
+            "wire_sha256": "af5a1a19bd2430ba27d096e1a45c4dce9c5b74ad13e325bdc3aabd0e06f06298"
+          },
+          {
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "c58c8afbca37b433916880a1933fde10e6a4d0f0bf1c9b7e85ba045ee35b2c51",
+              "request_sha256": "4d96cf47b754ea98ab0858bd5dd4a4c31907dc95c5fa9d78033f771f84315fe9",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 5,
+            "max_tokens": 2048,
+            "message_roles": [
+              "system",
+              "user",
+              "assistant",
+              "user",
+              "assistant",
+              "tool",
+              "assistant",
+              "tool",
+              "assistant",
+              "tool",
+              "assistant",
+              "tool"
+            ],
+            "normalized_bytes": 28919,
+            "normalized_sha256": "fe55dac6c352ad3215afee3233963bcc7f9b9ee06dccc9a759a4ee8162e74f80",
+            "production_adapter_mock_serialization_byte_equal": true,
+            "saved_prompt_estimate": 8526,
+            "sequence": 6,
+            "tool_reply_id_name_continuity": true,
+            "tool_result_names": [
+              "tree",
+              "read_file",
+              "emit_plan",
+              "write_file"
+            ],
+            "uncalibrated_heuristic_footprint": {
+              "anchor_adjustment_tokens": 0,
+              "estimated_prompt_tokens": 8526,
+              "heuristic_prompt_tokens": 8526,
+              "largest_messages": [
+                {
+                  "message_index": 5,
+                  "payload_bytes": 7193,
+                  "role": "tool",
+                  "tool_name": "tree"
+                },
+                {
+                  "message_index": 10,
+                  "payload_bytes": 4184,
+                  "role": "assistant",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 7,
+                  "payload_bytes": 4163,
+                  "role": "tool",
+                  "tool_name": "read_file"
+                },
+                {
+                  "message_index": 1,
+                  "payload_bytes": 983,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 0,
+                  "payload_bytes": 829,
+                  "role": "system",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 9,
+                  "payload_bytes": 571,
+                  "role": "tool",
+                  "tool_name": "emit_plan"
+                },
+                {
+                  "message_index": 8,
+                  "payload_bytes": 554,
+                  "role": "assistant",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 3,
+                  "payload_bytes": 142,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 11,
+                  "payload_bytes": 72,
+                  "role": "tool",
+                  "tool_name": "write_file"
+                },
+                {
+                  "message_index": 6,
+                  "payload_bytes": 48,
+                  "role": "assistant",
+                  "tool_name": null
+                }
+              ],
+              "largest_messages_truncated": true,
+              "message_estimate_tokens": 6297,
+              "prompt_estimate_bytes_per_token": 3.0,
+              "tool_schema_estimate_tokens": 2229
+            },
+            "wire_bytes": 27864,
+            "wire_sha256": "4f37d90699ee3767f54ee762259731aa8c89ddd2c8f959d18e770966bf675b96"
+          },
+          {
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "f0ae80a62e5506a5d482956ba343eae1549103cbaeeac336803e3375e2ba3be7",
+              "request_sha256": "ee37164b31d277db286eb9d52abc13b5364c1ae313d250b3eeb24cc9b4b23d9c",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 6,
+            "max_tokens": 2048,
+            "message_roles": [
+              "system",
+              "user",
+              "assistant",
+              "user",
+              "assistant",
+              "tool",
+              "assistant",
+              "tool",
+              "assistant",
+              "tool",
+              "assistant",
+              "tool",
+              "assistant",
+              "tool"
+            ],
+            "normalized_bytes": 29564,
+            "normalized_sha256": "33305bd74174fba3c90868e684fccde41f78b4665036d603b3ad6ec87e30d053",
+            "production_adapter_mock_serialization_byte_equal": true,
+            "saved_prompt_estimate": 8653,
+            "sequence": 7,
+            "tool_reply_id_name_continuity": true,
+            "tool_result_names": [
+              "tree",
+              "read_file",
+              "emit_plan",
+              "write_file",
+              "run_command"
+            ],
+            "uncalibrated_heuristic_footprint": {
+              "anchor_adjustment_tokens": 0,
+              "estimated_prompt_tokens": 8653,
+              "heuristic_prompt_tokens": 8653,
+              "largest_messages": [
+                {
+                  "message_index": 5,
+                  "payload_bytes": 7193,
+                  "role": "tool",
+                  "tool_name": "tree"
+                },
+                {
+                  "message_index": 10,
+                  "payload_bytes": 4184,
+                  "role": "assistant",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 7,
+                  "payload_bytes": 4163,
+                  "role": "tool",
+                  "tool_name": "read_file"
+                },
+                {
+                  "message_index": 1,
+                  "payload_bytes": 983,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 0,
+                  "payload_bytes": 829,
+                  "role": "system",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 9,
+                  "payload_bytes": 571,
+                  "role": "tool",
+                  "tool_name": "emit_plan"
+                },
+                {
+                  "message_index": 8,
+                  "payload_bytes": 554,
+                  "role": "assistant",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 13,
+                  "payload_bytes": 287,
+                  "role": "tool",
+                  "tool_name": "run_command"
+                },
+                {
+                  "message_index": 3,
+                  "payload_bytes": 142,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 11,
+                  "payload_bytes": 72,
+                  "role": "tool",
+                  "tool_name": "write_file"
+                }
+              ],
+              "largest_messages_truncated": true,
+              "message_estimate_tokens": 6424,
+              "prompt_estimate_bytes_per_token": 3.0,
+              "tool_schema_estimate_tokens": 2229
+            },
+            "wire_bytes": 28397,
+            "wire_sha256": "25131bcc76f0d042fb9936681f5e6fa90cc38c58514525bf5b3f4f2488a1490c"
+          }
+        ],
+        "total_input_bytes": 279707
+      },
+      "input_analysis_complete": true,
+      "known_response_prefix_usage": {
+        "completion_tokens": 1678,
+        "prompt_tokens": 34158
+      },
+      "local_input_files_sha256": {
+        "request-0001-normalized.json": "e25ad91fcd1e326f963d128ed53a01c8d793330c3327a2049cd5a964cb930a8a",
+        "request-0001-wire.json": "f80d49f2c5e7afb82991b061bd64988fbf544968f8901572532b6827ebedc201",
+        "request-0002-normalized.json": "f3afef5fd238018695267231551d563c487d1e3a655bbba6d71c0660f450f91d",
+        "request-0002-wire.json": "19ca789cb913844ac56736e2489a4d2cb8b1b7f9c7b01565a7169c413aa4b7b3",
+        "request-0003-normalized.json": "c0e820afaa846fac16f42ac582b72469dbf9e60b5dd19fa844d0b47dc2cd68a1",
+        "request-0003-wire.json": "2d369288de1c0be7e327c7261fb8024cf3f924f2e671ad65218626aa495302f0",
+        "request-0004-normalized.json": "89d19cb2d3326f06cdbd516ba065dd0f4a6a31eebd501174936991d741291024",
+        "request-0004-wire.json": "c606edbf3b92272ad240c7e9342c00af90caa32735f7e27e42361f4e49f3fa3c",
+        "request-0005-normalized.json": "7d3d5ac10d1743550260523d4565ba74ea0b0fd72bab51e06c06e178f2b8f1b8",
+        "request-0005-wire.json": "af5a1a19bd2430ba27d096e1a45c4dce9c5b74ad13e325bdc3aabd0e06f06298",
+        "request-0006-normalized.json": "fe55dac6c352ad3215afee3233963bcc7f9b9ee06dccc9a759a4ee8162e74f80",
+        "request-0006-wire.json": "4f37d90699ee3767f54ee762259731aa8c89ddd2c8f959d18e770966bf675b96",
+        "request-0007-normalized.json": "33305bd74174fba3c90868e684fccde41f78b4665036d603b3ad6ec87e30d053",
+        "request-0007-wire.json": "25131bcc76f0d042fb9936681f5e6fa90cc38c58514525bf5b3f4f2488a1490c"
+      },
+      "modes_preserved": true,
+      "one_saved_run_no_reversal_or_replacement": true,
+      "protected_preserved": true,
+      "provider_failure": null,
+      "provider_timeout_seconds": 180,
+      "request_count": 7,
+      "request_id": "0157ef839bec49c7843b2edf9406c171",
+      "response_count": 7,
+      "restart_identical": true,
+      "run_id": "78eadc4985de42e4ac58c0af775c1247",
+      "status": "finished",
+      "tool_progress": [
+        {
+          "coverage": "recorded",
+          "events": [
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-23T22:44:51.971237Z",
+              "sequence": 1,
+              "tool": "tree",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 6.83050000667572,
+              "observed_at": "2026-10-23T22:44:51.979694Z",
+              "sequence": 2,
+              "tool": "tree",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-23T22:45:18.628954Z",
+              "sequence": 3,
+              "tool": "read_file",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 2.1010830402374268,
+              "observed_at": "2026-10-23T22:45:18.631772Z",
+              "sequence": 4,
+              "tool": "read_file",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-23T22:45:45.124584Z",
+              "sequence": 5,
+              "tool": "emit_plan",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 1.2369580268859863,
+              "observed_at": "2026-10-23T22:45:45.126662Z",
+              "sequence": 6,
+              "tool": "emit_plan",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-23T22:47:21.010804Z",
+              "sequence": 7,
+              "tool": "write_file",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 2.220292091369629,
+              "observed_at": "2026-10-23T22:47:21.014072Z",
+              "sequence": 8,
+              "tool": "write_file",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-23T22:47:39.021872Z",
+              "sequence": 9,
+              "tool": "run_command",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 577.7986670732498,
+              "observed_at": "2026-10-23T22:47:39.601171Z",
+              "sequence": 10,
+              "tool": "run_command",
+              "type": "tool_end"
+            }
+          ],
+          "events_truncated": false,
+          "observed_events": 10,
+          "read_only": true,
+          "run_id": "78eadc4985de42e4ac58c0af775c1247",
+          "scope_note": "Bounded prefix of observed tool-start/end metadata; arguments, results, error text, model messages and tool-call IDs are not stored here. Start precedes tool gates, so it does not prove dispatch or mutation. End/error presence is not patch acceptance or verification. A missing end may mean interrupted work or unsaved evidence; file changes may exist. This is not a transcript, checkpoint, replay, repair, or permission to resume. Unknown tool names are recorded as unknown_tool.",
+          "updated_at": "2026-10-23T22:47:39.601171Z"
+        }
+      ],
+      "usage": {
+        "completion_tokens": 1678,
+        "prompt_tokens": 34158
+      },
+      "verification_status": "passed",
+      "workspace_identity": {
+        "device": 16777233,
+        "inode": 21447009
+      }
+    },
+    {
+      "archive_tree_sha256": "03647fada969c4d49ddd5b93cbd4c3f73b11de0eb18b9156a6e4f7e588389afe",
+      "artifact_accepted": false,
+      "audit_complete": true,
+      "budget_evidence": {
+        "events": [
+          {
+            "anchor_adjustment_tokens": 0,
+            "call_observation": null,
+            "completion_tokens_used": 0,
+            "estimated_prompt_tokens": 2841,
+            "heuristic_prompt_tokens": 2841,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "87b0b9f5b24177f89d4678ceef097f4750c3a0a0272c20c17d47c705b89bd40d",
+              "request_sha256": "185b166bb585e379da5bc60624b2ab2ce3543c80490d8e94079f92fa5839eef9",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 0,
+            "kind": "request",
+            "max_tokens": 2048,
+            "message_count": 2,
+            "prompt_tokens_used": 0,
+            "usage": null
+          },
+          {
+            "anchor_adjustment_tokens": null,
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": true,
+              "duration_ms": 18293.49483293481,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 0
+            },
+            "completion_tokens_used": 7,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "identity": null,
+            "iteration": 0,
+            "kind": "response",
+            "max_tokens": null,
+            "message_count": 2,
+            "prompt_tokens_used": 1748,
+            "usage": {
+              "completion_tokens": 7,
+              "prompt_tokens": 1748
+            }
+          },
+          {
+            "anchor_adjustment_tokens": 0,
+            "call_observation": null,
+            "completion_tokens_used": 7,
+            "estimated_prompt_tokens": 2897,
+            "heuristic_prompt_tokens": 2897,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "09dadddb209b842eb487979e19f8ad23c72858b8ed821d3eab847bd4e72eb82f",
+              "request_sha256": "d7c048140cfbdcc26bc53c1ea70f0f84ac8ae358b80717eab54014bfc62409a0",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 1,
+            "kind": "request",
+            "max_tokens": 2048,
+            "message_count": 4,
+            "prompt_tokens_used": 1748,
+            "usage": null
+          },
+          {
+            "anchor_adjustment_tokens": null,
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": true,
+              "duration_ms": 1318.9845000160858,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 1
+            },
+            "completion_tokens_used": 14,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "identity": null,
+            "iteration": 1,
+            "kind": "response",
+            "max_tokens": null,
+            "message_count": 4,
+            "prompt_tokens_used": 3534,
+            "usage": {
+              "completion_tokens": 7,
+              "prompt_tokens": 1786
+            }
+          },
+          {
+            "anchor_adjustment_tokens": 0,
+            "call_observation": null,
+            "completion_tokens_used": 14,
+            "estimated_prompt_tokens": 5304,
+            "heuristic_prompt_tokens": 5304,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "68bee18730272d73215a006e8cf67476314867f318565474ed82fba369634394",
+              "request_sha256": "d7517da9b7fbfd4387799bd70a0d397e15ceff5e8c84e66a244dc3b5013bcfc0",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 2,
+            "kind": "request",
+            "max_tokens": 2048,
+            "message_count": 6,
+            "prompt_tokens_used": 3534,
+            "usage": null
+          },
+          {
+            "anchor_adjustment_tokens": null,
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": true,
+              "duration_ms": 26771.97758294642,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 1
+            },
+            "completion_tokens_used": 42,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "identity": null,
+            "iteration": 2,
+            "kind": "response",
+            "max_tokens": null,
+            "message_count": 6,
+            "prompt_tokens_used": 7863,
+            "usage": {
+              "completion_tokens": 28,
+              "prompt_tokens": 4329
+            }
+          },
+          {
+            "anchor_adjustment_tokens": 0,
+            "call_observation": null,
+            "completion_tokens_used": 42,
+            "estimated_prompt_tokens": 6716,
+            "heuristic_prompt_tokens": 6716,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "c1d807703014648a3c230ce533bf5225b2c38b779401211608ca8bc6f6b601d0",
+              "request_sha256": "bd68ace8296569b88b4bde62e144ee82c9c86d4c8c9c627a8912d0c8fe6d967d",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 3,
+            "kind": "request",
+            "max_tokens": 2048,
+            "message_count": 8,
+            "prompt_tokens_used": 7863,
+            "usage": null
+          },
+          {
+            "anchor_adjustment_tokens": null,
+            "call_observation": {
+              "completion_usage_field": "present",
+              "content_empty": true,
+              "duration_ms": 26571.847334038466,
+              "prompt_usage_field": "present",
+              "terminal_reason": "stop",
+              "tool_call_count": 1
+            },
+            "completion_tokens_used": 205,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "identity": null,
+            "iteration": 3,
+            "kind": "response",
+            "max_tokens": null,
+            "message_count": 8,
+            "prompt_tokens_used": 13528,
+            "usage": {
+              "completion_tokens": 163,
+              "prompt_tokens": 5665
+            }
+          },
+          {
+            "anchor_adjustment_tokens": 0,
+            "call_observation": null,
+            "completion_tokens_used": 205,
+            "estimated_prompt_tokens": 7099,
+            "heuristic_prompt_tokens": 7099,
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "4dddda6dd4ecb8f537cfb70c83d18b7bfe8a7a8e2e5d7f4d3ed7ff9dd270096c",
+              "request_sha256": "b6af65a2e7872d92b01fdbb2524bd798f4b4f73d002bbc3083d886d0b58cbb38",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 4,
+            "kind": "request",
+            "max_tokens": 2048,
+            "message_count": 10,
+            "prompt_tokens_used": 13528,
+            "usage": null
+          },
+          {
+            "anchor_adjustment_tokens": null,
+            "call_observation": {
+              "completion_usage_field": null,
+              "content_empty": null,
+              "duration_ms": 60023.83674995508,
+              "prompt_usage_field": null,
+              "terminal_reason": null,
+              "tool_call_count": null
+            },
+            "completion_tokens_used": null,
+            "estimated_prompt_tokens": null,
+            "heuristic_prompt_tokens": null,
+            "identity": null,
+            "iteration": 4,
+            "kind": "request_failure",
+            "max_tokens": null,
+            "message_count": 10,
+            "prompt_tokens_used": null,
+            "usage": null
+          }
+        ],
+        "events_truncated": false,
+        "observed_events": 10,
+        "read_only": true,
+        "scope_note": "Bounded prefix of normalized request attempts, reported response usage and token-gate stops. Request precedes delivery; response usage is a provider report, not backend attestation. Failure usage is unknown; a request without a response may have consumed tokens. Missing/truncated evidence is not zero usage or proven budget compliance. No messages, paths, call IDs, tool arguments/results or exception text are stored here. Fingerprints cover normalized inputs only; see the separate configured profile for limits/provider identity. Optional call observations describe adapter HTTP timing and allowlisted response fields, not backend causes or token compliance. Missing observations stay unknown, including cancellation, parsing failures and unsupported providers. Wall/tool/iteration stops are not token-gate events. Not completion, acceptance, replay or permission to resume."
+      },
+      "cell": "C2",
+      "changed_paths": [],
+      "completed_and_accepted": false,
+      "completion_reason": null,
+      "completion_status": null,
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_truncated": false,
+      "external_exit_code": 1,
+      "failure_count": 1,
+      "full_tree_sha256": "03647fada969c4d49ddd5b93cbd4c3f73b11de0eb18b9156a6e4f7e588389afe",
+      "input_analysis": {
+        "inputs_sha256": {
+          "request-0001-normalized.json": "e25ad91fcd1e326f963d128ed53a01c8d793330c3327a2049cd5a964cb930a8a",
+          "request-0001-wire.json": "f80d49f2c5e7afb82991b061bd64988fbf544968f8901572532b6827ebedc201",
+          "request-0002-normalized.json": "f3afef5fd238018695267231551d563c487d1e3a655bbba6d71c0660f450f91d",
+          "request-0002-wire.json": "19ca789cb913844ac56736e2489a4d2cb8b1b7f9c7b01565a7169c413aa4b7b3",
+          "request-0003-normalized.json": "8cc58acc97e8f86b4cce6e3fdeccebcb2d444d6bce74c8adbff8aeb78a718a93",
+          "request-0003-wire.json": "2d369288de1c0be7e327c7261fb8024cf3f924f2e671ad65218626aa495302f0",
+          "request-0004-normalized.json": "a6f2f110deff7e5c1a46eb11fb3f2d84c090a90b44a480b2bdb1cb0e2d4d7147",
+          "request-0004-wire.json": "c606edbf3b92272ad240c7e9342c00af90caa32735f7e27e42361f4e49f3fa3c",
+          "request-0005-normalized.json": "f3c4c20ed3f2f093976e13f20164aaf30ea8eaa892f3cf189ef53c5f0d6ad602",
+          "request-0005-wire.json": "af5a1a19bd2430ba27d096e1a45c4dce9c5b74ad13e325bdc3aabd0e06f06298"
+        },
+        "kind": "offline-input-pairing-and-mock-serialization-NOT-inference",
+        "limits": [
+          "Input presence before forwarding is not backend receipt or execution.",
+          "Mock serialization uses no HTTP network/inference and is not failed-request model replay.",
+          "Heuristic footprint is not provider tokenization/backend compliance; saved estimate may use calibration.",
+          "Valid role/tool/option continuity does not prove semantic correctness, absence of all malformed values or backend cause."
+        ],
+        "request_count": 5,
+        "rows": [
+          {
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "87b0b9f5b24177f89d4678ceef097f4750c3a0a0272c20c17d47c705b89bd40d",
+              "request_sha256": "185b166bb585e379da5bc60624b2ab2ce3543c80490d8e94079f92fa5839eef9",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 0,
+            "max_tokens": 2048,
+            "message_roles": [
+              "system",
+              "user"
+            ],
+            "normalized_bytes": 9152,
+            "normalized_sha256": "e25ad91fcd1e326f963d128ed53a01c8d793330c3327a2049cd5a964cb930a8a",
+            "production_adapter_mock_serialization_byte_equal": true,
+            "saved_prompt_estimate": 2841,
+            "sequence": 1,
+            "tool_reply_id_name_continuity": true,
+            "tool_result_names": [],
+            "uncalibrated_heuristic_footprint": {
+              "anchor_adjustment_tokens": 0,
+              "estimated_prompt_tokens": 2841,
+              "heuristic_prompt_tokens": 2841,
+              "largest_messages": [
+                {
+                  "message_index": 1,
+                  "payload_bytes": 983,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 0,
+                  "payload_bytes": 829,
+                  "role": "system",
+                  "tool_name": null
+                }
+              ],
+              "largest_messages_truncated": false,
+              "message_estimate_tokens": 612,
+              "prompt_estimate_bytes_per_token": 3.0,
+              "tool_schema_estimate_tokens": 2229
+            },
+            "wire_bytes": 8661,
+            "wire_sha256": "f80d49f2c5e7afb82991b061bd64988fbf544968f8901572532b6827ebedc201"
+          },
+          {
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "09dadddb209b842eb487979e19f8ad23c72858b8ed821d3eab847bd4e72eb82f",
+              "request_sha256": "d7c048140cfbdcc26bc53c1ea70f0f84ac8ae358b80717eab54014bfc62409a0",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 1,
+            "max_tokens": 2048,
+            "message_roles": [
+              "system",
+              "user",
+              "assistant",
+              "user"
+            ],
+            "normalized_bytes": 9483,
+            "normalized_sha256": "f3afef5fd238018695267231551d563c487d1e3a655bbba6d71c0660f450f91d",
+            "production_adapter_mock_serialization_byte_equal": true,
+            "saved_prompt_estimate": 2897,
+            "sequence": 2,
+            "tool_reply_id_name_continuity": true,
+            "tool_result_names": [],
+            "uncalibrated_heuristic_footprint": {
+              "anchor_adjustment_tokens": 0,
+              "estimated_prompt_tokens": 2897,
+              "heuristic_prompt_tokens": 2897,
+              "largest_messages": [
+                {
+                  "message_index": 1,
+                  "payload_bytes": 983,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 0,
+                  "payload_bytes": 829,
+                  "role": "system",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 3,
+                  "payload_bytes": 142,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 2,
+                  "payload_bytes": 0,
+                  "role": "assistant",
+                  "tool_name": null
+                }
+              ],
+              "largest_messages_truncated": false,
+              "message_estimate_tokens": 668,
+              "prompt_estimate_bytes_per_token": 3.0,
+              "tool_schema_estimate_tokens": 2229
+            },
+            "wire_bytes": 8866,
+            "wire_sha256": "19ca789cb913844ac56736e2489a4d2cb8b1b7f9c7b01565a7169c413aa4b7b3"
+          },
+          {
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "68bee18730272d73215a006e8cf67476314867f318565474ed82fba369634394",
+              "request_sha256": "d7517da9b7fbfd4387799bd70a0d397e15ceff5e8c84e66a244dc3b5013bcfc0",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 2,
+            "max_tokens": 2048,
+            "message_roles": [
+              "system",
+              "user",
+              "assistant",
+              "user",
+              "assistant",
+              "tool"
+            ],
+            "normalized_bytes": 18258,
+            "normalized_sha256": "8cc58acc97e8f86b4cce6e3fdeccebcb2d444d6bce74c8adbff8aeb78a718a93",
+            "production_adapter_mock_serialization_byte_equal": true,
+            "saved_prompt_estimate": 5304,
+            "sequence": 3,
+            "tool_reply_id_name_continuity": true,
+            "tool_result_names": [
+              "tree"
+            ],
+            "uncalibrated_heuristic_footprint": {
+              "anchor_adjustment_tokens": 0,
+              "estimated_prompt_tokens": 5304,
+              "heuristic_prompt_tokens": 5304,
+              "largest_messages": [
+                {
+                  "message_index": 5,
+                  "payload_bytes": 7193,
+                  "role": "tool",
+                  "tool_name": "tree"
+                },
+                {
+                  "message_index": 1,
+                  "payload_bytes": 983,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 0,
+                  "payload_bytes": 829,
+                  "role": "system",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 3,
+                  "payload_bytes": 142,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 4,
+                  "payload_bytes": 6,
+                  "role": "assistant",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 2,
+                  "payload_bytes": 0,
+                  "role": "assistant",
+                  "tool_name": null
+                }
+              ],
+              "largest_messages_truncated": false,
+              "message_estimate_tokens": 3075,
+              "prompt_estimate_bytes_per_token": 3.0,
+              "tool_schema_estimate_tokens": 2229
+            },
+            "wire_bytes": 17534,
+            "wire_sha256": "2d369288de1c0be7e327c7261fb8024cf3f924f2e671ad65218626aa495302f0"
+          },
+          {
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "c1d807703014648a3c230ce533bf5225b2c38b779401211608ca8bc6f6b601d0",
+              "request_sha256": "bd68ace8296569b88b4bde62e144ee82c9c86d4c8c9c627a8912d0c8fe6d967d",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 3,
+            "max_tokens": 2048,
+            "message_roles": [
+              "system",
+              "user",
+              "assistant",
+              "user",
+              "assistant",
+              "tool",
+              "assistant",
+              "tool"
+            ],
+            "normalized_bytes": 22992,
+            "normalized_sha256": "a6f2f110deff7e5c1a46eb11fb3f2d84c090a90b44a480b2bdb1cb0e2d4d7147",
+            "production_adapter_mock_serialization_byte_equal": true,
+            "saved_prompt_estimate": 6716,
+            "sequence": 4,
+            "tool_reply_id_name_continuity": true,
+            "tool_result_names": [
+              "tree",
+              "read_file"
+            ],
+            "uncalibrated_heuristic_footprint": {
+              "anchor_adjustment_tokens": 0,
+              "estimated_prompt_tokens": 6716,
+              "heuristic_prompt_tokens": 6716,
+              "largest_messages": [
+                {
+                  "message_index": 5,
+                  "payload_bytes": 7193,
+                  "role": "tool",
+                  "tool_name": "tree"
+                },
+                {
+                  "message_index": 7,
+                  "payload_bytes": 4163,
+                  "role": "tool",
+                  "tool_name": "read_file"
+                },
+                {
+                  "message_index": 1,
+                  "payload_bytes": 983,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 0,
+                  "payload_bytes": 829,
+                  "role": "system",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 3,
+                  "payload_bytes": 142,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 6,
+                  "payload_bytes": 48,
+                  "role": "assistant",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 4,
+                  "payload_bytes": 6,
+                  "role": "assistant",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 2,
+                  "payload_bytes": 0,
+                  "role": "assistant",
+                  "tool_name": null
+                }
+              ],
+              "largest_messages_truncated": false,
+              "message_estimate_tokens": 4487,
+              "prompt_estimate_bytes_per_token": 3.0,
+              "tool_schema_estimate_tokens": 2229
+            },
+            "wire_bytes": 22160,
+            "wire_sha256": "c606edbf3b92272ad240c7e9342c00af90caa32735f7e27e42361f4e49f3fa3c"
+          },
+          {
+            "identity": {
+              "format": "normalized-chat-request-v1",
+              "messages_sha256": "4dddda6dd4ecb8f537cfb70c83d18b7bfe8a7a8e2e5d7f4d3ed7ff9dd270096c",
+              "request_sha256": "b6af65a2e7872d92b01fdbb2524bd798f4b4f73d002bbc3083d886d0b58cbb38",
+              "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+            },
+            "iteration": 4,
+            "max_tokens": 2048,
+            "message_roles": [
+              "system",
+              "user",
+              "assistant",
+              "user",
+              "assistant",
+              "tool",
+              "assistant",
+              "tool",
+              "assistant",
+              "tool"
+            ],
+            "normalized_bytes": 24401,
+            "normalized_sha256": "f3c4c20ed3f2f093976e13f20164aaf30ea8eaa892f3cf189ef53c5f0d6ad602",
+            "production_adapter_mock_serialization_byte_equal": true,
+            "saved_prompt_estimate": 7099,
+            "sequence": 5,
+            "tool_reply_id_name_continuity": true,
+            "tool_result_names": [
+              "tree",
+              "read_file",
+              "emit_plan"
+            ],
+            "uncalibrated_heuristic_footprint": {
+              "anchor_adjustment_tokens": 0,
+              "estimated_prompt_tokens": 7099,
+              "heuristic_prompt_tokens": 7099,
+              "largest_messages": [
+                {
+                  "message_index": 5,
+                  "payload_bytes": 7193,
+                  "role": "tool",
+                  "tool_name": "tree"
+                },
+                {
+                  "message_index": 7,
+                  "payload_bytes": 4163,
+                  "role": "tool",
+                  "tool_name": "read_file"
+                },
+                {
+                  "message_index": 1,
+                  "payload_bytes": 983,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 0,
+                  "payload_bytes": 829,
+                  "role": "system",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 9,
+                  "payload_bytes": 571,
+                  "role": "tool",
+                  "tool_name": "emit_plan"
+                },
+                {
+                  "message_index": 8,
+                  "payload_bytes": 554,
+                  "role": "assistant",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 3,
+                  "payload_bytes": 142,
+                  "role": "user",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 6,
+                  "payload_bytes": 48,
+                  "role": "assistant",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 4,
+                  "payload_bytes": 6,
+                  "role": "assistant",
+                  "tool_name": null
+                },
+                {
+                  "message_index": 2,
+                  "payload_bytes": 0,
+                  "role": "assistant",
+                  "tool_name": null
+                }
+              ],
+              "largest_messages_truncated": false,
+              "message_estimate_tokens": 4870,
+              "prompt_estimate_bytes_per_token": 3.0,
+              "tool_schema_estimate_tokens": 2229
+            },
+            "wire_bytes": 23456,
+            "wire_sha256": "af5a1a19bd2430ba27d096e1a45c4dce9c5b74ad13e325bdc3aabd0e06f06298"
+          }
+        ],
+        "total_input_bytes": 164963
+      },
+      "input_analysis_complete": true,
+      "known_response_prefix_usage": {
+        "completion_tokens": 205,
+        "prompt_tokens": 13528
+      },
+      "local_input_files_sha256": {
+        "request-0001-normalized.json": "e25ad91fcd1e326f963d128ed53a01c8d793330c3327a2049cd5a964cb930a8a",
+        "request-0001-wire.json": "f80d49f2c5e7afb82991b061bd64988fbf544968f8901572532b6827ebedc201",
+        "request-0002-normalized.json": "f3afef5fd238018695267231551d563c487d1e3a655bbba6d71c0660f450f91d",
+        "request-0002-wire.json": "19ca789cb913844ac56736e2489a4d2cb8b1b7f9c7b01565a7169c413aa4b7b3",
+        "request-0003-normalized.json": "8cc58acc97e8f86b4cce6e3fdeccebcb2d444d6bce74c8adbff8aeb78a718a93",
+        "request-0003-wire.json": "2d369288de1c0be7e327c7261fb8024cf3f924f2e671ad65218626aa495302f0",
+        "request-0004-normalized.json": "a6f2f110deff7e5c1a46eb11fb3f2d84c090a90b44a480b2bdb1cb0e2d4d7147",
+        "request-0004-wire.json": "c606edbf3b92272ad240c7e9342c00af90caa32735f7e27e42361f4e49f3fa3c",
+        "request-0005-normalized.json": "f3c4c20ed3f2f093976e13f20164aaf30ea8eaa892f3cf189ef53c5f0d6ad602",
+        "request-0005-wire.json": "af5a1a19bd2430ba27d096e1a45c4dce9c5b74ad13e325bdc3aabd0e06f06298"
+      },
+      "modes_preserved": true,
+      "one_saved_run_no_reversal_or_replacement": true,
+      "protected_preserved": true,
+      "provider_failure": {
+        "call_observation": {
+          "completion_usage_field": null,
+          "content_empty": null,
+          "duration_ms": 60023.83674995508,
+          "prompt_usage_field": null,
+          "terminal_reason": null,
+          "tool_call_count": null
+        },
+        "http_status": null,
+        "kind": "read_timeout"
+      },
+      "provider_timeout_seconds": 60,
+      "request_count": 5,
+      "request_id": "2873e343947a467fa1a9a3feed71fee2",
+      "response_count": 4,
+      "restart_identical": true,
+      "run_id": "b3e2c62d4bfd46a2bbc8029d816c7dab",
+      "status": "failed",
+      "tool_progress": [
+        {
+          "coverage": "recorded",
+          "events": [
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-23T22:48:21.192053Z",
+              "sequence": 1,
+              "tool": "tree",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 4.152791976928711,
+              "observed_at": "2026-10-23T22:48:21.197225Z",
+              "sequence": 2,
+              "tool": "tree",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-23T22:48:47.978630Z",
+              "sequence": 3,
+              "tool": "read_file",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 2.3686670064926147,
+              "observed_at": "2026-10-23T22:48:47.982132Z",
+              "sequence": 4,
+              "tool": "read_file",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-23T22:49:14.572475Z",
+              "sequence": 5,
+              "tool": "emit_plan",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 2.5822091102600098,
+              "observed_at": "2026-10-23T22:49:14.576446Z",
+              "sequence": 6,
+              "tool": "emit_plan",
+              "type": "tool_end"
+            }
+          ],
+          "events_truncated": false,
+          "observed_events": 6,
+          "read_only": true,
+          "run_id": "b3e2c62d4bfd46a2bbc8029d816c7dab",
+          "scope_note": "Bounded prefix of observed tool-start/end metadata; arguments, results, error text, model messages and tool-call IDs are not stored here. Start precedes tool gates, so it does not prove dispatch or mutation. End/error presence is not patch acceptance or verification. A missing end may mean interrupted work or unsaved evidence; file changes may exist. This is not a transcript, checkpoint, replay, repair, or permission to resume. Unknown tool names are recorded as unknown_tool.",
+          "updated_at": "2026-10-23T22:49:14.576446Z"
+        }
+      ],
+      "usage": null,
+      "verification_status": null,
+      "workspace_identity": {
+        "device": 16777233,
+        "inode": 21448193
+      }
+    }
+  ],
+  "runtime_revision": "6721cc9997a00a473cee39508aba8da169eb2758"
+}
