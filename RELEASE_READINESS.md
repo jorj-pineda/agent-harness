@@ -4,10 +4,62 @@ Audited source: `62ac6a44f1a6d96e7ea261162d51bc662306cefa` (merged through PR #1
 This is a point-in-time source, regression and recorded-evidence audit. It is not
 an independent security audit, a fresh model comparison or release approval.
 
-**Decision: suitable for a controlled, supervised trial from a source checkout;
+**Decision at the original audited revision: suitable for a controlled, supervised trial from a source checkout;
 not yet ready to claim the roadmap's personal-use release targets.** Infrastructure
 is substantially implemented. Reliable coding performance and the complete real
 workflow are still unproven. PR/test counts are not a release-completion percentage.
+
+## Current disposition — 2026-10-23
+
+**Retain no-go for unattended coding under the agreed ten-task envelope.** The
+latest [transport comparison](evals/projects/duodoro/TRANSPORT_COMPARISON_RESULTS.md)
+finished buffered **0/2 accepted, 0/2 completed-and-accepted** and streamed
+**0/2 accepted, 0/2 completed-and-accepted** on original T09. All four fifth calls
+received zero body chunks before a roughly sixty-second read timeout, with no
+edits. Earlier treatment responses contained valid streamed frames, so the
+experimental path was active; it did not remove the observed failure. Backend
+cause and failed-call usage remain unknown. Two repeats per arm on one public
+task do not establish a general transport effect or coding-quality comparison.
+
+The streaming-only remedy hypothesis is unsuccessful **for this tested task and
+configuration**. Close this comparison without promoting the transport wrapper to
+application settings/defaults. Keep its code, freeze and raw results as evaluation
+reproduction evidence. The production adapter still requests buffered responses;
+original prompts, limits and completion/recovery rules remain unchanged.
+
+The original [ten-task trial](evals/projects/duodoro/TRIAL_RESULTS.md) accepted
+2/10 artifacts and completed-and-accepted 1/10. The later
+[whole-file ten-task cohort](evals/projects/duodoro/WHOLE_FILE_TEN_TASK_RESULTS.md)
+accepted 2/10 and completed-and-accepted 2/10, again below the unchanged 8/10 target.
+Keep these cohorts separate from selected-task comparisons and workflow probes;
+additional PRs, green offline tests and successful bookkeeping do not close their
+coding-quality acceptance gap. No narrower unattended envelope is established.
+
+| Gate | Current evidence | Work still required |
+|---|---|---|
+| G0 — mechanics baseline | Passed at the latest frozen execution runtime `51463ae`: 1,437 offline tests, static checks and both scripted matrices. | Validate the exact next execution/release candidate; this is not a model-quality gate. |
+| G1 — trial agreement | Original ten tasks, limits and criteria agreed and reviewed before inference. | Any revised envelope must be named and frozen explicitly; the original agreement does not make new criteria equivalent. |
+| G2 — client/recovery workflow | Original client cohort plus one bounded [CLI](evals/projects/duodoro/RECOVERY_RESULTS.md) and one [panel](evals/projects/duodoro/PANEL_RECOVERY_RESULTS.md) partial-edit/reversal observation. | Broader agreed client/recovery acceptance remains open; selected variants and unknown interrupted usage do not close it. |
+| G3 — useful coding envelope | Both ten-task cohorts miss the 8/10 artifact target. | Demonstrate a useful agreed envelope within its budgets, or explicitly revise the proposed scope with its unmet original target retained. |
+| G4 — repeatable quality evidence | Selected public-task observations exist; no completed matched held-out two-model release comparison. | Expand the 20–30-task/category coverage, preserve held-out cases, and run repeated comparable intended-model measurements. |
+| G5 — release decision/onboarding | [Packaged assets and fresh installations](WHEEL_INSTALLATION.md) have bounded evidence; release acceptance is unmet. | Reconcile the open gates, validate the selected distribution/candidate and obtain Jorge's release decision. No release is approved here. |
+
+### Boundary for the next work
+
+This closes the three-slice transport preparation/results/disposition batch. The
+current default remains a trusted-local experimental harness for controlled use;
+it is not a validated unattended coding envelope. A further investigation should
+start with a concrete hypothesis tied to retained evidence, or an explicit proposal
+for a narrower task envelope. A fresh live experiment needs its own fixed scope,
+actual inputs, independent criteria, comparable budgets and reviewed execution
+freeze; failed cells in this completed cohort are not replay slots.
+
+The zero-chunk observations alone do not distinguish backend queueing, generation,
+serialization or another cause. No further runtime remedy follows from them yet.
+Keep feature batches frozen and the original G2–G5 requirements visible. This
+disposition adds no inference, limit increase, model switch, Duodoro patch or
+milestone-completion claim. Next development must remove an observed obstacle or
+supply missing acceptance evidence, rather than extend the PR count.
 
 ## Freeze the trial scope
 
