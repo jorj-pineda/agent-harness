@@ -528,6 +528,18 @@ tests (five live deselected), Ruff/format/mypy and both 90/90 scripted matrices
 passed with contract labels/limits inspected. Fresh client preflight and
 independently reviewed inputs remain required before inference. Original counts/no-go/G2–G5 stay unchanged.
 
+**2026-10-23 UTC — Fresh provider diagnostic inputs prepared:** the
+[new freeze](evals/projects/duodoro/PROVIDER_DIAGNOSTIC_FRESH_FREEZE.md) pins fresh
+T05/T09 roots and unchanged contracts/limits at corrected runtime `a9d6072`.
+Actual source-factory CLI scripted edit/check/failure/restart flows pass despite
+raw rows beside the manifest; default-components GET-only startup/review also
+passes without model requests. Eight mismatch gates, 78 focused/1,415 offline,
+static and both 90/90 scripted matrices pass with labels/limits inspected.
+Post-flow self-archival and cleanup-audit corrections are retained, without flow
+reruns. Scheduled stores remain absent; model unloaded. Independent exact-freeze
+review/merge and unchanged preconditions remain before inference. Original failed
+freeze/cohorts, no-go and G2–G5 are unchanged; no new quality result is claimed.
+
 ## Direction
 
 Build a coding harness Jorge can use on real repositories with affordable hosted models and locally runnable models that struggle with coding-agent workflows. The harness should help those models inspect the right code, make focused edits, recover from errors, and verify their work within an explicit budget.
