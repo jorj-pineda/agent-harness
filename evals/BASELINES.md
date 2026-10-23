@@ -2199,3 +2199,28 @@ or Docker action. Original cohorts/no-go and G2–G5 are unchanged. Correct sour
 factory validation and fresh independently reviewed preparation are required
 before any future inference. Preparation's 60 focused/1,397 offline/static and
 both 90/90 scripted matrices remain historical mechanics evidence, not model quality.
+
+
+## 2026-10-23 UTC — two-task provider diagnostic observations
+
+[Full report](projects/duodoro/PROVIDER_DIAGNOSTIC_LIVE_RESULTS.md) and
+[structured evidence](results/2026-10-23-duodoro-provider-diagnostic.json) retain
+T05 then T09 once each through actual CLI at reviewed runtime `a9d6072`.
+Both fail with read_timeout before edits: **0/2 accepted artifacts, 0/2 completed-
+and-accepted**. External rejection reproduces on unchanged archived copies.
+All ten response/failure events retain bounded metadata across restart without
+truncation; failed HTTP durations are 60,015.958 and 60,004.900 ms. Aggregate token
+usage is unknown; known prefixes 14,761/115 and 13,560/201 are not totals.
+All eight returned responses have present usage fields; historical T05 missing
+usage did not reproduce. Backend cause, pure inference and wire state remain unknown.
+
+Frozen first identities/profiles/criteria/recipes/preflight evidence and protected
+files/modes match; both roots have exactly one run and no reversal. CLI saved
+review remains identical after review-only restart. Four owned APIs exited, model
+unloaded and existing service/Duodoro HEAD/status/refs/index preserved. No retry,
+replacement, coding rescue, execution setup correction, paid/new-model call,
+dependency install or Docker action. Historical failed freeze and original cohorts
+remain unchanged. Preparation's 78 focused/1,415 offline/static and both 90/90
+scripted matrices remain historical mechanics evidence. These selected attempts
+validate observed diagnostic coverage, not a remedy or held-out/causal improvement;
+retain no-go and open G2–G5.

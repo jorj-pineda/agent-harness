@@ -1,6 +1,11 @@
 # Fresh provider diagnostic execution freeze
 
-**Unrun; independent review and merge required before inference.** This fresh
+**Subsequently executed after review/merge:** the
+[results](PROVIDER_DIAGNOSTIC_LIVE_RESULTS.md) retain both read-timeout outcomes,
+0/2 accepted artifacts and 10/10 saved response/failure observations. Preparation
+claims below are historical; this frozen manifest remains unchanged.
+
+**Status at preparation: unrun, requiring independent review and merge.** This fresh
 preparation follows the [historical setup blocker](PROVIDER_DIAGNOSTIC_RESULTS.md)
 and the source-factory correction in PR #182. The old freeze, roots and failed
 outcomes are unchanged and must not be retried.
