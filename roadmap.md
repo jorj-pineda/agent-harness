@@ -12,8 +12,24 @@ remains unknown. Keep the wrapper as evaluation-only reproduction evidence and
 feature batches frozen. No smaller unattended envelope or G2–G5 closure is
 established. Further work needs a specific retained-failure hypothesis or an
 explicit narrower-envelope proposal with independent acceptance; the completed
-cohort is not a retry queue. Preparation, results and disposition are complete;
-no additional inference, default/limit change or release approval follows.
+cohort is not a retry queue. That transport experiment’s preparation, results and
+disposition are complete; no additional inference, default/limit change or release
+approval follows from that closed experiment.
+
+**2026-10-23 — Provider-timeout comparison scoped, unrun:** the
+[offline analysis](evals/projects/duodoro/PROVIDER_WAIT_ANALYSIS.md) records the
+retained run's roughly 70-second age at plan end and separate 60-second call stop;
+its nominal remaining allowance is not a measured monotonic deadline. A bounded
+read-only shared-log scan found five time-window candidates under an explicit
+Chicago-time assumption, not request-ID linkage or backend cause. No-chat production
+construction confirms the scalar changes all four HTTP timeout phases. The
+[protocol](evals/projects/duodoro/PROVIDER_WAIT_PROTOCOL.md) explicitly compares
+60/180 in C1/W1/W2/C2 original-T09 CLI cells while keeping each task's 300-second,
+token/tool/iteration limits unchanged. Actual same-root inputs/client preflight,
+exact G0 and independent execution-freeze review remain required. No inference,
+service/debug/default change, live failed-input replay or quality claim. Original
+cohorts, 8/10 target, no-go and G2–G5 stay unchanged; this tests a bounded existing
+configuration setting, not an automatic timeout escalation or feature batch.
 
 **2026-10-23 — One request-input diagnostic complete:** the
 [results](evals/projects/duodoro/REQUEST_INPUT_RESULTS.md) retain one original T09

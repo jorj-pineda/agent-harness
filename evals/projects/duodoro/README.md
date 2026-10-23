@@ -257,3 +257,13 @@ input pairs. Exact production mock serialization, stable options/tool continuity
 and a 740-byte post-plan delta do not support unexpected input expansion in this
 attempt. Backend cause and failed usage remain unknown; no runtime remedy or
 release improvement is claimed. Historical freezes/cohorts stay unchanged.
+
+## Provider-timeout comparison: scoped, not run
+
+The [offline analysis](PROVIDER_WAIT_ANALYSIS.md) motivates the existing provider
+wait setting as a separate hypothesis. The [fixed protocol](PROVIDER_WAIT_PROTOCOL.md)
+compares 60/180-second scalar timeouts on four original T09 CLI cells with the same
+five-minute per-task/token/tool limits, source and acceptance. This changes all four
+HTTP timeout phases, not production defaults or the global task budget. Shared-log
+metadata is only time-window evidence. Actual fresh same-root preflight, exact G0
+and an independently reviewed freeze remain required; no inference ran here.

@@ -1,0 +1,194 @@
+{
+  "analysis_revision": "7a7114a02c131e8a0857a39c0d02ec7b484bfce7",
+  "client_window_utc": {
+    "created_at": "2026-10-23T21:48:40.557100Z",
+    "finished_at": "2026-10-23T21:50:50.918188Z",
+    "plan_ended_at": "2026-10-23T21:49:50.832081+00:00"
+  },
+  "configuration_probe": {
+    "candidate_timeouts": {
+      "connect": 180.0,
+      "pool": 180.0,
+      "read": 180.0,
+      "write": 180.0
+    },
+    "control_timeouts": {
+      "connect": 60.0,
+      "pool": 60.0,
+      "read": 60.0,
+      "write": 60.0
+    },
+    "httpx_version": "0.28.1",
+    "kind": "production-construction-without-chat-NOT-network",
+    "only_changed_settings_field": "request_timeout_seconds",
+    "task_wall_seconds_both": 300
+  },
+  "elapsed_run_age_at_failure_seconds": 130.361088,
+  "elapsed_run_age_at_plan_end_seconds": 70.274981,
+  "failed_adapter_post_duration_ms": 60046.100292005576,
+  "headroom_scope": "UTC run age, not measured monotonic deadline remaining; setup/finalization and clock differences remain. No wall-budget stop was observed.",
+  "kind": "offline-existing-access-metadata-and-config-NOT-inference",
+  "limits": [
+    "Five shared-log candidates under an assumed timezone are not per-request correlation or proof of why status500 occurred.",
+    "A longer provider timeout may still fail or consume the unchanged task deadline; completion and artifact acceptance remain unproven.",
+    "The scalar changes connect/read/write/pool timeouts, not just read inactivity. Global300sec/tokens/tools remain unchanged.",
+    "No production default, cohort result, acceptance criterion or G2-G5/release decision changes."
+  ],
+  "model_inference_calls": 0,
+  "nominal_300_minus_run_age_at_plan_end_seconds": 229.725019,
+  "parser_fixture_checks": 8,
+  "prior_outcomes_inputs_and_freeze_unchanged": true,
+  "recipe_sha256": "79f0a9bdd2ce6fc18336ca76ea7b857f1c39b71510a1b9d24319acb6598746bf",
+  "service_or_debug_changes": false,
+  "shared_log_selection": {
+    "assumed_timezone": "America/Chicago",
+    "candidate_records": [
+      {
+        "duration_ms_from_literal": 21724.184708,
+        "end_utc_under_assumed_zone": "2026-10-23T21:49:02+00:00",
+        "line_number": 29277,
+        "method": "POST",
+        "path": "/api/chat",
+        "reported_duration_literal": "21.724184708s",
+        "source_file": "server.log",
+        "status": 200
+      },
+      {
+        "duration_ms_from_literal": 1424.909583,
+        "end_utc_under_assumed_zone": "2026-10-23T21:49:04+00:00",
+        "line_number": 29301,
+        "method": "POST",
+        "path": "/api/chat",
+        "reported_duration_literal": "1.424909583s",
+        "source_file": "server.log",
+        "status": 200
+      },
+      {
+        "duration_ms_from_literal": 25607.255792,
+        "end_utc_under_assumed_zone": "2026-10-23T21:49:29+00:00",
+        "line_number": 29334,
+        "method": "POST",
+        "path": "/api/chat",
+        "reported_duration_literal": "25.607255792s",
+        "source_file": "server.log",
+        "status": 200
+      },
+      {
+        "duration_ms_from_literal": 21139.355416000002,
+        "end_utc_under_assumed_zone": "2026-10-23T21:49:50+00:00",
+        "line_number": 29363,
+        "method": "POST",
+        "path": "/api/chat",
+        "reported_duration_literal": "21.139355416s",
+        "source_file": "server.log",
+        "status": 200
+      },
+      {
+        "duration_ms_from_literal": 60000.0,
+        "end_utc_under_assumed_zone": "2026-10-23T21:50:50+00:00",
+        "line_number": 29399,
+        "method": "POST",
+        "path": "/api/chat",
+        "reported_duration_literal": "1m0s",
+        "source_file": "server.log",
+        "status": 500
+      }
+    ],
+    "correlation": "Time window only; no shared request IDs. Candidates do not prove attribution, backend cause or generation progress. Duration literals may be rounded/truncated.",
+    "max_file_bytes": 8388608,
+    "max_line_bytes": 4096,
+    "max_total_bytes": 16777216,
+    "raw_log_payload_copied": false,
+    "source_prefixes": [
+      {
+        "candidate_count": 0,
+        "changed_during_scan": false,
+        "initial_bytes": 1432713,
+        "initial_device": 16777233,
+        "initial_inode": 13539484,
+        "invalid_lines_skipped": 0,
+        "long_lines_skipped": 0,
+        "name": "server-1.log",
+        "scanned_prefix_bytes": 1432713,
+        "scanned_prefix_sha256": "448320d7c49c0091a3634532be4d095cc31feae47ac7784fbdf3d83a194fa03c",
+        "truncated_scan": false
+      },
+      {
+        "candidate_count": 0,
+        "changed_during_scan": false,
+        "initial_bytes": 2408,
+        "initial_device": 16777233,
+        "initial_inode": 11322098,
+        "invalid_lines_skipped": 0,
+        "long_lines_skipped": 0,
+        "name": "server-2.log",
+        "scanned_prefix_bytes": 2408,
+        "scanned_prefix_sha256": "3e757dd33b82095714977c9982ef24bd359a3cecdc41e8dd8786aa04344e95fb",
+        "truncated_scan": false
+      },
+      {
+        "candidate_count": 0,
+        "changed_during_scan": false,
+        "initial_bytes": 2411,
+        "initial_device": 16777233,
+        "initial_inode": 10432746,
+        "invalid_lines_skipped": 0,
+        "long_lines_skipped": 0,
+        "name": "server-3.log",
+        "scanned_prefix_bytes": 2411,
+        "scanned_prefix_sha256": "bfda27437326da89f09a66c29f06b4a7af4c479e92e1b68824f045b6e93b2c74",
+        "truncated_scan": false
+      },
+      {
+        "candidate_count": 0,
+        "changed_during_scan": false,
+        "initial_bytes": 3086,
+        "initial_device": 16777233,
+        "initial_inode": 10429443,
+        "invalid_lines_skipped": 0,
+        "long_lines_skipped": 0,
+        "name": "server-4.log",
+        "scanned_prefix_bytes": 3086,
+        "scanned_prefix_sha256": "5c2f80c9daeaec81576594bc35426e1ff2394c5b0111715384a3f6d49089bd0e",
+        "truncated_scan": false
+      },
+      {
+        "candidate_count": 0,
+        "changed_during_scan": false,
+        "initial_bytes": 2589,
+        "initial_device": 16777233,
+        "initial_inode": 9874474,
+        "invalid_lines_skipped": 0,
+        "long_lines_skipped": 0,
+        "name": "server-5.log",
+        "scanned_prefix_bytes": 2589,
+        "scanned_prefix_sha256": "89d78dec2e50bc7e64f356f7a853e2085856a1a7189a84ae906918fbd305836b",
+        "truncated_scan": false
+      },
+      {
+        "candidate_count": 5,
+        "changed_during_scan": false,
+        "initial_bytes": 2454342,
+        "initial_device": 16777233,
+        "initial_inode": 16334457,
+        "invalid_lines_skipped": 0,
+        "long_lines_skipped": 0,
+        "name": "server.log",
+        "scanned_prefix_bytes": 2454342,
+        "scanned_prefix_sha256": "2aa4f216ded5fdec6bb3267119fe2a64aac4788d85b2f6b04dd0f66c0a0b099a",
+        "truncated_scan": false
+      }
+    ],
+    "total_scanned_bytes": 3897549,
+    "window_padding_seconds": 2
+  },
+  "source_cohort_runtime": "1a0573e7faa42e045cdd18e108e22d035ecf0e96",
+  "source_hashes": {
+    "harness/config.py": "8b889e5ceeac459b73e5841fa4a55a8411ecd94acdd441ceef9a597a5de5b68c",
+    "harness/execution_profile.py": "7587157779e7b1bd139522eedb77c420eaa7a0d49d10cf13f2fd375201d18c9a",
+    "harness/providers.py": "309707f4343bfccc957e8233a740e581eac11cfd66b8fd720ffa94cd2687d356",
+    "harness/runtime.py": "f919c9c5ee55b4274d9f04e933967e338aab0477a9e768f148e87a3c16168dcb",
+    "providers/ollama.py": "3ba07db6c8e45891c514d720f99fe07c8e2b8ee3647a225721d487010c2cf0fe"
+  },
+  "source_report_sha256": "b4578daeda4706efbc8f2b41a57fb678a3913e63fce54e945812ad8aa67aeb28"
+}
