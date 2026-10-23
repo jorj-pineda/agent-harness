@@ -553,6 +553,23 @@ rescue or execution correction. Observation coverage is established for these
 selected attempts, not a remedy, causal quality gain or release readiness.
 Original cohorts/failed preparation, no-go and G2–G5 remain unchanged.
 
+**2026-10-23 UTC — Frozen transport comparison complete:** the
+[results](evals/projects/duodoro/TRANSPORT_COMPARISON_RESULTS.md) retain all original
+T09 B1/S1/S2/B2 attempts at `51463ae`: buffered **0/2 accepted, 0/2 completed-and-
+accepted**; streamed **0/2 accepted, 0/2 completed-and-accepted**. Every fifth call
+had a roughly 60-second read timeout with zero received chunks and no edit.
+Earlier treatment calls returned valid terminal-bearing streamed frames; activation
+did not remove this selected failure. All 20 request events have transport and
+saved response/failure observations; failed aggregate usage stays unknown.
+First inputs/wires, profiles, one-run counts, full archive/regrades, protected
+bytes/modes and restart JSON audits passed. Eight APIs exited, model unloaded and
+Duodoro head/status/index/refs stayed unchanged. One post-execution read-only SQL
+column lookup was corrected without state/inference changes. No replacement,
+repair or limit/default change. First-input parity does not imply identical later
+histories or causal/held-out/two-model improvement. Preserve no-go/G2–G5; do not
+promote streaming or rerun automatically. The separate evidence-based decision
+remains the third slice; no milestone/release approval follows.
+
 **2026-10-23 UTC — Actual four-cell transport freeze prepared, unrun:** the
 [freeze](evals/projects/duodoro/TRANSPORT_COMPARISON_FREEZE.md) pins original T09
 B1/S1/S2/B2 at `51463ae`, one common disposable workspace path, four fresh stores,

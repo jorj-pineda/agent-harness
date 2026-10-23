@@ -1,0 +1,1260 @@
+{
+  "arm_counts": {
+    "buffered": {
+      "artifact_accepted": 0,
+      "attempts": 2,
+      "completed_and_accepted": 0
+    },
+    "streamed": {
+      "artifact_accepted": 0,
+      "attempts": 2,
+      "completed_and_accepted": 0
+    }
+  },
+  "cell_order": [
+    "B1",
+    "S1",
+    "S2",
+    "B2"
+  ],
+  "duodoro_head_status_index_refs_unchanged": true,
+  "evidence_sha256": {
+    "collect-report.py": "f951648ebda0b82038dbff49ded4fcef5efca45f8d4a3780cd31b7722fd3e46b",
+    "outcomes/B1/acceptance.json": "2a128834f0935f09fc992044c34ec6e01a1782622ffbb9806fbd8b5c1e1e43bb",
+    "outcomes/B1/cell-audit.json": "432a7cc9f7eb0dc4fa21530ffb6f53372e7582f46698789cb1bb4d1f806b6982",
+    "outcomes/B1/chat.txt": "27d63bc092df2bbdcd91b03c6f2a5f5aa4038f98a001fd8cef970a37dcf7526d",
+    "outcomes/B1/final.diff": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "outcomes/B1/full-final-tree.json": "03647fada969c4d49ddd5b93cbd4c3f73b11de0eb18b9156a6e4f7e588389afe",
+    "outcomes/B1/lookup-000.json": "0b082df525d7d4aec7963ce727713598b5ceba9df4dd6c603e6928fbb849bf47",
+    "outcomes/B1/regrade.json": "c673a6c2b3463d5bdf58853c9c8ab089cdaad0ab56891ae5d23a10d6667f7e90",
+    "outcomes/B1/restarted-human.txt": "27c7c4e5078c652ff0cf84d40d07cb1d3e9fd2c8ffcf6f81088ba95175281cab",
+    "outcomes/B1/restarted-run.json": "0b082df525d7d4aec7963ce727713598b5ceba9df4dd6c603e6928fbb849bf47",
+    "outcomes/B1/review-server.log": "cdb3c3b2a267fdb5549e6ec347d961d16b6ce4b238efb1ef166dd7754950ecfe",
+    "outcomes/B1/review/http.jsonl": "9375189588f737e7608d97800018552df4887c653b3b1fa47810ca0dd41f54cd",
+    "outcomes/B1/run-human.txt": "27c7c4e5078c652ff0cf84d40d07cb1d3e9fd2c8ffcf6f81088ba95175281cab",
+    "outcomes/B1/runs.txt": "92fa4df142f61c5584ff2c92c9eed2a20b41dcd7e77319b473d1f76c44786d57",
+    "outcomes/B1/saved-run.json": "b7aaab2d0165f0bc67be9780c59c8e80eeede24fb97fe13aad845e7afc4041d4",
+    "outcomes/B1/source-server.log": "9ebb135a0ed193cf7478d034f401977fbaf70f8ca00bf615a826ec343efe550c",
+    "outcomes/B1/source/first-wire.json": "2c6edec426148715648b933439b8f519f1f47084989e0ebdfb943055cc40a640",
+    "outcomes/B1/source/http.jsonl": "d58b64fbed806c1156d2766f5667966fedecb0275ee7a6cfb4ceea757ab18499",
+    "outcomes/B1/source/transport.jsonl": "1740406689b3634d7dcb2091b08eee2a2db0808b0586acb4906f93c8d8ba34f8",
+    "outcomes/B1/staging.json": "fbae83b6152e9e59aaa842c617167d336c8c24b1d573119c9227c32889253854",
+    "outcomes/B1/submission.json": "b9869a00f430c9f61af6a4a2a3dfafc3a7304694b06f291236ad98882e559eac",
+    "outcomes/B1/summary.json": "ae55fe1a0e94cc0776feab9833b43dfe9129cf9f57f22bd89a3128d2b49c1d05",
+    "outcomes/B1/unload.json": "c00bf22bef386a6ebc94f2b184b96583fc26c0dab726344eb2aee4ab0643495b",
+    "outcomes/B2/acceptance.json": "6749478a5207929e595f329ba9bc83c2e307ecb26a8e4864a4da4f8a9e6bcf8c",
+    "outcomes/B2/cell-audit.json": "db4f3dae091cf367dd2ef3255fa27079f58cae0bcff70faf29021dc52337022f",
+    "outcomes/B2/chat.txt": "27d8f21c1e1258c5150dd14728c12159d2559c9d2b84ec807a1e1e326ef25fcd",
+    "outcomes/B2/final.diff": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "outcomes/B2/full-final-tree.json": "03647fada969c4d49ddd5b93cbd4c3f73b11de0eb18b9156a6e4f7e588389afe",
+    "outcomes/B2/lookup-000.json": "ff47079a070cfa8b61cce8b0a845e196c43bf0a0dd5f80d1b0d16708d302cf29",
+    "outcomes/B2/regrade.json": "618bed2d236b6aa985c2b131b5fe30518c53965690757efc72f04b9d787d3188",
+    "outcomes/B2/restarted-human.txt": "0b7ddfaaa025b66158c137303240d034a50c86e489ae06828787a3ee629a64bc",
+    "outcomes/B2/restarted-run.json": "ff47079a070cfa8b61cce8b0a845e196c43bf0a0dd5f80d1b0d16708d302cf29",
+    "outcomes/B2/review-server.log": "f6b0038cac51e6e04407e8e7d8b859cdecbd6113905a1dd7fcc4f038929096c9",
+    "outcomes/B2/review/http.jsonl": "da04944058521567a7f4883f526dfb50df16891d3b21abe13ce5980d0c9d81ae",
+    "outcomes/B2/run-human.txt": "0b7ddfaaa025b66158c137303240d034a50c86e489ae06828787a3ee629a64bc",
+    "outcomes/B2/runs.txt": "00bae16b59ff35c284383b105bf4f84e259996b9b8ad28bdabc7619d4281d7d4",
+    "outcomes/B2/saved-run.json": "3c71bcad9ea29ea27d4acd7dd34ba03c732140f6b95bfa3803a97bd36f315c52",
+    "outcomes/B2/source-server.log": "ec99ebd0b3b150759ed425c8f199743be89f0950d2973d0249d10052b2339c9f",
+    "outcomes/B2/source/first-wire.json": "2c6edec426148715648b933439b8f519f1f47084989e0ebdfb943055cc40a640",
+    "outcomes/B2/source/http.jsonl": "9ee7e599980eef2f05fb11bde864cf1d582a5ba12fc7398ea70369259c584700",
+    "outcomes/B2/source/transport.jsonl": "6dd46b30eb667d9598496daaad4f6dbe40900d4ca7f2fb4ace2ad5c690e3e00c",
+    "outcomes/B2/staging.json": "75164dc33a71f37e9c0042cf84a3f92b6f37de6263402a4c23493d4ca452b5fc",
+    "outcomes/B2/submission.json": "2909aadb047eb7fb0a141bfc31c2c2daa019b3786cc8df7c8a1aa4a63c24f1b8",
+    "outcomes/B2/summary.json": "30b017fae74182b24c9ac9ef1d1669d0cf1a7c52242bd79460c5f9df601982d1",
+    "outcomes/B2/unload.json": "92df77e5cda18fc5d7130f150d1b9340acf292e3f175e363c4c78b9c8284f275",
+    "outcomes/S1/acceptance.json": "641145dd97007581606f310f3e97cafd4e0f583b4bc4bd2350f571b5aad358bd",
+    "outcomes/S1/cell-audit.json": "e5f7fcc000c1269a9f8183ed89a1c3f18f9255c075f5af2237db2eca3bc2c177",
+    "outcomes/S1/chat.txt": "82307a34f2eb9e71bc32e3b00c8406769d98be80a4d89178d9701f1675b3743b",
+    "outcomes/S1/final.diff": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "outcomes/S1/full-final-tree.json": "03647fada969c4d49ddd5b93cbd4c3f73b11de0eb18b9156a6e4f7e588389afe",
+    "outcomes/S1/lookup-000.json": "3dc2c952b1fb0168a992e82669628726627bfef1ff6acd30d6e3df82b60e9da9",
+    "outcomes/S1/regrade.json": "5a784c011979cb0d0de04587fb0f5efdff50c6d73504d0f5ae77f959bcdfeb41",
+    "outcomes/S1/restarted-human.txt": "80c510132dd6d7b127db8ffa3783f0e4405db1dbaf75c08336c06a274489d374",
+    "outcomes/S1/restarted-run.json": "3dc2c952b1fb0168a992e82669628726627bfef1ff6acd30d6e3df82b60e9da9",
+    "outcomes/S1/review-server.log": "fcef428ec689093ac08a99c8e51a1cc6d3ffaa788344664c28bbed11b42d930a",
+    "outcomes/S1/review/http.jsonl": "3bdedb4c8a96582d413f7a5d837f21875d633855b1945a65085991417a22d4c8",
+    "outcomes/S1/run-human.txt": "80c510132dd6d7b127db8ffa3783f0e4405db1dbaf75c08336c06a274489d374",
+    "outcomes/S1/runs.txt": "59f0dfde00bb8b03589dd2f55aaafc3a11f597517edd239fc11dc6dd3d0dde30",
+    "outcomes/S1/saved-run.json": "d49c653be46708852e46062d3a8e1848765df8282b58ef8eb1fa2c451ba72a98",
+    "outcomes/S1/source-server.log": "fb53e303fb7c94deb8a6eff715189af4a4882703cbc6d43662f3b7b8c7f0b598",
+    "outcomes/S1/source/first-wire.json": "38dac74a4a95b6905e13702d6ba372e6c61b6a383a0581245604181802a014ad",
+    "outcomes/S1/source/http.jsonl": "48e1964271057292a343b7668fd1c781f005423b9fe0a6445ffea874a3cdd03a",
+    "outcomes/S1/source/transport.jsonl": "e96c52319a4d888f1dd65525fa9a47b965652f6c1f45de87ac75d1b448d1f98d",
+    "outcomes/S1/staging.json": "2924e542a8718293a01c95071d1b6696652e096c14676361d6cca5e659efbd09",
+    "outcomes/S1/submission.json": "768306deaf459188af459674283272a411ad0859908cd5d6bdd53e61306b47e2",
+    "outcomes/S1/summary.json": "0c0687dd8d05b7dd7b9a660fd81d09dd584ca43458a5e64ae0009934462b90e7",
+    "outcomes/S1/unload.json": "13dc03e53efd30d209bed140c2ef3e49f76e8922b04538d7f047575b596f460f",
+    "outcomes/S2/acceptance.json": "3eb095b4267608b8a5674a8b34d1d93570af57032e05e5e5dbf531c6c6ec3755",
+    "outcomes/S2/cell-audit.json": "3fa21626792c71c535672cb9a3d85b9ef68277fc099fdc6f7c5d755f16f39622",
+    "outcomes/S2/chat.txt": "50d894894f0b3e2b6a669b54ac9716ec400cb22e5fcc52c5bebbf90351abe06e",
+    "outcomes/S2/final.diff": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "outcomes/S2/full-final-tree.json": "03647fada969c4d49ddd5b93cbd4c3f73b11de0eb18b9156a6e4f7e588389afe",
+    "outcomes/S2/lookup-000.json": "518d2a083b9cad6b4ce1ebaf1f40afa183edaeea6f7a428bc92553b0b635da71",
+    "outcomes/S2/regrade.json": "2590a49fdf7c9c4554bf2786b591a120410cbb8e7ac6a63e9e74ac2f67119383",
+    "outcomes/S2/restarted-human.txt": "cc18efe3b501823cd690d456391bf7fff9839fc7aaaf152aaa4d3fc05e5dca2e",
+    "outcomes/S2/restarted-run.json": "518d2a083b9cad6b4ce1ebaf1f40afa183edaeea6f7a428bc92553b0b635da71",
+    "outcomes/S2/review-server.log": "3e48eed22cb6ff3792303ed71c9454d07d5e6555f031b957b378ff618abd3785",
+    "outcomes/S2/review/http.jsonl": "83857eb0244344187490df422b947e7fc4bda829e11dc88ea9768fbe772b27cc",
+    "outcomes/S2/run-human.txt": "cc18efe3b501823cd690d456391bf7fff9839fc7aaaf152aaa4d3fc05e5dca2e",
+    "outcomes/S2/runs.txt": "3564f2559ab31af650f6650193edd0b793eeb3eb9e1bd1d1dd4ad4a3ee4bee5f",
+    "outcomes/S2/saved-run.json": "3266d75e986efb8a4533ff53e7554d9841496b45eebe714b17e7cce913165909",
+    "outcomes/S2/source-server.log": "a9d171b931efcf88887323c151b523f6e88c5084223b3344eaee5308939c5997",
+    "outcomes/S2/source/first-wire.json": "38dac74a4a95b6905e13702d6ba372e6c61b6a383a0581245604181802a014ad",
+    "outcomes/S2/source/http.jsonl": "3d56e2e8b9daf085d76af7a9adafd9efc661d3f26e7df72e5c27c4641c6ad389",
+    "outcomes/S2/source/transport.jsonl": "e8d2bbe625396d1dcf37d9d7555340897e46691f3b3344cddadc93ed42620845",
+    "outcomes/S2/staging.json": "161328a364c55f82553c7a3052400f67b6f801e9e5d65e856568f44114e97e09",
+    "outcomes/S2/submission.json": "0f71281f576838dca8b4ea63966ab6466e8941f8b44487eb34098f4240f1e9af",
+    "outcomes/S2/summary.json": "48f4af61e7487d37d93bfb0dc21ec414baa2e3a5f1ac5f4fe2118f94a0b36946",
+    "outcomes/S2/unload.json": "99c05c3b902dc1e0b47b6ea4d9fc048d84f7527900469eb29a11d11c83fbf8f9",
+    "post-execution-progress/B1.json": "7f18701834aaf6730f7baef5011faa6081ebb2e67d6eb178101c0a3a9cbafd5c",
+    "post-execution-progress/B2.json": "ef7f749389882206448533740037c5afb36554df339a25ad17fcb611504a6dce",
+    "post-execution-progress/S1.json": "5e116aad6c6baf74d14320a0df02df384677bd320cfa5935c337d09bc1798786",
+    "post-execution-progress/S2.json": "68b4afe59a44b06ba6a7dd739d454e34458f23d8ede70e7637d390e82774db1c",
+    "report-audit.json": "1d82adaf8d58a615e33ff0f9620b020d5f16e738a0184fff839d17088e0f1f2f",
+    "report-audit.py": "e0a7879c3ea3853cb1dac1a10cee6b66702db6697310cffc82e38d9c7e67e0e3"
+  },
+  "execution_lifecycle": [
+    {
+      "cell": "B1",
+      "ended_at": 1792731191.1348312,
+      "listener_released": true,
+      "pid": 22324,
+      "purpose": "source",
+      "returncode": -15,
+      "shutdown_complete": true,
+      "started_at": 1792731058.791828
+    },
+    {
+      "cell": "B1",
+      "ended_at": 1792731194.3421812,
+      "listener_released": true,
+      "pid": 24167,
+      "purpose": "review",
+      "returncode": -15,
+      "shutdown_complete": true,
+      "started_at": 1792731193.010035
+    },
+    {
+      "cell": "S1",
+      "ended_at": 1792731327.867382,
+      "listener_released": true,
+      "pid": 24201,
+      "purpose": "source",
+      "returncode": -15,
+      "shutdown_complete": true,
+      "started_at": 1792731195.406865
+    },
+    {
+      "cell": "S1",
+      "ended_at": 1792731331.0837498,
+      "listener_released": true,
+      "pid": 26484,
+      "purpose": "review",
+      "returncode": -15,
+      "shutdown_complete": true,
+      "started_at": 1792731329.669054
+    },
+    {
+      "cell": "S2",
+      "ended_at": 1792731461.1338298,
+      "listener_released": true,
+      "pid": 26509,
+      "purpose": "source",
+      "returncode": -15,
+      "shutdown_complete": true,
+      "started_at": 1792731332.154474
+    },
+    {
+      "cell": "S2",
+      "ended_at": 1792731464.468386,
+      "listener_released": true,
+      "pid": 44809,
+      "purpose": "review",
+      "returncode": -15,
+      "shutdown_complete": true,
+      "started_at": 1792731463.107358
+    },
+    {
+      "cell": "B2",
+      "ended_at": 1792731591.507186,
+      "listener_released": true,
+      "pid": 44833,
+      "purpose": "source",
+      "returncode": -15,
+      "shutdown_complete": true,
+      "started_at": 1792731465.483068
+    },
+    {
+      "cell": "B2",
+      "ended_at": 1792731594.54218,
+      "listener_released": true,
+      "pid": 47995,
+      "purpose": "review",
+      "returncode": -15,
+      "shutdown_complete": true,
+      "started_at": 1792731593.19377
+    }
+  ],
+  "freeze_path": "evals/projects/duodoro/transport-comparison-freeze.json",
+  "freeze_sha256": "d0b73d213633f12544d410b030703fcb5d61bfc555f27d49b29ec1288dfff16e",
+  "inference_ran": true,
+  "kind": "real-model-real-tools-selected-transport-comparison",
+  "limits": [
+    "Four original T09 public-task attempts, one model; not held-out, causal or release evidence.",
+    "Timing includes body buffering, assembly and cleanup inside HTTP post; not pure backend generation.",
+    "60-second read inactivity can permit longer streamed calls; shared 300-second dispatch remains.",
+    "Failed usage remains unknown; parsing constraints are part of treatment. No production default changed."
+  ],
+  "local_results_sha256": "1bde8842c50a743f24368e8dc8383de6c634a50c7ff8f383bd1ee789bdf8a7d8",
+  "local_root": "/Users/jorge/.local/share/agent-harness/trials/duodoro-transport-comparison-2gxp1b38",
+  "model": {
+    "details": {
+      "context_length": 262144,
+      "embedding_length": 3840,
+      "families": [
+        "gemma4"
+      ],
+      "family": "gemma4",
+      "format": "gguf",
+      "parameter_size": "11.9B",
+      "parent_model": "",
+      "quantization_level": "Q4_K_M"
+    },
+    "digest": "4eb23ef187e2c5462566d6a1d3bbbc2f1346d0b4327cbb66d58fffbcc9b2b05c",
+    "name": "gemma4:12b",
+    "ollama_version": "0.33.2",
+    "size": 7556508396
+  },
+  "model_unloaded": true,
+  "operator_coding_rescues": 0,
+  "operator_execution_corrections": [],
+  "operator_reporting_corrections": [
+    "A post-execution read-only inspection queried sessions.record, which does not exist. The inspected schema uses sessions.archive and tool_progress.record; subsequent read-only queries used those columns. No state, model attempt, criterion or artifact changed."
+  ],
+  "original_task": "T09 tag_filter",
+  "post_execution_audit": {
+    "all_four_model_unloads_and_final_unloaded_model_verified": true,
+    "all_saved_JSON_matches_SQLite_and_GET_only_restart": true,
+    "all_transport_records_validate_and_cover_request_events": true,
+    "duodoro_head_status_index_refs_unchanged": true,
+    "eight_owned_API_PIDs_exited_complete_shutdown_listener_released": true,
+    "exactly_one_saved_run_per_cell_no_reversal_no_replacement": true,
+    "four_first_wire_bodies_equal_except_stream": true,
+    "freeze_sha256": "d0b73d213633f12544d410b030703fcb5d61bfc555f27d49b29ec1288dfff16e",
+    "frozen_launch_inputs_recipes_preflight_evidence_unchanged": true,
+    "full_archived_bytes_modes_and_bounded_diff_hashes_unchanged": true,
+    "kind": "read-only-post-execution-audit-NOT-new-inference",
+    "operator_execution_corrections": [],
+    "recipe_sha256": "e0a7879c3ea3853cb1dac1a10cee6b66702db6697310cffc82e38d9c7e67e0e3",
+    "results_sha256": "1bde8842c50a743f24368e8dc8383de6c634a50c7ff8f383bd1ee789bdf8a7d8"
+  },
+  "rows": [
+    {
+      "archive_tree_sha256": "03647fada969c4d49ddd5b93cbd4c3f73b11de0eb18b9156a6e4f7e588389afe",
+      "artifact_accepted": false,
+      "audit_complete": true,
+      "budget_events_truncated": false,
+      "cell": "B1",
+      "changed_paths": [],
+      "completed_and_accepted": false,
+      "completion_reason": null,
+      "completion_status": null,
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_truncated": false,
+      "external_exit_code": 1,
+      "failure_count": 1,
+      "first_normalized_identity_matches": true,
+      "first_wire_identity_matches": true,
+      "full_tree_sha256": "03647fada969c4d49ddd5b93cbd4c3f73b11de0eb18b9156a6e4f7e588389afe",
+      "known_response_prefix_usage": {
+        "completion_tokens": 132,
+        "prompt_tokens": 13536
+      },
+      "mode": "buffered",
+      "modes_preserved": true,
+      "one_run_no_reversal": true,
+      "protected_preserved": true,
+      "provider_failure": {
+        "call_observation": {
+          "completion_usage_field": null,
+          "content_empty": null,
+          "duration_ms": 60020.86987497751,
+          "prompt_usage_field": null,
+          "terminal_reason": null,
+          "tool_call_count": null
+        },
+        "http_status": null,
+        "kind": "read_timeout"
+      },
+      "provider_observations": [
+        {
+          "call_observation": {
+            "completion_usage_field": "present",
+            "content_empty": true,
+            "duration_ms": 22157.807165989652,
+            "prompt_usage_field": "present",
+            "terminal_reason": "stop",
+            "tool_call_count": 0
+          },
+          "iteration": 0,
+          "kind": "response",
+          "usage": {
+            "completion_tokens": 7,
+            "prompt_tokens": 1750
+          }
+        },
+        {
+          "call_observation": {
+            "completion_usage_field": "present",
+            "content_empty": true,
+            "duration_ms": 1338.7348330579698,
+            "prompt_usage_field": "present",
+            "terminal_reason": "stop",
+            "tool_call_count": 1
+          },
+          "iteration": 1,
+          "kind": "response",
+          "usage": {
+            "completion_tokens": 7,
+            "prompt_tokens": 1788
+          }
+        },
+        {
+          "call_observation": {
+            "completion_usage_field": "present",
+            "content_empty": true,
+            "duration_ms": 25871.378374984488,
+            "prompt_usage_field": "present",
+            "terminal_reason": "stop",
+            "tool_call_count": 1
+          },
+          "iteration": 2,
+          "kind": "response",
+          "usage": {
+            "completion_tokens": 28,
+            "prompt_tokens": 4331
+          }
+        },
+        {
+          "call_observation": {
+            "completion_usage_field": "present",
+            "content_empty": true,
+            "duration_ms": 20758.396707940847,
+            "prompt_usage_field": "present",
+            "terminal_reason": "stop",
+            "tool_call_count": 1
+          },
+          "iteration": 3,
+          "kind": "response",
+          "usage": {
+            "completion_tokens": 90,
+            "prompt_tokens": 5667
+          }
+        },
+        {
+          "call_observation": {
+            "completion_usage_field": null,
+            "content_empty": null,
+            "duration_ms": 60020.86987497751,
+            "prompt_usage_field": null,
+            "terminal_reason": null,
+            "tool_call_count": null
+          },
+          "iteration": 4,
+          "kind": "request_failure",
+          "usage": null
+        }
+      ],
+      "request_count": 5,
+      "request_id": "8592c3c481324569bae4df07503938ef",
+      "response_count": 4,
+      "restart_identical": true,
+      "run_id": "17125c3ef209444ea8a2698e9148ea0a",
+      "status": "failed",
+      "tool_progress": {
+        "coverage": "recorded",
+        "events": [
+          {
+            "error_observed": null,
+            "latency_ms": null,
+            "observed_at": "2026-10-23T04:51:23.358115Z",
+            "sequence": 1,
+            "tool": "tree",
+            "type": "tool_start"
+          },
+          {
+            "error_observed": false,
+            "latency_ms": 13.87987494468689,
+            "observed_at": "2026-10-23T04:51:23.376584Z",
+            "sequence": 2,
+            "tool": "tree",
+            "type": "tool_end"
+          },
+          {
+            "error_observed": null,
+            "latency_ms": null,
+            "observed_at": "2026-10-23T04:51:49.256551Z",
+            "sequence": 3,
+            "tool": "read_file",
+            "type": "tool_start"
+          },
+          {
+            "error_observed": false,
+            "latency_ms": 3.0340829491615295,
+            "observed_at": "2026-10-23T04:51:49.260791Z",
+            "sequence": 4,
+            "tool": "read_file",
+            "type": "tool_end"
+          },
+          {
+            "error_observed": null,
+            "latency_ms": null,
+            "observed_at": "2026-10-23T04:52:10.027770Z",
+            "sequence": 5,
+            "tool": "emit_plan",
+            "type": "tool_start"
+          },
+          {
+            "error_observed": false,
+            "latency_ms": 1.706250011920929,
+            "observed_at": "2026-10-23T04:52:10.030468Z",
+            "sequence": 6,
+            "tool": "emit_plan",
+            "type": "tool_end"
+          }
+        ],
+        "events_truncated": false,
+        "observed_events": 6,
+        "read_only": true,
+        "run_id": "17125c3ef209444ea8a2698e9148ea0a",
+        "scope_note": "Bounded prefix of observed tool-start/end metadata; arguments, results, error text, model messages and tool-call IDs are not stored here. Start precedes tool gates, so it does not prove dispatch or mutation. End/error presence is not patch acceptance or verification. A missing end may mean interrupted work or unsaved evidence; file changes may exist. This is not a transcript, checkpoint, replay, repair, or permission to resume. Unknown tool names are recorded as unknown_tool.",
+        "updated_at": "2026-10-23T04:52:10.030468Z"
+      },
+      "transport_observations": [
+        {
+          "body_chunks": 1,
+          "duration_ms": 22115.12879107613,
+          "first_body_chunk_ms": 22102.949124993756,
+          "frames": 0,
+          "largest_body_gap_ms": 22102.949124993756,
+          "mode": "buffered",
+          "outcome": "completed",
+          "response_bytes": 299,
+          "sequence": 1,
+          "terminal_received": null
+        },
+        {
+          "body_chunks": 1,
+          "duration_ms": 1336.914333049208,
+          "first_body_chunk_ms": 1336.4975000731647,
+          "frames": 0,
+          "largest_body_gap_ms": 1336.4975000731647,
+          "mode": "buffered",
+          "outcome": "completed",
+          "response_bytes": 384,
+          "sequence": 2,
+          "terminal_received": null
+        },
+        {
+          "body_chunks": 1,
+          "duration_ms": 25869.408375001512,
+          "first_body_chunk_ms": 25868.605375057086,
+          "frames": 0,
+          "largest_body_gap_ms": 25868.605375057086,
+          "mode": "buffered",
+          "outcome": "completed",
+          "response_bytes": 429,
+          "sequence": 3,
+          "terminal_received": null
+        },
+        {
+          "body_chunks": 1,
+          "duration_ms": 20755.428291042335,
+          "first_body_chunk_ms": 20754.173875087872,
+          "frames": 0,
+          "largest_body_gap_ms": 20754.173875087872,
+          "mode": "buffered",
+          "outcome": "completed",
+          "response_bytes": 651,
+          "sequence": 4,
+          "terminal_received": null
+        },
+        {
+          "body_chunks": 0,
+          "duration_ms": 60012.784208054654,
+          "first_body_chunk_ms": null,
+          "frames": 0,
+          "largest_body_gap_ms": null,
+          "mode": "buffered",
+          "outcome": "transport_error",
+          "response_bytes": 0,
+          "sequence": 5,
+          "terminal_received": null
+        }
+      ],
+      "transport_request_count_equal": true,
+      "usage": null,
+      "verification_status": null,
+      "workspace_identity": {
+        "device": 16777233,
+        "inode": 21163452
+      }
+    },
+    {
+      "archive_tree_sha256": "03647fada969c4d49ddd5b93cbd4c3f73b11de0eb18b9156a6e4f7e588389afe",
+      "artifact_accepted": false,
+      "audit_complete": true,
+      "budget_events_truncated": false,
+      "cell": "S1",
+      "changed_paths": [],
+      "completed_and_accepted": false,
+      "completion_reason": null,
+      "completion_status": null,
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_truncated": false,
+      "external_exit_code": 1,
+      "failure_count": 1,
+      "first_normalized_identity_matches": true,
+      "first_wire_identity_matches": true,
+      "full_tree_sha256": "03647fada969c4d49ddd5b93cbd4c3f73b11de0eb18b9156a6e4f7e588389afe",
+      "known_response_prefix_usage": {
+        "completion_tokens": 131,
+        "prompt_tokens": 13536
+      },
+      "mode": "streamed",
+      "modes_preserved": true,
+      "one_run_no_reversal": true,
+      "protected_preserved": true,
+      "provider_failure": {
+        "call_observation": {
+          "completion_usage_field": null,
+          "content_empty": null,
+          "duration_ms": 60011.31108298432,
+          "prompt_usage_field": null,
+          "terminal_reason": null,
+          "tool_call_count": null
+        },
+        "http_status": null,
+        "kind": "read_timeout"
+      },
+      "provider_observations": [
+        {
+          "call_observation": {
+            "completion_usage_field": "present",
+            "content_empty": true,
+            "duration_ms": 21222.612584009767,
+            "prompt_usage_field": "present",
+            "terminal_reason": "stop",
+            "tool_call_count": 0
+          },
+          "iteration": 0,
+          "kind": "response",
+          "usage": {
+            "completion_tokens": 7,
+            "prompt_tokens": 1750
+          }
+        },
+        {
+          "call_observation": {
+            "completion_usage_field": "present",
+            "content_empty": true,
+            "duration_ms": 1272.1962499199435,
+            "prompt_usage_field": "present",
+            "terminal_reason": "stop",
+            "tool_call_count": 1
+          },
+          "iteration": 1,
+          "kind": "response",
+          "usage": {
+            "completion_tokens": 7,
+            "prompt_tokens": 1788
+          }
+        },
+        {
+          "call_observation": {
+            "completion_usage_field": "present",
+            "content_empty": true,
+            "duration_ms": 26881.59291690681,
+            "prompt_usage_field": "present",
+            "terminal_reason": "stop",
+            "tool_call_count": 1
+          },
+          "iteration": 2,
+          "kind": "response",
+          "usage": {
+            "completion_tokens": 28,
+            "prompt_tokens": 4331
+          }
+        },
+        {
+          "call_observation": {
+            "completion_usage_field": "present",
+            "content_empty": true,
+            "duration_ms": 21178.36725001689,
+            "prompt_usage_field": "present",
+            "terminal_reason": "stop",
+            "tool_call_count": 1
+          },
+          "iteration": 3,
+          "kind": "response",
+          "usage": {
+            "completion_tokens": 89,
+            "prompt_tokens": 5667
+          }
+        },
+        {
+          "call_observation": {
+            "completion_usage_field": null,
+            "content_empty": null,
+            "duration_ms": 60011.31108298432,
+            "prompt_usage_field": null,
+            "terminal_reason": null,
+            "tool_call_count": null
+          },
+          "iteration": 4,
+          "kind": "request_failure",
+          "usage": null
+        }
+      ],
+      "request_count": 5,
+      "request_id": "092e8f0e9aa9478cbaa9503b0d63fe4e",
+      "response_count": 4,
+      "restart_identical": true,
+      "run_id": "8f85c307a0c24bc5971600edd30e0d43",
+      "status": "failed",
+      "tool_progress": {
+        "coverage": "recorded",
+        "events": [
+          {
+            "error_observed": null,
+            "latency_ms": null,
+            "observed_at": "2026-10-23T04:53:38.886977Z",
+            "sequence": 1,
+            "tool": "tree",
+            "type": "tool_start"
+          },
+          {
+            "error_observed": false,
+            "latency_ms": 3.358875095844269,
+            "observed_at": "2026-10-23T04:53:38.891099Z",
+            "sequence": 2,
+            "tool": "tree",
+            "type": "tool_end"
+          },
+          {
+            "error_observed": null,
+            "latency_ms": null,
+            "observed_at": "2026-10-23T04:54:05.776885Z",
+            "sequence": 3,
+            "tool": "read_file",
+            "type": "tool_start"
+          },
+          {
+            "error_observed": false,
+            "latency_ms": 1.4993749856948853,
+            "observed_at": "2026-10-23T04:54:05.779030Z",
+            "sequence": 4,
+            "tool": "read_file",
+            "type": "tool_end"
+          },
+          {
+            "error_observed": null,
+            "latency_ms": null,
+            "observed_at": "2026-10-23T04:54:26.964003Z",
+            "sequence": 5,
+            "tool": "emit_plan",
+            "type": "tool_start"
+          },
+          {
+            "error_observed": false,
+            "latency_ms": 0.9097499847412109,
+            "observed_at": "2026-10-23T04:54:26.965774Z",
+            "sequence": 6,
+            "tool": "emit_plan",
+            "type": "tool_end"
+          }
+        ],
+        "events_truncated": false,
+        "observed_events": 6,
+        "read_only": true,
+        "run_id": "8f85c307a0c24bc5971600edd30e0d43",
+        "scope_note": "Bounded prefix of observed tool-start/end metadata; arguments, results, error text, model messages and tool-call IDs are not stored here. Start precedes tool gates, so it does not prove dispatch or mutation. End/error presence is not patch acceptance or verification. A missing end may mean interrupted work or unsaved evidence; file changes may exist. This is not a transcript, checkpoint, replay, repair, or permission to resume. Unknown tool names are recorded as unknown_tool.",
+        "updated_at": "2026-10-23T04:54:26.965774Z"
+      },
+      "transport_observations": [
+        {
+          "body_chunks": 1,
+          "duration_ms": 21219.95749999769,
+          "first_body_chunk_ms": 21218.07050006464,
+          "frames": 1,
+          "largest_body_gap_ms": 21218.07050006464,
+          "mode": "streamed",
+          "outcome": "completed",
+          "response_bytes": 300,
+          "sequence": 1,
+          "terminal_received": true
+        },
+        {
+          "body_chunks": 2,
+          "duration_ms": 1271.2377910502255,
+          "first_body_chunk_ms": 1200.5946249701083,
+          "frames": 2,
+          "largest_body_gap_ms": 1200.5946249701083,
+          "mode": "streamed",
+          "outcome": "completed",
+          "response_bytes": 507,
+          "sequence": 2,
+          "terminal_received": true
+        },
+        {
+          "body_chunks": 2,
+          "duration_ms": 26878.92458389979,
+          "first_body_chunk_ms": 26807.029166957363,
+          "frames": 2,
+          "largest_body_gap_ms": 26807.029166957363,
+          "mode": "streamed",
+          "outcome": "completed",
+          "response_bytes": 553,
+          "sequence": 3,
+          "terminal_received": true
+        },
+        {
+          "body_chunks": 2,
+          "duration_ms": 21174.472165992483,
+          "first_body_chunk_ms": 21101.779750082642,
+          "frames": 2,
+          "largest_body_gap_ms": 21101.779750082642,
+          "mode": "streamed",
+          "outcome": "completed",
+          "response_bytes": 766,
+          "sequence": 4,
+          "terminal_received": true
+        },
+        {
+          "body_chunks": 0,
+          "duration_ms": 60009.15466703009,
+          "first_body_chunk_ms": null,
+          "frames": 0,
+          "largest_body_gap_ms": null,
+          "mode": "streamed",
+          "outcome": "transport_error",
+          "response_bytes": 0,
+          "sequence": 5,
+          "terminal_received": false
+        }
+      ],
+      "transport_request_count_equal": true,
+      "usage": null,
+      "verification_status": null,
+      "workspace_identity": {
+        "device": 16777233,
+        "inode": 21222284
+      }
+    },
+    {
+      "archive_tree_sha256": "03647fada969c4d49ddd5b93cbd4c3f73b11de0eb18b9156a6e4f7e588389afe",
+      "artifact_accepted": false,
+      "audit_complete": true,
+      "budget_events_truncated": false,
+      "cell": "S2",
+      "changed_paths": [],
+      "completed_and_accepted": false,
+      "completion_reason": null,
+      "completion_status": null,
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_truncated": false,
+      "external_exit_code": 1,
+      "failure_count": 1,
+      "first_normalized_identity_matches": true,
+      "first_wire_identity_matches": true,
+      "full_tree_sha256": "03647fada969c4d49ddd5b93cbd4c3f73b11de0eb18b9156a6e4f7e588389afe",
+      "known_response_prefix_usage": {
+        "completion_tokens": 131,
+        "prompt_tokens": 13536
+      },
+      "mode": "streamed",
+      "modes_preserved": true,
+      "one_run_no_reversal": true,
+      "protected_preserved": true,
+      "provider_failure": {
+        "call_observation": {
+          "completion_usage_field": null,
+          "content_empty": null,
+          "duration_ms": 60007.051582913846,
+          "prompt_usage_field": null,
+          "terminal_reason": null,
+          "tool_call_count": null
+        },
+        "http_status": null,
+        "kind": "read_timeout"
+      },
+      "provider_observations": [
+        {
+          "call_observation": {
+            "completion_usage_field": "present",
+            "content_empty": true,
+            "duration_ms": 17932.07454192452,
+            "prompt_usage_field": "present",
+            "terminal_reason": "stop",
+            "tool_call_count": 0
+          },
+          "iteration": 0,
+          "kind": "response",
+          "usage": {
+            "completion_tokens": 7,
+            "prompt_tokens": 1750
+          }
+        },
+        {
+          "call_observation": {
+            "completion_usage_field": "present",
+            "content_empty": true,
+            "duration_ms": 1334.146042005159,
+            "prompt_usage_field": "present",
+            "terminal_reason": "stop",
+            "tool_call_count": 1
+          },
+          "iteration": 1,
+          "kind": "response",
+          "usage": {
+            "completion_tokens": 7,
+            "prompt_tokens": 1788
+          }
+        },
+        {
+          "call_observation": {
+            "completion_usage_field": "present",
+            "content_empty": true,
+            "duration_ms": 26790.96766700968,
+            "prompt_usage_field": "present",
+            "terminal_reason": "stop",
+            "tool_call_count": 1
+          },
+          "iteration": 2,
+          "kind": "response",
+          "usage": {
+            "completion_tokens": 28,
+            "prompt_tokens": 4331
+          }
+        },
+        {
+          "call_observation": {
+            "completion_usage_field": "present",
+            "content_empty": true,
+            "duration_ms": 21047.046958003193,
+            "prompt_usage_field": "present",
+            "terminal_reason": "stop",
+            "tool_call_count": 1
+          },
+          "iteration": 3,
+          "kind": "response",
+          "usage": {
+            "completion_tokens": 89,
+            "prompt_tokens": 5667
+          }
+        },
+        {
+          "call_observation": {
+            "completion_usage_field": null,
+            "content_empty": null,
+            "duration_ms": 60007.051582913846,
+            "prompt_usage_field": null,
+            "terminal_reason": null,
+            "tool_call_count": null
+          },
+          "iteration": 4,
+          "kind": "request_failure",
+          "usage": null
+        }
+      ],
+      "request_count": 5,
+      "request_id": "4195eccba39844a4a893dc34eb9bc50a",
+      "response_count": 4,
+      "restart_identical": true,
+      "run_id": "845cd535bfda4bec8d8eefbc1d85cc8e",
+      "status": "failed",
+      "tool_progress": {
+        "coverage": "recorded",
+        "events": [
+          {
+            "error_observed": null,
+            "latency_ms": null,
+            "observed_at": "2026-10-23T04:55:52.410024Z",
+            "sequence": 1,
+            "tool": "tree",
+            "type": "tool_start"
+          },
+          {
+            "error_observed": false,
+            "latency_ms": 5.555415987968445,
+            "observed_at": "2026-10-23T04:55:52.416685Z",
+            "sequence": 2,
+            "tool": "tree",
+            "type": "tool_end"
+          },
+          {
+            "error_observed": null,
+            "latency_ms": null,
+            "observed_at": "2026-10-23T04:56:19.212815Z",
+            "sequence": 3,
+            "tool": "read_file",
+            "type": "tool_start"
+          },
+          {
+            "error_observed": false,
+            "latency_ms": 1.3501660823822021,
+            "observed_at": "2026-10-23T04:56:19.214866Z",
+            "sequence": 4,
+            "tool": "read_file",
+            "type": "tool_end"
+          },
+          {
+            "error_observed": null,
+            "latency_ms": null,
+            "observed_at": "2026-10-23T04:56:40.265582Z",
+            "sequence": 5,
+            "tool": "emit_plan",
+            "type": "tool_start"
+          },
+          {
+            "error_observed": false,
+            "latency_ms": 0.477042019367218,
+            "observed_at": "2026-10-23T04:56:40.267242Z",
+            "sequence": 6,
+            "tool": "emit_plan",
+            "type": "tool_end"
+          }
+        ],
+        "events_truncated": false,
+        "observed_events": 6,
+        "read_only": true,
+        "run_id": "845cd535bfda4bec8d8eefbc1d85cc8e",
+        "scope_note": "Bounded prefix of observed tool-start/end metadata; arguments, results, error text, model messages and tool-call IDs are not stored here. Start precedes tool gates, so it does not prove dispatch or mutation. End/error presence is not patch acceptance or verification. A missing end may mean interrupted work or unsaved evidence; file changes may exist. This is not a transcript, checkpoint, replay, repair, or permission to resume. Unknown tool names are recorded as unknown_tool.",
+        "updated_at": "2026-10-23T04:56:40.267242Z"
+      },
+      "transport_observations": [
+        {
+          "body_chunks": 1,
+          "duration_ms": 17927.17350006569,
+          "first_body_chunk_ms": 17925.56629201863,
+          "frames": 1,
+          "largest_body_gap_ms": 17925.56629201863,
+          "mode": "streamed",
+          "outcome": "completed",
+          "response_bytes": 300,
+          "sequence": 1,
+          "terminal_received": true
+        },
+        {
+          "body_chunks": 2,
+          "duration_ms": 1331.8958750460297,
+          "first_body_chunk_ms": 1260.7030839426443,
+          "frames": 2,
+          "largest_body_gap_ms": 1260.7030839426443,
+          "mode": "streamed",
+          "outcome": "completed",
+          "response_bytes": 507,
+          "sequence": 2,
+          "terminal_received": true
+        },
+        {
+          "body_chunks": 2,
+          "duration_ms": 26787.515833042562,
+          "first_body_chunk_ms": 26723.485208000056,
+          "frames": 2,
+          "largest_body_gap_ms": 26723.485208000056,
+          "mode": "streamed",
+          "outcome": "completed",
+          "response_bytes": 553,
+          "sequence": 3,
+          "terminal_received": true
+        },
+        {
+          "body_chunks": 2,
+          "duration_ms": 21045.740916975774,
+          "first_body_chunk_ms": 20971.659624949098,
+          "frames": 2,
+          "largest_body_gap_ms": 20971.659624949098,
+          "mode": "streamed",
+          "outcome": "completed",
+          "response_bytes": 766,
+          "sequence": 4,
+          "terminal_received": true
+        },
+        {
+          "body_chunks": 0,
+          "duration_ms": 60005.40733302478,
+          "first_body_chunk_ms": null,
+          "frames": 0,
+          "largest_body_gap_ms": null,
+          "mode": "streamed",
+          "outcome": "transport_error",
+          "response_bytes": 0,
+          "sequence": 5,
+          "terminal_received": false
+        }
+      ],
+      "transport_request_count_equal": true,
+      "usage": null,
+      "verification_status": null,
+      "workspace_identity": {
+        "device": 16777233,
+        "inode": 21223489
+      }
+    },
+    {
+      "archive_tree_sha256": "03647fada969c4d49ddd5b93cbd4c3f73b11de0eb18b9156a6e4f7e588389afe",
+      "artifact_accepted": false,
+      "audit_complete": true,
+      "budget_events_truncated": false,
+      "cell": "B2",
+      "changed_paths": [],
+      "completed_and_accepted": false,
+      "completion_reason": null,
+      "completion_status": null,
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diff_truncated": false,
+      "external_exit_code": 1,
+      "failure_count": 1,
+      "first_normalized_identity_matches": true,
+      "first_wire_identity_matches": true,
+      "full_tree_sha256": "03647fada969c4d49ddd5b93cbd4c3f73b11de0eb18b9156a6e4f7e588389afe",
+      "known_response_prefix_usage": {
+        "completion_tokens": 132,
+        "prompt_tokens": 13536
+      },
+      "mode": "buffered",
+      "modes_preserved": true,
+      "one_run_no_reversal": true,
+      "protected_preserved": true,
+      "provider_failure": {
+        "call_observation": {
+          "completion_usage_field": null,
+          "content_empty": null,
+          "duration_ms": 60013.80549999885,
+          "prompt_usage_field": null,
+          "terminal_reason": null,
+          "tool_call_count": null
+        },
+        "http_status": null,
+        "kind": "read_timeout"
+      },
+      "provider_observations": [
+        {
+          "call_observation": {
+            "completion_usage_field": "present",
+            "content_empty": true,
+            "duration_ms": 16842.66895800829,
+            "prompt_usage_field": "present",
+            "terminal_reason": "stop",
+            "tool_call_count": 0
+          },
+          "iteration": 0,
+          "kind": "response",
+          "usage": {
+            "completion_tokens": 7,
+            "prompt_tokens": 1750
+          }
+        },
+        {
+          "call_observation": {
+            "completion_usage_field": "present",
+            "content_empty": true,
+            "duration_ms": 1280.3970000240952,
+            "prompt_usage_field": "present",
+            "terminal_reason": "stop",
+            "tool_call_count": 1
+          },
+          "iteration": 1,
+          "kind": "response",
+          "usage": {
+            "completion_tokens": 7,
+            "prompt_tokens": 1788
+          }
+        },
+        {
+          "call_observation": {
+            "completion_usage_field": "present",
+            "content_empty": true,
+            "duration_ms": 25608.579125022516,
+            "prompt_usage_field": "present",
+            "terminal_reason": "stop",
+            "tool_call_count": 1
+          },
+          "iteration": 2,
+          "kind": "response",
+          "usage": {
+            "completion_tokens": 28,
+            "prompt_tokens": 4331
+          }
+        },
+        {
+          "call_observation": {
+            "completion_usage_field": "present",
+            "content_empty": true,
+            "duration_ms": 20485.316375037655,
+            "prompt_usage_field": "present",
+            "terminal_reason": "stop",
+            "tool_call_count": 1
+          },
+          "iteration": 3,
+          "kind": "response",
+          "usage": {
+            "completion_tokens": 90,
+            "prompt_tokens": 5667
+          }
+        },
+        {
+          "call_observation": {
+            "completion_usage_field": null,
+            "content_empty": null,
+            "duration_ms": 60013.80549999885,
+            "prompt_usage_field": null,
+            "terminal_reason": null,
+            "tool_call_count": null
+          },
+          "iteration": 4,
+          "kind": "request_failure",
+          "usage": null
+        }
+      ],
+      "request_count": 5,
+      "request_id": "5f6cc9ba7b7a47108d73e02b0439fb0a",
+      "response_count": 4,
+      "restart_identical": true,
+      "run_id": "fcbdf7ff8f4b4aee8eeb015f3349c92a",
+      "status": "failed",
+      "tool_progress": {
+        "coverage": "recorded",
+        "events": [
+          {
+            "error_observed": null,
+            "latency_ms": null,
+            "observed_at": "2026-10-23T04:58:04.518457Z",
+            "sequence": 1,
+            "tool": "tree",
+            "type": "tool_start"
+          },
+          {
+            "error_observed": false,
+            "latency_ms": 5.270000100135803,
+            "observed_at": "2026-10-23T04:58:04.524865Z",
+            "sequence": 2,
+            "tool": "tree",
+            "type": "tool_end"
+          },
+          {
+            "error_observed": null,
+            "latency_ms": null,
+            "observed_at": "2026-10-23T04:58:30.139549Z",
+            "sequence": 3,
+            "tool": "read_file",
+            "type": "tool_start"
+          },
+          {
+            "error_observed": false,
+            "latency_ms": 3.3950419425964355,
+            "observed_at": "2026-10-23T04:58:30.144176Z",
+            "sequence": 4,
+            "tool": "read_file",
+            "type": "tool_end"
+          },
+          {
+            "error_observed": null,
+            "latency_ms": null,
+            "observed_at": "2026-10-23T04:58:50.634356Z",
+            "sequence": 5,
+            "tool": "emit_plan",
+            "type": "tool_start"
+          },
+          {
+            "error_observed": false,
+            "latency_ms": 0.5812090635299683,
+            "observed_at": "2026-10-23T04:58:50.635539Z",
+            "sequence": 6,
+            "tool": "emit_plan",
+            "type": "tool_end"
+          }
+        ],
+        "events_truncated": false,
+        "observed_events": 6,
+        "read_only": true,
+        "run_id": "fcbdf7ff8f4b4aee8eeb015f3349c92a",
+        "scope_note": "Bounded prefix of observed tool-start/end metadata; arguments, results, error text, model messages and tool-call IDs are not stored here. Start precedes tool gates, so it does not prove dispatch or mutation. End/error presence is not patch acceptance or verification. A missing end may mean interrupted work or unsaved evidence; file changes may exist. This is not a transcript, checkpoint, replay, repair, or permission to resume. Unknown tool names are recorded as unknown_tool.",
+        "updated_at": "2026-10-23T04:58:50.635539Z"
+      },
+      "transport_observations": [
+        {
+          "body_chunks": 1,
+          "duration_ms": 16838.8771249447,
+          "first_body_chunk_ms": 16836.116166901775,
+          "frames": 0,
+          "largest_body_gap_ms": 16836.116166901775,
+          "mode": "buffered",
+          "outcome": "completed",
+          "response_bytes": 299,
+          "sequence": 1,
+          "terminal_received": null
+        },
+        {
+          "body_chunks": 1,
+          "duration_ms": 1277.9347909381613,
+          "first_body_chunk_ms": 1276.5150830382481,
+          "frames": 0,
+          "largest_body_gap_ms": 1276.5150830382481,
+          "mode": "buffered",
+          "outcome": "completed",
+          "response_bytes": 383,
+          "sequence": 2,
+          "terminal_received": null
+        },
+        {
+          "body_chunks": 1,
+          "duration_ms": 25606.561166932806,
+          "first_body_chunk_ms": 25605.74883292429,
+          "frames": 0,
+          "largest_body_gap_ms": 25605.74883292429,
+          "mode": "buffered",
+          "outcome": "completed",
+          "response_bytes": 429,
+          "sequence": 3,
+          "terminal_received": null
+        },
+        {
+          "body_chunks": 1,
+          "duration_ms": 20479.963209014386,
+          "first_body_chunk_ms": 20478.85074990336,
+          "frames": 0,
+          "largest_body_gap_ms": 20478.85074990336,
+          "mode": "buffered",
+          "outcome": "completed",
+          "response_bytes": 651,
+          "sequence": 4,
+          "terminal_received": null
+        },
+        {
+          "body_chunks": 0,
+          "duration_ms": 60011.95029192604,
+          "first_body_chunk_ms": null,
+          "frames": 0,
+          "largest_body_gap_ms": null,
+          "mode": "buffered",
+          "outcome": "transport_error",
+          "response_bytes": 0,
+          "sequence": 5,
+          "terminal_received": null
+        }
+      ],
+      "transport_request_count_equal": true,
+      "usage": null,
+      "verification_status": null,
+      "workspace_identity": {
+        "device": 16777233,
+        "inode": 21224600
+      }
+    }
+  ],
+  "runtime_revision": "51463aedc97dee0a17ddc5cc032ffb7b8f4f4445"
+}
