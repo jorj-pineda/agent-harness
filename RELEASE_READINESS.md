@@ -12,7 +12,16 @@ workflow are still unproven. PR/test counts are not a release-completion percent
 ## Current disposition — 2026-10-23
 
 **Retain no-go for unattended coding under the agreed ten-task envelope.** The
-latest [transport comparison](evals/projects/duodoro/TRANSPORT_COMPARISON_RESULTS.md)
+later [provider-timeout comparison](evals/projects/duodoro/PROVIDER_WAIT_RESULTS.md)
+completed and accepted original T09 at 180 seconds in 2/2 attempts, versus 0/2 at
+60 seconds, within unchanged 300-second task limits. This selected public-task
+result supports broader candidate validation, not a production default or G3/G4
+closure. The [ten-task follow-up protocol](evals/projects/duodoro/PROVIDER_WAIT_TEN_TASK_PROTOCOL.md)
+preserves original tasks, clients, criteria and 300/150-second budgets; fresh
+client preflight, exact-runtime G0 and independent execution-freeze review remain
+required. No inference in that preparation slice or release approval follows.
+
+The earlier [transport comparison](evals/projects/duodoro/TRANSPORT_COMPARISON_RESULTS.md)
 finished buffered **0/2 accepted, 0/2 completed-and-accepted** and streamed
 **0/2 accepted, 0/2 completed-and-accepted** on original T09. All four fifth calls
 received zero body chunks before a roughly sixty-second read timeout, with no
@@ -37,7 +46,7 @@ coding-quality acceptance gap. No narrower unattended envelope is established.
 
 | Gate | Current evidence | Work still required |
 |---|---|---|
-| G0 — mechanics baseline | Passed at the latest frozen execution runtime `51463ae`: 1,437 offline tests, static checks and both scripted matrices. | Validate the exact next execution/release candidate; this is not a model-quality gate. |
+| G0 — mechanics baseline | Passed at the latest frozen execution runtime `6721cc9`: 1,453 offline tests, static checks and both scripted matrices. | Validate the exact next execution/release candidate; this is not a model-quality gate. |
 | G1 — trial agreement | Original ten tasks, limits and criteria agreed and reviewed before inference. | Any revised envelope must be named and frozen explicitly; the original agreement does not make new criteria equivalent. |
 | G2 — client/recovery workflow | Original client cohort plus one bounded [CLI](evals/projects/duodoro/RECOVERY_RESULTS.md) and one [panel](evals/projects/duodoro/PANEL_RECOVERY_RESULTS.md) partial-edit/reversal observation. | Broader agreed client/recovery acceptance remains open; selected variants and unknown interrupted usage do not close it. |
 | G3 — useful coding envelope | Both ten-task cohorts miss the 8/10 artifact target. | Demonstrate a useful agreed envelope within its budgets, or explicitly revise the proposed scope with its unmet original target retained. |

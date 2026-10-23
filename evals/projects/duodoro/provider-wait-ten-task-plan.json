@@ -1,0 +1,586 @@
+{
+  "budget_plans": {
+    "one_turn": {
+      "max_operator_submitted_turns": 1,
+      "per_turn": {
+        "max_completion_tokens_per_turn": 8192,
+        "max_tool_calls_per_turn": 24,
+        "max_tool_iterations": 12,
+        "max_total_tokens_per_turn": 64000,
+        "max_turn_wall_seconds": 300
+      }
+    },
+    "two_reserved_phases": {
+      "max_operator_submitted_turns": 2,
+      "per_turn": {
+        "max_completion_tokens_per_turn": 4096,
+        "max_tool_calls_per_turn": 12,
+        "max_tool_iterations": 6,
+        "max_total_tokens_per_turn": 32000,
+        "max_turn_wall_seconds": 150
+      }
+    }
+  },
+  "clients": {
+    "CLI_tasks": 5,
+    "cli_chat_response_timeout_seconds": 600,
+    "panel_tasks": 5,
+    "panel_transport": "native SSE, record fallback/uncertainty without injected workaround",
+    "timeout_scope": "HTTP read inactivity only; no dispatch/provider/token budget change or guaranteed end-to-end return; lookup original key on unknown outcome, no fresh submission"
+  },
+  "common_settings": {
+    "coding_prompt_profile": "compact",
+    "coding_toolset": "whole_file",
+    "enable_support_tools": false,
+    "load_root_agents": false,
+    "max_completion_retries": 1,
+    "max_context_tokens": 16384,
+    "max_files_touched_per_turn": 2,
+    "max_identical_tool_calls": 2,
+    "max_request_output_tokens": 2048,
+    "min_request_output_tokens": 256,
+    "ollama_num_ctx": 16384,
+    "ollama_think": false,
+    "project_check_argv": [
+      "python",
+      "-m",
+      "pytest",
+      "-q",
+      "test_visible.py"
+    ],
+    "prompt_estimate_bytes_per_token": 3,
+    "request_timeout_seconds": 180,
+    "require_plan_before_edit": false,
+    "require_verification_before_finish": true
+  },
+  "decision_rules": {
+    "artifact_acceptance": "Independent behavior/scope/mode checks; T08 also independent source-review rubric. Unknown source review is not a pass.",
+    "artifact_target": 8,
+    "completed_and_accepted": "Separate from artifact acceptance; require completed and independent accepted artifact, not prose/visible checks.",
+    "denominator": 10,
+    "failure": "Keep timeout, malformed calls, context/token stops, failed/blocked checks, client controls and incomplete tasks; no replacements or retry-until-good counts.",
+    "historical_cohorts": "Never overwrite/recount original2/10 artifact1/10completed or earlier selected observations; different runtime/preset/client wait and public development selection limit attribution.",
+    "manual_intervention": "Record planned interruption/preservation separately from any rescue. No manual patch repair; no new coding follow-up outside planned T03 continuation.",
+    "outcome": "If missed, retain no-go and report task-specific failures/narrower candidate rather than extending feature batches. Passing 8/10 once does not close held-out/two-model G4 or grant release approval.",
+    "within_budget": "Separate established acceptable-and-known-within-budget count. If any in-flight failure/cancellation has unknown usage, task is not established known within budget. 8 accepted alone does not close G3."
+  },
+  "execution_gates": [
+    "Independent protocol review and merge. No inference in this slice.",
+    "Fresh full-source task-isolated roots, stores and actual CLI/browser owners; original request, setup, reference and criterion bytes/modes revalidated. No reference-validation or scored artifacts reused as scheduled workspaces.",
+    "Exact clean runtime G0, both scripted matrices and actual CLI/panel source-factory preflight for timeout 180, required checks/captures, T03 half-budget cancellation/fork and T05 reversal. Test default and guarded GET restarts, actual phase timeout construction, first-input guards and recording-failure stop without inference.",
+    "Immutable actual execution freeze pins runtime/tree/lock/sources/assets/model/environment/settings/profiles, root identities/full bytes/storage/owners, recipes/receipts and per-task normalized/wire guards. Independent exact-freeze review and merge plus unchanged launch checks before inference.",
+    "Original ten requests, order and clients; maximum eleven coding turns and 3,000 reserved dispatch seconds. T03 maximum 150 seconds per phase can expire before the 180-second provider wait. No transfer, third phase, rescue, replacement or reactive timeout change.",
+    "Existing bounded recorder equally in all coding phases: twelve requests, 1 MiB per file, 8 MiB combined, private 0700/0600. Observer failure retained; incomplete evidence stops further dispatch and undispatched tasks remain explicit in the ten-task denominator.",
+    "All artifacts externally graded/regraded before preservation mutations; T08 independent frozen source-review rubric. Preserve unchanged saved review, cleanup and known versus unknown usage separately. No release/default promotion or general/causal quality claim."
+  ],
+  "execution_manifest": null,
+  "extra_turns_or_budget_transfers": false,
+  "g0_result": null,
+  "inference_ran": false,
+  "kind": "unrun-provider-wait-ten-task-followup-protocol-plan",
+  "max_operator_submitted_coding_turns": 11,
+  "max_total_reserved_dispatch_seconds": 3000,
+  "max_total_reserved_model_iterations": 120,
+  "max_total_reserved_output_tokens": 81920,
+  "max_total_reserved_reported_tokens": 640000,
+  "max_total_reserved_tool_calls": 240,
+  "offline_validation": {
+    "all_ten_initial_visible_and_external_fail_reference_visible_and_external_pass": true,
+    "all_ten_original_requests_criteria_reference_setup_match": true,
+    "focused_tests": {
+      "command": "uv run pytest -q tests/evals/test_duodoro_trial_acceptance.py -m 'not live'",
+      "passed": 28,
+      "seconds": 22.66
+    },
+    "kind": "offline-original-criterion-validation-NOT-inference",
+    "local_evidence_root": "/Users/jorge/.local/share/agent-harness/trials/duodoro-provider-wait-ten-plan-j4qb09j4",
+    "original_historical_files_modified": false,
+    "preparation_corrections": [
+      "Initial offline validation helper used Task.acceptance_dir instead of Task.acceptance and stopped after first task validation. Corrected recipe ran in a fresh root; prior root retained, no inference or source changes."
+    ],
+    "recipe_sha256": "1529966e45a64292c30660a7681e70fb6f30e19e2b8585091717966f30bd87af",
+    "validation_receipt_sha256": "9ccc00840bebb4567c4a4fecaa374f236b26c5ecc3ef29e5e91af1bb0ebdb670"
+  },
+  "prepared_at_utc": "2026-10-23T23:52:17.084614+00:00",
+  "prior_panel_recovery_freeze_sha256": "2ae054141a3cbe889242b972c6aa099afcada8182af8d028705b9b4490f3b978",
+  "prior_provider_wait_results_sha256": "e69cea4360ee5bb4eae2940ebf0491c3d75b84a837a775fc36b9e1fe2ef6ca00",
+  "prior_task_and_limit_agreement": "Original ten tasks, clients, exact requests, criteria and total/phase budgets remain approved and unchanged. Separately reviewed follow-up uses existing whole_file preset with provider timeout180 within unchanged outer300/150 dispatch limits; not a replay/replacement of old cells.",
+  "prior_trial_freeze_sha256": "26f9971e635d204599a38968b10427bef967178890a1c041d26eb3cfc7bfb62d",
+  "prior_trial_ledger_sha256": "a8bbd57e314d003a94dc457c02dacdc2e7916c77424fa1fd9fd667dbf2043b21",
+  "prior_whole_file_plan_sha256": "cd6b6e21fbabf919053f65735a6af6080b00e2759ecd8df9e287548de5de0d54",
+  "proposed_model": {
+    "fresh_backend_identity": null,
+    "name": "gemma4:12b",
+    "paid_or_additional_model": false,
+    "provider": "ollama"
+  },
+  "recording_override": {
+    "evaluation_only": true,
+    "incomplete_evidence_stops_further_dispatch": true,
+    "maximum_bytes_per_file": 1048576,
+    "maximum_requests_per_phase": 12,
+    "maximum_total_bytes_per_phase": 8388608,
+    "raw_inputs_local_only": true
+  },
+  "recovery_inputs": {
+    "T03_continuation_message": "Continue the same requested calendar change, preserving existing work; report actual checks and limits",
+    "T03_input_source": "Original TRIAL_PROTOCOL.md exact wording; no formatter request variant. Final key/actual source turn frozen before submission.",
+    "T05_sentinel_text": "Not yet frozen; actual execution manifest must retain original protocol and pin the exact post-grade append before inference."
+  },
+  "release_gate_closure_claim": false,
+  "runtime_candidate": "56406a4501a1d5b76bcd111511bebc5fd07d0e63",
+  "runtime_candidate_reason": "Published PR194 merge; candidate only, exact fresh execution runtime/G0/preflight/freeze still required.",
+  "schema_version": 1,
+  "scripted_client_preflight_result": null,
+  "source_review": {
+    "T08_required": true,
+    "pending_means_unknown": true,
+    "rubric": "acceptance/duration_refactor/source-review.md",
+    "rubric_sha256": "f0f5d549e94ad1aeee3e568ec27e3704d5885b4c27a8aa362d3586b953b7a6a7"
+  },
+  "source_revision": "5324cabba4ad3c8ad2e1cd1480218cf087d9b741",
+  "status": "protocol-only-not-execution-freeze",
+  "tasks": [
+    {
+      "acceptance_files_sha256": {
+        "baseline.json": "b9b094a6d2d7350e8f28ae6fa90efe2b6517c3da40adc3f9a8945527827debd0",
+        "test_acceptance.py": "eb658229d6ee00a8b870357c68458cb0dbd4ee05cc9e87caf8142c73bb763e2f"
+      },
+      "adapter": "duration_format",
+      "allowed_modified_paths": [
+        "client/src/lib/format.ts"
+      ],
+      "artifact_acceptance": null,
+      "budget_profile": "one_turn",
+      "category": "bugfix",
+      "client": "CLI",
+      "client_workflow_passed": null,
+      "completion_status": null,
+      "execution": null,
+      "id": "T01",
+      "independent_source_review": null,
+      "manual_interventions": null,
+      "observed_check_status": null,
+      "planned_recovery": null,
+      "preservation_passed": null,
+      "reference_files_sha256": {
+        "client/src/lib/format.ts": "7f3a802eed35e725cd05b45258fd0a08b28546ada21e13e849c3add5910adc0f"
+      },
+      "request": "In Duodoro, harden formatDuration and formatTime in client/src/lib/format.ts against negative and non-finite numeric durations. Negative numbers, NaN, Infinity and -Infinity must render as zero (0m and 0:00). Preserve existing finite-positive formatting, fractional truncation and formatTag behavior. Inspect AGENTS.md and the existing format tests first. Only modify client/src/lib/format.ts; preserve all other files, including pre-existing work and tests. For this disposable library-level evaluation, test_visible.py is an additional visible task check using the installed Node runtime's native TypeScript support; run [\"python\",\"-m\",\"pytest\",\"-q\",\"test_visible.py\"] after the edit. This adapter does not run the full Next/Vitest suite. Do not install dependencies, start services or touch Docker. Report the observed checks and any limits honestly.",
+      "request_utf8_sha256": "15b7c2d1ba4548a7085c577f62dcd4de4b1a5974079659e39a8098f2a2236098",
+      "requires_independent_source_review": false,
+      "setup_files": {
+        "preexisting-user-work.txt": {
+          "mode": 420,
+          "sha256": "0d1c51a1d68631ec595d6a59a23dffc86aea09e0c4d4c3bcd65183d1735e1c58"
+        },
+        "test_visible.py": {
+          "mode": 420,
+          "sha256": "bab3360429b3f90df5e465a33af968149e0febe88b5d3767a1ea20e83f167b46"
+        }
+      },
+      "within_budget": null
+    },
+    {
+      "acceptance_files_sha256": {
+        "baseline.json": "a2052accd1b601c157861a630fc5fa5169e7dcab1050dab62107c818ed8fafb7",
+        "test_acceptance.py": "71c615741d10b39668529f0b8e8cdab285e8a6f60bd97b8332717021e11f74ce"
+      },
+      "adapter": "timer_normalization",
+      "allowed_modified_paths": [
+        "server/payloadParsers.js"
+      ],
+      "artifact_acceptance": null,
+      "budget_profile": "one_turn",
+      "category": "bugfix",
+      "client": "panel",
+      "client_workflow_passed": null,
+      "completion_status": null,
+      "execution": null,
+      "id": "T02",
+      "independent_source_review": null,
+      "manual_interventions": null,
+      "observed_check_status": null,
+      "planned_recovery": null,
+      "preservation_passed": null,
+      "reference_files_sha256": {
+        "server/payloadParsers.js": "56c19d07980e94727486714f8f727a4ab95a1cc49028a2190ccf4c8795b073bd"
+      },
+      "request": "In Duodoro, normalize parseStartSession focusDuration and breakDuration in server/payloadParsers.js to whole seconds by flooring the final defaulted/clamped numeric values. Preserve Number coercion, falsy/NaN defaults (1500 focus, 300 break), min/max clamps (60..7200 focus, 30..3600 break), Infinity clamping, string session-id validation, mode parsing and all other exported parser behavior. Inspect AGENTS.md and server/payloadParsers.test.js first. Only modify server/payloadParsers.js; preserve all other files and tests. This disposable pure-parser evaluation adds test_visible.py as a visible Node adapter: run [\"python\",\"-m\",\"pytest\",\"-q\",\"test_visible.py\"] after editing. It does not run the full Vitest/Socket.IO/server suite. Do not install dependencies, start services or touch Docker. Report actual checks and limits honestly.",
+      "request_utf8_sha256": "0824f29e080a293c6fdf0bba6b5f721a99084aa0ff2c67ba64e777ab09953680",
+      "requires_independent_source_review": false,
+      "setup_files": {
+        "preexisting-user-work.txt": {
+          "mode": 420,
+          "sha256": "0d1c51a1d68631ec595d6a59a23dffc86aea09e0c4d4c3bcd65183d1735e1c58"
+        },
+        "test_visible.py": {
+          "mode": 420,
+          "sha256": "a56f0b5c5a71967fc19c4cf9c28ede72bd7bb8b8499daac63248688af7441cc4"
+        }
+      },
+      "within_budget": null
+    },
+    {
+      "acceptance_files_sha256": {
+        "baseline.json": "cb94db8e3dca8858f37dbbf2654032b8e08c0a2119cf1564aeb9e9379ae78e60",
+        "test_acceptance.py": "e446204d7c13efc57d400756a61371f07da27af429b9be1810c472f833813bdd"
+      },
+      "adapter": "calendar_layout",
+      "allowed_modified_paths": [
+        "client/src/lib/focusCalendar.ts"
+      ],
+      "artifact_acceptance": null,
+      "budget_profile": "two_reserved_phases",
+      "category": "feature",
+      "client": "CLI",
+      "client_workflow_passed": null,
+      "completion_status": null,
+      "execution": null,
+      "id": "T03",
+      "independent_source_review": null,
+      "manual_interventions": null,
+      "observed_check_status": null,
+      "planned_recovery": "cancel_restart_guarded_fork",
+      "preservation_passed": null,
+      "reference_files_sha256": {
+        "client/src/lib/focusCalendar.ts": "36679751b9fd9be012b0c035fa7ad3760ac1c1b8516f7c965fa5c10d8c51ced9"
+      },
+      "request": "Add an optional boolean sundayFirst argument (default false) to monthDays in client/src/lib/focusCalendar.ts. Sunday-first true lays out full Sunday-through-Saturday weeks; existing one-argument and explicit false calls remain Monday-first. Preserve every date exactly once in order, leap and non-leap months, null padding and all other calendar exports. Inspect AGENTS.md and client/src/lib/focusCalendar.test.ts first. Only modify client/src/lib/focusCalendar.ts; preserve every other file, including tests and pre-existing work. This is a library-only feature without UI wiring. test_visible.py is an additional visible Node-native TypeScript check with a scoped focusTags resolution hook; run [\"python\",\"-m\",\"pytest\",\"-q\",\"test_visible.py\"] after the edit. This does not run Next/Vitest, typechecking or full application integration. Do not install dependencies, start services or touch Docker. Report actual checks and limits honestly.",
+      "request_utf8_sha256": "a5fe6e4d4521bc53510dedfc302c3e043350cca6ee47af68ff6860c7d4446657",
+      "requires_independent_source_review": false,
+      "setup_files": {
+        "preexisting-user-work.txt": {
+          "mode": 420,
+          "sha256": "0d1c51a1d68631ec595d6a59a23dffc86aea09e0c4d4c3bcd65183d1735e1c58"
+        },
+        "test_visible.py": {
+          "mode": 420,
+          "sha256": "ecd47b8d7ce9f6a0f8175b53d97443589f4df0437bae29adbe99e58ac672710a"
+        }
+      },
+      "within_budget": null
+    },
+    {
+      "acceptance_files_sha256": {
+        "baseline.json": "45738425c01ed6525a944618384197579806f24f835c1c6fda82b2cf3dd28f04",
+        "checks.mjs": "832eedcdc1c6c17e62d3f1a4d58f95cf391ffc451f253af54de720f581b70dd4",
+        "test_acceptance.py": "9395e0743c45e8d1568d8fe2898adea5c21d191dac2c9d69e51e6aef979e7af3"
+      },
+      "adapter": "share_storage",
+      "allowed_modified_paths": [
+        "client/src/lib/shareInvite.ts"
+      ],
+      "artifact_acceptance": null,
+      "budget_profile": "one_turn",
+      "category": "bugfix",
+      "client": "panel",
+      "client_workflow_passed": null,
+      "completion_status": null,
+      "execution": null,
+      "id": "T04",
+      "independent_source_review": null,
+      "manual_interventions": null,
+      "observed_check_status": null,
+      "planned_recovery": null,
+      "preservation_passed": null,
+      "reference_files_sha256": {
+        "client/src/lib/shareInvite.ts": "76723da20067a3ccfe23c7ed3bca2a5a45e683782954d094655d2cb474d44ac3"
+      },
+      "request": "In the disposable pinned Duodoro source, Make pending share-invite storage resilient to unavailable browser storage. Preserve the exact token validator and URL behavior. SSR returns false for store and null for read and clears without error. Valid tokens round-trip; malformed stored tokens are removed. Throwing getItem/setItem/removeItem or the sessionStorage accessor must not escape: store returns false on a failed set, read returns null on a failed read/cleanup, and clear no-ops on failure. Do not weaken validation. Inspect applicable instructions and relevant existing code/tests first. Only modify client/src/lib/shareInvite.ts. Preserve every other file, tests and pre-existing work. This library task adds test_visible.py and visible_check.mjs as visible Node-native checks. After editing run [\"python\",\"-m\",\"pytest\",\"-q\",\"test_visible.py\"]. This is not full application/Vitest/typechecking coverage. Do not install dependencies, start services or touch Docker. Report actual check outcomes, unresolved issues and limits honestly.",
+      "request_utf8_sha256": "93b8cde7f4ea0e097a87b1e59ee388d65acc43f17e5a861f739d6d87e4c4c318",
+      "requires_independent_source_review": false,
+      "setup_files": {
+        "preexisting-user-work.txt": {
+          "mode": 420,
+          "sha256": "0d1c51a1d68631ec595d6a59a23dffc86aea09e0c4d4c3bcd65183d1735e1c58"
+        },
+        "test_visible.py": {
+          "mode": 420,
+          "sha256": "a11949e7a91097373c2722033ed35e2b8fbf1f9d79f0df77342b41757de94758"
+        },
+        "visible_check.mjs": {
+          "mode": 420,
+          "sha256": "64283b912a4b869fc2f071f33235edb0d511e8c14b0986540d6b9a2a9a6eaab3"
+        }
+      },
+      "within_budget": null
+    },
+    {
+      "acceptance_files_sha256": {
+        "baseline.json": "0ebd946b7e7d7f6170420fa41a85047a1b14f742e900db8fb205b4b3fdbdbd98",
+        "checks.mjs": "81850f022c9ac2b7424fd44e7c986c4391907866b94ff1f9d0b6122450073d14",
+        "test_acceptance.py": "b9af5f55cf5455972ff18e2acecadb168ed6895106fe1b9adb5035067b046f5f"
+      },
+      "adapter": "timer_prefs",
+      "allowed_modified_paths": [
+        "client/src/lib/timerPrefs.ts"
+      ],
+      "artifact_acceptance": null,
+      "budget_profile": "one_turn",
+      "category": "bugfix",
+      "client": "CLI",
+      "client_workflow_passed": null,
+      "completion_status": null,
+      "execution": null,
+      "id": "T05",
+      "independent_source_review": null,
+      "manual_interventions": null,
+      "observed_check_status": null,
+      "planned_recovery": "post_grade_single_file_reversal",
+      "preservation_passed": null,
+      "reference_files_sha256": {
+        "client/src/lib/timerPrefs.ts": "2cbe0e43186cb7ef0aaf5e494afec165661fe1c01a0b81bf89281948a441dadc"
+      },
+      "request": "In the disposable pinned Duodoro source, Normalize merged timer preferences before persisting: serialize normalizeTimerPrefs({...readTimerPrefs(), ...prefs}). Preserve unspecified existing fields, existing read normalization, mode choices, bounds and snapping. Invalid supplied fields use existing normalization defaults. Do not mutate the partial input or exported defaults. SSR, malformed storage, unavailable storage and quota errors remain nonthrowing. Inspect applicable instructions and relevant existing code/tests first. Only modify client/src/lib/timerPrefs.ts. Preserve every other file, tests and pre-existing work. This library task adds test_visible.py and visible_check.mjs as visible Node-native checks. After editing run [\"python\",\"-m\",\"pytest\",\"-q\",\"test_visible.py\"]. This is not full application/Vitest/typechecking coverage. Do not install dependencies, start services or touch Docker. Report actual check outcomes, unresolved issues and limits honestly.",
+      "request_utf8_sha256": "43a9586f74551ab58bf69879c7ded6cd1aca002aaafc2dce9d1ab3137d6373ee",
+      "requires_independent_source_review": false,
+      "setup_files": {
+        "preexisting-user-work.txt": {
+          "mode": 420,
+          "sha256": "0d1c51a1d68631ec595d6a59a23dffc86aea09e0c4d4c3bcd65183d1735e1c58"
+        },
+        "test_visible.py": {
+          "mode": 420,
+          "sha256": "a11949e7a91097373c2722033ed35e2b8fbf1f9d79f0df77342b41757de94758"
+        },
+        "visible_check.mjs": {
+          "mode": 420,
+          "sha256": "71cce1c22a9accb728caca984a1fe9bf7e656236edbf80c34e8d19b8f3d84ae5"
+        }
+      },
+      "within_budget": null
+    },
+    {
+      "acceptance_files_sha256": {
+        "baseline.json": "1e65cf43d02e6ef93c22cf2d78ee6d2308ffe4b0dda11613362021df82d11244",
+        "checks.mjs": "dc675dc06f005f7a78f19c92b525cdfdce842e243b031f18dd3eac94e665f615",
+        "test_acceptance.py": "5f3eff8eb73a7e3abf238cc8cc3292e50e0ec138751a6450988f59f6eca83ef7"
+      },
+      "adapter": "shortcut_count",
+      "allowed_modified_paths": [
+        "client/src/lib/keyboardShortcuts.ts"
+      ],
+      "artifact_acceptance": null,
+      "budget_profile": "one_turn",
+      "category": "bugfix",
+      "client": "panel",
+      "client_workflow_passed": null,
+      "completion_status": null,
+      "execution": null,
+      "id": "T06",
+      "independent_source_review": null,
+      "manual_interventions": null,
+      "observed_check_status": null,
+      "planned_recovery": null,
+      "preservation_passed": null,
+      "reference_files_sha256": {
+        "client/src/lib/keyboardShortcuts.ts": "69d947739c2a2919096c56135136552d929a0439d24f9cbf78d686f4a5dcc54e"
+      },
+      "request": "In the disposable pinned Duodoro source, Harden startShortcutAction so playerCount must be a positive safe integer. Reject NaN, infinities, fractions, zero, negatives, strings, booleans and other invalid runtime values without coercion. Preserve all existing game/session/connection/started/editing gates, valid positive safe integer counts, and waiting -> start / ready -> again behavior. Do not mutate the state. Inspect applicable instructions and relevant existing code/tests first. Only modify client/src/lib/keyboardShortcuts.ts. Preserve every other file, tests and pre-existing work. This library task adds test_visible.py and visible_check.mjs as visible Node-native checks. After editing run [\"python\",\"-m\",\"pytest\",\"-q\",\"test_visible.py\"]. This is not full application/Vitest/typechecking coverage. Do not install dependencies, start services or touch Docker. Report actual check outcomes, unresolved issues and limits honestly.",
+      "request_utf8_sha256": "3769f4ed5e733beed4cf1dd99bba776ee8b060da359a4e191209652a177f3669",
+      "requires_independent_source_review": false,
+      "setup_files": {
+        "preexisting-user-work.txt": {
+          "mode": 420,
+          "sha256": "0d1c51a1d68631ec595d6a59a23dffc86aea09e0c4d4c3bcd65183d1735e1c58"
+        },
+        "test_visible.py": {
+          "mode": 420,
+          "sha256": "a11949e7a91097373c2722033ed35e2b8fbf1f9d79f0df77342b41757de94758"
+        },
+        "visible_check.mjs": {
+          "mode": 420,
+          "sha256": "2786cb69977afd51f3da86857d75abb88af8dcf3d7299760ecc3cea4d29b70ec"
+        }
+      },
+      "within_budget": null
+    },
+    {
+      "acceptance_files_sha256": {
+        "baseline.json": "6bfe55ff5a679f42719c443f9aa5deca03907fa02f761e886ff0fba2e653cbe2",
+        "checks.mjs": "bde99f82a0b56ea245f69f3ca12c498a36cb3354e7071cee92085d0cba5f0893",
+        "golden.json": "83e30979018416d53605b146cf19156f0f1d61365b553754c0d1803b28b6db1b",
+        "test_acceptance.py": "da340c6fa52cabceda29436f40200137d7a6eb0d6a5cac839d86b408160ff502"
+      },
+      "adapter": "rotation_preview",
+      "allowed_modified_paths": [
+        "client/src/lib/rotation.ts",
+        "server/rotation.js"
+      ],
+      "artifact_acceptance": null,
+      "budget_profile": "one_turn",
+      "category": "feature",
+      "client": "CLI",
+      "client_workflow_passed": null,
+      "completion_status": null,
+      "execution": null,
+      "id": "T07",
+      "independent_source_review": null,
+      "manual_interventions": null,
+      "observed_check_status": null,
+      "planned_recovery": null,
+      "preservation_passed": null,
+      "reference_files_sha256": {
+        "client/src/lib/rotation.ts": "d486bf741ecbc818b5e885012c532f6f166d036df5f8ae6c7aeda769486c0b09",
+        "server/rotation.js": "3e8b719155b324162ea442636d0b1366586956f954cc079387106df0c1b5ade2"
+      },
+      "request": "In the disposable pinned Duodoro source, Add matching exported upcomingWorlds(now, count=3) helpers to both rotation modules. Accept only finite numeric now and integer count from 0 through 8; reject other inputs with RangeError. Return a fresh list of exactly count fresh {world, startsAt} objects starting at nextRotationAt(now), advancing by ROTATION_MS and using the existing world order at each start. Exclude the current slot. Preserve all existing exports, order tables and client/server parity, including negative timestamps and cycle boundaries. No UI wiring or randomness changes. Inspect applicable instructions and relevant existing code/tests first. Only modify client/src/lib/rotation.ts, server/rotation.js. Preserve every other file, tests and pre-existing work. This library task adds test_visible.py and visible_check.mjs as visible Node-native checks. After editing run [\"python\",\"-m\",\"pytest\",\"-q\",\"test_visible.py\"]. This is not full application/Vitest/typechecking coverage. Do not install dependencies, start services or touch Docker. Report actual check outcomes, unresolved issues and limits honestly.",
+      "request_utf8_sha256": "ea4efc1193ddeac46c0e60d862b0062c1e9269f7553b5116b3f791faf7a7c578",
+      "requires_independent_source_review": false,
+      "setup_files": {
+        "preexisting-user-work.txt": {
+          "mode": 420,
+          "sha256": "0d1c51a1d68631ec595d6a59a23dffc86aea09e0c4d4c3bcd65183d1735e1c58"
+        },
+        "test_visible.py": {
+          "mode": 420,
+          "sha256": "a11949e7a91097373c2722033ed35e2b8fbf1f9d79f0df77342b41757de94758"
+        },
+        "visible_check.mjs": {
+          "mode": 420,
+          "sha256": "6519d46bfc4e44a3a6276b995dc2b3715cf4e7a8dd441b266e89fe6da42f8413"
+        }
+      },
+      "within_budget": null
+    },
+    {
+      "acceptance_files_sha256": {
+        "baseline.json": "bd1164ea4069327c0a0caed5cb01dec55545a9315e80d57dbe86f717e299c558",
+        "checks.mjs": "b53efa86e913731759ac3d786ccc5ef875b2514099289fbbba7d35a0101855f6",
+        "golden.json": "df3d2bd21984958ca1bc604300df67a6aca41e0a66823f9ea8d9140afc96b3f6",
+        "source-review.md": "f0f5d549e94ad1aeee3e568ec27e3704d5885b4c27a8aa362d3586b953b7a6a7",
+        "test_acceptance.py": "96f290ded070f1c566080c1892c27e91c7e3a6a26d64444ce32d996dcff8a87c"
+      },
+      "adapter": "duration_refactor",
+      "allowed_modified_paths": [
+        "server/payloadParsers.js"
+      ],
+      "artifact_acceptance": null,
+      "budget_profile": "one_turn",
+      "category": "refactor",
+      "client": "panel",
+      "client_workflow_passed": null,
+      "completion_status": null,
+      "execution": null,
+      "id": "T08",
+      "independent_source_review": null,
+      "manual_interventions": null,
+      "observed_check_status": null,
+      "planned_recovery": null,
+      "preservation_passed": null,
+      "reference_files_sha256": {
+        "server/payloadParsers.js": "28890c306075b7de4dcb7ff8eb27b66b89d7f634ef8e24d756c55ed5685609cd"
+      },
+      "request": "In the disposable pinned Duodoro source, Extract and export boundedDuration(value, fallback, min, max), and use the same helper for both parseStartSession duration fields. Preserve Math.min(Math.max(Number(value) || fallback, min), max), including fractional seconds, defaults, infinity clamps and thrown Symbol coercion. Preserve session IDs, modes and every existing parser/export. This is a behavior-preserving refactor: do not floor durations. Besides executable behavioral checks, independent source review will verify actual reuse for both fields and removal of duplication; an unused exported helper does not satisfy the request. Inspect applicable instructions and relevant existing code/tests first. Only modify server/payloadParsers.js. Preserve every other file, tests and pre-existing work. This library task adds test_visible.py and visible_check.mjs as visible Node-native checks. After editing run [\"python\",\"-m\",\"pytest\",\"-q\",\"test_visible.py\"]. This is not full application/Vitest/typechecking coverage. Do not install dependencies, start services or touch Docker. Report actual check outcomes, unresolved issues and limits honestly.",
+      "request_utf8_sha256": "d360d89d7ea83b9968a89096cf44d1ebdd044d00dd46742c731fd85de45699ad",
+      "requires_independent_source_review": true,
+      "setup_files": {
+        "preexisting-user-work.txt": {
+          "mode": 420,
+          "sha256": "0d1c51a1d68631ec595d6a59a23dffc86aea09e0c4d4c3bcd65183d1735e1c58"
+        },
+        "test_visible.py": {
+          "mode": 420,
+          "sha256": "a11949e7a91097373c2722033ed35e2b8fbf1f9d79f0df77342b41757de94758"
+        },
+        "visible_check.mjs": {
+          "mode": 420,
+          "sha256": "449b3cebb914bec88aac664dec64ea8f227b8470b41a0bad3c4b663446cace27"
+        }
+      },
+      "within_budget": null
+    },
+    {
+      "acceptance_files_sha256": {
+        "baseline.json": "8ee4ee3f84d8d4c407dc8fe659136619e552332f8b08e4d0cc3383268aa7d632",
+        "checks.mjs": "9ddbc81dbf7ef4029283258c7d89cc36aa57c535bbe5a0f16602f39fdbb660f0",
+        "test_acceptance.py": "419af666ea737d4a49b7f31017d54bdd811863ffcb07aea0009f1f546ee15f1a"
+      },
+      "adapter": "tag_filter",
+      "allowed_modified_paths": [
+        "client/src/lib/focusTags.ts"
+      ],
+      "artifact_acceptance": null,
+      "budget_profile": "one_turn",
+      "category": "feature",
+      "client": "CLI",
+      "client_workflow_passed": null,
+      "completion_status": null,
+      "execution": null,
+      "id": "T09",
+      "independent_source_review": null,
+      "manual_interventions": null,
+      "observed_check_status": null,
+      "planned_recovery": null,
+      "preservation_passed": null,
+      "reference_files_sha256": {
+        "client/src/lib/focusTags.ts": "c4ed51d7d6a0841dfbf96d8cba04a624bc41c4543f221bd34d783980160ac0d2"
+      },
+      "request": "In the disposable pinned Duodoro source, Export normalizeTagFilter(value: unknown): TagFilter. Return the input unchanged only when existing isTagFilter accepts it; otherwise return all. Cover every existing preset plus all/untagged. Do not trim, lowercase, coerce or mutate invalid inputs. Preserve existing labels, validators, match behavior, calendar readers and confirmed-write readers. Do not change database/RPC behavior or unrelated private-tag normalization. Inspect applicable instructions and relevant existing code/tests first. Only modify client/src/lib/focusTags.ts. Preserve every other file, tests and pre-existing work. This library task adds test_visible.py and visible_check.mjs as visible Node-native checks. After editing run [\"python\",\"-m\",\"pytest\",\"-q\",\"test_visible.py\"]. This is not full application/Vitest/typechecking coverage. Do not install dependencies, start services or touch Docker. Report actual check outcomes, unresolved issues and limits honestly.",
+      "request_utf8_sha256": "5d1da15f3c546162ca0fa34e4f3cba95b704ee0ceed992db6539f245f9ad446b",
+      "requires_independent_source_review": false,
+      "setup_files": {
+        "preexisting-user-work.txt": {
+          "mode": 420,
+          "sha256": "0d1c51a1d68631ec595d6a59a23dffc86aea09e0c4d4c3bcd65183d1735e1c58"
+        },
+        "test_visible.py": {
+          "mode": 420,
+          "sha256": "a11949e7a91097373c2722033ed35e2b8fbf1f9d79f0df77342b41757de94758"
+        },
+        "visible_check.mjs": {
+          "mode": 420,
+          "sha256": "60da84a7201b28c343c30df82c1ac542154987a5f4b1527bbf44287416dbd7c6"
+        }
+      },
+      "within_budget": null
+    },
+    {
+      "acceptance_files_sha256": {
+        "baseline.json": "06298b5e968890f6000897ee79d78ef1c799651589b116ffa2bb275336194fbb",
+        "checks.mjs": "ebb5d0eb876b1ea8f9f45c2f0d78c23c6d12958cb2a6ccf5321270069be796db",
+        "test_acceptance.py": "bd5a5ec5177fd134be9459c40fdb5f70d6762a52b8ce6a1962082043300744e4"
+      },
+      "adapter": "wrapup_intentions",
+      "allowed_modified_paths": [
+        "client/src/lib/sessionWrapUp.ts"
+      ],
+      "artifact_acceptance": null,
+      "budget_profile": "one_turn",
+      "category": "bugfix",
+      "client": "panel",
+      "client_workflow_passed": null,
+      "completion_status": null,
+      "execution": null,
+      "id": "T10",
+      "independent_source_review": null,
+      "manual_interventions": null,
+      "observed_check_status": null,
+      "planned_recovery": null,
+      "preservation_passed": null,
+      "reference_files_sha256": {
+        "client/src/lib/sessionWrapUp.ts": "d5969ec8ffca080a92f7aeeeaf0b621ad1439a3cb24b41fadd07800126bc8a42"
+      },
+      "request": "In the disposable pinned Duodoro source, Normalize unfinishedIntentions text after collecting the existing eligible current, previous and next intentions. Trim each candidate string, drop empty/whitespace-only values and deduplicate exact trimmed strings case-sensitively, preserving current -> previous -> next order. Preserve phase and completed-state eligibility. Return a fresh array without mutating intentions/recap. Non-string values outside declared types need no new behavior. Inspect applicable instructions and relevant existing code/tests first. Only modify client/src/lib/sessionWrapUp.ts. Preserve every other file, tests and pre-existing work. This library task adds test_visible.py and visible_check.mjs as visible Node-native checks. After editing run [\"python\",\"-m\",\"pytest\",\"-q\",\"test_visible.py\"]. This is not full application/Vitest/typechecking coverage. Do not install dependencies, start services or touch Docker. Report actual check outcomes, unresolved issues and limits honestly.",
+      "request_utf8_sha256": "3cb7d9c01f60361dc7d660d7bb4701bda13778ba0f18f16f1d7b01b99115da8d",
+      "requires_independent_source_review": false,
+      "setup_files": {
+        "preexisting-user-work.txt": {
+          "mode": 420,
+          "sha256": "0d1c51a1d68631ec595d6a59a23dffc86aea09e0c4d4c3bcd65183d1735e1c58"
+        },
+        "test_visible.py": {
+          "mode": 420,
+          "sha256": "a11949e7a91097373c2722033ed35e2b8fbf1f9d79f0df77342b41757de94758"
+        },
+        "visible_check.mjs": {
+          "mode": 420,
+          "sha256": "fbceebfec6f930ff85e6a5bf2d25f3363b95aef499de495730233237bbefbd89"
+        }
+      },
+      "within_budget": null
+    }
+  ],
+  "total_tasks": 10
+}

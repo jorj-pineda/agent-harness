@@ -16,6 +16,17 @@ cohort is not a retry queue. That transport experiment’s preparation, results 
 disposition are complete; no additional inference, default/limit change or release
 approval follows from that closed experiment.
 
+**2026-10-23 — Ten-task provider-timeout follow-up protocol prepared:** the
+[protocol](evals/projects/duodoro/PROVIDER_WAIT_TEN_TASK_PROTOCOL.md) tests whether
+the selected T09 result generalizes across all ten original tasks, preserving
+requests/clients/criteria, whole_file settings and original 300/150-second budgets.
+Only the candidate provider scalar becomes 180; T03's outer 150-second phase cap
+still applies. All ten fresh initial-fail/reference-pass validations and 28 focused
+criterion tests passed. Equal bounded private input recording, actual client
+preflight, exact G0 and independently reviewed fresh execution freeze remain
+prerequisites. No inference or production adoption; historical cohorts, no-go,
+8/10 target, unknown-usage rules and G2–G5 remain unchanged.
+
 **2026-10-23 — Frozen provider-timeout comparison complete:** the
 [results](evals/projects/duodoro/PROVIDER_WAIT_RESULTS.md) retain C1/W1/W2/C2
 at runtime `6721cc9`: **60 seconds 0/2 accepted and completed-and-accepted;
