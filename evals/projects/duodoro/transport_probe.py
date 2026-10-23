@@ -192,6 +192,15 @@ class ProbeTransport(httpx.AsyncBaseTransport):
             try:
                 if response is not None:
                     await response.aclose()
+            except asyncio.CancelledError:
+                outcome = "cancelled"
+                raise
+            except httpx.HTTPError:
+                outcome = "transport_error"
+                raise
+            except Exception:
+                outcome = "protocol_error"
+                raise
             finally:
                 self.observe(
                     TransportObservation(

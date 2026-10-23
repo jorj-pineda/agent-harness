@@ -2,6 +2,7 @@
 
 import asyncio
 import json
+from contextlib import suppress
 
 import httpx
 import pytest
@@ -313,10 +314,8 @@ async def test_real_loopback_chunks_change_inactivity_behavior_without_changing_
             writer.close()
             active.discard(writer)
             tasks.discard(current)
-            try:
+            with suppress(ConnectionError):
                 await writer.wait_closed()
-            except ConnectionError:
-                pass
 
     server = await asyncio.start_server(respond, "127.0.0.1", 0)
     port = server.sockets[0].getsockname()[1]
@@ -357,3 +356,48 @@ async def test_real_loopback_chunks_change_inactivity_behavior_without_changing_
             task.cancel()
         await asyncio.gather(*remaining, return_exceptions=True)
         assert not active
+
+
+async def test_cleanup_failure_is_not_recorded_as_completed():
+    class FailedClose(Body):
+        async def aclose(self):
+            self.closed = True
+            raise httpx.ReadError("private cleanup failure")
+
+    # HTTP status path closes without consuming the body; failure in finally
+    # must override that outcome instead of recording an accepted response.
+    body = FailedClose([b"private"])
+    adapter, _, observations = provider(body, status=503)
+    try:
+        with pytest.raises(ProviderError) as failure:
+            await adapter.chat([ChatMessage(role="user", content="task")])
+        assert failure.value.failure.kind == "connection"
+        assert observations[0].outcome == "transport_error"
+        assert "private" not in observations[0].model_dump_json()
+    finally:
+        await adapter.aclose()
+
+
+async def test_observer_failure_prevents_response_delivery_after_cleanup():
+    body = Body([frame(done=True, message={"content": "not delivered"})])
+
+    def respond(request):
+        return httpx.Response(200, stream=body)
+
+    def fail_evidence(observation):
+        raise RuntimeError("SCRIPTED evidence storage unavailable")
+
+    adapter = OllamaProvider(
+        host="http://fixture",
+        model="SCRIPTED",
+        embed_model="unused",
+        transport=probe.ProbeTransport(
+            httpx.MockTransport(respond), streamed=True, observe=fail_evidence
+        ),
+    )
+    try:
+        with pytest.raises(RuntimeError, match="evidence storage"):
+            await adapter.chat([ChatMessage(role="user", content="task")])
+        assert body.closed
+    finally:
+        await adapter.aclose()
