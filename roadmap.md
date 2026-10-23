@@ -553,6 +553,27 @@ rescue or execution correction. Observation coverage is established for these
 selected attempts, not a remedy, causal quality gain or release readiness.
 Original cohorts/failed preparation, no-go and G2–G5 remain unchanged.
 
+**2026-10-23 UTC — Actual four-cell transport freeze prepared, unrun:** the
+[freeze](evals/projects/duodoro/TRANSPORT_COMPARISON_FREEZE.md) pins original T09
+B1/S1/S2/B2 at `51463ae`, one common disposable workspace path, four fresh stores,
+original requests/criteria/limits, equal first normalized inputs/profiles and first
+wire bodies differing only in stream. All initial/reference validations, four
+actual-CLI scripted write/check/grade/restart flows, partial-stream no-write case,
+28 no-forward mismatches and staging/grade/audit recipe checks passed. Twelve
+preflight APIs plus the partial-stream API stopped; no inference ran. Exact G0
+passed 100 focused/1,437 offline tests (five live deselected), Ruff/format/mypy and
+both scripted 90/90 matrices with labels/limits inspected. Actual roots, managed
+model/environment, full prepared trees and local recipes/evidence are hashed.
+The first independent review caught a permissive missing-evidence audit gate;
+its pre-inference revision now blocks absent first identities/wire, truncated
+request evidence and empty/mismatched transport coverage before staging permission.
+Seven negative regressions preserve the workspace and matching evidence still
+passes; the original reviewed manifest/recipe remain retained.
+Independent exact-freeze review/merge remains required before four one-turn
+attempts. Changed state blocks replay/staging; all artifacts must be archived,
+regraded and reviewed before replacing the owned common path. This is preparation,
+not quality/release evidence; historical cohorts/no-go and G2–G5 remain unchanged.
+
 **2026-10-23 UTC — Evaluation-only transport hypothesis prepared:** the
 [protocol](evals/projects/duodoro/TRANSPORT_PROBE_PROTOCOL.md) proposes four fixed
 T09 CLI attempts (buffered, streamed, streamed, buffered) at a common literal
