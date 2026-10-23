@@ -15,6 +15,23 @@ explicit narrower-envelope proposal with independent acceptance; the completed
 cohort is not a retry queue. Preparation, results and disposition are complete;
 no additional inference, default/limit change or release approval follows.
 
+**2026-10-23 — Actual one-attempt input freeze prepared, unrun:** the
+[freeze](evals/projects/duodoro/REQUEST_INPUT_FREEZE.md) pins fresh original T09
+inputs/stores at `1a0573e`, original criteria/limits, first normalized/wire guards,
+managed model/environment and all local source/recording/audit recipes. Final
+actual-CLI scripted read/plan/reference-write/check/fifth-timeout preflight retained
+five paired inputs matching saved requests and production MockTransport wire
+serialization; default source/guarded GET restarts preserved JSON/input files.
+Storage refusal, seven no-forward mismatches, five pre-resource malformed-capture
+cases and grade/audit missing-evidence checks passed. Earlier preflight is retained;
+fresh final-factory preflight followed validation/allowlist tightening. Eight owned
+APIs exited, model unloaded and scheduled stores/inputs/outcomes remain absent.
+Exact G0 passed 116 focused/1,453 offline tests (five live deselected), static gates
+and both scripted 90/90 matrices with labels/limits inspected. Independent exact-
+freeze review/merge is required before one original buffered CLI submission.
+No inference, replay, production/default/limit change or backend diagnosis;
+original cohort/no-go and G2–G5 remain unchanged.
+
 **2026-10-23 — Bounded failed-input diagnostic prepared:** the
 [protocol](evals/projects/duodoro/REQUEST_INPUT_PROTOCOL.md) investigates the
 post-plan request boundary: prior captures fingerprint but cannot reconstruct
