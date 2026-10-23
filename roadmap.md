@@ -12,8 +12,9 @@ remains unknown. Keep the wrapper as evaluation-only reproduction evidence and
 feature batches frozen. No smaller unattended envelope or G2–G5 closure is
 established. Further work needs a specific retained-failure hypothesis or an
 explicit narrower-envelope proposal with independent acceptance; the completed
-cohort is not a retry queue. Preparation, results and disposition are complete;
-no additional inference, default/limit change or release approval follows.
+cohort is not a retry queue. That transport experiment’s preparation, results and
+disposition are complete; no additional inference, default/limit change or release
+approval follows from that closed experiment.
 
 **2026-10-23 — Provider-timeout comparison scoped, unrun:** the
 [offline analysis](evals/projects/duodoro/PROVIDER_WAIT_ANALYSIS.md) records the
