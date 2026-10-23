@@ -1,0 +1,871 @@
+{
+  "artifact_accepted": false,
+  "budget_evidence": {
+    "events": [
+      {
+        "anchor_adjustment_tokens": 0,
+        "call_observation": null,
+        "completion_tokens_used": 0,
+        "estimated_prompt_tokens": 2843,
+        "heuristic_prompt_tokens": 2843,
+        "identity": {
+          "format": "normalized-chat-request-v1",
+          "messages_sha256": "28510fc4dfe17a84bce17c101a323e3cef639070256d8b24471039076e8aebe3",
+          "request_sha256": "a9f8e5a474bdf0811d41b50a9bc61a4c42c1d989223c88d5e412e934c2cf2a9f",
+          "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+        },
+        "iteration": 0,
+        "kind": "request",
+        "max_tokens": 2048,
+        "message_count": 2,
+        "prompt_tokens_used": 0,
+        "usage": null
+      },
+      {
+        "anchor_adjustment_tokens": null,
+        "call_observation": {
+          "completion_usage_field": "present",
+          "content_empty": true,
+          "duration_ms": 21847.225249977782,
+          "prompt_usage_field": "present",
+          "terminal_reason": "stop",
+          "tool_call_count": 0
+        },
+        "completion_tokens_used": 7,
+        "estimated_prompt_tokens": null,
+        "heuristic_prompt_tokens": null,
+        "identity": null,
+        "iteration": 0,
+        "kind": "response",
+        "max_tokens": null,
+        "message_count": 2,
+        "prompt_tokens_used": 1751,
+        "usage": {
+          "completion_tokens": 7,
+          "prompt_tokens": 1751
+        }
+      },
+      {
+        "anchor_adjustment_tokens": 0,
+        "call_observation": null,
+        "completion_tokens_used": 7,
+        "estimated_prompt_tokens": 2898,
+        "heuristic_prompt_tokens": 2898,
+        "identity": {
+          "format": "normalized-chat-request-v1",
+          "messages_sha256": "45f4d611185ffd24a21ea9d30c89261db89a7a793e661dc67e7c6dd8810e5ab5",
+          "request_sha256": "edd21b89ff768a953750ac8623cd0e29c5a9d88335e0d7be767ea06af6a81652",
+          "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+        },
+        "iteration": 1,
+        "kind": "request",
+        "max_tokens": 2048,
+        "message_count": 4,
+        "prompt_tokens_used": 1751,
+        "usage": null
+      },
+      {
+        "anchor_adjustment_tokens": null,
+        "call_observation": {
+          "completion_usage_field": "present",
+          "content_empty": true,
+          "duration_ms": 1430.4219579789788,
+          "prompt_usage_field": "present",
+          "terminal_reason": "stop",
+          "tool_call_count": 1
+        },
+        "completion_tokens_used": 14,
+        "estimated_prompt_tokens": null,
+        "heuristic_prompt_tokens": null,
+        "identity": null,
+        "iteration": 1,
+        "kind": "response",
+        "max_tokens": null,
+        "message_count": 4,
+        "prompt_tokens_used": 3540,
+        "usage": {
+          "completion_tokens": 7,
+          "prompt_tokens": 1789
+        }
+      },
+      {
+        "anchor_adjustment_tokens": 0,
+        "call_observation": null,
+        "completion_tokens_used": 14,
+        "estimated_prompt_tokens": 5306,
+        "heuristic_prompt_tokens": 5306,
+        "identity": {
+          "format": "normalized-chat-request-v1",
+          "messages_sha256": "b7c91b49240cf8f6006400c4a44649baa49a0d965ed9418af807d30b1dbdc36d",
+          "request_sha256": "a58cbe23ef86eba3bc737a6e890fd0ba9342b1a03c5c622b126e844f994c039b",
+          "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+        },
+        "iteration": 2,
+        "kind": "request",
+        "max_tokens": 2048,
+        "message_count": 6,
+        "prompt_tokens_used": 3540,
+        "usage": null
+      },
+      {
+        "anchor_adjustment_tokens": null,
+        "call_observation": {
+          "completion_usage_field": "present",
+          "content_empty": true,
+          "duration_ms": 25619.942541932687,
+          "prompt_usage_field": "present",
+          "terminal_reason": "stop",
+          "tool_call_count": 1
+        },
+        "completion_tokens_used": 42,
+        "estimated_prompt_tokens": null,
+        "heuristic_prompt_tokens": null,
+        "identity": null,
+        "iteration": 2,
+        "kind": "response",
+        "max_tokens": null,
+        "message_count": 6,
+        "prompt_tokens_used": 7872,
+        "usage": {
+          "completion_tokens": 28,
+          "prompt_tokens": 4332
+        }
+      },
+      {
+        "anchor_adjustment_tokens": 0,
+        "call_observation": null,
+        "completion_tokens_used": 42,
+        "estimated_prompt_tokens": 6718,
+        "heuristic_prompt_tokens": 6718,
+        "identity": {
+          "format": "normalized-chat-request-v1",
+          "messages_sha256": "19fbdba9a4def82c8d78fb0e5f99ebb20f97e8952fd6b7eaf0b1b8359cfc03f1",
+          "request_sha256": "64c62905718af5c01b0cd91237a796e36030c365694bbf685faf047f62d6a895",
+          "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+        },
+        "iteration": 3,
+        "kind": "request",
+        "max_tokens": 2048,
+        "message_count": 8,
+        "prompt_tokens_used": 7872,
+        "usage": null
+      },
+      {
+        "anchor_adjustment_tokens": null,
+        "call_observation": {
+          "completion_usage_field": "present",
+          "content_empty": true,
+          "duration_ms": 21153.566292021424,
+          "prompt_usage_field": "present",
+          "terminal_reason": "stop",
+          "tool_call_count": 1
+        },
+        "completion_tokens_used": 138,
+        "estimated_prompt_tokens": null,
+        "heuristic_prompt_tokens": null,
+        "identity": null,
+        "iteration": 3,
+        "kind": "response",
+        "max_tokens": null,
+        "message_count": 8,
+        "prompt_tokens_used": 13540,
+        "usage": {
+          "completion_tokens": 96,
+          "prompt_tokens": 5668
+        }
+      },
+      {
+        "anchor_adjustment_tokens": 0,
+        "call_observation": null,
+        "completion_tokens_used": 138,
+        "estimated_prompt_tokens": 6919,
+        "heuristic_prompt_tokens": 6919,
+        "identity": {
+          "format": "normalized-chat-request-v1",
+          "messages_sha256": "6cdc28e4b6f4d480e6a35f01ca69606134a6d13a25ea636efc8f6ee4f7680abe",
+          "request_sha256": "7b5287b0b905b573fdb41759678123d1f57cce801f0ff6f8237061b2359f270d",
+          "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+        },
+        "iteration": 4,
+        "kind": "request",
+        "max_tokens": 2048,
+        "message_count": 10,
+        "prompt_tokens_used": 13540,
+        "usage": null
+      },
+      {
+        "anchor_adjustment_tokens": null,
+        "call_observation": {
+          "completion_usage_field": null,
+          "content_empty": null,
+          "duration_ms": 60046.100292005576,
+          "prompt_usage_field": null,
+          "terminal_reason": null,
+          "tool_call_count": null
+        },
+        "completion_tokens_used": null,
+        "estimated_prompt_tokens": null,
+        "heuristic_prompt_tokens": null,
+        "identity": null,
+        "iteration": 4,
+        "kind": "request_failure",
+        "max_tokens": null,
+        "message_count": 10,
+        "prompt_tokens_used": null,
+        "usage": null
+      }
+    ],
+    "events_truncated": false,
+    "observed_events": 10,
+    "read_only": true,
+    "scope_note": "Bounded prefix of normalized request attempts, reported response usage and token-gate stops. Request precedes delivery; response usage is a provider report, not backend attestation. Failure usage is unknown; a request without a response may have consumed tokens. Missing/truncated evidence is not zero usage or proven budget compliance. No messages, paths, call IDs, tool arguments/results or exception text are stored here. Fingerprints cover normalized inputs only; see the separate configured profile for limits/provider identity. Optional call observations describe adapter HTTP timing and allowlisted response fields, not backend causes or token compliance. Missing observations stay unknown, including cancellation, parsing failures and unsupported providers. Wall/tool/iteration stops are not token-gate events. Not completion, acceptance, replay or permission to resume."
+  },
+  "cell": "T09",
+  "changed_paths": [],
+  "completed_and_accepted": false,
+  "completion_reason": null,
+  "completion_status": null,
+  "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "diff_truncated": false,
+  "duodoro_head_status_index_refs_unchanged": true,
+  "evidence_sha256": {
+    "collect-report.py": "61752b63394fef4f3ccffc96d2f796cae64001b5296868d47fad112046169498",
+    "outcomes/acceptance.json": "5168eb65b8dc206bd4152df3494890a6fa23c177a2ed73c9feb2793beee0790f",
+    "outcomes/chat.txt": "0605b7036591586a1745ebc481d4ce7f588aef4f45d97f8f1338576b15b63fe2",
+    "outcomes/final.diff": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "outcomes/full-final-tree.json": "03647fada969c4d49ddd5b93cbd4c3f73b11de0eb18b9156a6e4f7e588389afe",
+    "outcomes/input-analysis.json": "b0f71d527be3112e49cb6692f5e7f9b3471de5db925a9bc61a0a89aed6a4b489",
+    "outcomes/lookup-000.json": "9ae666fa5f05d2f41432fe9fbd9050e968c39b39dcfd00ed1a9b6fb88acf96af",
+    "outcomes/regrade.json": "fec5d6581b7e21d712ddddd3f7b0b282f5f90ecafa25264431e2efbbcbba3749",
+    "outcomes/restarted-human.txt": "5ef0d74d61021cede0fd107b4c54f86d842e425765134c7d3a0f1197c9c21e8a",
+    "outcomes/restarted-run.json": "9ae666fa5f05d2f41432fe9fbd9050e968c39b39dcfd00ed1a9b6fb88acf96af",
+    "outcomes/review-server.log": "03b32e379e27c61b6207309a6db5edf52711031b3f2aec1e033b9525182d45bc",
+    "outcomes/review/http.jsonl": "028a981fb0767dd02854316e2e51bb7224bd1568b86190e386011843325768a6",
+    "outcomes/run-human.txt": "5ef0d74d61021cede0fd107b4c54f86d842e425765134c7d3a0f1197c9c21e8a",
+    "outcomes/runs.txt": "a4c0a6be5e7e1c3aeacad720f31bbb4a206e6d57f9762280d555ea6ead34b097",
+    "outcomes/saved-run.json": "4ad78d59de204c6754c7a085fe4388c05f11abae3d4160f2e9f64c13cc7e3b00",
+    "outcomes/source-server.log": "27082e2f737b4d9da513aca5d489014b1e41e33766d336a06a4430d061cdbe2c",
+    "outcomes/source/http.jsonl": "45660c02da76429c8051698a5eef3bce3a155e356b02a517814b1b3a93be6828",
+    "outcomes/staging.json": "e2fbb2569868399d0fdbc30c7331f15415099fe8b7a03a97d669303a6219ea61",
+    "outcomes/submission.json": "7f34c7d766ad245491d74c46560824cfba0923cdbfcd0bbca4a25bcf5f6c5e87",
+    "outcomes/summary.json": "8312c73682c082f086ea5956fce68101a163a5db4fe82419c4ee2a7ece01d1fc",
+    "outcomes/unload.json": "ae5af43dffd2f1a3ead313f9babbb4e3dde504d9c868b75e08aaa7f4089a88bb",
+    "report-audit-r1.py": "4d5770aa5019113626c0dbf7daf6d891bf0d7d0e326733349a199c21699af937",
+    "report-audit.json": "19c587648ef6f0d89a648c3abb4559ac03823e94f3644dbfd664f143e09692f8",
+    "report-audit.py": "e55f8b24aba9c15c7fe39c50e3cd95bffc13822e8c9fbb54bed5569e965009dc"
+  },
+  "execution_lifecycle": [
+    {
+      "ended_at": 1792792251.946392,
+      "listener_released": true,
+      "pid": 6547,
+      "purpose": "source",
+      "returncode": -15,
+      "shutdown_complete": true,
+      "started_at": 1792792119.7232509
+    },
+    {
+      "ended_at": 1792792254.995071,
+      "listener_released": true,
+      "pid": 25640,
+      "purpose": "review",
+      "returncode": -15,
+      "shutdown_complete": true,
+      "started_at": 1792792253.630764
+    }
+  ],
+  "external_exit_code": 1,
+  "failure_count": 1,
+  "freeze_path": "evals/projects/duodoro/request-input-freeze.json",
+  "freeze_sha256": "255851ea43fdbdb8382daa9e552822e9ab9ff62a4a1892b5f20fd8e29e74fd7e",
+  "full_tree_sha256": "03647fada969c4d49ddd5b93cbd4c3f73b11de0eb18b9156a6e4f7e588389afe",
+  "input_analysis": {
+    "inputs_sha256": {
+      "request-0001-normalized.json": "9db71daa04b363e666172a58f1fcb75b014357355173b7014776471b66193d3c",
+      "request-0001-wire.json": "8b364b413514ee7deaee8f43e9d0b3300dea05801d3bcf947cc5cb7a78f64ba3",
+      "request-0002-normalized.json": "6a8a535bf2210795146fcef23911403085630783949cd54137f0a97e68020153",
+      "request-0002-wire.json": "4a536cc023dc45175aa3c37f8beb39353d2a2ee9fec9137a798dc09ac4b5cd8f",
+      "request-0003-normalized.json": "61678f56f3a501393e399192412e38699912269ee12a0df20bd123351e67b2f9",
+      "request-0003-wire.json": "e21874bd010a66a993c7b476f80e55f3a39a7f283a504839a36ad0a399992a08",
+      "request-0004-normalized.json": "c0542a58fff13bcd5736d688a821e0d0ccf2ec2010272efc1f2b1c0dc0e7010c",
+      "request-0004-wire.json": "6ea8875d880bfdef56c968d78f42430334562ad23b78bcaaa889b7d11d2844f1",
+      "request-0005-normalized.json": "bc3ce99e553025b5cc9ee98d4cf0f94c69fb798c41bfaa00298ceb69b3563459",
+      "request-0005-wire.json": "7587bd39e79dc0c2f78d02f91d0b1f9f5bfb82ba858d0721253e070d4610d936"
+    },
+    "kind": "offline-input-pairing-and-mock-serialization-NOT-inference",
+    "limits": [
+      "Input presence before forwarding is not backend receipt or execution.",
+      "Mock serialization uses no HTTP network/inference and is not failed-request model replay.",
+      "Heuristic footprint is not provider tokenization/backend compliance; saved estimate may use calibration.",
+      "Valid role/tool/option continuity does not prove semantic correctness, absence of all malformed values or backend cause."
+    ],
+    "request_count": 5,
+    "rows": [
+      {
+        "identity": {
+          "format": "normalized-chat-request-v1",
+          "messages_sha256": "28510fc4dfe17a84bce17c101a323e3cef639070256d8b24471039076e8aebe3",
+          "request_sha256": "a9f8e5a474bdf0811d41b50a9bc61a4c42c1d989223c88d5e412e934c2cf2a9f",
+          "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+        },
+        "iteration": 0,
+        "max_tokens": 2048,
+        "message_roles": [
+          "system",
+          "user"
+        ],
+        "normalized_bytes": 9157,
+        "normalized_sha256": "9db71daa04b363e666172a58f1fcb75b014357355173b7014776471b66193d3c",
+        "production_adapter_mock_serialization_byte_equal": true,
+        "saved_prompt_estimate": 2843,
+        "sequence": 1,
+        "tool_reply_id_name_continuity": true,
+        "tool_result_names": [],
+        "uncalibrated_heuristic_footprint": {
+          "anchor_adjustment_tokens": 0,
+          "estimated_prompt_tokens": 2843,
+          "heuristic_prompt_tokens": 2843,
+          "largest_messages": [
+            {
+              "message_index": 1,
+              "payload_bytes": 983,
+              "role": "user",
+              "tool_name": null
+            },
+            {
+              "message_index": 0,
+              "payload_bytes": 834,
+              "role": "system",
+              "tool_name": null
+            }
+          ],
+          "largest_messages_truncated": false,
+          "message_estimate_tokens": 614,
+          "prompt_estimate_bytes_per_token": 3.0,
+          "tool_schema_estimate_tokens": 2229
+        },
+        "wire_bytes": 8666,
+        "wire_sha256": "8b364b413514ee7deaee8f43e9d0b3300dea05801d3bcf947cc5cb7a78f64ba3"
+      },
+      {
+        "identity": {
+          "format": "normalized-chat-request-v1",
+          "messages_sha256": "45f4d611185ffd24a21ea9d30c89261db89a7a793e661dc67e7c6dd8810e5ab5",
+          "request_sha256": "edd21b89ff768a953750ac8623cd0e29c5a9d88335e0d7be767ea06af6a81652",
+          "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+        },
+        "iteration": 1,
+        "max_tokens": 2048,
+        "message_roles": [
+          "system",
+          "user",
+          "assistant",
+          "user"
+        ],
+        "normalized_bytes": 9488,
+        "normalized_sha256": "6a8a535bf2210795146fcef23911403085630783949cd54137f0a97e68020153",
+        "production_adapter_mock_serialization_byte_equal": true,
+        "saved_prompt_estimate": 2898,
+        "sequence": 2,
+        "tool_reply_id_name_continuity": true,
+        "tool_result_names": [],
+        "uncalibrated_heuristic_footprint": {
+          "anchor_adjustment_tokens": 0,
+          "estimated_prompt_tokens": 2898,
+          "heuristic_prompt_tokens": 2898,
+          "largest_messages": [
+            {
+              "message_index": 1,
+              "payload_bytes": 983,
+              "role": "user",
+              "tool_name": null
+            },
+            {
+              "message_index": 0,
+              "payload_bytes": 834,
+              "role": "system",
+              "tool_name": null
+            },
+            {
+              "message_index": 3,
+              "payload_bytes": 142,
+              "role": "user",
+              "tool_name": null
+            },
+            {
+              "message_index": 2,
+              "payload_bytes": 0,
+              "role": "assistant",
+              "tool_name": null
+            }
+          ],
+          "largest_messages_truncated": false,
+          "message_estimate_tokens": 669,
+          "prompt_estimate_bytes_per_token": 3.0,
+          "tool_schema_estimate_tokens": 2229
+        },
+        "wire_bytes": 8871,
+        "wire_sha256": "4a536cc023dc45175aa3c37f8beb39353d2a2ee9fec9137a798dc09ac4b5cd8f"
+      },
+      {
+        "identity": {
+          "format": "normalized-chat-request-v1",
+          "messages_sha256": "b7c91b49240cf8f6006400c4a44649baa49a0d965ed9418af807d30b1dbdc36d",
+          "request_sha256": "a58cbe23ef86eba3bc737a6e890fd0ba9342b1a03c5c622b126e844f994c039b",
+          "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+        },
+        "iteration": 2,
+        "max_tokens": 2048,
+        "message_roles": [
+          "system",
+          "user",
+          "assistant",
+          "user",
+          "assistant",
+          "tool"
+        ],
+        "normalized_bytes": 18263,
+        "normalized_sha256": "61678f56f3a501393e399192412e38699912269ee12a0df20bd123351e67b2f9",
+        "production_adapter_mock_serialization_byte_equal": true,
+        "saved_prompt_estimate": 5306,
+        "sequence": 3,
+        "tool_reply_id_name_continuity": true,
+        "tool_result_names": [
+          "tree"
+        ],
+        "uncalibrated_heuristic_footprint": {
+          "anchor_adjustment_tokens": 0,
+          "estimated_prompt_tokens": 5306,
+          "heuristic_prompt_tokens": 5306,
+          "largest_messages": [
+            {
+              "message_index": 5,
+              "payload_bytes": 7193,
+              "role": "tool",
+              "tool_name": "tree"
+            },
+            {
+              "message_index": 1,
+              "payload_bytes": 983,
+              "role": "user",
+              "tool_name": null
+            },
+            {
+              "message_index": 0,
+              "payload_bytes": 834,
+              "role": "system",
+              "tool_name": null
+            },
+            {
+              "message_index": 3,
+              "payload_bytes": 142,
+              "role": "user",
+              "tool_name": null
+            },
+            {
+              "message_index": 4,
+              "payload_bytes": 6,
+              "role": "assistant",
+              "tool_name": null
+            },
+            {
+              "message_index": 2,
+              "payload_bytes": 0,
+              "role": "assistant",
+              "tool_name": null
+            }
+          ],
+          "largest_messages_truncated": false,
+          "message_estimate_tokens": 3077,
+          "prompt_estimate_bytes_per_token": 3.0,
+          "tool_schema_estimate_tokens": 2229
+        },
+        "wire_bytes": 17539,
+        "wire_sha256": "e21874bd010a66a993c7b476f80e55f3a39a7f283a504839a36ad0a399992a08"
+      },
+      {
+        "identity": {
+          "format": "normalized-chat-request-v1",
+          "messages_sha256": "19fbdba9a4def82c8d78fb0e5f99ebb20f97e8952fd6b7eaf0b1b8359cfc03f1",
+          "request_sha256": "64c62905718af5c01b0cd91237a796e36030c365694bbf685faf047f62d6a895",
+          "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+        },
+        "iteration": 3,
+        "max_tokens": 2048,
+        "message_roles": [
+          "system",
+          "user",
+          "assistant",
+          "user",
+          "assistant",
+          "tool",
+          "assistant",
+          "tool"
+        ],
+        "normalized_bytes": 22997,
+        "normalized_sha256": "c0542a58fff13bcd5736d688a821e0d0ccf2ec2010272efc1f2b1c0dc0e7010c",
+        "production_adapter_mock_serialization_byte_equal": true,
+        "saved_prompt_estimate": 6718,
+        "sequence": 4,
+        "tool_reply_id_name_continuity": true,
+        "tool_result_names": [
+          "tree",
+          "read_file"
+        ],
+        "uncalibrated_heuristic_footprint": {
+          "anchor_adjustment_tokens": 0,
+          "estimated_prompt_tokens": 6718,
+          "heuristic_prompt_tokens": 6718,
+          "largest_messages": [
+            {
+              "message_index": 5,
+              "payload_bytes": 7193,
+              "role": "tool",
+              "tool_name": "tree"
+            },
+            {
+              "message_index": 7,
+              "payload_bytes": 4163,
+              "role": "tool",
+              "tool_name": "read_file"
+            },
+            {
+              "message_index": 1,
+              "payload_bytes": 983,
+              "role": "user",
+              "tool_name": null
+            },
+            {
+              "message_index": 0,
+              "payload_bytes": 834,
+              "role": "system",
+              "tool_name": null
+            },
+            {
+              "message_index": 3,
+              "payload_bytes": 142,
+              "role": "user",
+              "tool_name": null
+            },
+            {
+              "message_index": 6,
+              "payload_bytes": 48,
+              "role": "assistant",
+              "tool_name": null
+            },
+            {
+              "message_index": 4,
+              "payload_bytes": 6,
+              "role": "assistant",
+              "tool_name": null
+            },
+            {
+              "message_index": 2,
+              "payload_bytes": 0,
+              "role": "assistant",
+              "tool_name": null
+            }
+          ],
+          "largest_messages_truncated": false,
+          "message_estimate_tokens": 4489,
+          "prompt_estimate_bytes_per_token": 3.0,
+          "tool_schema_estimate_tokens": 2229
+        },
+        "wire_bytes": 22165,
+        "wire_sha256": "6ea8875d880bfdef56c968d78f42430334562ad23b78bcaaa889b7d11d2844f1"
+      },
+      {
+        "identity": {
+          "format": "normalized-chat-request-v1",
+          "messages_sha256": "6cdc28e4b6f4d480e6a35f01ca69606134a6d13a25ea636efc8f6ee4f7680abe",
+          "request_sha256": "7b5287b0b905b573fdb41759678123d1f57cce801f0ff6f8237061b2359f270d",
+          "tool_specs_sha256": "e12d7c098c6af30957731861900df653b198b9b8769d2625896952364ab7cd3a"
+        },
+        "iteration": 4,
+        "max_tokens": 2048,
+        "message_roles": [
+          "system",
+          "user",
+          "assistant",
+          "user",
+          "assistant",
+          "tool",
+          "assistant",
+          "tool",
+          "assistant",
+          "tool"
+        ],
+        "normalized_bytes": 23848,
+        "normalized_sha256": "bc3ce99e553025b5cc9ee98d4cf0f94c69fb798c41bfaa00298ceb69b3563459",
+        "production_adapter_mock_serialization_byte_equal": true,
+        "saved_prompt_estimate": 6919,
+        "sequence": 5,
+        "tool_reply_id_name_continuity": true,
+        "tool_result_names": [
+          "tree",
+          "read_file",
+          "emit_plan"
+        ],
+        "uncalibrated_heuristic_footprint": {
+          "anchor_adjustment_tokens": 0,
+          "estimated_prompt_tokens": 6919,
+          "heuristic_prompt_tokens": 6919,
+          "largest_messages": [
+            {
+              "message_index": 5,
+              "payload_bytes": 7193,
+              "role": "tool",
+              "tool_name": "tree"
+            },
+            {
+              "message_index": 7,
+              "payload_bytes": 4163,
+              "role": "tool",
+              "tool_name": "read_file"
+            },
+            {
+              "message_index": 1,
+              "payload_bytes": 983,
+              "role": "user",
+              "tool_name": null
+            },
+            {
+              "message_index": 0,
+              "payload_bytes": 834,
+              "role": "system",
+              "tool_name": null
+            },
+            {
+              "message_index": 9,
+              "payload_bytes": 298,
+              "role": "tool",
+              "tool_name": "emit_plan"
+            },
+            {
+              "message_index": 8,
+              "payload_bytes": 281,
+              "role": "assistant",
+              "tool_name": null
+            },
+            {
+              "message_index": 3,
+              "payload_bytes": 142,
+              "role": "user",
+              "tool_name": null
+            },
+            {
+              "message_index": 6,
+              "payload_bytes": 48,
+              "role": "assistant",
+              "tool_name": null
+            },
+            {
+              "message_index": 4,
+              "payload_bytes": 6,
+              "role": "assistant",
+              "tool_name": null
+            },
+            {
+              "message_index": 2,
+              "payload_bytes": 0,
+              "role": "assistant",
+              "tool_name": null
+            }
+          ],
+          "largest_messages_truncated": false,
+          "message_estimate_tokens": 4690,
+          "prompt_estimate_bytes_per_token": 3.0,
+          "tool_schema_estimate_tokens": 2229
+        },
+        "wire_bytes": 22905,
+        "wire_sha256": "7587bd39e79dc0c2f78d02f91d0b1f9f5bfb82ba858d0721253e070d4610d936"
+      }
+    ],
+    "total_input_bytes": 163899
+  },
+  "input_analysis_complete": true,
+  "kind": "one-real-model-real-tools-request-input-diagnostic",
+  "known_response_prefix_usage": {
+    "completion_tokens": 138,
+    "prompt_tokens": 13540
+  },
+  "limits": [
+    "Single selected public task; input recording is not a coding comparison or proven backend cause.",
+    "Failed usage stays unknown; input presence before delegation is not backend receipt.",
+    "Normalized I/O precedes HTTP post; wire I/O is inside it. No hard deadline/isolation/CPU/RSS guarantee.",
+    "No raw input payload publication, live input replay, production change or G2-G5/release claim."
+  ],
+  "local_input_files_sha256": {
+    "request-0001-normalized.json": "9db71daa04b363e666172a58f1fcb75b014357355173b7014776471b66193d3c",
+    "request-0001-wire.json": "8b364b413514ee7deaee8f43e9d0b3300dea05801d3bcf947cc5cb7a78f64ba3",
+    "request-0002-normalized.json": "6a8a535bf2210795146fcef23911403085630783949cd54137f0a97e68020153",
+    "request-0002-wire.json": "4a536cc023dc45175aa3c37f8beb39353d2a2ee9fec9137a798dc09ac4b5cd8f",
+    "request-0003-normalized.json": "61678f56f3a501393e399192412e38699912269ee12a0df20bd123351e67b2f9",
+    "request-0003-wire.json": "e21874bd010a66a993c7b476f80e55f3a39a7f283a504839a36ad0a399992a08",
+    "request-0004-normalized.json": "c0542a58fff13bcd5736d688a821e0d0ccf2ec2010272efc1f2b1c0dc0e7010c",
+    "request-0004-wire.json": "6ea8875d880bfdef56c968d78f42430334562ad23b78bcaaa889b7d11d2844f1",
+    "request-0005-normalized.json": "bc3ce99e553025b5cc9ee98d4cf0f94c69fb798c41bfaa00298ceb69b3563459",
+    "request-0005-wire.json": "7587bd39e79dc0c2f78d02f91d0b1f9f5bfb82ba858d0721253e070d4610d936"
+  },
+  "local_raw_results_sha256": "cc47c1387985c8333d9abb48efa3a9ade658bb5bf4bcb116d43e840f70e6f28e",
+  "local_root": "/Users/jorge/.local/share/agent-harness/trials/duodoro-request-input-v14rnqm5",
+  "model": {
+    "details": {
+      "context_length": 262144,
+      "embedding_length": 3840,
+      "families": [
+        "gemma4"
+      ],
+      "family": "gemma4",
+      "format": "gguf",
+      "parameter_size": "11.9B",
+      "parent_model": "",
+      "quantization_level": "Q4_K_M"
+    },
+    "digest": "4eb23ef187e2c5462566d6a1d3bbbc2f1346d0b4327cbb66d58fffbcc9b2b05c",
+    "name": "gemma4:12b",
+    "ollama_version": "0.33.2",
+    "size": 7556508396
+  },
+  "model_unloaded": true,
+  "modes_preserved": true,
+  "one_saved_run_no_reversal_or_replacement": true,
+  "operator_coding_rescues": 0,
+  "operator_execution_corrections": [],
+  "operator_reporting_corrections": [
+    "The first post-execution helper incorrectly expected emit_plan result keys status/steps. Reading the pinned tools/code.py showed steps/summary/step_count; the helper now checks that shape, count and documented normalization. The original helper is retained; no input, artifact, model attempt or execution recipe changed."
+  ],
+  "post_execution_audit": {
+    "all_pairing_identities_and_production_mock_wire_serializations_match": true,
+    "all_roles_tool_reply_ID_name_continuity_match": true,
+    "all_tool_schemas_and_configured_wire_options_unchanged": true,
+    "duodoro_head_status_index_refs_unchanged": true,
+    "failed_request": {
+      "configured_context": 16384,
+      "heuristic_prompt_plus_output": 8967,
+      "heuristic_prompt_tokens": 6919,
+      "message_count": 10,
+      "normalized_bytes": 23848,
+      "output_allowance": 2048,
+      "tool_count": 11,
+      "wire_bytes": 22905
+    },
+    "full_archives_regrades_SQLite_restart_criteria_recipe_hashes_unchanged": true,
+    "kind": "offline-post-plan-boundary-audit-NOT-inference",
+    "limits": [
+      "This observed delta does not establish backend tokenization, accepted request semantics or cause.",
+      "Byte-exact MockTransport serialization is offline, not a live failed-request replay.",
+      "No failed response, body-chunk timing or backend logs were collected by this recorder."
+    ],
+    "operator_reporting_corrections": [
+      "The first post-execution helper incorrectly expected emit_plan result keys status/steps. Reading the pinned tools/code.py showed steps/summary/step_count; the helper now checks that shape, count and documented normalization. The original helper is retained; no input, artifact, model attempt or execution recipe changed."
+    ],
+    "owned_API_PIDs_exited_and_listener_model_cleanup_verified": true,
+    "post_plan_delta": {
+      "new_roles": [
+        "assistant",
+        "tool"
+      ],
+      "normalized_byte_increase": 851,
+      "only_new_call_name": "emit_plan",
+      "plan_arguments_result_steps_and_summary_match_pinned_normalization": true,
+      "plan_result_matches_pinned_emit_plan_keys_and_step_count": true,
+      "plan_step_utf8_bytes": [
+        74,
+        105
+      ],
+      "plan_steps": 2,
+      "saved_prompt_estimate_increase": 201,
+      "wire_byte_increase": 740
+    },
+    "raw_input_permissions_private_and_hashes_unchanged": true,
+    "report_audit_recipe_sha256": "e55f8b24aba9c15c7fe39c50e3cd95bffc13822e8c9fbb54bed5569e965009dc",
+    "request_count": 5,
+    "results_sha256": "cc47c1387985c8333d9abb48efa3a9ade658bb5bf4bcb116d43e840f70e6f28e"
+  },
+  "protected_preserved": true,
+  "provider_failure": {
+    "call_observation": {
+      "completion_usage_field": null,
+      "content_empty": null,
+      "duration_ms": 60046.100292005576,
+      "prompt_usage_field": null,
+      "terminal_reason": null,
+      "tool_call_count": null
+    },
+    "http_status": null,
+    "kind": "read_timeout"
+  },
+  "raw_failed_response_and_chunk_timing": "not collected; unknown",
+  "raw_inputs_local_only": true,
+  "request_count": 5,
+  "request_id": "f9d5844ab2054938891d862fa70b12dd",
+  "response_count": 4,
+  "restart_GET_only_JSON_identical": true,
+  "run_id": "bce44b7f286a45cf93dfc70f63042fb3",
+  "runtime_revision": "1a0573e7faa42e045cdd18e108e22d035ecf0e96",
+  "status": "failed",
+  "tool_progress": [
+    {
+      "coverage": "recorded",
+      "events": [
+        {
+          "error_observed": null,
+          "latency_ms": null,
+          "observed_at": "2026-10-23T21:49:04.019129Z",
+          "sequence": 1,
+          "tool": "tree",
+          "type": "tool_start"
+        },
+        {
+          "error_observed": false,
+          "latency_ms": 8.283125042915344,
+          "observed_at": "2026-10-23T21:49:04.031869Z",
+          "sequence": 2,
+          "tool": "tree",
+          "type": "tool_end"
+        },
+        {
+          "error_observed": null,
+          "latency_ms": null,
+          "observed_at": "2026-10-23T21:49:29.658588Z",
+          "sequence": 3,
+          "tool": "read_file",
+          "type": "tool_start"
+        },
+        {
+          "error_observed": false,
+          "latency_ms": 6.333416938781738,
+          "observed_at": "2026-10-23T21:49:29.666161Z",
+          "sequence": 4,
+          "tool": "read_file",
+          "type": "tool_end"
+        },
+        {
+          "error_observed": null,
+          "latency_ms": null,
+          "observed_at": "2026-10-23T21:49:50.829266Z",
+          "sequence": 5,
+          "tool": "emit_plan",
+          "type": "tool_start"
+        },
+        {
+          "error_observed": false,
+          "latency_ms": 1.7714589834213257,
+          "observed_at": "2026-10-23T21:49:50.832081Z",
+          "sequence": 6,
+          "tool": "emit_plan",
+          "type": "tool_end"
+        }
+      ],
+      "events_truncated": false,
+      "observed_events": 6,
+      "read_only": true,
+      "run_id": "bce44b7f286a45cf93dfc70f63042fb3",
+      "scope_note": "Bounded prefix of observed tool-start/end metadata; arguments, results, error text, model messages and tool-call IDs are not stored here. Start precedes tool gates, so it does not prove dispatch or mutation. End/error presence is not patch acceptance or verification. A missing end may mean interrupted work or unsaved evidence; file changes may exist. This is not a transcript, checkpoint, replay, repair, or permission to resume. Unknown tool names are recorded as unknown_tool.",
+      "updated_at": "2026-10-23T21:49:50.832081Z"
+    }
+  ],
+  "usage": null,
+  "verification_status": null
+}

@@ -250,3 +250,10 @@ final-factory scripted CLI/restart/storage/guard preflight at `1a0573e`, plus
 independent exact-freeze review/merge and unchanged launch preconditions precede
 any one-turn diagnostic. Raw input content stays local; no quality or release
 claim follows from preparation.
+
+The [completed one-attempt diagnostic](REQUEST_INPUT_RESULTS.md) retained the
+fifth-call read timeout and rejected unchanged artifact, with five complete private
+input pairs. Exact production mock serialization, stable options/tool continuity
+and a 740-byte post-plan delta do not support unexpected input expansion in this
+attempt. Backend cause and failed usage remain unknown; no runtime remedy or
+release improvement is claimed. Historical freezes/cohorts stay unchanged.
