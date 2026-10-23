@@ -219,3 +219,15 @@ matrices passed 90/90 with contract labels/metric limits inspected. The existing
 Chroma deprecation warning remains. A read-only loader probe of the historical
 blocked preparation found both manifest identities without resource allocation;
 old recipes/stores were not changed or executed. These are mechanics checks.
+
+
+## Transport hypothesis preparation
+
+The [evaluation-only transport protocol](TRANSPORT_PROBE_PROTOCOL.md) proposes a
+bounded buffered/streamed comparison after the observed read timeouts. The
+experimental wrapper is not selected by application settings and does not enable
+a production streaming option. It buffers complete output before tools, records
+numeric timing only and retains unchanged task limits. Synthetic HTTP/API tests
+are mechanics evidence; fresh same-input/client preparation and an independently
+reviewed execution freeze remain prerequisites for inference. Original no-go and
+all cohorts remain unchanged.

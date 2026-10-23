@@ -553,6 +553,22 @@ rescue or execution correction. Observation coverage is established for these
 selected attempts, not a remedy, causal quality gain or release readiness.
 Original cohorts/failed preparation, no-go and G2–G5 remain unchanged.
 
+**2026-10-23 UTC — Evaluation-only transport hypothesis prepared:** the
+[protocol](evals/projects/duodoro/TRANSPORT_PROBE_PROTOCOL.md) proposes four fixed
+T09 CLI attempts (buffered, streamed, streamed, buffered) at a common literal
+root under unchanged task limits. A bounded experimental transport keeps the
+production adapter/normalizer, changes only the wire stream flag plus required
+stream assembly, withholds partial output until valid terminal/body completion,
+and records numeric body-chunk timing outside model context. Synthetic loopback
+checks demonstrate read-inactivity semantics, not the cause of prior timeouts or
+a remedy. No application option/default, prompt, retry or budget changed; no
+inference ran. Fresh actual client preflight, same-input/wire checks, exact G0 and
+an independently reviewed execution freeze remain required. Original cohorts,
+no-go and G2–G5 stay unchanged; this experiment is not shipped product behavior.
+Validation: 22 new/62 focused and 1,437 offline tests passed (five live deselected
+in the full gate), Ruff/format/mypy and both 90/90 scripted matrices passed with
+contract labels/limits inspected. The existing Chroma warning remains.
+
 ## Direction
 
 Build a coding harness Jorge can use on real repositories with affordable hosted models and locally runnable models that struggle with coding-agent workflows. The harness should help those models inspect the right code, make focused edits, recover from errors, and verify their work within an explicit budget.
