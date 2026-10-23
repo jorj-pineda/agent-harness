@@ -15,6 +15,25 @@ explicit narrower-envelope proposal with independent acceptance; the completed
 cohort is not a retry queue. Preparation, results and disposition are complete;
 no additional inference, default/limit change or release approval follows.
 
+**2026-10-23 — One request-input diagnostic complete:** the
+[results](evals/projects/duodoro/REQUEST_INPUT_RESULTS.md) retain one original T09
+CLI attempt at `1a0573e`: **0/1 accepted, 0/1 completed-and-accepted**, fifth-call
+read timeout and no edits. All five private normalized/wire pairs match saved
+request evidence and offline production MockTransport serialization. After the
+plan, the exact prefix gains two messages, 740 wire bytes and 201 estimated tokens;
+options/tool schemas and tool-reply continuity stay unchanged. The failed input's
+6,919-token heuristic plus 2,048 output remains below configured 16,384 context,
+without attesting backend tokenization/compliance or ruling out all malformed
+semantics. This observed boundary does not support unexpected expansion/option
+drift; backend cause and aggregate usage remain unknown. No chunk timing was
+collected by this recorder. External regrades, private-input hashes/permissions,
+full preservation, SQLite/restart and cleanup audits passed; both APIs exited,
+model unloaded and Duodoro head/status/index/refs stayed unchanged. One reporting
+helper's wrong plan-result shape was corrected against pinned source without any
+input/artifact/model change. The recording gap is closed for this failure, not
+the timeout. No replay, replacement, remedy/default/limit change, quality gain or
+G2–G5/release closure; original cohorts/no-go remain unchanged.
+
 **2026-10-23 — Actual one-attempt input freeze prepared, unrun:** the
 [freeze](evals/projects/duodoro/REQUEST_INPUT_FREEZE.md) pins fresh original T09
 inputs/stores at `1a0573e`, original criteria/limits, first normalized/wire guards,

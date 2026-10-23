@@ -1,6 +1,12 @@
 # One-attempt request-input execution freeze
 
-**Unrun; independent exact-freeze review and merge are required before inference.**
+**Subsequently executed after independent review and PR #190's merge:** the
+[results](REQUEST_INPUT_RESULTS.md) retain the one fifth-call read timeout,
+rejected unchanged artifact and five complete input pairs. The observed plan
+boundary matches production serialization; backend cause remains unknown.
+Preparation claims below are historical; the committed manifest stays unchanged.
+
+**Status at preparation: unrun, requiring independent exact-freeze review and merge.**
 This freezes the [post-plan input protocol](REQUEST_INPUT_PROTOCOL.md), after
 PR #189's reviewed recorder implementation merged. The completed transport cohort
 and every historical outcome remain unchanged; this is a separate diagnostic.
