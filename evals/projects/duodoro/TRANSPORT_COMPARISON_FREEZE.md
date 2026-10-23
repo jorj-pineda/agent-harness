@@ -1,6 +1,11 @@
 # Buffered/streamed comparison execution freeze
 
-**Unrun; independent exact-freeze review and merge are required before inference.**
+**Subsequently executed after independent re-review and PR #186's merge:** the
+[results](TRANSPORT_COMPARISON_RESULTS.md) retain all four read-timeout outcomes:
+buffered 0/2 and streamed 0/2 accepted, with no edits. Preparation claims below
+are historical; the committed manifest remains unchanged.
+
+**Status at preparation: unrun, requiring independent exact-freeze review and merge.**
 This freezes the four-cell experiment proposed in the reviewed
 [transport protocol](TRANSPORT_PROBE_PROTOCOL.md). It does not ship streaming in
 an application client or change the current release no-go.
