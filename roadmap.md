@@ -516,6 +516,18 @@ remains unloaded. No repair or hidden retry. A separate corrected source-factory
 preflight and fresh reviewed freeze are required before future inference; this
 setup failure does not change original coding counts/no-go or close G2–G5.
 
+**2026-10-22 UTC — Provider source-launch correction:** an evaluation-only
+launcher now loads augmented rows from the execution manifest and validates both
+capture identities plus selected paths/settings before component allocation.
+Source and review share that actual factory; offline regressions exercise raw/
+missing/malformed evidence, startup/cleanup without dispatch, first-input drift,
+real file submission and identical restart review. Application runtime, prompts,
+limits and old frozen artifacts stay unchanged. This fixes a reproduced setup
+blocker, not model quality. Validation: 18 new/32 focused and 1,415 offline
+tests (five live deselected), Ruff/format/mypy and both 90/90 scripted matrices
+passed with contract labels/limits inspected. Fresh client preflight and
+independently reviewed inputs remain required before inference. Original counts/no-go/G2–G5 stay unchanged.
+
 ## Direction
 
 Build a coding harness Jorge can use on real repositories with affordable hosted models and locally runnable models that struggle with coding-agent workflows. The harness should help those models inspect the right code, make focused edits, recover from errors, and verify their work within an explicit budget.
