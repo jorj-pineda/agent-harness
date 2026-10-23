@@ -270,5 +270,10 @@ and an independently reviewed freeze remain required; no inference ran here.
 
 The [provider-timeout execution freeze](PROVIDER_WAIT_FREEZE.md) pins four fresh
 original-T09 CLI cells (60/180/180/60), unchanged five-minute task limits and
-completed offline/client preflight. It remains unrun pending independent review
-and merge; no model-quality or release-gate claim follows from preparation.
+completed offline/client preflight. The immutable preparation manifest records its
+unrun state before independent review and merge; subsequent results are separate.
+
+The [completed provider-timeout comparison](PROVIDER_WAIT_RESULTS.md) records
+0/2 accepted at 60 seconds and 2/2 completed-and-accepted at 180 seconds on original
+T09, within unchanged task budgets. These selected public-task results do not
+promote a production default or close release gates.
