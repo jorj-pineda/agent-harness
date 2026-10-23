@@ -1,8 +1,19 @@
 # Roadmap: a coding harness for lower-tier models
 
-Updated: 2026-10-21
+Updated: 2026-10-23
 
 ## Current release decision
+
+**2026-10-23 disposition:** the [current gate summary](RELEASE_READINESS.md#current-disposition--2026-10-23)
+retains no-go and closes the transport experiment without application promotion.
+Original T09 produced buffered 0/2 and streamed 0/2 accepted artifacts; valid early
+streamed responses did not prevent zero-chunk fifth-call timeouts. Backend cause
+remains unknown. Keep the wrapper as evaluation-only reproduction evidence and
+feature batches frozen. No smaller unattended envelope or G2–G5 closure is
+established. Further work needs a specific retained-failure hypothesis or an
+explicit narrower-envelope proposal with independent acceptance; the completed
+cohort is not a retry queue. Preparation, results and disposition are complete;
+no additional inference, default/limit change or release approval follows.
 
 The [release-readiness audit](RELEASE_READINESS.md) defines the release gates.
 The reviewed, frozen [ten-task Duodoro client trial](evals/projects/duodoro/TRIAL_RESULTS.md)

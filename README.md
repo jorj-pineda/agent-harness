@@ -21,7 +21,11 @@ read-only by default. Cancellation waits for owned cleanup; guarded continuation
 checks scoped evidence and cannot certify all external/dependency state.
 
 For the current go/no-go assessment, start with the
-[release-readiness audit](RELEASE_READINESS.md). The frozen ten-task trial produced
+[current release disposition and remaining gates](RELEASE_READINESS.md#current-disposition--2026-10-23).
+The completed [transport comparison](evals/projects/duodoro/TRANSPORT_COMPARISON_RESULTS.md)
+accepted 0/2 buffered and 0/2 streamed T09 artifacts; every attempt timed out before
+edits. Streaming stays evaluation-only, with no application default change or
+established narrower unattended envelope. Backend cause remains unknown. The frozen ten-task trial produced
 2/10 accepted artifacts and 1/10 completed-and-accepted: a no-go for its unattended
 task envelope. The selected [same-root read-batching comparison](evals/projects/duodoro/BATCH_READ_RESULTS.md)
 also completed no workflows (0/2 per arm); the batching hint never activated in
