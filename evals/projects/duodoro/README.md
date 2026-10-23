@@ -243,3 +243,10 @@ a production setting or a replay permission. The proposed next slice is one fres
 original T09 buffered CLI attempt at unchanged limits after actual-client preflight,
 pinned G0 and independent execution-freeze review. No inference ran during this
 implementation; the old cohort, no-go and G2–G5 remain unchanged.
+
+The [actual one-attempt freeze](REQUEST_INPUT_FREEZE.md) pins fresh roots and the
+final-factory scripted CLI/restart/storage/guard preflight at `1a0573e`, plus
+116 focused/1,453 offline/static checks and both scripted matrices. It is unrun:
+independent exact-freeze review/merge and unchanged launch preconditions precede
+any one-turn diagnostic. Raw input content stays local; no quality or release
+claim follows from preparation.
