@@ -564,6 +564,11 @@ preflight APIs plus the partial-stream API stopped; no inference ran. Exact G0
 passed 100 focused/1,437 offline tests (five live deselected), Ruff/format/mypy and
 both scripted 90/90 matrices with labels/limits inspected. Actual roots, managed
 model/environment, full prepared trees and local recipes/evidence are hashed.
+The first independent review caught a permissive missing-evidence audit gate;
+its pre-inference revision now blocks absent first identities/wire, truncated
+request evidence and empty/mismatched transport coverage before staging permission.
+Seven negative regressions preserve the workspace and matching evidence still
+passes; the original reviewed manifest/recipe remain retained.
 Independent exact-freeze review/merge remains required before four one-turn
 attempts. Changed state blocks replay/staging; all artifacts must be archived,
 regraded and reviewed before replacing the owned common path. This is preparation,

@@ -549,6 +549,7 @@
     "capture/S2/transport.jsonl": "5fe25075466beae4e4be7f3aaf4bc4e6011627a729b755e0fdd8ed0dc8c49101",
     "duodoro-before.json": "c5a027a782b95dc1ac21a3ea41a10bb0749a7d5d97a4ce8a9f4aacba5aca414d",
     "environment.json": "cad6ec20fe905819d80c20f1de7643ab0e481c9a38d1e4ed877b42f3c3660d56",
+    "evidence-guard-check.json": "ade0a5154c8d38492cf894d7fcde159eabcf85db2cd0d02fc678b61b072105d6",
     "g0-coding.log": "5b6171fdf5d869c01e824701f999fb792987b2597685457836a7fff4f3fcd1f9",
     "g0-coding.md": "267c18c8384f9b74faa3090ed601aed0c0d6820191e71582fa20e93551fab3ce",
     "g0-focused.log": "75ac9ac67d99ea88b2e77c17d462de5b3354655c1397bb5b24d7ae8902a4c1e9",
@@ -633,13 +634,16 @@
     "preflight/outcomes/S2/source-server.log": "e08db638d2b9759e124245bab26025dad9d16028bdcf87de38e0f4951410ba96",
     "preflight/outcomes/S2/source/http.jsonl": "c5fecf1c289df87ef943b1fdb39b689bdcec7fe2542da84945eb3efe70c63644",
     "protocol.md": "a90e9532a4d8ea497a8f54d05b6f466ef43716bf27ea8f5763c57fdc8241cb18",
-    "recipe-check.json": "a19d327fae6394b0a04b8a1f54597fc1a2ec50853850569f2306991f12bb5e98"
+    "recipe-check.json": "a19d327fae6394b0a04b8a1f54597fc1a2ec50853850569f2306991f12bb5e98",
+    "review-r1/audit.py": "b3ef2239da7bad6c2976c9ae3e3e92189073397947fd104fd572c260a5f12f1a",
+    "review-r1/manifest.json": "e7ace4ed2f092cd2bb60dba81b681fb862e06e20eb694da583f1d8765398afaf"
   },
   "local_recipes_sha256": {
-    "audit.py": "b3ef2239da7bad6c2976c9ae3e3e92189073397947fd104fd572c260a5f12f1a",
+    "audit.py": "b632f313b8d17e858a2c14fb8aefac7ce053351b463daa76083c9c2338252bf3",
     "capture.py": "9d399abb3316a46a3dcfd93e83b2df1ac1f3f156b577bc1633968b640606d87e",
     "common.py": "5c9d70a789f298083f7cc0dc2c3124f107c5748d7451d86e7ca5c62255a044c8",
     "comparison_app.py": "a449f736ebb385ae278f97eeaa854123bae4c195b66b1fe5eb4351aa12c41a82",
+    "evidence-guard-check.py": "e0dca5ea48f14c0c494d069ec2c54167d51266cf79e04a172c86a613f6a292e9",
     "execution.py": "a4729e0957b62a2d75e4a96f661de21b51b4aa0679469e766647bb92f1b7729d",
     "finalize.py": "d0880c4576dc2721433699ef679a9a6e5e8618426d83286fefbc2aff9e16a1b1",
     "g0.py": "f6dfd11ca3eeffdc8de12d3b0915c30e4a874a1e0d39fe851f8536067e281de2",
@@ -649,6 +653,7 @@
     "preflight.py": "af849e76e051aee4dd713ca160726e66e6b10af3c32f7d386080458d8b94a81a",
     "preparation.py": "1f5cd794d6aa317a9251d655bfbc419aa4c96b5cd0e6743af13d8ffbf84faa37",
     "recipe-check.py": "d667f44728b256e7a4acc9295725320545b364f91bdb4769fcd31c47daf1de25",
+    "revise-freeze.py": "038472bacf339a116247d16a45be8ef12de75b10dc5717f6305bc93c725fb199",
     "server.py": "dbfa05e6f22df0869f182c25155b1db938ca8c98abdbb29234d157ccb570f973",
     "stage.py": "3e2dda9cefdf1a066b0be6eb048c6b970ad599e3b79d3455719c36c6d4b58cfc"
   },
@@ -689,6 +694,7 @@
   "model_unloaded": true,
   "preflight": {
     "four_actual_cli_scripted_real_tool_cells": "passed",
+    "incomplete_evidence_rejected_before_staging_permission": 7,
     "matching_unchanged_forwarding": true,
     "normalized_no_forward_mismatches": 16,
     "partial_stream_actual_cli_withheld_write": true,
@@ -701,6 +707,17 @@
   ],
   "prepared_at_utc": "2026-10-23T04:42:56.474859+00:00",
   "protocol_sha256": "a90e9532a4d8ea497a8f54d05b6f466ef43716bf27ea8f5763c57fdc8241cb18",
+  "review_revisions": [
+    {
+      "at_utc": "2026-10-23T04:47:49.495203+00:00",
+      "correction": "Require nonempty matching first identities/wire, untruncated request prefix, and nonempty one-per-request transport journal before audit_complete.",
+      "finding": "Audit recorded missing first identity/wire/transport coverage but still granted staging permission.",
+      "inputs_runtime_criteria_budgets_and_scheduled_state_unchanged": true,
+      "previous_manifest_sha256": "e7ace4ed2f092cd2bb60dba81b681fb862e06e20eb694da583f1d8765398afaf",
+      "reviewed_head": "f74094a42a140b1bbfc8fd95b0089b6d61be68d6",
+      "validation": "Seven missing/truncated/empty/short/extra evidence cases stop without granting audit permission; matching evidence passes; workspace preserved."
+    }
+  ],
   "review_status": "requires-independent-review-and-merge",
   "reviewed_source_sha256": {
     "api/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",

@@ -72,6 +72,21 @@ These are contract/preparation checks, not inference or a coding-quality result.
 One inspection used an unavailable bare `python`; it was repeated with the managed
 interpreter. No task, model attempt or acceptance criterion was changed.
 
+## Pre-inference review correction
+
+Luna's first review found that the retained audit merely recorded absent identity/
+wire evidence and transport-count disagreement, then still granted staging
+permission. Before any inference, the revised audit now requires a matching first
+normalized identity, first-wire record, untruncated request prefix and nonempty
+one-per-request transport journal. Missing evidence stops the batch with artifacts
+retained; it cannot grant permission to replace the common workspace. Seven
+missing/truncated/empty/short/extra evidence regressions reject without an audit
+permission record, preserve the workspace and leave matching evidence passing.
+The original reviewed manifest and audit recipe remain under `review-r1/`; this
+explicit revision changes only the audit gate and regression evidence. Scheduled
+inputs, stores, runtime, criteria and budgets are unchanged. Independent review of
+the revised exact freeze remains required.
+
 ## Launch, staging and retention
 
 The retained `execution.py` requires PR #186 merged and exact local/committed
