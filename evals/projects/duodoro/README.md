@@ -187,3 +187,35 @@ bound the five read-timeout observations, reproduce T05's missing-usage stop and
 T06's unsafe-integer defect without inference or artifact repair. Original evidence,
 criteria, counts and no-go remain unchanged. Missing backend/wire evidence limits
 root-cause attribution; no larger timeout/budget or new trial follows automatically.
+
+## Provider diagnostic source launcher
+
+The evaluation-only `provider_probe` module corrects the startup blocker recorded
+in [the failed preparation](PROVIDER_DIAGNOSTIC_RESULTS.md). It loads augmented
+rows from `provider-diagnostic-freeze.json`, never raw `tasks.json`, and validates
+identity, paths, settings hash and selected configuration before resource allocation.
+Both source and review use this loader and the same application component factory;
+review rejects inference and source guards the first normalized request unchanged.
+The factory's injected component-builder seam supports offline preflight with fake
+providers and real API lifecycles; it does not change production harness behavior.
+
+Only after a fresh execution freeze is independently reviewed and merged:
+
+```sh
+uv run python -m evals.projects.duodoro.provider_probe \
+  --root /absolute/path/to/fresh-reviewed-probe --task T05 --phase source
+```
+
+This trusted-operator launcher is not a general evaluation framework, an isolation
+boundary, a complete pre-dispatch audit or permission to rerun the old freeze.
+Retain the separate hash/model/environment/one-turn launch checks, actual CLI
+preflight and unchanged acceptance/budgets. Fresh preparation and live evidence
+remain required; no inference or model-quality improvement is established here.
+
+Correction validation: 18 new source-factory/guard regressions passed, with 32
+focused including existing API/CLI observation tests. The full gate passed 1,415
+offline tests (five live deselected), Ruff, formatting and mypy. Both scripted
+matrices passed 90/90 with contract labels/metric limits inspected. The existing
+Chroma deprecation warning remains. A read-only loader probe of the historical
+blocked preparation found both manifest identities without resource allocation;
+old recipes/stores were not changed or executed. These are mechanics checks.
