@@ -1,8 +1,9 @@
 # Duodoro real-project validation
 
-Latest offline follow-up: [retained truncation diagnosis](TRUNCATION_DIAGNOSIS.md).
-Recorded-response replays explain three stops without new inference or changing
-the failed cohort, settings, acceptance criteria or release no-go.
+Latest offline follow-ups: [retained truncation diagnosis](TRUNCATION_DIAGNOSIS.md)
+and [parser preservation counterexamples](PARSER_PRESERVATION_DIAGNOSIS.md).
+Recorded-response replays and unchanged-artifact probes explain failures without
+new inference or changing the cohort, settings, acceptance criteria or release no-go.
 
 Jorge authorized the local Duodoro repository. Pin the inspected source at
 `5324cabba4ad3c8ad2e1cd1480218cf087d9b741`; do not edit its working checkout,
