@@ -4,6 +4,17 @@ Updated: 2026-10-23
 
 ## Current release decision
 
+**2026-10-24 UTC — Three truncation stops reproduced offline:** the
+[diagnosis](evals/projects/duodoro/TRUNCATION_DIAGNOSIS.md) matches all sixteen
+normalized requests/allowances, 32 budget events and final histories at `e2a0d46`
+with recorded responses/canned tools. T05/T06/T10 each report terminal `length`
+and 2,048 final output tokens at their 2,048 request cap; the loop retains
+incomplete without retry. T06's invalid edit precedes its later truncation.
+All 360 outcome hashes and read-only databases remain unchanged. Three focused
+existing regressions passed; no inference, repair, runtime/limit change or
+model-quality claim. Larger caps are not a proven remedy; original counts,
+no-go/feature freeze and G2–G5 remain unchanged.
+
 **2026-10-23 disposition:** the [current gate summary](RELEASE_READINESS.md#current-disposition--2026-10-23)
 retains no-go and closes the transport experiment without application promotion.
 Original T09 produced buffered 0/2 and streamed 0/2 accepted artifacts; valid early
