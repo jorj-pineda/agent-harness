@@ -16,6 +16,21 @@ cohort is not a retry queue. That transport experiment’s preparation, results 
 disposition are complete; no additional inference, default/limit change or release
 approval follows from that closed experiment.
 
+**2026-10-23 — Ten-task provider-timeout follow-up complete:** the
+[results](evals/projects/duodoro/PROVIDER_WAIT_TEN_TASK_RESULTS.md) retain all ten
+original tasks and eleven coding runs at `e2a0d46`: **2/10 accepted artifacts,
+2/10 completed-and-accepted, 2/10 accepted with known reported usage within
+nominal budgets**. Four task totals are unknown. Dispatch stops, truncated
+responses, missing usage and incorrect artifacts remain; T08 passed its visible
+check but failed independent parser preservation/source review. T03 cancelled
+before edit and its fork made no patch; T05's unchanged target reversal returned
+409 with no saved action, while the later sentinel survived. All 62 input pairs,
+external regrades, full archives and saved reviews matched; 22 owned APIs stopped,
+Gemma unloaded, tab closed and Duodoro Git fingerprints preserved. The 8/10 target
+was missed again. Retain no-go/feature freeze and G2–G5; no production timeout
+adoption or general/causal gain follows. Earlier cohorts and selected T09 results
+remain separate and unchanged. This cohort is closed, not a replacement queue.
+
 **2026-10-23 — Actual ten-task provider-timeout freeze prepared, unrun:** the
 [freeze](evals/projects/duodoro/PROVIDER_WAIT_TEN_EXECUTION_FREEZE.md) pins fresh
 original-task roots/clients at `e2a0d46`, provider 180 and unchanged 300/150-second
