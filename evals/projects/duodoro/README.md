@@ -1,5 +1,10 @@
 # Duodoro real-project validation
 
+Next bounded investigation: [parser edit-preset protocol](PARSER_EDIT_PROTOCOL.md)
+and [unrun plan](parser-edit-plan.json). Existing full/whole-file presets will be
+compared on T02/T08 under fixed budgets; actual execution preparation and independent
+freeze review remain required. No inference or release/default change in that slice.
+
 Latest offline follow-ups: [retained truncation diagnosis](TRUNCATION_DIAGNOSIS.md)
 and [parser preservation counterexamples](PARSER_PRESERVATION_DIAGNOSIS.md), plus
 [T07 missing-usage stop](MISSING_USAGE_STOP_DIAGNOSIS.md), complete the three investigations.
