@@ -2224,3 +2224,35 @@ remain unchanged. Preparation's 78 focused/1,415 offline/static and both 90/90
 scripted matrices remain historical mechanics evidence. These selected attempts
 validate observed diagnostic coverage, not a remedy or held-out/causal improvement;
 retain no-go and open G2–G5.
+
+## 2026-10-24 — Frozen parser edit-preset comparison
+
+[Results](projects/duodoro/PARSER_EDIT_RESULTS.md) and
+[structured evidence](results/2026-10-24-duodoro-parser-edit-comparison.json) retain
+all eight actual CLI cells at frozen `9f97655`: full 2/4 artifacts and
+completed-and-accepted, whole-file 0/4. Both full T08 refactors used two successful
+exact edits, passed independent behavior/source review and preserved unrelated
+parser behavior. Both whole-file T08 artifacts completed/passed visible checks
+but changed the intention whitespace regex and failed independent acceptance.
+T02 failed in both arms: full rejected edits then token prevention; whole-file
+missing reported usage. Those two aggregate usage totals remain unknown.
+
+All 54 input pairs match saved identities/allowances and offline production
+MockTransport serialization. Post-execution regrades, full archives, SQLite/native
+GET/archived responses, protected files/modes, source reviews and 228 outcome hashes
+pass audit; all sixteen owned APIs exited and Gemma is unloaded. Duodoro Git
+fingerprints and immutable preparation evidence match. Reporting-only archive-
+wrapper and parent-PATH corrections are retained; final extra regrades use pinned
+Node bytes. Original coding/grades already used the managed environment. No model
+input/artifact/coding attempt was repaired or repeated for reporting.
+
+Only existing preset plus its necessary instruction differs; CLI is held constant
+in both arms rather than reproducing original panel workflows. Same-task/preset
+diffs and known token totals match across repeats at temperature zero; variation
+is limited. This selected public-task observation supports the bounded refactor
+mechanism, not a general/causal/held-out/two-model gain or a new supported envelope.
+Historical formatter observations favoring whole-file remain separate. Original
+cohort counts, 8/10 target, no-go/feature freeze, defaults and G2–G5 stay unchanged.
+No paid/additional model, Duodoro edit/push, dependency install or Docker action.
+The report uses frozen G0 (116 focused/1,453 offline, static and both scripted90/90)
+plus new outcome audits; it does not claim those mechanics tests as model successes.

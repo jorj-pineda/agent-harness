@@ -11,6 +11,17 @@ workflow are still unproven. PR/test counts are not a release-completion percent
 
 ## Current disposition — 2026-10-23
 
+**2026-10-24 selected-task follow-up:** the
+[parser edit-preset comparison](evals/projects/duodoro/PARSER_EDIT_RESULTS.md)
+completed all eight frozen CLI cells at `9f97655`: full 2/4 accepted completions,
+whole-file 0/4. Both successes are T08 refactors with actual exact edits and passed
+independent source review; both whole-file refactors regress another parser despite
+visible passes. T02 fails in both presets. Final evidence/cleanup audits pass, but
+these two selected public tasks and low-variation repeats establish no broader
+envelope, causal/held-out/two-model gain or gate closure. This comparison is closed;
+the original 8/10 target, ten-task counts, no-go/feature freeze, defaults and G2–G5
+remain unchanged. No further inference or release approval follows.
+
 **Retain no-go for unattended coding under the agreed ten-task envelope.** The
 [ten-task provider-timeout follow-up](evals/projects/duodoro/PROVIDER_WAIT_TEN_TASK_RESULTS.md)
 ran every original task at frozen `e2a0d46`, with provider timeout 180 and unchanged

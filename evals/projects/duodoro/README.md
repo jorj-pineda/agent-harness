@@ -1,13 +1,20 @@
 # Duodoro real-project validation
 
-Next bounded investigation: [parser edit-preset protocol](PARSER_EDIT_PROTOCOL.md)
-and [unrun plan](parser-edit-plan.json). Existing full/whole-file presets will be
-compared on T02/T08 under fixed budgets; actual execution preparation and independent
-freeze review remain required. No inference or release/default change in that slice.
+The [parser edit-preset comparison results](PARSER_EDIT_RESULTS.md) complete that
+finite eight-cell investigation: full 2/4 accepted completions, whole-file 0/4,
+with success limited to the selected refactor. T02 failed in both arms. Original
+cohorts, release no-go, criteria and production defaults stay unchanged.
 
-Actual setup is now pinned in the [unrun execution freeze](PARSER_EDIT_EXECUTION_FREEZE.md)
-and [manifest](parser-edit-execution-freeze.json). Scripted client preflight and exact
-G0 passed; independent exact-freeze review/merge still precedes model execution.
+Historical preparation for that completed comparison remains in the
+[protocol](PARSER_EDIT_PROTOCOL.md) and [original unrun plan](parser-edit-plan.json).
+They fixed the full/whole-file T02/T08 comparison before inference; the preparation
+records retain their original status rather than being rewritten with outcomes.
+
+The [execution freeze](PARSER_EDIT_EXECUTION_FREEZE.md) and
+[manifest](parser-edit-execution-freeze.json) likewise retain the setup as reviewed
+before execution. Scripted client preflight, exact G0 and independent freeze
+review/merge preceded all eight live cells. Current outcomes are in the results
+above; these historical preparation records authorize no additional runs.
 
 Latest offline follow-ups: [retained truncation diagnosis](TRUNCATION_DIAGNOSIS.md)
 and [parser preservation counterexamples](PARSER_PRESERVATION_DIAGNOSIS.md), plus
