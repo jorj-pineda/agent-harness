@@ -4,6 +4,16 @@ Updated: 2026-10-23
 
 ## Current release decision
 
+**2026-10-24 UTC — Unrelated parser regressions reproduced:** fresh unchanged
+T02/T08 artifact copies pass their frozen visible checks but fail external
+acceptance/regrade. [Three counterexamples per artifact](evals/projects/duodoro/PARSER_PRESERVATION_DIAGNOSIS.md)
+expose the whitespace regex changed to match literal backslash-s sequences.
+T02's original not-run check remains not-run; T08's original failed independent
+source review remains failed. Full copied trees/modes and all 360 outcome hashes
+are preserved; 28 criterion regressions passed. No repair, inference, criterion
+or runtime change, semantic-success claim or proven remedy. Original counts,
+feature freeze/no-go and G2–G5 stay unchanged.
+
 **2026-10-24 UTC — Three truncation stops reproduced offline:** the
 [diagnosis](evals/projects/duodoro/TRUNCATION_DIAGNOSIS.md) matches all sixteen
 normalized requests/allowances, 32 budget events and final histories at `e2a0d46`
