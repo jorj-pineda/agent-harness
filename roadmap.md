@@ -4,6 +4,18 @@ Updated: 2026-10-24
 
 ## Current release decision
 
+**2026-10-24 — Actual parser edit-preset inputs frozen, unrun:** the
+[execution freeze](evals/projects/duodoro/PARSER_EDIT_EXECUTION_FREEZE.md) pins eight
+fresh T02/T08 CLI cells at `9f97655`, one literal workspace, unchanged original
+criteria/budgets and exact intended full/whole_file input contrast. Final scripted
+CLI edits/checks/grades and default/guarded GET restart pass; forty input pairs
+match offline serialization. Missing input/review evidence blocks staging. G0
+passes 116 focused/1,453 offline, static and both 90/90 scripted matrices with
+labels/limits inspected. All 48 initial/final preflight APIs exited; model unloaded.
+Preparation refinements/reporting corrections are retained. No inference; exact
+independent freeze review/merge and unchanged launch gates remain. Original
+counts, no-go/8of10 target, production defaults and G2–G5 remain unchanged.
+
 **2026-10-24 — Bounded parser edit-preset comparison prepared, unrun:** the
 [protocol](evals/projects/duodoro/PARSER_EDIT_PROTOCOL.md) compares existing
 full/whole_file compact presets on original T02/T08 requests and criteria, two

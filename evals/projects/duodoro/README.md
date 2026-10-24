@@ -5,6 +5,10 @@ and [unrun plan](parser-edit-plan.json). Existing full/whole-file presets will b
 compared on T02/T08 under fixed budgets; actual execution preparation and independent
 freeze review remain required. No inference or release/default change in that slice.
 
+Actual setup is now pinned in the [unrun execution freeze](PARSER_EDIT_EXECUTION_FREEZE.md)
+and [manifest](parser-edit-execution-freeze.json). Scripted client preflight and exact
+G0 passed; independent exact-freeze review/merge still precedes model execution.
+
 Latest offline follow-ups: [retained truncation diagnosis](TRUNCATION_DIAGNOSIS.md)
 and [parser preservation counterexamples](PARSER_PRESERVATION_DIAGNOSIS.md), plus
 [T07 missing-usage stop](MISSING_USAGE_STOP_DIAGNOSIS.md), complete the three investigations.
