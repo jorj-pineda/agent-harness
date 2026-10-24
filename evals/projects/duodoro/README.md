@@ -1,5 +1,10 @@
 # Duodoro real-project validation
 
+The [parser edit-preset comparison results](PARSER_EDIT_RESULTS.md) complete that
+finite eight-cell investigation: full 2/4 accepted completions, whole-file 0/4,
+with success limited to the selected refactor. T02 failed in both arms. Original
+cohorts, release no-go, criteria and production defaults stay unchanged.
+
 Next bounded investigation: [parser edit-preset protocol](PARSER_EDIT_PROTOCOL.md)
 and [unrun plan](parser-edit-plan.json). Existing full/whole-file presets will be
 compared on T02/T08 under fixed budgets; actual execution preparation and independent

@@ -4,6 +4,21 @@ Updated: 2026-10-24
 
 ## Current release decision
 
+**2026-10-24 — Frozen parser edit-preset comparison complete:** all eight
+[cells](evals/projects/duodoro/PARSER_EDIT_RESULTS.md) ran once at `9f97655`:
+full **2/4 accepted and completed-and-accepted**, whole_file **0/4**. Both full
+T08 refactors applied two exact edits, passed checks/external regrades/source
+review and preserved other parsers. Both whole-file T08 runs completed/passed
+but regressed intention whitespace normalization. T02 failed in both presets:
+whole-file missing usage, full rejected edits then token stop. Two totals stay
+unknown. All 54 input pairs, archives/records, source reviews and 228 outcome
+hashes passed final audit; sixteen APIs exited, Gemma unloaded and Duodoro Git
+fingerprints preserved. Reporting-only shape/PATH corrections are retained;
+no model input, patch, coding attempt or frozen recipe changed. Selected refactor
+activation supports only this bounded observation, not a general/causal/held-out
+gain. Original cohorts, 8/10 target, no-go/feature freeze, defaults and G2–G5 remain
+unchanged. The finite comparison is complete; no additional inference is implied.
+
 **2026-10-24 — Actual parser edit-preset inputs frozen, unrun:** the
 [execution freeze](evals/projects/duodoro/PARSER_EDIT_EXECUTION_FREEZE.md) pins eight
 fresh T02/T08 CLI cells at `9f97655`, one literal workspace, unchanged original
