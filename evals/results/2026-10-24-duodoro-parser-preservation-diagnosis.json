@@ -1,0 +1,210 @@
+{
+  "kind": "offline-unchanged-artifact-parser-preservation-counterexamples",
+  "inference": false,
+  "runtime_revision": "e2a0d46c3c014cf4dcaea33889929926e47875a7",
+  "source_results_sha256": "9c22f0f41b1140d880f61cf4659248c4067f8644b1477b32a062f7269d9ade8f",
+  "local_root": "/Users/jorge/.local/share/agent-harness/trials/duodoro-retained-failures-k5qia1i5",
+  "recipe_sha256": "a7967b43d3fd359b0882bba60e536f54fb45b2028ffe76f4ce895dfa602aea75",
+  "node_binary_sha256": "b468fb9c67427c9d3aec07ee1105e63020923a631a9a2a00beb71a7ba3768bfd",
+  "node_version": "v24.22.0",
+  "tasks": [
+    {
+      "task": "T02",
+      "original_completion": "budget_exhausted",
+      "original_observed_check": "not_run",
+      "offline_visible_exit_code": 0,
+      "offline_visible_argv": [
+        "/Users/jorge/Projects/agent-harness/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "test_visible.py"
+      ],
+      "offline_acceptance_and_regrade_exit_codes": [
+        1,
+        1
+      ],
+      "counterexamples": [
+        {
+          "label": "spaces",
+          "expected": {
+            "ok": true,
+            "value": {
+              "sessionId": "room",
+              "text": "work well"
+            }
+          },
+          "actual": {
+            "ok": true,
+            "value": {
+              "sessionId": "room",
+              "text": "work   well"
+            }
+          }
+        },
+        {
+          "label": "tabs_newlines",
+          "expected": {
+            "ok": true,
+            "value": {
+              "sessionId": "room",
+              "text": "work well"
+            }
+          },
+          "actual": {
+            "ok": true,
+            "value": {
+              "sessionId": "room",
+              "text": "work\t\nwell"
+            }
+          }
+        },
+        {
+          "label": "literal_backslash_s",
+          "expected": {
+            "ok": true,
+            "value": {
+              "sessionId": "room",
+              "text": "work\\swell"
+            }
+          },
+          "actual": {
+            "ok": true,
+            "value": {
+              "sessionId": "room",
+              "text": "work well"
+            }
+          }
+        }
+      ],
+      "local_copy": "/Users/jorge/.local/share/agent-harness/trials/duodoro-retained-failures-k5qia1i5/T02-unchanged-copy",
+      "full_tree_equal_before_after": true,
+      "full_tree_file_and_directory_entries": 454,
+      "source_evidence_files_unchanged": 360,
+      "artifact_repair": false,
+      "criterion_changes": false,
+      "visible_log_sha256": "3605abb09038ce24e90d81df8f7c0d87bb6f647a5e016bf461d8a8fcb408f6e9",
+      "grades_sha256": "18a4fe00c082a1c9ba8b2f7473b54b27159b06a475733e6fbd08252592b171ad",
+      "source_hashes": {
+        "tasks/T02/audits/source/saved-run.json": "759d53eff4bdd1b8f2317377ff8fc7ed7852cf280dc4f08be47fce4f14d67d15",
+        "tasks/T02/audits/source/diff.txt": "31c49758eae5b64474704f9837a1c27ded4facf06a8ce91b7a6cd490662ec232",
+        "tasks/T02/prepared/acceptance/test_acceptance.py": "71c615741d10b39668529f0b8e8cdab285e8a6f60bd97b8332717021e11f74ce",
+        "tasks/T02/audits/source/artifact/server/payloadParsers.js": "298ef3a9cc85a8e46dbcf2171cc2e7a0197d721b9bcbf9e4fea2b2dc98152744",
+        "tasks/T02/audits/source/artifact/test_visible.py": "a56f0b5c5a71967fc19c4cf9c28ede72bd7bb8b8499daac63248688af7441cc4"
+      },
+      "scope": "Exact unchanged model artifact in new disposable copy; tests run offline with bytecode/cache disabled. Not a new coding attempt or original check observation."
+    },
+    {
+      "task": "T08",
+      "original_completion": "completed",
+      "original_observed_check": "passed",
+      "offline_visible_exit_code": 0,
+      "offline_visible_argv": [
+        "/Users/jorge/Projects/agent-harness/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "test_visible.py"
+      ],
+      "offline_acceptance_and_regrade_exit_codes": [
+        1,
+        1
+      ],
+      "counterexamples": [
+        {
+          "label": "spaces",
+          "expected": {
+            "ok": true,
+            "value": {
+              "sessionId": "room",
+              "text": "work well"
+            }
+          },
+          "actual": {
+            "ok": true,
+            "value": {
+              "sessionId": "room",
+              "text": "work   well"
+            }
+          }
+        },
+        {
+          "label": "tabs_newlines",
+          "expected": {
+            "ok": true,
+            "value": {
+              "sessionId": "room",
+              "text": "work well"
+            }
+          },
+          "actual": {
+            "ok": true,
+            "value": {
+              "sessionId": "room",
+              "text": "work\t\nwell"
+            }
+          }
+        },
+        {
+          "label": "literal_backslash_s",
+          "expected": {
+            "ok": true,
+            "value": {
+              "sessionId": "room",
+              "text": "work\\swell"
+            }
+          },
+          "actual": {
+            "ok": true,
+            "value": {
+              "sessionId": "room",
+              "text": "work well"
+            }
+          }
+        }
+      ],
+      "local_copy": "/Users/jorge/.local/share/agent-harness/trials/duodoro-retained-failures-k5qia1i5/T08-unchanged-copy",
+      "full_tree_equal_before_after": true,
+      "full_tree_file_and_directory_entries": 464,
+      "source_evidence_files_unchanged": 360,
+      "artifact_repair": false,
+      "criterion_changes": false,
+      "visible_log_sha256": "f4c77b58e2280613a49ba18da1c4a02d440e862c49a6c8fe5daaf277333ff99d",
+      "grades_sha256": "c2eae86df3419bcb3a5f84c1a390a5a4442957c6ce0b4d74188c48ff874b05d0",
+      "source_hashes": {
+        "tasks/T08/audits/source/saved-run.json": "6297527bffeb0b2c86acd1986b1a62d594fbcb659ebb947bee1ffcd27b20eadd",
+        "tasks/T08/audits/source/diff.txt": "b769006bd92a6ca709001ab6434a8579e2aa0018dc248a95c205916c231088c6",
+        "tasks/T08/prepared/acceptance/test_acceptance.py": "96f290ded070f1c566080c1892c27e91c7e3a6a26d64444ce32d996dcff8a87c",
+        "tasks/T08/audits/source/artifact/server/payloadParsers.js": "3d77bf742ac6e41c1453ea0d06118851138c8ab923e356c1d91b676a4edb78f2",
+        "tasks/T08/audits/source/artifact/test_visible.py": "a11949e7a91097373c2722033ed35e2b8fbf1f9d79f0df77342b41757de94758",
+        "tasks/T08/audits/source/artifact/visible_check.mjs": "449b3cebb914bec88aac664dec64ea8f227b8470b41a0bad3c4b663446cace27",
+        "tasks/T08/prepared/acceptance/checks.mjs": "b53efa86e913731759ac3d786ccc5ef875b2514099289fbbba7d35a0101855f6",
+        "tasks/T08/prepared/acceptance/golden.json": "df3d2bd21984958ca1bc604300df67a6aca41e0a66823f9ea8d9140afc96b3f6",
+        "tasks/T08/prepared/acceptance/source-review.md": "f0f5d549e94ad1aeee3e568ec27e3704d5885b4c27a8aa362d3586b953b7a6a7"
+      },
+      "scope": "Exact unchanged model artifact in new disposable copy; tests run offline with bytecode/cache disabled. Not a new coding attempt or original check observation.",
+      "prior_independent_source_review": {
+        "reviewer": "Codex independent source inspection",
+        "verdict": "fail",
+        "criterion_sha256": "f0f5d549e94ad1aeee3e568ec27e3704d5885b4c27a8aa362d3586b953b7a6a7",
+        "diff_sha256": "b769006bd92a6ca709001ab6434a8579e2aa0018dc248a95c205916c231088c6",
+        "exported_helper_identified": "boundedDuration(value, fallback, min, max)",
+        "both_duration_fields_use_same_helper": true,
+        "duplicated_inline_duration_coercion_removed": true,
+        "other_parser_behavior_preserved": false,
+        "explanation": "The extraction is present and reused, but parseSetIntention changes the whitespace regex from /\\s+/g to /\\\\s+/g. This unrelated semantic regression violates the frozen preservation rubric and independent acceptance; passing the visible helper check does not accept the artifact. Many blank lines also gained spaces. No tests were changed and protected paths/modes are preserved.",
+        "supporting_external_exit_code": 1,
+        "model_answer_not_used_as_acceptance": true
+      }
+    }
+  ],
+  "limits": [
+    "Visible checks do not certify unrelated parser behavior or independent acceptance.",
+    "Counterexamples identify an artifact regression, not why the model changed it or a demonstrated remedy.",
+    "No original artifact, check, criterion, workflow status or source review was rewritten."
+  ]
+}
