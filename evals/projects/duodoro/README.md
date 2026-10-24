@@ -1,7 +1,8 @@
 # Duodoro real-project validation
 
 Latest offline follow-ups: [retained truncation diagnosis](TRUNCATION_DIAGNOSIS.md)
-and [parser preservation counterexamples](PARSER_PRESERVATION_DIAGNOSIS.md).
+and [parser preservation counterexamples](PARSER_PRESERVATION_DIAGNOSIS.md), plus
+[T07 missing-usage stop](MISSING_USAGE_STOP_DIAGNOSIS.md), complete the three investigations.
 Recorded-response replays and unchanged-artifact probes explain failures without
 new inference or changing the cohort, settings, acceptance criteria or release no-go.
 
