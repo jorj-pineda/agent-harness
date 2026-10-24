@@ -16,6 +16,17 @@ cohort is not a retry queue. That transport experiment’s preparation, results 
 disposition are complete; no additional inference, default/limit change or release
 approval follows from that closed experiment.
 
+**2026-10-23 — Actual ten-task provider-timeout freeze prepared, unrun:** the
+[freeze](evals/projects/duodoro/PROVIDER_WAIT_TEN_EXECUTION_FREEZE.md) pins fresh
+original-task roots/clients at `e2a0d46`, provider 180 and unchanged 300/150-second
+budgets. Actual CLI cancellation/fork/reversal and panel SSE/restart preflight,
+paired inputs, external grade/regrade and negative launch/recording checks passed.
+All thirteen owned preflight APIs stopped, including retained preparation failures;
+scheduled stores remain absent and no inference ran. Exact G0 passed 116 focused/
+1,453 offline tests, static checks and both 90/90 scripted matrices. Independent
+exact-freeze review/merge and unchanged launch/browser checks remain required;
+original cohorts, no-go, 8/10 target and G2–G5 remain unchanged.
+
 **2026-10-23 — Ten-task provider-timeout follow-up protocol prepared:** the
 [protocol](evals/projects/duodoro/PROVIDER_WAIT_TEN_TASK_PROTOCOL.md) tests whether
 the selected T09 result generalizes across all ten original tasks, preserving
