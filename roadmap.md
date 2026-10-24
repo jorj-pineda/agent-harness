@@ -1,8 +1,22 @@
 # Roadmap: a coding harness for lower-tier models
 
-Updated: 2026-10-23
+Updated: 2026-10-24
 
 ## Current release decision
+
+**2026-10-24 — Bounded parser edit-preset comparison prepared, unrun:** the
+[protocol](evals/projects/duodoro/PARSER_EDIT_PROTOCOL.md) compares existing
+full/whole_file compact presets on original T02/T08 requests and criteria, two
+repeats per task/preset (eight cells). Both arms use actual CLI, explicitly distinct
+from the original panel cohort. Same-path inputs, equal private recording, original
+300-second/token/tool/iteration budgets, provider180 and source-review requirements
+are fixed; actual exact-edit activation must be observed. Both fresh initial/reference
+validations and 29 existing criterion/preset regressions passed without inference.
+One pre-fixture helper self-copy error is retained; corrected fresh preparation
+preserves Duodoro fingerprints. Actual client preflight, exact G0, independently
+reviewed execution freeze and unchanged launch checks remain before dispatch.
+No new runtime/default, accepted remedy or release claim; original counts,
+8/10 target, no-go/feature freeze and G2–G5 remain unchanged.
 
 **2026-10-24 UTC — Missing-usage replay closes the three-investigation batch:**
 [T07 replay](evals/projects/duodoro/MISSING_USAGE_STOP_DIAGNOSIS.md) matches six
