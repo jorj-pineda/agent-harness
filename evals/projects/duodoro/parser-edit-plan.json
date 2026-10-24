@@ -1,0 +1,292 @@
+{
+  "actual_first_inputs": null,
+  "arms": {
+    "F": "full",
+    "W": "whole_file"
+  },
+  "cells": [
+    {
+      "artifact_accepted": null,
+      "client": "CLI",
+      "completed_and_accepted": null,
+      "execution_status": "unrun",
+      "id": "T02-W1",
+      "order": 1,
+      "preset": "whole_file",
+      "repeat": 1,
+      "source_review": null,
+      "task": "T02"
+    },
+    {
+      "artifact_accepted": null,
+      "client": "CLI",
+      "completed_and_accepted": null,
+      "execution_status": "unrun",
+      "id": "T02-F1",
+      "order": 2,
+      "preset": "full",
+      "repeat": 1,
+      "source_review": null,
+      "task": "T02"
+    },
+    {
+      "artifact_accepted": null,
+      "client": "CLI",
+      "completed_and_accepted": null,
+      "execution_status": "unrun",
+      "id": "T02-F2",
+      "order": 3,
+      "preset": "full",
+      "repeat": 2,
+      "source_review": null,
+      "task": "T02"
+    },
+    {
+      "artifact_accepted": null,
+      "client": "CLI",
+      "completed_and_accepted": null,
+      "execution_status": "unrun",
+      "id": "T02-W2",
+      "order": 4,
+      "preset": "whole_file",
+      "repeat": 2,
+      "source_review": null,
+      "task": "T02"
+    },
+    {
+      "artifact_accepted": null,
+      "client": "CLI",
+      "completed_and_accepted": null,
+      "execution_status": "unrun",
+      "id": "T08-F1",
+      "order": 5,
+      "preset": "full",
+      "repeat": 1,
+      "source_review": null,
+      "task": "T08"
+    },
+    {
+      "artifact_accepted": null,
+      "client": "CLI",
+      "completed_and_accepted": null,
+      "execution_status": "unrun",
+      "id": "T08-W1",
+      "order": 6,
+      "preset": "whole_file",
+      "repeat": 1,
+      "source_review": null,
+      "task": "T08"
+    },
+    {
+      "artifact_accepted": null,
+      "client": "CLI",
+      "completed_and_accepted": null,
+      "execution_status": "unrun",
+      "id": "T08-W2",
+      "order": 7,
+      "preset": "whole_file",
+      "repeat": 2,
+      "source_review": null,
+      "task": "T08"
+    },
+    {
+      "artifact_accepted": null,
+      "client": "CLI",
+      "completed_and_accepted": null,
+      "execution_status": "unrun",
+      "id": "T08-F2",
+      "order": 8,
+      "preset": "full",
+      "repeat": 2,
+      "source_review": null,
+      "task": "T08"
+    }
+  ],
+  "cli_response_timeout_seconds": 600,
+  "client_preflight": null,
+  "client_scope": "Both originally panel tasks use CLI in both arms; controlled editing-preset experiment, not original-client cohort replay or G2 validation. Exact original request text remains unchanged.",
+  "common_settings": {
+    "coding_prompt_profile": "compact",
+    "enable_support_tools": false,
+    "load_root_agents": false,
+    "max_completion_retries": 1,
+    "max_context_tokens": 16384,
+    "max_files_touched_per_turn": 2,
+    "max_identical_tool_calls": 2,
+    "max_request_output_tokens": 2048,
+    "min_request_output_tokens": 256,
+    "ollama_num_ctx": 16384,
+    "ollama_think": false,
+    "project_check_argv": [
+      "python",
+      "-m",
+      "pytest",
+      "-q",
+      "test_visible.py"
+    ],
+    "prompt_estimate_bytes_per_token": 3,
+    "request_timeout_seconds": 180,
+    "require_plan_before_edit": false,
+    "require_verification_before_finish": true
+  },
+  "execution_manifest": null,
+  "g0": null,
+  "historical_results_unchanged": true,
+  "inference_preconditions": [
+    "Protocol independent review and merge.",
+    "Fresh actual execution roots and absent per-cell stores; exact clean runtime/model/environment/tree/criteria/reference/recipes/input/owner/root hashes.",
+    "Actual CLI scripted full and whole_file real-tool/check/capture/grade/GET restart preflight, first normalized and wire parity/negative guard probes and incomplete recording stop.",
+    "Exact runtime focused/full offline/static gates and both scripted matrices with labels inspected.",
+    "Independent review and merge of immutable execution freeze and unchanged launch preconditions before local inference."
+  ],
+  "inference_ran": false,
+  "kind": "unrun-parser-edit-preset-comparison-protocol",
+  "limits": [
+    "Existing full preset plus its necessary matching edit instruction is the only intended cross-arm configuration difference; replace_text availability is not enforced use.",
+    "No new prompts, retry, warm-up, model, dependency, timeout/output/budget increase, manual patch repair, rescue, task replacement or extra coding submission.",
+    "All eight scheduled cells retained; setup/evidence/cleanup blockers leave later rows unrun/unknown rather than rescheduling.",
+    "This is selected public-task development evidence, not held-out/causal/general quality or G2\u2013G5/release closure.",
+    "Original ten-task counts,8/10 target,no-go and defaults remain unchanged."
+  ],
+  "max_coding_runs": 8,
+  "max_reserved_dispatch_seconds": 2400,
+  "max_reserved_iterations": 96,
+  "max_reserved_output_tokens": 65536,
+  "max_reserved_reported_tokens": 512000,
+  "max_reserved_tools": 192,
+  "mechanism": "Observe successful replace_text calls on target in full mode and parser-preserving artifact. Full can choose write_file; no successful exact edit means mechanism not activated. No-patch preservation alone is not success.",
+  "model": {
+    "additional_or_paid_model": false,
+    "fresh_identity": null,
+    "name": "gemma4:12b",
+    "provider": "ollama"
+  },
+  "offline_validation": {
+    "criterion_regressions_passed": 28,
+    "preparation_correction": {
+      "error": "SameFileError before fixture preparation; removed redundant recipe self-copy in fresh root",
+      "inference": false,
+      "retained_initial_root": "/Users/jorge/.local/share/agent-harness/trials/duodoro-parser-edit-plan-n66e8aeo"
+    },
+    "preset_contract_receipt_sha256": "47fc085d1f8a6875c942b82d238763fd4ca893d9e71483d2f7a689177150d16e",
+    "receipt": {
+      "duodoro_head_status_index_refs_unchanged": true,
+      "inference_ran": false,
+      "kind": "offline-original-criterion-validation-NOT-inference",
+      "local_root": "/Users/jorge/.local/share/agent-harness/trials/duodoro-parser-edit-plan-ozbxfk31",
+      "recipe_sha256": "1589d11867b7a603105abf39fc743aa74eeee5e0690e4a8244b79d61c332b980",
+      "runtime_candidate": "30a35d1ad8949348b3994b0248c6f30f44c33678",
+      "tasks": [
+        {
+          "id": "T02",
+          "initial_visible_external_fail_reference_visible_external_pass": true,
+          "original_request_criteria_reference_setup_match": true
+        },
+        {
+          "id": "T08",
+          "initial_visible_external_fail_reference_visible_external_pass": true,
+          "original_request_criteria_reference_setup_match": true
+        }
+      ]
+    },
+    "receipt_sha256": "ef54e057e8a200e4f4521a07f9737d05238b87593776d22e8d16f6b5244b3836",
+    "shared_preset_regressions_passed": 1
+  },
+  "owner": "duodoro-parser-edit-cli",
+  "per_turn": {
+    "max_completion_tokens_per_turn": 8192,
+    "max_tool_calls_per_turn": 24,
+    "max_tool_iterations": 12,
+    "max_total_tokens_per_turn": 64000,
+    "max_turn_wall_seconds": 300
+  },
+  "primary_outcome": "Completed and independently accepted /4 per preset, /2 per task/preset; artifact acceptance and observed checks separately. Unknown required T08 source review is not accepted.",
+  "recording": {
+    "evaluation_only": true,
+    "incomplete_evidence_stops_further_dispatch": true,
+    "maximum_bytes_per_file": 1048576,
+    "maximum_requests_per_phase": 12,
+    "maximum_total_bytes_per_phase": 8388608,
+    "raw_inputs_local_only": true
+  },
+  "release_gate_closure": false,
+  "runtime_candidate": "30a35d1ad8949348b3994b0248c6f30f44c33678",
+  "schema_version": 1,
+  "source_review": {
+    "T08_required": true,
+    "pending_means_unknown": true,
+    "rubric": "acceptance/duration_refactor/source-review.md",
+    "rubric_sha256": "f0f5d549e94ad1aeee3e568ec27e3704d5885b4c27a8aa362d3586b953b7a6a7"
+  },
+  "source_revision": "5324cabba4ad3c8ad2e1cd1480218cf087d9b741",
+  "tasks": [
+    {
+      "acceptance_files_sha256": {
+        "baseline.json": "a2052accd1b601c157861a630fc5fa5169e7dcab1050dab62107c818ed8fafb7",
+        "test_acceptance.py": "71c615741d10b39668529f0b8e8cdab285e8a6f60bd97b8332717021e11f74ce"
+      },
+      "adapter": "timer_normalization",
+      "allowed_modified_paths": [
+        "server/payloadParsers.js"
+      ],
+      "category": "bugfix",
+      "comparison_client": "CLI",
+      "historical_client": "panel",
+      "id": "T02",
+      "reference_files_sha256": {
+        "server/payloadParsers.js": "56c19d07980e94727486714f8f727a4ab95a1cc49028a2190ccf4c8795b073bd"
+      },
+      "request": "In Duodoro, normalize parseStartSession focusDuration and breakDuration in server/payloadParsers.js to whole seconds by flooring the final defaulted/clamped numeric values. Preserve Number coercion, falsy/NaN defaults (1500 focus, 300 break), min/max clamps (60..7200 focus, 30..3600 break), Infinity clamping, string session-id validation, mode parsing and all other exported parser behavior. Inspect AGENTS.md and server/payloadParsers.test.js first. Only modify server/payloadParsers.js; preserve all other files and tests. This disposable pure-parser evaluation adds test_visible.py as a visible Node adapter: run [\"python\",\"-m\",\"pytest\",\"-q\",\"test_visible.py\"] after editing. It does not run the full Vitest/Socket.IO/server suite. Do not install dependencies, start services or touch Docker. Report actual checks and limits honestly.",
+      "request_utf8_sha256": "0824f29e080a293c6fdf0bba6b5f721a99084aa0ff2c67ba64e777ab09953680",
+      "requires_independent_source_review": false,
+      "setup_files": {
+        "preexisting-user-work.txt": {
+          "mode": 420,
+          "sha256": "0d1c51a1d68631ec595d6a59a23dffc86aea09e0c4d4c3bcd65183d1735e1c58"
+        },
+        "test_visible.py": {
+          "mode": 420,
+          "sha256": "a56f0b5c5a71967fc19c4cf9c28ede72bd7bb8b8499daac63248688af7441cc4"
+        }
+      }
+    },
+    {
+      "acceptance_files_sha256": {
+        "baseline.json": "bd1164ea4069327c0a0caed5cb01dec55545a9315e80d57dbe86f717e299c558",
+        "checks.mjs": "b53efa86e913731759ac3d786ccc5ef875b2514099289fbbba7d35a0101855f6",
+        "golden.json": "df3d2bd21984958ca1bc604300df67a6aca41e0a66823f9ea8d9140afc96b3f6",
+        "source-review.md": "f0f5d549e94ad1aeee3e568ec27e3704d5885b4c27a8aa362d3586b953b7a6a7",
+        "test_acceptance.py": "96f290ded070f1c566080c1892c27e91c7e3a6a26d64444ce32d996dcff8a87c"
+      },
+      "adapter": "duration_refactor",
+      "allowed_modified_paths": [
+        "server/payloadParsers.js"
+      ],
+      "category": "refactor",
+      "comparison_client": "CLI",
+      "historical_client": "panel",
+      "id": "T08",
+      "reference_files_sha256": {
+        "server/payloadParsers.js": "28890c306075b7de4dcb7ff8eb27b66b89d7f634ef8e24d756c55ed5685609cd"
+      },
+      "request": "In the disposable pinned Duodoro source, Extract and export boundedDuration(value, fallback, min, max), and use the same helper for both parseStartSession duration fields. Preserve Math.min(Math.max(Number(value) || fallback, min), max), including fractional seconds, defaults, infinity clamps and thrown Symbol coercion. Preserve session IDs, modes and every existing parser/export. This is a behavior-preserving refactor: do not floor durations. Besides executable behavioral checks, independent source review will verify actual reuse for both fields and removal of duplication; an unused exported helper does not satisfy the request. Inspect applicable instructions and relevant existing code/tests first. Only modify server/payloadParsers.js. Preserve every other file, tests and pre-existing work. This library task adds test_visible.py and visible_check.mjs as visible Node-native checks. After editing run [\"python\",\"-m\",\"pytest\",\"-q\",\"test_visible.py\"]. This is not full application/Vitest/typechecking coverage. Do not install dependencies, start services or touch Docker. Report actual check outcomes, unresolved issues and limits honestly.",
+      "request_utf8_sha256": "d360d89d7ea83b9968a89096cf44d1ebdd044d00dd46742c731fd85de45699ad",
+      "requires_independent_source_review": true,
+      "setup_files": {
+        "preexisting-user-work.txt": {
+          "mode": 420,
+          "sha256": "0d1c51a1d68631ec595d6a59a23dffc86aea09e0c4d4c3bcd65183d1735e1c58"
+        },
+        "test_visible.py": {
+          "mode": 420,
+          "sha256": "a11949e7a91097373c2722033ed35e2b8fbf1f9d79f0df77342b41757de94758"
+        },
+        "visible_check.mjs": {
+          "mode": 420,
+          "sha256": "449b3cebb914bec88aac664dec64ea8f227b8470b41a0bad3c4b663446cace27"
+        }
+      }
+    }
+  ],
+  "workspace_policy": "One new evaluation-owned literal workspace path across all eight cells, full fresh initial fixture and absent independent stores per cell. Settled owned API, archive/full grade/regrade/restart and audit gate required before replacement. Never stage over uncertain work."
+}
