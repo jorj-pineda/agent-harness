@@ -286,3 +286,7 @@ or production promotion precedes fresh preflight and reviewed execution freeze.
 The [actual ten-task timeout freeze](PROVIDER_WAIT_TEN_EXECUTION_FREEZE.md) records
 fresh scheduled inputs, scripted actual-client preflight and exact-runtime G0 at
 `e2a0d46`. It is unrun pending independent review/merge and unchanged launch checks.
+
+The [completed ten-task timeout follow-up](PROVIDER_WAIT_TEN_TASK_RESULTS.md)
+accepted and completed 2/10, missing the unchanged 8/10 target. All outcomes and
+unknown usage are retained; no-go and production defaults remain unchanged.
