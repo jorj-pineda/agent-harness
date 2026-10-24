@@ -1,0 +1,183 @@
+{
+  "kind": "offline-recorded-normalized-response-canned-tool-replay",
+  "inference": false,
+  "runtime_revision": "e2a0d46c3c014cf4dcaea33889929926e47875a7",
+  "local_root": "/Users/jorge/.local/share/agent-harness/trials/duodoro-retained-failures-k5qia1i5",
+  "source_results_sha256": "9c22f0f41b1140d880f61cf4659248c4067f8644b1477b32a062f7269d9ade8f",
+  "recipe_sha256": "b15707b5572056fa99df2aaaffb0f74a47bcbefb913f9512f0449ab81f2aabfd",
+  "tasks": [
+    {
+      "task": "T05",
+      "requests": 5,
+      "budget_events": 10,
+      "request_identities_allowances_and_full_inputs_equal": true,
+      "normalized_messages_and_budget_events_equal": true,
+      "completion_status": "incomplete",
+      "completion_reason": "The model response was truncated.",
+      "verification_status": "not_run",
+      "aggregate_usage": {
+        "prompt_tokens": 21840,
+        "completion_tokens": 2163
+      },
+      "canned_tool_invocations": [
+        "tree",
+        "read_file",
+        "emit_plan"
+      ],
+      "actual_workspace_tool_invocations": 0,
+      "final_request": {
+        "iteration": 4,
+        "max_tokens": 2048,
+        "estimated_prompt_tokens": 7425,
+        "prompt_tokens_used": 14777,
+        "completion_tokens_used": 115
+      },
+      "final_response_usage": {
+        "completion_tokens": 2048,
+        "prompt_tokens": 7063
+      },
+      "final_call_observation": {
+        "completion_usage_field": "present",
+        "content_empty": true,
+        "duration_ms": 164851.98387503624,
+        "prompt_usage_field": "present",
+        "terminal_reason": "length",
+        "tool_call_count": 0
+      },
+      "final_content_bytes": 0,
+      "final_tool_call_count": 0,
+      "input_pairs": 5,
+      "saved_database_unchanged": true,
+      "source_evidence_files_unchanged": 360,
+      "source_hashes": {
+        "saved_run": "c02eb6a531fae29b969f66d390dac727c57f10a93c16482b40878e518e98ad7c",
+        "session_database": "b63ec6a40c0be42ebce397fe78c3e18cd734483dcfb8a019e9fb906f9bd88556",
+        "runtime/harness/loop.py": "76d67f7de230581e0f96d92e5910c836debf97d5f3a77f793b67f0f07e8849fe",
+        "runtime/harness/context.py": "8b2e57b2b95ef403a0b8d87c0802ff1a9611335a2d1ec5484fadfff96fb1f1d6",
+        "runtime/providers/ollama.py": "3ba07db6c8e45891c514d720f99fe07c8e2b8ee3647a225721d487010c2cf0fe"
+      },
+      "raw_response_payload_available": false,
+      "limits": [
+        "Timing/tool execution are simulated, not inference or wall-time replay.",
+        "Responses are reconstructed from saved normalized history, usage and allowlisted terminal observations; raw response bodies/hidden reasoning are unavailable.",
+        "No claim about backend cause, token compliance, a successful patch at a larger cap, or a remedy."
+      ]
+    },
+    {
+      "task": "T06",
+      "requests": 7,
+      "budget_events": 14,
+      "request_identities_allowances_and_full_inputs_equal": true,
+      "normalized_messages_and_budget_events_equal": true,
+      "completion_status": "incomplete",
+      "completion_reason": "The model response was truncated.",
+      "verification_status": "failed",
+      "aggregate_usage": {
+        "prompt_tokens": 29029,
+        "completion_tokens": 2550
+      },
+      "canned_tool_invocations": [
+        "tree",
+        "read_file",
+        "emit_plan",
+        "write_file",
+        "run_command"
+      ],
+      "actual_workspace_tool_invocations": 0,
+      "final_request": {
+        "iteration": 6,
+        "max_tokens": 2048,
+        "estimated_prompt_tokens": 7506,
+        "prompt_tokens_used": 22701,
+        "completion_tokens_used": 502
+      },
+      "final_response_usage": {
+        "completion_tokens": 2048,
+        "prompt_tokens": 6328
+      },
+      "final_call_observation": {
+        "completion_usage_field": "present",
+        "content_empty": false,
+        "duration_ms": 167938.55241697747,
+        "prompt_usage_field": "present",
+        "terminal_reason": "length",
+        "tool_call_count": 0
+      },
+      "final_content_bytes": 7259,
+      "final_tool_call_count": 0,
+      "input_pairs": 7,
+      "saved_database_unchanged": true,
+      "source_evidence_files_unchanged": 360,
+      "source_hashes": {
+        "saved_run": "154a9dd8b66112a229ca6619b29f5f0101ca80efc657297e59a79d8166f3b64a",
+        "session_database": "a45bb5a523e80996eaebfb699b1178f4ebb0ae574249903085478170d49c5293",
+        "runtime/harness/loop.py": "76d67f7de230581e0f96d92e5910c836debf97d5f3a77f793b67f0f07e8849fe",
+        "runtime/harness/context.py": "8b2e57b2b95ef403a0b8d87c0802ff1a9611335a2d1ec5484fadfff96fb1f1d6",
+        "runtime/providers/ollama.py": "3ba07db6c8e45891c514d720f99fe07c8e2b8ee3647a225721d487010c2cf0fe"
+      },
+      "raw_response_payload_available": false,
+      "limits": [
+        "Timing/tool execution are simulated, not inference or wall-time replay.",
+        "Responses are reconstructed from saved normalized history, usage and allowlisted terminal observations; raw response bodies/hidden reasoning are unavailable.",
+        "No claim about backend cause, token compliance, a successful patch at a larger cap, or a remedy."
+      ]
+    },
+    {
+      "task": "T10",
+      "requests": 4,
+      "budget_events": 8,
+      "request_identities_allowances_and_full_inputs_equal": true,
+      "normalized_messages_and_budget_events_equal": true,
+      "completion_status": "incomplete",
+      "completion_reason": "The model response was truncated.",
+      "verification_status": "not_run",
+      "aggregate_usage": {
+        "prompt_tokens": 15524,
+        "completion_tokens": 2227
+      },
+      "canned_tool_invocations": [
+        "tree",
+        "read_file",
+        "emit_plan"
+      ],
+      "actual_workspace_tool_invocations": 0,
+      "final_request": {
+        "iteration": 3,
+        "max_tokens": 2048,
+        "estimated_prompt_tokens": 5899,
+        "prompt_tokens_used": 10649,
+        "completion_tokens_used": 179
+      },
+      "final_response_usage": {
+        "completion_tokens": 2048,
+        "prompt_tokens": 4875
+      },
+      "final_call_observation": {
+        "completion_usage_field": "present",
+        "content_empty": true,
+        "duration_ms": 160262.49975000974,
+        "prompt_usage_field": "present",
+        "terminal_reason": "length",
+        "tool_call_count": 0
+      },
+      "final_content_bytes": 0,
+      "final_tool_call_count": 0,
+      "input_pairs": 4,
+      "saved_database_unchanged": true,
+      "source_evidence_files_unchanged": 360,
+      "source_hashes": {
+        "saved_run": "a904f8927cd8df29d1918a64219b7ab1c4dc870df4e4cc96e8decb68f89477f9",
+        "session_database": "239406fde59704f2cd2b23e5085b2006707dd0d2964a227be0cadb5b49018c9e",
+        "runtime/harness/loop.py": "76d67f7de230581e0f96d92e5910c836debf97d5f3a77f793b67f0f07e8849fe",
+        "runtime/harness/context.py": "8b2e57b2b95ef403a0b8d87c0802ff1a9611335a2d1ec5484fadfff96fb1f1d6",
+        "runtime/providers/ollama.py": "3ba07db6c8e45891c514d720f99fe07c8e2b8ee3647a225721d487010c2cf0fe"
+      },
+      "raw_response_payload_available": false,
+      "limits": [
+        "Timing/tool execution are simulated, not inference or wall-time replay.",
+        "Responses are reconstructed from saved normalized history, usage and allowlisted terminal observations; raw response bodies/hidden reasoning are unavailable.",
+        "No claim about backend cause, token compliance, a successful patch at a larger cap, or a remedy."
+      ]
+    }
+  ]
+}

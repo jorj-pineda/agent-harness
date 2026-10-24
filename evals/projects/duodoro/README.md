@@ -1,5 +1,9 @@
 # Duodoro real-project validation
 
+Latest offline follow-up: [retained truncation diagnosis](TRUNCATION_DIAGNOSIS.md).
+Recorded-response replays explain three stops without new inference or changing
+the failed cohort, settings, acceptance criteria or release no-go.
+
 Jorge authorized the local Duodoro repository. Pin the inspected source at
 `5324cabba4ad3c8ad2e1cd1480218cf087d9b741`; do not edit its working checkout,
 reset user changes, deploy, start account/database services, or touch Docker.
