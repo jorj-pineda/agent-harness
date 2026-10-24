@@ -4,6 +4,17 @@ Updated: 2026-10-23
 
 ## Current release decision
 
+**2026-10-24 UTC — Missing-usage replay closes the three-investigation batch:**
+[T07 replay](evals/projects/duodoro/MISSING_USAGE_STOP_DIAGNOSIS.md) matches six
+complete requests/allowances, thirteen budget events and final history at `e2a0d46`.
+The final empty response has absent native usage/reason fields; the request-cap
+guard preserves incomplete/not-run and unknown totals. Its 25,228/147 known prefix
+is not aggregate usage. All 360 outcome hashes/database bytes are unchanged;
+seven focused regressions passed. Together with truncation and parser preservation,
+this completes offline diagnosis, not a remedy or model-quality improvement.
+No inference, default/limit/criterion change or new execution freeze follows.
+Original 2/10 counts, 8/10 target, no-go/feature freeze and G2–G5 stay unchanged.
+
 **2026-10-24 UTC — Unrelated parser regressions reproduced:** fresh unchanged
 T02/T08 artifact copies pass their frozen visible checks but fail external
 acceptance/regrade. [Three counterexamples per artifact](evals/projects/duodoro/PARSER_PRESERVATION_DIAGNOSIS.md)

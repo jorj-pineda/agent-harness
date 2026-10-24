@@ -67,6 +67,16 @@ coding-quality acceptance gap. No narrower unattended envelope is established.
 
 ### Boundary for the next work
 
+The subsequent offline [truncation](evals/projects/duodoro/TRUNCATION_DIAGNOSIS.md),
+[parser preservation](evals/projects/duodoro/PARSER_PRESERVATION_DIAGNOSIS.md) and
+[missing-usage](evals/projects/duodoro/MISSING_USAGE_STOP_DIAGNOSIS.md) investigations
+are complete. Exact canned-tool replays reproduce the three request-length stops
+and T07's unknown-usage stop; unchanged artifact copies reproduce unrelated parser
+regressions that visible checks missed and external checks rejected. They establish
+failure boundaries, not a successful remedy, new inference or gate closure. No
+original result, criterion, runtime/default or limit changes. Keep the 2/10 latest
+cohort, original 8/10 target and no-go; these finite investigations are closed.
+
 The transport and selected timeout comparisons are closed, and the subsequent
 ten-task follow-up is complete. The current default remains a trusted-local experimental harness for controlled use;
 it is not a validated unattended coding envelope. A further investigation should

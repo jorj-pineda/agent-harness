@@ -1,0 +1,68 @@
+{
+  "kind": "offline-recorded-normalized-response-canned-tool-replay",
+  "inference": false,
+  "runtime_revision": "e2a0d46c3c014cf4dcaea33889929926e47875a7",
+  "local_root": "/Users/jorge/.local/share/agent-harness/trials/duodoro-retained-failures-k5qia1i5",
+  "source_results_sha256": "9c22f0f41b1140d880f61cf4659248c4067f8644b1477b32a062f7269d9ade8f",
+  "recipe_sha256": "b15707b5572056fa99df2aaaffb0f74a47bcbefb913f9512f0449ab81f2aabfd",
+  "tasks": [
+    {
+      "task": "T07",
+      "requests": 6,
+      "budget_events": 13,
+      "request_identities_allowances_and_full_inputs_equal": true,
+      "normalized_messages_and_budget_events_equal": true,
+      "completion_status": "incomplete",
+      "completion_reason": "Provider did not report output-token usage; request cap cannot be checked.",
+      "verification_status": "not_run",
+      "aggregate_usage": {
+        "prompt_tokens": null,
+        "completion_tokens": null
+      },
+      "canned_tool_invocations": [
+        "tree",
+        "read_file",
+        "read_file",
+        "emit_plan"
+      ],
+      "actual_workspace_tool_invocations": 0,
+      "final_request": {
+        "iteration": 5,
+        "max_tokens": 2048,
+        "estimated_prompt_tokens": 10205,
+        "prompt_tokens_used": 25228,
+        "completion_tokens_used": 147
+      },
+      "final_response_usage": {
+        "completion_tokens": null,
+        "prompt_tokens": null
+      },
+      "final_call_observation": {
+        "completion_usage_field": "absent",
+        "content_empty": true,
+        "duration_ms": 7331.366249942221,
+        "prompt_usage_field": "absent",
+        "terminal_reason": "absent",
+        "tool_call_count": 0
+      },
+      "final_content_bytes": 0,
+      "final_tool_call_count": 0,
+      "input_pairs": 6,
+      "saved_database_unchanged": true,
+      "source_evidence_files_unchanged": 360,
+      "source_hashes": {
+        "saved_run": "186bef7bca5d8173a83a5c48b4367408e96fc772c4e932d4e4b74fd963a61d68",
+        "session_database": "978e4a07497d69b3b2fe6a1b2a50701fd10298c87adb83383583d964d45f48a5",
+        "runtime/harness/loop.py": "76d67f7de230581e0f96d92e5910c836debf97d5f3a77f793b67f0f07e8849fe",
+        "runtime/harness/context.py": "8b2e57b2b95ef403a0b8d87c0802ff1a9611335a2d1ec5484fadfff96fb1f1d6",
+        "runtime/providers/ollama.py": "3ba07db6c8e45891c514d720f99fe07c8e2b8ee3647a225721d487010c2cf0fe"
+      },
+      "raw_response_payload_available": false,
+      "limits": [
+        "Timing/tool execution are simulated, not inference or wall-time replay.",
+        "Responses are reconstructed from saved normalized history, usage and allowlisted terminal observations; raw response bodies/hidden reasoning are unavailable.",
+        "No claim about backend cause, token compliance, a successful patch at a larger cap, or a remedy."
+      ]
+    }
+  ]
+}
