@@ -11,13 +11,22 @@ import inspect
 import json
 import os
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 import httpx
 from pydantic import BaseModel, Field
 
 from harness.trace import request_identity
-from providers.base import ChatMessage, ChatProvider, ProviderResponse, ToolSpec
+from providers.base import (
+    ChatMessage,
+    ChatProvider,
+    ConversationProvider,
+    ProviderResponse,
+    ToolSpec,
+)
+
+ChatRequestPath = Literal["/api/chat", "/v1/chat/completions", "/inference/go/v1/chat/completions"]
+_CHAT_PATHS = ("/api/chat", "/v1/chat/completions", "/inference/go/v1/chat/completions")
 
 
 class CaptureLimits(BaseModel):
@@ -29,13 +38,22 @@ class CaptureLimits(BaseModel):
 class RequestCapture:
     """One provider/transport pair, sequential calls, a fresh owner-only directory."""
 
-    def __init__(self, directory: Path, *, limits: CaptureLimits | None = None) -> None:
+    def __init__(
+        self,
+        directory: Path,
+        *,
+        limits: CaptureLimits | None = None,
+        chat_path: ChatRequestPath = "/api/chat",
+    ) -> None:
+        if chat_path not in _CHAT_PATHS:
+            raise ValueError("Unsupported diagnostic chat request path")
         if not directory.is_absolute() or directory.resolve() != directory:
             raise ValueError("Capture directory must be a canonical absolute path")
         # Refuse existing data rather than resuming or overwriting a recording.
         directory.mkdir(mode=0o700, parents=False, exist_ok=False)
         self.directory = directory
         self.limits = limits or CaptureLimits()
+        self._chat_path = chat_path
         self.requests = 0
         self.stored_bytes = 0
         self._active: int | None = None
@@ -104,7 +122,7 @@ class RequestCapture:
         try:
             if self._active is None or self._failed or self._wire_written:
                 raise ValueError("Missing or duplicate normalized/wire capture pairing")
-            if request.method != "POST" or request.url.path != "/api/chat":
+            if request.method != "POST" or request.url.path != self._chat_path:
                 raise ValueError("Diagnostic capture accepts chat requests only")
             # Retain exact original bytes, never headers, URL, extensions or output.
             if not isinstance(json.loads(request.content), dict):
@@ -128,6 +146,16 @@ class CapturedProvider:
         self.inner = inner
         self.name = inner.name
         self.capture = capture
+        self._conversation_set = False
+        self._conversation_id: str | None = None
+
+    def for_conversation(self, conversation_id: str) -> ChatProvider:
+        inner = (
+            self.inner.for_conversation(conversation_id)
+            if isinstance(self.inner, ConversationProvider)
+            else self.inner
+        )
+        return _CapturedConversationView(self, inner, conversation_id)
 
     async def chat(
         self,
@@ -137,10 +165,35 @@ class CapturedProvider:
         temperature: float = 0.0,
         max_tokens: int | None = None,
     ) -> ProviderResponse:
+        return await self._chat(
+            self.inner,
+            None,
+            messages,
+            tools=tools,
+            temperature=temperature,
+            max_tokens=max_tokens,
+        )
+
+    async def _chat(
+        self,
+        inner: ChatProvider,
+        conversation_id: str | None,
+        messages: list[ChatMessage],
+        *,
+        tools: list[ToolSpec] | None,
+        temperature: float,
+        max_tokens: int | None,
+    ) -> ProviderResponse:
+        # Binding is a pure view. The first actual call claims this phase's
+        # recorder, preventing later views from mixing conversations or scopes.
+        if self._conversation_set and self._conversation_id != conversation_id:
+            raise ValueError("A diagnostic capture cannot mix conversations")
+        self._conversation_set = True
+        self._conversation_id = conversation_id
         self.capture.begin(messages, tools, temperature, max_tokens)
         returned = False
         try:
-            response = await self.inner.chat(
+            response = await inner.chat(
                 messages, tools=tools, temperature=temperature, max_tokens=max_tokens
             )
             returned = True
@@ -154,6 +207,33 @@ class CapturedProvider:
             result = close()
             if inspect.isawaitable(result):
                 await result
+
+
+class _CapturedConversationView:
+    """Preserve provider-local routing; the original wrapper owns resource cleanup."""
+
+    def __init__(self, parent: CapturedProvider, inner: ChatProvider, conversation_id: str) -> None:
+        self.name = parent.name
+        self._parent = parent
+        self._inner = inner
+        self._conversation_id = conversation_id
+
+    async def chat(
+        self,
+        messages: list[ChatMessage],
+        *,
+        tools: list[ToolSpec] | None = None,
+        temperature: float = 0.0,
+        max_tokens: int | None = None,
+    ) -> ProviderResponse:
+        return await self._parent._chat(
+            self._inner,
+            self._conversation_id,
+            messages,
+            tools=tools,
+            temperature=temperature,
+            max_tokens=max_tokens,
+        )
 
 
 class CapturedTransport(httpx.AsyncBaseTransport):

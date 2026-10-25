@@ -4,6 +4,19 @@ Updated: 2026-10-25
 
 ## Current release decision
 
+**2026-10-25 UTC — Compatible-provider recording mechanics:** opt-in evaluation
+capture supports explicit compatible chat paths, retaining exact body bytes,
+private file/count bounds and the legacy Ollama default. Capture and first-input
+wrappers preserve pure conversation views, stable underlying routing, owner cleanup
+and shared guard checks/counts; mixing phases rejects. Actual SDK MockTransport,
+real-file API partial-edit/failure/restart, bounds/privacy/no-forward/cancellation
+regressions pass. Validation: 52 focused/1,483 offline, five live deselected,
+Ruff/format/mypy and both scripted 90/90 matrices with labels/limits inspected.
+No inference, credential/default/budget change, access/quality claim or Duodoro
+edit. [Developer scope](evals/projects/duodoro/COMPATIBLE_REQUEST_CAPTURE.md).
+Actual intended-model preflight/free-access gates remain separate; original
+counts, 8/10 target, no-go and G2–G5 remain unchanged.
+
 **2026-10-25 UTC — Timer request boundary compared offline:** twelve retained
 pairs from six runs compare earlier returned request-two calls with four later
 timeouts. [All eight pairwise wire comparisons](evals/projects/duodoro/TIMER_REQUEST_BOUNDARY.md)
