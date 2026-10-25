@@ -4,6 +4,19 @@ Updated: 2026-10-25
 
 ## Current release decision
 
+**2026-10-25 UTC — Intended-model protocol prepared, access-blocked and unrun:**
+[Eight original T02/T08 CLI cells](evals/projects/duodoro/INTENDED_MODEL_PROTOCOL.md)
+compare the already used Gemma/free-Go LongCat configurations with unchanged
+requests/criteria/budgets and independent refactor review. A read-only Go metadata
+401 leaves access unverified; public free pricing is not account/billing proof.
+All cells stay unrun until current access/free-price/account gates and actual
+preflight/execution-freeze review pass. Fresh initial/reference validation and
+four provisional shared prompt/registry/profile/allowance contracts plus 78 focused
+regressions pass without provider construction or inference. Actual inputs/stores,
+SDK/client flows and execution G0 remain unset. This completes only the three-PR
+offline boundary/recording/protocol slice, not a quality/envelope/release target.
+Original counts, 8/10 target, no-go/defaults and G2–G5 remain unchanged.
+
 **2026-10-25 UTC — Compatible-provider recording mechanics:** opt-in evaluation
 capture supports explicit compatible chat paths, retaining exact body bytes,
 private file/count bounds and the legacy Ollama default. Capture and first-input

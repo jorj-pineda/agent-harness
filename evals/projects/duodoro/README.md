@@ -1,5 +1,11 @@
 # Duodoro real-project validation
 
+The [intended-model protocol](INTENDED_MODEL_PROTOCOL.md) prepares eight unrun
+original T02/T08 CLI cells for local Gemma and the previously used free Go LongCat.
+Hosted access remains unverified after a read-only HTTP 401; no cell may dispatch
+until access/free-price/account gates, actual client preflight and a reviewed
+execution freeze pass. This is preparation, not model evidence or another run.
+
 [Compatible-provider recording](COMPATIBLE_REQUEST_CAPTURE.md) now has bounded
 SDK/routing/guard/restart coverage using canned traffic. It adds no hosted trial
 or access/quality claim; actual client preflight and execution gates remain separate.
