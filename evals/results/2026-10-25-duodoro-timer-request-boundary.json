@@ -1,0 +1,335 @@
+{
+  "comparisons": [
+    {
+      "actual_wire_bytes_equal": false,
+      "equal_after_only_explicit_system_workspace_line_substitution": true,
+      "later_cell": "C1",
+      "prior_cell": "T02-F1",
+      "raw_new_wire_sha256": "2c591174cc68ac6835a3bb5c6fc0ac23c4af7a0138a2fdc6adcc89c3df242729",
+      "raw_old_wire_sha256": "4ee6b369760de9696f02be472fabf6aa35e7e82ea3bf38b9bda2888da38a0ffc",
+      "sequence": 1
+    },
+    {
+      "actual_wire_bytes_equal": false,
+      "equal_after_only_explicit_system_workspace_line_substitution": true,
+      "later_cell": "C1",
+      "prior_cell": "T02-F1",
+      "raw_new_wire_sha256": "0af33bfc920fb38b19592d9f5dd518678a2ab94e1446ba1e5df9c74a68966b38",
+      "raw_old_wire_sha256": "c8c2dcd5e130b269aee36bcaae26193107c4e7d36efbd10cf7eaa150b1a38ef2",
+      "sequence": 2
+    },
+    {
+      "actual_wire_bytes_equal": false,
+      "equal_after_only_explicit_system_workspace_line_substitution": true,
+      "later_cell": "T1",
+      "prior_cell": "T02-F1",
+      "raw_new_wire_sha256": "2c591174cc68ac6835a3bb5c6fc0ac23c4af7a0138a2fdc6adcc89c3df242729",
+      "raw_old_wire_sha256": "4ee6b369760de9696f02be472fabf6aa35e7e82ea3bf38b9bda2888da38a0ffc",
+      "sequence": 1
+    },
+    {
+      "actual_wire_bytes_equal": false,
+      "equal_after_only_explicit_system_workspace_line_substitution": true,
+      "later_cell": "T1",
+      "prior_cell": "T02-F1",
+      "raw_new_wire_sha256": "0af33bfc920fb38b19592d9f5dd518678a2ab94e1446ba1e5df9c74a68966b38",
+      "raw_old_wire_sha256": "c8c2dcd5e130b269aee36bcaae26193107c4e7d36efbd10cf7eaa150b1a38ef2",
+      "sequence": 2
+    },
+    {
+      "actual_wire_bytes_equal": false,
+      "equal_after_only_explicit_system_workspace_line_substitution": true,
+      "later_cell": "T2",
+      "prior_cell": "T02-F2",
+      "raw_new_wire_sha256": "2c591174cc68ac6835a3bb5c6fc0ac23c4af7a0138a2fdc6adcc89c3df242729",
+      "raw_old_wire_sha256": "4ee6b369760de9696f02be472fabf6aa35e7e82ea3bf38b9bda2888da38a0ffc",
+      "sequence": 1
+    },
+    {
+      "actual_wire_bytes_equal": false,
+      "equal_after_only_explicit_system_workspace_line_substitution": true,
+      "later_cell": "T2",
+      "prior_cell": "T02-F2",
+      "raw_new_wire_sha256": "0af33bfc920fb38b19592d9f5dd518678a2ab94e1446ba1e5df9c74a68966b38",
+      "raw_old_wire_sha256": "c8c2dcd5e130b269aee36bcaae26193107c4e7d36efbd10cf7eaa150b1a38ef2",
+      "sequence": 2
+    },
+    {
+      "actual_wire_bytes_equal": false,
+      "equal_after_only_explicit_system_workspace_line_substitution": true,
+      "later_cell": "C2",
+      "prior_cell": "T02-F2",
+      "raw_new_wire_sha256": "2c591174cc68ac6835a3bb5c6fc0ac23c4af7a0138a2fdc6adcc89c3df242729",
+      "raw_old_wire_sha256": "4ee6b369760de9696f02be472fabf6aa35e7e82ea3bf38b9bda2888da38a0ffc",
+      "sequence": 1
+    },
+    {
+      "actual_wire_bytes_equal": false,
+      "equal_after_only_explicit_system_workspace_line_substitution": true,
+      "later_cell": "C2",
+      "prior_cell": "T02-F2",
+      "raw_new_wire_sha256": "0af33bfc920fb38b19592d9f5dd518678a2ab94e1446ba1e5df9c74a68966b38",
+      "raw_old_wire_sha256": "c8c2dcd5e130b269aee36bcaae26193107c4e7d36efbd10cf7eaa150b1a38ef2",
+      "sequence": 2
+    }
+  ],
+  "conclusion": "All eight pairwise comparisons match after only diagnostic system workspace-line substitution. Actual requests differ and no model input was rewritten. No unexpected schema/options/remaining-content drift is shown at this boundary; backend cause and path effects remain unknown.",
+  "kind": "offline-retained-returned-versus-timeout-input-comparison-NOT-inference",
+  "limits": [
+    "Neither prior T02 artifact was accepted; this compares returned provider calls, not successful coding tasks.",
+    "Different literal workspace paths, runtime dates and unobserved host/backend state remain. Diagnostic substitution is not actual input equality, inference replay or causal evidence.",
+    "No source, input, database, artifact, criterion, runtime/default, budget or original outcome changed. No model/network call or new acceptance."
+  ],
+  "local_root": "/Users/jorge/.local/share/agent-harness/trials/duodoro-timer-request-boundary-hmrj56lx",
+  "negative_projection_checks": [
+    "user-message",
+    "tool-schema",
+    "output-option",
+    "other-system-content"
+  ],
+  "observed_at_utc": "2026-10-25T03:43:53.630935+00:00",
+  "preserved_outcome_hashes": 332,
+  "recipe_sha256": "1b7d0a7024e99b6d07c2ae65401ab0b0c2fe124406c9ea77afab46fcd774b541",
+  "runs": [
+    {
+      "cell": "T02-F1",
+      "cohort": "prior-parser-edit",
+      "failure_kind": null,
+      "limits": [
+        "Returned refers only to request two; both prior T02 tasks still failed independent artifact acceptance.",
+        "Read result size/heuristic estimates do not attest tokenizer/backend memory/latency cause."
+      ],
+      "read_file_sha256": "efc573cca6a89993e35535aea0cd077a9d7177596741518b54ebece3bb405d10",
+      "read_result_content_utf8_bytes": 16934,
+      "records": [
+        {
+          "estimated_prompt_tokens": 3116,
+          "max_tokens": 2048,
+          "message_count": 2,
+          "normalized_sha256": "408b46f2f48b431c2291b636c21d8d14278f213ee2c698f1ad95f17f961dff22",
+          "sequence": 1,
+          "tool_schema_count": 12,
+          "wire_bytes": 9462,
+          "wire_sha256": "4ee6b369760de9696f02be472fabf6aa35e7e82ea3bf38b9bda2888da38a0ffc"
+        },
+        {
+          "estimated_prompt_tokens": 8933,
+          "max_tokens": 2048,
+          "message_count": 4,
+          "normalized_sha256": "94dd0c73fb17cc54e0805e1759d0f23cdf0fdab95f836237958d8f4cd1ee5266",
+          "sequence": 2,
+          "tool_schema_count": 12,
+          "wire_bytes": 27325,
+          "wire_sha256": "c8c2dcd5e130b269aee36bcaae26193107c4e7d36efbd10cf7eaa150b1a38ef2"
+        }
+      ],
+      "runtime_revision": "9f976555fb5b437146b2b07bcc6550e742ab2ff7",
+      "second_request_failed": false,
+      "second_request_returned": true,
+      "second_response_usage": {
+        "completion_tokens": 25,
+        "prompt_tokens": 6304
+      },
+      "source_saved_run_sha256": "259788b949d7a6abb8970d692c1b83ca892ac8501c09f1940b0af1b1adb6b30e"
+    },
+    {
+      "cell": "T02-F2",
+      "cohort": "prior-parser-edit",
+      "failure_kind": null,
+      "limits": [
+        "Returned refers only to request two; both prior T02 tasks still failed independent artifact acceptance.",
+        "Read result size/heuristic estimates do not attest tokenizer/backend memory/latency cause."
+      ],
+      "read_file_sha256": "efc573cca6a89993e35535aea0cd077a9d7177596741518b54ebece3bb405d10",
+      "read_result_content_utf8_bytes": 16934,
+      "records": [
+        {
+          "estimated_prompt_tokens": 3116,
+          "max_tokens": 2048,
+          "message_count": 2,
+          "normalized_sha256": "408b46f2f48b431c2291b636c21d8d14278f213ee2c698f1ad95f17f961dff22",
+          "sequence": 1,
+          "tool_schema_count": 12,
+          "wire_bytes": 9462,
+          "wire_sha256": "4ee6b369760de9696f02be472fabf6aa35e7e82ea3bf38b9bda2888da38a0ffc"
+        },
+        {
+          "estimated_prompt_tokens": 8933,
+          "max_tokens": 2048,
+          "message_count": 4,
+          "normalized_sha256": "d8ec9a5ebd92a97e4e300ce6336a4826122fc7134d6ce4aa17eadd01aa68c650",
+          "sequence": 2,
+          "tool_schema_count": 12,
+          "wire_bytes": 27325,
+          "wire_sha256": "c8c2dcd5e130b269aee36bcaae26193107c4e7d36efbd10cf7eaa150b1a38ef2"
+        }
+      ],
+      "runtime_revision": "9f976555fb5b437146b2b07bcc6550e742ab2ff7",
+      "second_request_failed": false,
+      "second_request_returned": true,
+      "second_response_usage": {
+        "completion_tokens": 25,
+        "prompt_tokens": 6304
+      },
+      "source_saved_run_sha256": "6d598086364ad639735a1d3b707424aad54c31dbeae9b05feb39065e8ebd0e82"
+    },
+    {
+      "cell": "C1",
+      "cohort": "hash-feedback",
+      "failure_kind": "read_timeout",
+      "limits": [
+        "Returned refers only to request two; both prior T02 tasks still failed independent artifact acceptance.",
+        "Read result size/heuristic estimates do not attest tokenizer/backend memory/latency cause."
+      ],
+      "read_file_sha256": "efc573cca6a89993e35535aea0cd077a9d7177596741518b54ebece3bb405d10",
+      "read_result_content_utf8_bytes": 16934,
+      "records": [
+        {
+          "estimated_prompt_tokens": 3117,
+          "max_tokens": 2048,
+          "message_count": 2,
+          "normalized_sha256": "8a598fcd4562dd142bbeab1edc13af1486684cff254c7cdd08c8c023dfa61e97",
+          "sequence": 1,
+          "tool_schema_count": 12,
+          "wire_bytes": 9464,
+          "wire_sha256": "2c591174cc68ac6835a3bb5c6fc0ac23c4af7a0138a2fdc6adcc89c3df242729"
+        },
+        {
+          "estimated_prompt_tokens": 8934,
+          "max_tokens": 2048,
+          "message_count": 4,
+          "normalized_sha256": "5f919635ac4d6fcb9250281881b2cec95729ddf3fded24e3ce5a8ed412fe45ab",
+          "sequence": 2,
+          "tool_schema_count": 12,
+          "wire_bytes": 27327,
+          "wire_sha256": "0af33bfc920fb38b19592d9f5dd518678a2ab94e1446ba1e5df9c74a68966b38"
+        }
+      ],
+      "runtime_revision": "e92f6a11043e6d7025de13e75fd0e01818c4f696",
+      "second_request_failed": true,
+      "second_request_returned": false,
+      "second_response_usage": null,
+      "source_saved_run_sha256": "a0da896a3d431ea093fd397a05fb4dce7feeda31a937c7463feed0cafd7e627f"
+    },
+    {
+      "cell": "T1",
+      "cohort": "hash-feedback",
+      "failure_kind": "read_timeout",
+      "limits": [
+        "Returned refers only to request two; both prior T02 tasks still failed independent artifact acceptance.",
+        "Read result size/heuristic estimates do not attest tokenizer/backend memory/latency cause."
+      ],
+      "read_file_sha256": "efc573cca6a89993e35535aea0cd077a9d7177596741518b54ebece3bb405d10",
+      "read_result_content_utf8_bytes": 16934,
+      "records": [
+        {
+          "estimated_prompt_tokens": 3117,
+          "max_tokens": 2048,
+          "message_count": 2,
+          "normalized_sha256": "8a598fcd4562dd142bbeab1edc13af1486684cff254c7cdd08c8c023dfa61e97",
+          "sequence": 1,
+          "tool_schema_count": 12,
+          "wire_bytes": 9464,
+          "wire_sha256": "2c591174cc68ac6835a3bb5c6fc0ac23c4af7a0138a2fdc6adcc89c3df242729"
+        },
+        {
+          "estimated_prompt_tokens": 8934,
+          "max_tokens": 2048,
+          "message_count": 4,
+          "normalized_sha256": "cde86f41512fb8685df7a2e7f85df1c315d94261913432a51e619468f7ecca09",
+          "sequence": 2,
+          "tool_schema_count": 12,
+          "wire_bytes": 27327,
+          "wire_sha256": "0af33bfc920fb38b19592d9f5dd518678a2ab94e1446ba1e5df9c74a68966b38"
+        }
+      ],
+      "runtime_revision": "e416ce5b4afd9fc643d3a9613cb1618cb1d2a94a",
+      "second_request_failed": true,
+      "second_request_returned": false,
+      "second_response_usage": null,
+      "source_saved_run_sha256": "b49afc30e292023f8172962a35f59d02f560317d5032cdaa6b74083f0bb668a2"
+    },
+    {
+      "cell": "T2",
+      "cohort": "hash-feedback",
+      "failure_kind": "read_timeout",
+      "limits": [
+        "Returned refers only to request two; both prior T02 tasks still failed independent artifact acceptance.",
+        "Read result size/heuristic estimates do not attest tokenizer/backend memory/latency cause."
+      ],
+      "read_file_sha256": "efc573cca6a89993e35535aea0cd077a9d7177596741518b54ebece3bb405d10",
+      "read_result_content_utf8_bytes": 16934,
+      "records": [
+        {
+          "estimated_prompt_tokens": 3117,
+          "max_tokens": 2048,
+          "message_count": 2,
+          "normalized_sha256": "8a598fcd4562dd142bbeab1edc13af1486684cff254c7cdd08c8c023dfa61e97",
+          "sequence": 1,
+          "tool_schema_count": 12,
+          "wire_bytes": 9464,
+          "wire_sha256": "2c591174cc68ac6835a3bb5c6fc0ac23c4af7a0138a2fdc6adcc89c3df242729"
+        },
+        {
+          "estimated_prompt_tokens": 8934,
+          "max_tokens": 2048,
+          "message_count": 4,
+          "normalized_sha256": "471af014dbc41e43858016e82e66f8d76a43c97a7a1eca9c046b2711aeb3a9f3",
+          "sequence": 2,
+          "tool_schema_count": 12,
+          "wire_bytes": 27327,
+          "wire_sha256": "0af33bfc920fb38b19592d9f5dd518678a2ab94e1446ba1e5df9c74a68966b38"
+        }
+      ],
+      "runtime_revision": "e416ce5b4afd9fc643d3a9613cb1618cb1d2a94a",
+      "second_request_failed": true,
+      "second_request_returned": false,
+      "second_response_usage": null,
+      "source_saved_run_sha256": "e79154085dab4c5fb6780e87c3f026e051d7a8eb55430977342ab7f498b766f9"
+    },
+    {
+      "cell": "C2",
+      "cohort": "hash-feedback",
+      "failure_kind": "read_timeout",
+      "limits": [
+        "Returned refers only to request two; both prior T02 tasks still failed independent artifact acceptance.",
+        "Read result size/heuristic estimates do not attest tokenizer/backend memory/latency cause."
+      ],
+      "read_file_sha256": "efc573cca6a89993e35535aea0cd077a9d7177596741518b54ebece3bb405d10",
+      "read_result_content_utf8_bytes": 16934,
+      "records": [
+        {
+          "estimated_prompt_tokens": 3117,
+          "max_tokens": 2048,
+          "message_count": 2,
+          "normalized_sha256": "8a598fcd4562dd142bbeab1edc13af1486684cff254c7cdd08c8c023dfa61e97",
+          "sequence": 1,
+          "tool_schema_count": 12,
+          "wire_bytes": 9464,
+          "wire_sha256": "2c591174cc68ac6835a3bb5c6fc0ac23c4af7a0138a2fdc6adcc89c3df242729"
+        },
+        {
+          "estimated_prompt_tokens": 8934,
+          "max_tokens": 2048,
+          "message_count": 4,
+          "normalized_sha256": "b0fa8b699158e4bc18fd3e0bcc939661cb0950456841a03621dcfca7a8faa3eb",
+          "sequence": 2,
+          "tool_schema_count": 12,
+          "wire_bytes": 27327,
+          "wire_sha256": "0af33bfc920fb38b19592d9f5dd518678a2ab94e1446ba1e5df9c74a68966b38"
+        }
+      ],
+      "runtime_revision": "e92f6a11043e6d7025de13e75fd0e01818c4f696",
+      "second_request_failed": true,
+      "second_request_returned": false,
+      "second_response_usage": null,
+      "source_saved_run_sha256": "f0dde17efb36d49f76d503a7d795d646fd9caca518fff0bd80c2ae9983c7359d"
+    }
+  ],
+  "source_database_bytes_unchanged": true,
+  "source_reports_sha256": {
+    "2026-10-24-duodoro-parser-edit-comparison.json": "6b2e2f185e351533a2aa85ae6b457481d388c633c42a2e2d507792fcd3c1ea6d",
+    "2026-10-25-duodoro-hash-feedback-comparison.json": "429767464211dae9d7d31de2feb53498f10cbf0423c1243c3f49d58084f595a7"
+  },
+  "unique_recorded_request_pairs_inspected": 12
+}
