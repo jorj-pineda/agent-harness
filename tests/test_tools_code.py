@@ -158,6 +158,49 @@ async def test_replace_text_mismatch_errors_say_how_to_fix_the_call(tmp_path: Pa
     assert target.read_text(encoding="utf-8") == source
 
 
+@pytest.mark.parametrize(
+    "bad_hash",
+    ["a" * 63, "a" * 65, "A" * 64, "g" * 64, "a" * 64 + "\n", " " + "a" * 64, ""],
+)
+async def test_replace_text_invalid_hash_explains_recovery_before_file_access(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, bad_hash: str
+) -> None:
+    target = tmp_path / "calc.py"
+    target.write_bytes(b"user = 1\n")
+    target.chmod(0o640)
+    reg = ToolRegistry()
+    register_code_tools(reg, workspace=Workspace(root=tmp_path))
+
+    def unexpected_access(*args, **kwargs):
+        pytest.fail("Malformed hashes must reject before workspace resolution")
+
+    monkeypatch.setattr(Workspace, "resolve", unexpected_access)
+    with pytest.raises(ToolError, match="exactly 64 lowercase hexadecimal") as failure:
+        await reg.invoke(
+            "replace_text",
+            {"path": "calc.py", "old_text": "1", "new_text": "2", "expected_sha256": bad_hash},
+        )
+    assert "Copy the complete sha256 from the latest read_file result" in str(failure.value)
+    assert "arguments were not rewritten" in str(failure.value)
+    assert target.read_bytes() == b"user = 1\n"
+    assert target.stat().st_mode & 0o777 == 0o640
+
+
+async def test_replace_text_corrected_hash_still_requires_current_file(tmp_path: Path) -> None:
+    target = tmp_path / "calc.py"
+    target.write_bytes(b"user = 1\n")
+    reg = ToolRegistry()
+    register_code_tools(reg, workspace=Workspace(root=tmp_path))
+    read = await reg.invoke("read_file", {"path": "calc.py"})
+    args = {"path": "calc.py", "old_text": "1", "new_text": "2", "expected_sha256": read["sha256"]}
+    with pytest.raises(ToolError, match="Copy the complete sha256"):
+        await reg.invoke("replace_text", {**args, "expected_sha256": read["sha256"][:-1]})
+    target.write_bytes(b"user = 1\nlater_user = True\n")
+    with pytest.raises(ToolError, match="File changed since read_file"):
+        await reg.invoke("replace_text", args)
+    assert target.read_bytes() == b"user = 1\nlater_user = True\n"
+
+
 async def test_replace_text_preserves_literal_escapes_and_does_not_misdiagnose_tabs(
     tmp_path: Path,
 ) -> None:
