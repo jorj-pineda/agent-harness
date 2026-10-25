@@ -16,7 +16,11 @@ before execution. Scripted client preflight, exact G0 and independent freeze
 review/merge preceded all eight live cells. Current outcomes are in the results
 above; these historical preparation records authorize no additional runs.
 
-Latest offline follow-ups: [retained truncation diagnosis](TRUNCATION_DIAGNOSIS.md)
+Latest exact-edit follow-up: [timer hash diagnosis](TIMER_HASH_DIAGNOSIS.md)
+distinguishes one malformed-hash validation failure from one budget-prevented
+edit per repeat. Both first errors reproduce offline without mutation or inference.
+
+Earlier offline follow-ups: [retained truncation diagnosis](TRUNCATION_DIAGNOSIS.md)
 and [parser preservation counterexamples](PARSER_PRESERVATION_DIAGNOSIS.md), plus
 [T07 missing-usage stop](MISSING_USAGE_STOP_DIAGNOSIS.md), complete the three investigations.
 Recorded-response replays and unchanged-artifact probes explain failures without

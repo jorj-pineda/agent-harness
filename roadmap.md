@@ -4,6 +4,16 @@ Updated: 2026-10-24
 
 ## Current release decision
 
+**2026-10-24 — Selected timer hash failures diagnosed offline:**
+[Replay](evals/projects/duodoro/TIMER_HASH_DIAGNOSIS.md) reproduces the first
+63-character hash validation error in each T02 full repeat without mutation.
+Each second edit record was budget-prevented before validation; no text-match
+failure is established. Recorded final prompt estimates exceed the remaining
+4,157 total tokens. All 228 original outcome hashes remain unchanged. No inference,
+repair, limit/default change, quality gain or gate closure; original counts/no-go
+and G2–G5 remain unchanged. Specific malformed-hash feedback and scripted recovery
+coverage are separate follow-ups.
+
 **2026-10-24 — Frozen parser edit-preset comparison complete:** all eight
 [cells](evals/projects/duodoro/PARSER_EDIT_RESULTS.md) ran once at `9f97655`:
 full **2/4 accepted and completed-and-accepted**, whole_file **0/4**. Both full
