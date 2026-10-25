@@ -49,3 +49,30 @@ an offline validation of diagnostics, not a successful live correction or edit.
 64 focused and 1,461 offline tests (five live deselected), static checks and both
 scripted 90/90 matrices passed. Scripted API recovery/budget/restart checks are the
 next separate slice; no new live experiment is authorized by this diagnostic.
+
+## Scripted API recovery and prevention coverage
+
+The HTTP/SSE regression uses scripted responses, real file/check tools and fresh
+SQLite lifecycle resources. It reads the current hash, submits one malformed hash,
+retains the diagnostic in model history, then proposes an explicit corrected hash.
+With budget available, exactly one replacement preserves existing user bytes/mode,
+the configured pytest check passes and the scripted turn completes. In the separate
+synthetic over-reported-usage branch, the existing post-response total-token gate
+prevents the corrected edit before dispatch; the artifact is unchanged and checks
+remain not_run. This exercises an overrun stop, not the exact retained T02
+follow-up estimate boundary or a strict backend token cap.
+
+Both branches preserve their original errors, final response and budget journal
+across a fresh API lifecycle. Saved GET and explicit same-key replay return identical
+records without inference or tools, even after later user content is added. The
+unrelated protected file, permissions and visible check bytes remain unchanged.
+The scripted provider chooses the correction; this does not demonstrate Gemma
+recovery or independent task acceptance, and creates no new retry allowance.
+
+Validation: four new transport/budget cases, 69 focused tests and 1,465 offline
+tests passed (five live deselected), plus Ruff/format/mypy. The existing Chroma
+warning remains. This test/docs-only slice does not rerun the scripted matrices;
+both 90/90 results in the preceding feedback slice retain their original scope.
+No inference, historical result/criterion change, new live trial, Duodoro edit,
+quality gain or G2–G5 closure. This completes the three-PR diagnosis/feedback/
+scripted-regression batch; the original no-go and feature freeze remain.
