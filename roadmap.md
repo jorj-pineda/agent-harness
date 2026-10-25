@@ -4,6 +4,20 @@ Updated: 2026-10-24
 
 ## Current release decision
 
+**2026-10-24 — Actual hash-feedback comparison freeze prepared, unrun:** the
+[freeze](evals/projects/duodoro/HASH_FEEDBACK_EXECUTION_FREEZE.md) pins four fresh
+same-path original-T02 cells, separate clean selected-arm imports and identical
+first inputs/wires/profiles. Twelve actual-CLI scripted normal/budget/missing-usage
+flows retain 44 paired inputs and identical default/guarded GET restart evidence;
+36 owned APIs exited. No-forward/preallocation, ten unsafe staging and copied
+missing-input/aggregate gates pass. A copied staging-inode probe correction is
+retained without client/model reruns. Exact control G0: 119 focused/1,453 offline;
+treatment: 131/1,465, five live deselected each, static and both 90/90 matrices per
+arm with labels/limits inspected. Twenty recipes and 1,799 evidence hashes pinned;
+scheduled stores/inputs/outcomes absent, model unloaded. Independent exact-freeze
+review/merge remains before inference; original counts, 8/10 target, defaults,
+no-go/feature freeze and G2–G5 remain unchanged. No model-quality result is claimed.
+
 **2026-10-24 — Invalid-hash feedback comparison protocol prepared, unrun:**
 [Four original T02 CLI cells](evals/projects/duodoro/HASH_FEEDBACK_PROTOCOL.md)
 compare prior/new diagnostics in C1/T1/T2/C2 order under unchanged requests,
