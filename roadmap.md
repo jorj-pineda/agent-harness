@@ -4,6 +4,19 @@ Updated: 2026-10-24
 
 ## Current release decision
 
+**2026-10-24 — Scripted hash recovery/restart coverage complete:** four HTTP/SSE
+cases retain malformed-hash feedback, explicit corrected arguments and either one
+real edit/configured passing check or post-response token prevention with no edit.
+Fresh API lifecycle GET/keyed replay returns identical saved errors, response and
+budget evidence without tools, preserving later user bytes, modes and protected
+files. Synthetic over-reported usage tests the existing stop, not exact replay of
+T02's estimate shortage or a hard backend cap. Validation: 69 focused/1,465 offline
+(five live deselected), Ruff/format/mypy passed. Test/docs only; matrices were not
+rerun (preceding feedback slice passed both 90/90). This completes the scoped
+three-PR batch, not live Gemma correction, task acceptance or release readiness.
+No inference, historical/default/criterion change or Duodoro edit; original
+counts/no-go and G2–G5 remain unchanged. [Details](evals/projects/duodoro/TIMER_HASH_DIAGNOSIS.md).
+
 **2026-10-24 — Actionable malformed exact-edit hash feedback:** invalid string
 hashes now request the complete 64-character lowercase hexadecimal sha256 from
 the latest read_file result, without padding/coercion, file access or mutation.
