@@ -7,9 +7,12 @@ access/transport/compatibility gates still open. No inference ran. The original
 [intended-model protocol](INTENDED_MODEL_PROTOCOL.md) and unrun plan remain
 historical preparation, not launch inputs for a different model.
 
-[Compatible-provider recording](COMPATIBLE_REQUEST_CAPTURE.md) now has bounded
-SDK/routing/guard/restart coverage using canned traffic. It adds no hosted trial
-or access/quality claim; actual client preflight and execution gates remain separate.
+[Compatible-provider recording](COMPATIBLE_REQUEST_CAPTURE.md) now supports the
+current Go path and opt-in lazy allocation. Scripted selected-provider CLI cases
+cover completion, timeout and missing usage after a real edit, then identical
+GET-only saved review across a fresh application lifecycle without capture changes.
+This is mechanics coverage, not hosted Beam compatibility, process restart or an
+execution freeze; actual replacement-model trial gates remain open.
 
 The latest [offline timer request-boundary comparison](TIMER_REQUEST_BOUNDARY.md)
 finds matching parsed wire fields after only an explicit diagnostic workspace-line
