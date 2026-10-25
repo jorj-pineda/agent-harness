@@ -1,5 +1,10 @@
 # Duodoro real-project validation
 
+The latest [offline timer request-boundary comparison](TIMER_REQUEST_BOUNDARY.md)
+finds matching parsed wire fields after only an explicit diagnostic workspace-line
+substitution between earlier returned and later timed-out calls. Actual inputs
+stay different and unchanged; this does not establish backend cause or a remedy.
+
 The [invalid-hash feedback comparison results](HASH_FEEDBACK_RESULTS.md) close all
 four original-T02 CLI cells: control 0/2 and treatment 0/2 accepted completions.
 Every second call timed out before hash validation/editing, so the new diagnostic
