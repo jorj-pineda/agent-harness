@@ -4,6 +4,18 @@ Updated: 2026-10-25
 
 ## Current release decision
 
+**2026-10-25 UTC — Bounded assistant replay-state boundary:** an offline SDK
+fixture reproduces raw reasoning metadata absent from normalized assistant history;
+this is not an observed Beam error. [Typed continuation state](ASSISTANT_CONTINUATION.md)
+now preserves exact bounded UTF-8 assistant-only data, omits absent state to retain
+legacy identities and counts present state in pre-request heuristic sizing. Current
+adapters reject supplied state before HTTP until explicit replay support is selected;
+no response producer/default behavior changed. Compatible round trips and durable
+restart coverage remain separate. No inference, quality claim, old-plan/criterion
+change, Duodoro edit or G2–G5 closure. Validation: 100 focused/1,515 offline
+(five live deselected in full gate), Ruff/format/mypy and both scripted 90/90
+matrices passed with labels/limits inspected.
+
 **2026-10-25 UTC — Scripted CLI capture/review lifecycle:** three real CLI
 entry-point cases use selected settings/default API Components and canned SDK
 responses for completion, timeout and missing usage after one real edit. Fresh
