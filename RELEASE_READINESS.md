@@ -11,6 +11,16 @@ workflow are still unproven. PR/test counts are not a release-completion percent
 
 ## Current disposition — 2026-10-23
 
+**2026-10-25 UTC feedback follow-up:** the four-cell
+[invalid-hash comparison](evals/projects/duodoro/HASH_FEEDBACK_RESULTS.md) closed
+control 0/2 and treatment 0/2 accepted artifacts/completions. Every second request
+had a roughly 180-second read timeout, before hash feedback/editing/checks. No
+intervention activation or live recovery benefit was observed; backend cause and
+all aggregate usage totals remain unknown. Eight paired inputs, regrades, saved
+records, 104 outcome hashes and cleanup audits pass; all eight APIs exited and
+Gemma unloaded. This supplies failure evidence, not a remedy/envelope/gate closure.
+Original cohorts, 8/10 target, no-go/feature freeze, defaults and G2–G5 remain unchanged.
+
 **2026-10-24 selected-task follow-up:** the
 [parser edit-preset comparison](evals/projects/duodoro/PARSER_EDIT_RESULTS.md)
 completed all eight frozen CLI cells at `9f97655`: full 2/4 accepted completions,
@@ -69,7 +79,7 @@ coding-quality acceptance gap. No narrower unattended envelope is established.
 
 | Gate | Current evidence | Work still required |
 |---|---|---|
-| G0 — mechanics baseline | Passed at the latest frozen execution runtime `e2a0d46`: 1,453 offline tests, static checks and both scripted matrices. | Validate the exact next execution/release candidate; this is not a model-quality gate. |
+| G0 — mechanics baseline | Latest comparison exact runtimes passed: control `e92f6a1` 1,453 offline; treatment `e416ce5` 1,465; static checks and both scripted matrices per arm. These are mechanics checks. | Validate the exact next execution/release candidate; this is not a model-quality gate. |
 | G1 — trial agreement | Original ten tasks, limits and criteria agreed and reviewed before inference. | Any revised envelope must be named and frozen explicitly; the original agreement does not make new criteria equivalent. |
 | G2 — client/recovery workflow | Original client cohort plus one bounded [CLI](evals/projects/duodoro/RECOVERY_RESULTS.md) and one [panel](evals/projects/duodoro/PANEL_RECOVERY_RESULTS.md) partial-edit/reversal observation. | Broader agreed client/recovery acceptance remains open; selected variants and unknown interrupted usage do not close it. |
 | G3 — useful coding envelope | All three reported ten-task cohorts miss the 8/10 artifact target. | Demonstrate a useful agreed envelope within its budgets, or explicitly revise the proposed scope with its unmet original target retained. |

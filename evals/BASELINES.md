@@ -2256,3 +2256,31 @@ cohort counts, 8/10 target, no-go/feature freeze, defaults and G2–G5 stay unch
 No paid/additional model, Duodoro edit/push, dependency install or Docker action.
 The report uses frozen G0 (116 focused/1,453 offline, static and both scripted90/90)
 plus new outcome audits; it does not claim those mechanics tests as model successes.
+
+
+## 2026-10-25 UTC — Invalid-hash feedback comparison
+
+[Results](projects/duodoro/HASH_FEEDBACK_RESULTS.md) and
+[structured evidence](results/2026-10-25-duodoro-hash-feedback-comparison.json)
+retain four original-T02 CLI cells at published e92f6a1/e416ce5: control 0/2 and
+treatment 0/2 accepted artifacts or completed-and-accepted. Each read AGENTS.md,
+then hit an approximately 180-second second-call read timeout with no edit/check
+or invalid-hash feedback exposure. Absent final completion/check fields stay null;
+initial session archives are not invented final turns. The diagnostic did not
+activate, so its live recovery effect remains unmeasured and backend cause unknown.
+
+All eight request pairs match saved evidence/offline MockTransport serialization;
+paired wire prefixes match through both requests, while exact normalized records
+differ after the first. Four aggregate token totals remain unknown; each known
+1,962-prompt/22-output prefix is not a total. Further regrades reject unchanged
+artifacts; SQLite/native GET, full trees/modes, source/recipe/preparation and 104
+outcome hashes pass audit. Eight owned APIs exited, model unloaded and Duodoro Git
+fingerprints preserved. No replacement, repair, extra turn or execution correction.
+
+Selected public-task low-variation observations establish no feedback gain,
+regression, broader envelope or release closure. Existing basic diagnostic stays
+usability, not measured quality. Original cohorts/8of10 target/no-go/defaults/G2–G5
+remain unchanged. No paid/additional model, dependency install, Duodoro edit/push
+or Docker action. Report uses frozen G0 (control 1,453/treatment 1,465 offline,
+static and both 90/90 matrices each) plus the settled-outcome audit; no new local
+full suite was run for docs/data.
