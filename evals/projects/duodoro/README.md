@@ -7,6 +7,12 @@ access/transport/compatibility gates still open. No inference ran. The original
 [intended-model protocol](INTENDED_MODEL_PROTOCOL.md) and unrun plan remain
 historical preparation, not launch inputs for a different model.
 
+[Assistant continuation replay](../../../ASSISTANT_CONTINUATION.md) is explicitly
+opt-in and now has bounded SDK/shared-loop and durable HTTP/SSE regression coverage.
+Saved exact state survives fresh application review; guarded forks reject changed
+replay configuration or workspace state before provider requests. These are canned
+SDK mechanics, not hosted Beam compatibility or a new comparison execution freeze.
+
 [Compatible-provider recording](COMPATIBLE_REQUEST_CAPTURE.md) now supports the
 current Go path and opt-in lazy allocation. Scripted selected-provider CLI cases
 cover completion, timeout and missing usage after a real edit, then identical

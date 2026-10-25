@@ -4,6 +4,21 @@ Updated: 2026-10-25
 
 ## Current release decision
 
+**2026-10-25 UTC — Durable compatible replay coverage:** HTTP/SSE synthetic-SDK
+cases save exact assistant state after real read/write/configured pytest operations;
+fresh API lifecycle GET retains identical SQLite session/run evidence. A matching
+guarded fork sends the saved prefix under its own session header, while changed
+replay configuration or workspace bytes blocks before provider work/checkpoints.
+Keyed replay, source evidence, owner separation, later user bytes/modes and client
+closure are covered. Invalid first state prevents edits and retains failed/unknown-
+usage/absent-final/initial-only archive evidence after restart. This completes the
+scoped three-PR mechanics batch, not Beam inference, process/browser restart,
+independent coding acceptance or an actual replacement protocol/execution freeze.
+Validation: 68 focused/1,539 offline (five live deselected), Ruff/format/mypy
+passed. The preceding replay PR passed both scripted 90/90 matrices; no behavior
+changed here, so they were not rerun. No product/default/criterion change; original
+cohorts/no-go/G2–G5 unchanged.
+
 **2026-10-25 UTC — Opt-in compatible continuation round trips:** shared settings
 can explicitly retain/replay bounded assistant reasoning_content through normalized
 responses, the handwritten loop and optional traces. Exact empty/Unicode state stays
