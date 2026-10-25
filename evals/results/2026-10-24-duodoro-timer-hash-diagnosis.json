@@ -1,0 +1,40 @@
+{
+  "kind": "offline-recorded-argument-validation-replay-NOT-inference",
+  "runtime_revision": "9f976555fb5b437146b2b07bcc6550e742ab2ff7",
+  "source_report_sha256": "6b2e2f185e351533a2aa85ae6b457481d388c633c42a2e2d507792fcd3c1ea6d",
+  "preserved_outcome_hashes": 228,
+  "rows": [
+    {
+      "cell": "T02-F1",
+      "saved_run_sha256": "259788b949d7a6abb8970d692c1b83ca892ac8501c09f1940b0af1b1adb6b30e",
+      "attempted_hash_characters": 63,
+      "read_file_hash_characters": 64,
+      "registry_error_reproduced": true,
+      "bytes_and_mode_preserved": true,
+      "first_edit_validation_rejected": true,
+      "second_edit_prevented_before_validation": true,
+      "reported_prompt_tokens": 59086,
+      "reported_output_tokens": 757,
+      "total_remaining": 4157,
+      "stop_heuristic_prompt_tokens": 15561
+    },
+    {
+      "cell": "T02-F2",
+      "saved_run_sha256": "6d598086364ad639735a1d3b707424aad54c31dbeae9b05feb39065e8ebd0e82",
+      "attempted_hash_characters": 63,
+      "read_file_hash_characters": 64,
+      "registry_error_reproduced": true,
+      "bytes_and_mode_preserved": true,
+      "first_edit_validation_rejected": true,
+      "second_edit_prevented_before_validation": true,
+      "reported_prompt_tokens": 59086,
+      "reported_output_tokens": 757,
+      "total_remaining": 4157,
+      "stop_heuristic_prompt_tokens": 15561
+    }
+  ],
+  "limits": [
+    "Only first rejected edit re-invoked on disposable copies; second record was prevented, not invoked.",
+    "No model call, argument correction, patch repair, new acceptance or causal completion claim."
+  ]
+}
