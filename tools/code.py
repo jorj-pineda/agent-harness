@@ -108,6 +108,18 @@ class ReplaceTextInput(BaseModel):
         description="Whole-file SHA-256 from read_file. Refuses edits after the file changes.",
     )
 
+    @field_validator("expected_sha256", mode="before")
+    @classmethod
+    def explain_invalid_hash(cls, value: object) -> object:
+        if isinstance(value, str) and re.fullmatch(r"[0-9a-f]{64}", value) is None:
+            raise ValueError(
+                "expected_sha256 must contain exactly 64 lowercase hexadecimal characters. "
+                "Copy the complete sha256 from the latest read_file result; read the file "
+                "again if needed. Do not shorten, pad or reconstruct the hash. "
+                "No edit was applied; arguments were not rewritten."
+            )
+        return value
+
 
 class RunCommandInput(BaseModel):
     argv: list[str] = Field(

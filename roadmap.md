@@ -4,6 +4,19 @@ Updated: 2026-10-24
 
 ## Current release decision
 
+**2026-10-24 — Actionable malformed exact-edit hash feedback:** invalid string
+hashes now request the complete 64-character lowercase hexadecimal sha256 from
+the latest read_file result, without padding/coercion, file access or mutation.
+This addresses the retained T02 validation failure; it does not repair those
+artifacts or prove model recovery. JSON schema, valid/stale hash handling, edit
+preconditions, prompts and budgets remain unchanged. Validation: 64 focused and
+1,461 offline tests passed (five live deselected), Ruff/format/mypy and both
+scripted 90/90 matrices passed with labels/metric limits inspected. Both retained
+malformed arguments reach the new diagnostic before missing-path access; the
+schema matches frozen input exactly. No inference, Duodoro edits, quality gain
+or gate closure; original counts/no-go and G2–G5 stay unchanged. Scripted API
+recovery/prevention/restart coverage follows separately.
+
 **2026-10-24 — Selected timer hash failures diagnosed offline:**
 [Replay](evals/projects/duodoro/TIMER_HASH_DIAGNOSIS.md) reproduces the first
 63-character hash validation error in each T02 full repeat without mutation.

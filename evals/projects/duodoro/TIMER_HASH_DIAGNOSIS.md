@@ -37,3 +37,15 @@ complete latest read_file hash, while preserving the schema, strict rejection,
 stale-byte/mode guards and budgets. Scripted correction/restart and budget-stop
 regressions can validate mechanics; a live benefit would need a separate reviewed
 experiment. Do not pad, truncate, lowercase or infer the model's hash automatically.
+
+## Feedback follow-up
+
+Malformed string hashes now receive the complete-hash copying instruction before
+workspace resolution. The exposed JSON schema is byte-structure identical to the
+frozen input schema; valid hashes still face all current-file/content/mode guards.
+There is no automatic correction or new retry allowance. Both retained first
+arguments reach the new feedback even in an empty temporary workspace. This is
+an offline validation of diagnostics, not a successful live correction or edit.
+64 focused and 1,461 offline tests (five live deselected), static checks and both
+scripted 90/90 matrices passed. Scripted API recovery/budget/restart checks are the
+next separate slice; no new live experiment is authorized by this diagnostic.
