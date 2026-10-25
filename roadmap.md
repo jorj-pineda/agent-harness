@@ -1,8 +1,20 @@
 # Roadmap: a coding harness for lower-tier models
 
-Updated: 2026-10-24
+Updated: 2026-10-25
 
 ## Current release decision
+
+**2026-10-25 UTC — Frozen invalid-hash feedback comparison complete:** all four
+[original-T02 CLI cells](evals/projects/duodoro/HASH_FEEDBACK_RESULTS.md) ran once
+at e92f6a1/e416ce5: control 0/2 and treatment 0/2 accepted artifacts/completions.
+Each second request timed out at roughly 180 seconds before validation/edit/check;
+feedback never activated. Absent final response fields and unknown usage remain
+explicit, with initial-only session archives. Eight paired inputs, regrades,
+SQLite/native GET, full preservation and 104 outcome hashes pass audit. All eight
+APIs exited; model unloaded; no execution correction/rescue or Duodoro edit.
+The finite cohort is closed, with no feedback-effect/backend-cause/quality claim.
+Original counts, 8/10 target, no-go/feature freeze, defaults and G2–G5 remain unchanged.
+This completes protocol/freeze/results, not the release roadmap.
 
 **2026-10-24 — Actual hash-feedback comparison freeze prepared, unrun:** the
 [freeze](evals/projects/duodoro/HASH_FEEDBACK_EXECUTION_FREEZE.md) pins four fresh

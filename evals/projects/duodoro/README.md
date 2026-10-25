@@ -1,11 +1,14 @@
 # Duodoro real-project validation
 
-The [invalid-hash feedback protocol](HASH_FEEDBACK_PROTOCOL.md) and
-[actual execution freeze](HASH_FEEDBACK_EXECUTION_FREEZE.md) prepare four unrun
-original-T02 CLI cells. Both clean runtimes have matching first inputs and passed
-actual scripted-client/guard/restart checks and exact G0. Scheduled stores/inputs
-remain absent; independent exact-freeze review/merge and unchanged launch checks
-are required before inference. No completed cell is reopened and no-go stays intact.
+The [invalid-hash feedback comparison results](HASH_FEEDBACK_RESULTS.md) close all
+four original-T02 CLI cells: control 0/2 and treatment 0/2 accepted completions.
+Every second call timed out before hash validation/editing, so the new diagnostic
+did not activate. Usage totals remain unknown; original cohorts/no-go stay unchanged.
+
+Historical [protocol](HASH_FEEDBACK_PROTOCOL.md), [unrun plan](hash-feedback-plan.json)
+and [execution freeze](HASH_FEEDBACK_EXECUTION_FREEZE.md) retain preparation as
+reviewed before dispatch. Actual scripted client/input/runtime gates and independent
+review/merge preceded inference. These records authorize no additional attempts.
 
 The [parser edit-preset comparison results](PARSER_EDIT_RESULTS.md) complete that
 finite eight-cell investigation: full 2/4 accepted completions, whole-file 0/4,
