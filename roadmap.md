@@ -4,6 +4,19 @@ Updated: 2026-10-25
 
 ## Current release decision
 
+**2026-10-25 UTC — Scripted CLI capture/review lifecycle:** three real CLI
+entry-point cases use selected settings/default API Components and canned SDK
+responses for completion, timeout and missing usage after one real edit. Fresh
+application lifecycle review uses the same lazy construction plus an outer review
+guard: one CLI GET returns identical run evidence, session JSON and input bytes/
+modes stay unchanged, both clients close and later user work survives. Unknown
+usage/absent final response remain explicit. This is in-process mechanics, not
+Beam inference, process/browser restart, cancellation, independent task acceptance
+or an actual replacement execution freeze. Validation: 89 focused/1,495 offline
+(five live deselected), Ruff/format/mypy passed. The preceding capture PR passed
+both 90/90 matrices; no behavior changed here, so they were not rerun. Original
+counts/no-go/G2–G5 unchanged.
+
 **2026-10-25 UTC — Deferred diagnostic capture allocation:** opt-in lazy input
 recording creates its private directory only at the first normalized request;
 startup/binding/close can inspect existing evidence without reopening it. Actual

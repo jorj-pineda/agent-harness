@@ -85,7 +85,8 @@ Wrap the lazy captured provider in the existing review-only FirstRequestGuard
 when serving saved inspection. Laziness itself is not a read-only permission:
 a chat to a fresh directory would record and forward unless an outer guard rejects
 it. This helper does not implement a selected-model factory or execution manifest.
-The separate actual CLI restart regression and future trial freeze remain required.
+The CLI lifecycle regression below covers scripted restart inspection; a future
+trial freeze and actual selected-model preflight remain required.
 
 New scripted regressions cover absent/existing startup, binding/close, actual
 pre-forward SDK pairs/routing/private permissions, existing-path no-overwrite,
@@ -97,3 +98,36 @@ live deselected), Ruff/format/mypy passed. Both scripted matrices passed 90/90 a
 `/tmp/agent-harness-lazy-capture.iaLnyU`, with contract labels/metric limits inspected.
 The existing Chroma deprecation warning remains. These are mechanics, not model
 quality or actual hosted-client preflight results.
+
+## Scripted CLI lifecycle regression (2026-10-25)
+
+Three canned compatible-SDK cases now drive the real CLI chat entry point through
+the default API Components/settings factory with one named provider selected.
+CLI HTTP calls are bridged to TestClient. Provider construction is intercepted
+to install SDK MockTransport and capture; FactStore and SDK clients remain
+application-lifecycle owned. Each case applies one
+real file write, then completes with checks not_run, fails on a provider timeout,
+or stops incomplete with missing usage. Two normalized/wire pairs match durable
+request identities; private routing/header/error markers stay outside input files.
+These are synthetic model responses, not Beam calls or independent task acceptance.
+
+The same constructor path reopens a fresh API lifecycle with lazy capture and an
+outer review-only guard. CLI `run --json` makes one GET, returns identical saved
+run evidence and leaves capture bytes/modes unchanged; saved session JSON is also
+identical. Both SDK clients close. Pre-existing protected bytes/modes and a later
+user line survive. The timeout retains absent final response and unknown failed
+usage; missing usage stays unknown rather than zero. Exactly one selected provider
+is constructed per lifecycle, with no model request during review.
+
+This is in-process TestClient lifecycle coverage, not OS-process/browser restart,
+a selected Beam execution source factory, hosted connectivity, reasoning-history
+compatibility, cancellation preflight or a reviewed execution freeze. Those remain
+separate. The first test draft used the wrong saved-session-ID location; it was
+corrected to the existing request.session_id contract before final validation.
+No application/evaluator behavior, model input policy, old plan or trial result
+changed. No inference, account change, Duodoro edit or release-gate closure.
+
+CLI-lifecycle validation: 89 focused and 1,495 offline tests passed (five live
+excluded), Ruff/format/mypy passed and 40 local documentation links resolve.
+The existing Chroma warning remains. Application/evaluator behavior is unchanged,
+so the preceding lazy-capture PR's two 90/90 scripted matrices were not rerun here.
