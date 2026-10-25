@@ -55,7 +55,7 @@ def setup(tmp_path, respond, *, prefix="/v1", limits=None):
     return CapturedProvider(adapter, capture), capture, adapter
 
 
-@pytest.mark.parametrize("prefix", ["/v1", "/inference/go/v1"])
+@pytest.mark.parametrize("prefix", ["/v1", "/inference/go/v1", "/inference/go/openai/v1"])
 async def test_compatible_sdk_records_exact_bytes_and_preserves_bound_routing(tmp_path, prefix):
     messages = [
         ChatMessage(role="user", content="café 🙂\n"),

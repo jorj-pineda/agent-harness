@@ -25,8 +25,18 @@ from providers.base import (
     ToolSpec,
 )
 
-ChatRequestPath = Literal["/api/chat", "/v1/chat/completions", "/inference/go/v1/chat/completions"]
-_CHAT_PATHS = ("/api/chat", "/v1/chat/completions", "/inference/go/v1/chat/completions")
+ChatRequestPath = Literal[
+    "/api/chat",
+    "/v1/chat/completions",
+    "/inference/go/v1/chat/completions",
+    "/inference/go/openai/v1/chat/completions",
+]
+_CHAT_PATHS = (
+    "/api/chat",
+    "/v1/chat/completions",
+    "/inference/go/v1/chat/completions",
+    "/inference/go/openai/v1/chat/completions",
+)
 
 
 class CaptureLimits(BaseModel):
@@ -44,13 +54,12 @@ class RequestCapture:
         *,
         limits: CaptureLimits | None = None,
         chat_path: ChatRequestPath = "/api/chat",
+        lazy: bool = False,
     ) -> None:
         if chat_path not in _CHAT_PATHS:
             raise ValueError("Unsupported diagnostic chat request path")
         if not directory.is_absolute() or directory.resolve() != directory:
             raise ValueError("Capture directory must be a canonical absolute path")
-        # Refuse existing data rather than resuming or overwriting a recording.
-        directory.mkdir(mode=0o700, parents=False, exist_ok=False)
         self.directory = directory
         self.limits = limits or CaptureLimits()
         self._chat_path = chat_path
@@ -59,6 +68,20 @@ class RequestCapture:
         self._active: int | None = None
         self._wire_written = False
         self._failed = False
+        self._allocated = False
+        if not lazy:
+            self._allocate()
+
+    def _allocate(self) -> None:
+        if self._allocated:
+            return
+        # Recheck delayed parent/path resolution, then refuse existing data.
+        # Lazy startup/GET review may refer to an existing directory, but an
+        # actual chat can never reopen, resume or overwrite that recording.
+        if self.directory.resolve() != self.directory:
+            raise ValueError("Capture directory must be a canonical absolute path")
+        self.directory.mkdir(mode=0o700, parents=False, exist_ok=False)
+        self._allocated = True
 
     def _write(self, suffix: str, data: bytes) -> None:
         if self._active is None or self._failed:
@@ -101,6 +124,7 @@ class RequestCapture:
         self._active = self.requests
         self._wire_written = False
         try:
+            self._allocate()
             payload = {
                 "kind": "normalized-diagnostic-input-v1",
                 "sequence": self.requests,
