@@ -20,7 +20,13 @@ from api.server import Components, ComponentsFactory, build_components, create_a
 from harness.config import Settings
 from harness.router import ProviderRouter
 from harness.trace import request_identity
-from providers.base import ChatMessage, ChatProvider, ProviderResponse, ToolSpec
+from providers.base import (
+    ChatMessage,
+    ChatProvider,
+    ConversationProvider,
+    ProviderResponse,
+    ToolSpec,
+)
 
 
 class InitialIdentity(BaseModel):
@@ -77,6 +83,16 @@ class FirstRequestGuard:
         self.expected = expected
         self.review_only = review_only
         self.forwarded_requests = 0
+        self._conversation_set = False
+        self._conversation_id: str | None = None
+
+    def for_conversation(self, conversation_id: str) -> ChatProvider:
+        inner = (
+            self.inner.for_conversation(conversation_id)
+            if isinstance(self.inner, ConversationProvider)
+            else self.inner
+        )
+        return _GuardConversationView(self, inner, conversation_id)
 
     async def chat(
         self,
@@ -86,14 +102,37 @@ class FirstRequestGuard:
         temperature: float = 0.0,
         max_tokens: int | None = None,
     ) -> ProviderResponse:
+        return await self._chat(
+            self.inner,
+            None,
+            messages,
+            tools=tools,
+            temperature=temperature,
+            max_tokens=max_tokens,
+        )
+
+    async def _chat(
+        self,
+        inner: ChatProvider,
+        conversation_id: str | None,
+        messages: list[ChatMessage],
+        *,
+        tools: list[ToolSpec] | None,
+        temperature: float,
+        max_tokens: int | None,
+    ) -> ProviderResponse:
         if self.review_only:
             raise ValueError("Review-only probe cannot dispatch inference")
+        if self._conversation_set and self._conversation_id != conversation_id:
+            raise ValueError("A diagnostic guard cannot mix conversations")
         if self.forwarded_requests == 0:
             identity = request_identity(messages, tools or [], max_tokens)
             if identity is None or identity.request_sha256 != self.expected or temperature != 0.0:
                 raise ValueError("Frozen first-input mismatch; no inference forwarded")
+        self._conversation_set = True
+        self._conversation_id = conversation_id
         self.forwarded_requests += 1
-        return await self.inner.chat(
+        return await inner.chat(
             messages, tools=tools, temperature=temperature, max_tokens=max_tokens
         )
 
@@ -103,6 +142,35 @@ class FirstRequestGuard:
             result = close()
             if inspect.isawaitable(result):
                 await result
+
+
+class _GuardConversationView:
+    """Keep first-request/review checks on the owning guard, without mutating headers."""
+
+    def __init__(
+        self, parent: FirstRequestGuard, inner: ChatProvider, conversation_id: str
+    ) -> None:
+        self.name = parent.name
+        self._parent = parent
+        self._inner = inner
+        self._conversation_id = conversation_id
+
+    async def chat(
+        self,
+        messages: list[ChatMessage],
+        *,
+        tools: list[ToolSpec] | None = None,
+        temperature: float = 0.0,
+        max_tokens: int | None = None,
+    ) -> ProviderResponse:
+        return await self._parent._chat(
+            self._inner,
+            self._conversation_id,
+            messages,
+            tools=tools,
+            temperature=temperature,
+            max_tokens=max_tokens,
+        )
 
 
 def create_probe_app(
