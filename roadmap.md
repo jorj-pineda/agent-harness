@@ -4,6 +4,19 @@ Updated: 2026-10-25
 
 ## Current release decision
 
+**2026-10-25 UTC — Opt-in compatible continuation round trips:** shared settings
+can explicitly retain/replay bounded assistant reasoning_content through normalized
+responses, the handwritten loop and optional traces. Exact empty/Unicode state stays
+separate from answer text; malformed/oversized state rejects before tools, and present
+state participates in pre-request heuristic sizing. Disabled defaults/legacy recipe
+hashes remain unchanged; enabled policy is captured as provider-options drift and
+reported in evaluations. Synthetic SDK/loop/factory tests cover routing, round trips,
+invalid-state rejection, context prevention and unchanged usage/truncation stops.
+No inference, hosted Beam compatibility/quality claim or Duodoro edit. Durable API
+restart coverage remains separate. Validation: 144 focused/1,529 offline (five
+live deselected in full gate), Ruff/format/mypy and both scripted 90/90 matrices
+passed with labels/limits inspected; original cohorts/no-go/G2–G5 unchanged.
+
 **2026-10-25 UTC — Bounded assistant replay-state boundary:** an offline SDK
 fixture reproduces raw reasoning metadata absent from normalized assistant history;
 this is not an observed Beam error. [Typed continuation state](ASSISTANT_CONTINUATION.md)
