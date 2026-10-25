@@ -1,5 +1,11 @@
 # Duodoro real-project validation
 
+The [invalid-hash feedback protocol](HASH_FEEDBACK_PROTOCOL.md) prepares four
+unrun original-T02 CLI cells comparing the prior diagnostic with the new complete-
+hash instruction. Original requests/criteria/budgets stay fixed; actual input
+preflight, exact arm gates and a separately reviewed execution freeze remain
+required before inference. It does not reopen any completed cell or change no-go.
+
 The [parser edit-preset comparison results](PARSER_EDIT_RESULTS.md) complete that
 finite eight-cell investigation: full 2/4 accepted completions, whole-file 0/4,
 with success limited to the selected refactor. T02 failed in both arms. Original

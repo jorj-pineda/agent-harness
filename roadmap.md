@@ -4,6 +4,18 @@ Updated: 2026-10-24
 
 ## Current release decision
 
+**2026-10-24 — Invalid-hash feedback comparison protocol prepared, unrun:**
+[Four original T02 CLI cells](evals/projects/duodoro/HASH_FEEDBACK_PROTOCOL.md)
+compare prior/new diagnostics in C1/T1/T2/C2 order under unchanged requests,
+criteria and approved budgets. Published production runtimes differ only by the
+12-line hash validator; prompts/schemas must match. Fresh initial/reference
+validation and original hashes/modes plus 28 criterion regressions pass without
+inference. Actual inputs/factories/client preflight, exact arm G0 and independent
+execution-freeze review remain required. Activation needs real invalid-hash feedback
+followed by an explicit valid-hash applied edit, with pre-feedback divergence
+reported. No quality/default/envelope/gate claim; original counts, 8/10 target,
+no-go/feature freeze and G2–G5 remain unchanged.
+
 **2026-10-24 — Scripted hash recovery/restart coverage complete:** four HTTP/SSE
 cases retain malformed-hash feedback, explicit corrected arguments and either one
 real edit/configured passing check or post-response token prevention with no edit.
