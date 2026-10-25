@@ -93,3 +93,45 @@ Both scripted matrices passed 90/90 at `/tmp/agent-harness-compatible-replay.L1A
 with contract labels/metric limits inspected. A routine test literal-style lint
 finding was fixed before the passing gate; the existing Chroma warning remains.
 No inference or model-quality comparison ran.
+
+## Durable API lifecycle and guarded forks
+
+HTTP and native SSE synthetic-SDK regressions now perform a real read, write and
+configured pytest check, save all four exact assistant continuation records in
+SQLite, and inspect identical source session/run JSON after a fresh application
+lifecycle. A matching guarded fork sends that saved state under its own session
+header without altering the source archive. Disabling replay changes the captured
+configuration; changing workspace bytes changes the scoped baseline. Either blocks
+the fork before a provider request or new checkpoint. Keyed fork replay does not
+execute again. Ordinary restored sessions remain read-only.
+
+Non-text/oversized first response state rejects the proposed write through HTTP
+and SSE before mutation. The saved run stays failed with absent final response,
+unknown failed usage, before-only checkpoint and initial-only session archive;
+restart GET does not invent finished history. Pre-existing/later bytes and modes
+survive, owner separation holds and both SDK clients close.
+
+These tests exercise the actual default Components/settings/shared runtime and
+real SQLite/file/check operations, with only SDK HTTP intercepted. Named-profile
+selection keeps other providers unconstructed. They use in-process TestClient
+application restarts, not an OS-process/browser restart or hosted Beam. Passing
+configured pytest is observed check evidence, not external Duodoro acceptance.
+Failed/crashed turns still have the existing partial-transcript limits; this does
+not repair missing history or prove safe arbitrary model switching.
+
+The initial fixture omitted named-profile selection and tried to construct an
+unused Ollama adapter with the SDK interception arguments; selecting the intended
+profile fixed the test setup before final validation. An import-order lint finding
+was also corrected. No product change was needed in this test/docs slice.
+
+This completes the bounded state/replay/durable-coverage three-PR batch. Actual
+Beam access/region/current price/account allowance, reasoning/tool behavior, a new
+replacement comparison protocol, actual client preflight and an independently
+reviewed execution freeze remain required. No inference, paid call, Duodoro edit,
+old-result/criterion change, quality gain or G2–G5/release closure is claimed.
+
+Durable-coverage validation: 68 focused and 1,539 offline tests passed (five live
+deselected in the full gate), Ruff/format/mypy passed and 41 local documentation
+links resolve. The existing Chroma deprecation warning remains. This tests/docs
+slice changes no application/evaluator behavior; the preceding replay PR passed
+both scripted matrices 90/90, and they were not rerun here.
