@@ -37,6 +37,8 @@ def _tokens_for_bytes(size: int, bytes_per_token: float) -> int:
 def message_size_bytes(message: ChatMessage) -> int:
     """UTF-8 payload bytes counted by the existing heuristic (not wire size)."""
     size = len(message.content.encode("utf-8"))
+    if message.continuation is not None:
+        size += len(message.continuation.model_dump_json().encode("utf-8"))
     size += len((message.tool_name or "").encode("utf-8"))
     for call in message.tool_calls:
         size += len(call.name.encode("utf-8"))
