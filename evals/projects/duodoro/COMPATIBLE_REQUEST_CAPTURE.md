@@ -1,7 +1,8 @@
 # Bounded compatible-provider input recording
 
 The evaluation-only recorder can explicitly select `/v1/chat/completions` or
-`/inference/go/v1/chat/completions` alongside its unchanged `/api/chat` default.
+`/inference/go/v1/chat/completions`, or the current Go compatible path
+`/inference/go/openai/v1/chat/completions` alongside its unchanged `/api/chat` default.
 The selected path must match exactly on a POST, with a JSON object body. Other
 paths/methods reject before forwarding. This is developer opt-in instrumentation,
 not an API setting, new provider, endpoint discovery or authorization to infer.
@@ -47,7 +48,7 @@ not silently turn it into a hosted-model trial runner.
 
 ## Offline validation and limits
 
-Actual OpenAI SDK requests against MockTransport cover both explicit compatible
+Actual OpenAI SDK requests against MockTransport cover the explicit compatible
 paths, tool-call/result serialization, pre-forward paired files, private permissions,
 stable routing without header retention, pure views, shared guard counts, rejected
 mixing, unsupported paths/methods, byte/count/I/O failure, timeout/no retry,
@@ -68,3 +69,31 @@ routing mechanics, not hosted access, pricing/billing, model quality or a useful
 task envelope. A future comparison needs current authorized model/access/free-price
 checks, fresh inputs/stores, independent criteria and reviewed execution preflight/
 freeze. Original cohorts, 8/10 target, no-go/defaults and G2–G5 remain unchanged.
+
+## Deferred allocation (2026-10-25)
+
+`RequestCapture(..., lazy=True)` validates the selected path at construction but
+creates no directory until the first normalized `begin`. The default remains
+eager for existing recipes. Pure binding, GET-only lifecycle startup and owner
+close leave absent or existing recording paths untouched. Actual chat still
+requires an absent canonical directory: it never reopens, resumes or overwrites
+saved evidence. Allocation failure poisons that recorder before inner forwarding.
+Delayed parent-link resolution is rechecked; external writer races remain outside
+guarantees. The new Go path is explicit, not arbitrary endpoint discovery.
+
+Wrap the lazy captured provider in the existing review-only FirstRequestGuard
+when serving saved inspection. Laziness itself is not a read-only permission:
+a chat to a fresh directory would record and forward unless an outer guard rejects
+it. This helper does not implement a selected-model factory or execution manifest.
+The separate actual CLI restart regression and future trial freeze remain required.
+
+New scripted regressions cover absent/existing startup, binding/close, actual
+pre-forward SDK pairs/routing/private permissions, existing-path no-overwrite,
+review/first-input rejection before allocation, delayed parent-link drift and wire
+without normalized pairing. No inference or account changes ran.
+
+Deferred-allocation validation: 61 focused and 1,492 offline tests passed (five
+live deselected), Ruff/format/mypy passed. Both scripted matrices passed 90/90 at
+`/tmp/agent-harness-lazy-capture.iaLnyU`, with contract labels/metric limits inspected.
+The existing Chroma deprecation warning remains. These are mechanics, not model
+quality or actual hosted-client preflight results.

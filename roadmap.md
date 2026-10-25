@@ -4,6 +4,18 @@ Updated: 2026-10-25
 
 ## Current release decision
 
+**2026-10-25 UTC — Deferred diagnostic capture allocation:** opt-in lazy input
+recording creates its private directory only at the first normalized request;
+startup/binding/close can inspect existing evidence without reopening it. Actual
+chat against an existing path rejects before forwarding, and outer review/first-
+input guards reject before allocation. The current Go compatible chat path is
+explicitly allowlisted; legacy eager/default paths remain unchanged. Focused SDK,
+privacy, no-overwrite, parent-link and missing-pair regressions pass. No inference,
+new trial/default, quality claim or gate closure; actual CLI lifecycle coverage and
+a reviewed replacement-model execution freeze remain separate. Validation: 61
+focused/1,492 offline (five live deselected), Ruff/format/mypy and both scripted
+90/90 matrices passed with contract labels/limits inspected.
+
 **2026-10-25 UTC — Refreshed Go metadata and replacement candidate:** the
 [access update](evals/projects/duodoro/GO_ACCESS_STATUS.md) records metadata HTTP
 200 after Jorge refreshed Go; this does not prove generation, allowance or billing.
