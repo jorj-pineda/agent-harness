@@ -4,6 +4,17 @@ Updated: 2026-10-25
 
 ## Current release decision
 
+**2026-10-25 UTC — Timer request boundary compared offline:** twelve retained
+pairs from six runs compare earlier returned request-two calls with four later
+timeouts. [All eight pairwise wire comparisons](evals/projects/duodoro/TIMER_REQUEST_BOUNDARY.md)
+match after only an explicit in-memory system workspace-root-line substitution;
+actual inputs differ and were never rewritten or forwarded. The two-byte/one-
+heuristic-token size difference is accounted for, with identical read content,
+schemas and options. Four synthetic negative changes remain detectable. All 332
+original outcome hashes and six selected database byte hashes remain unchanged.
+No inference, backend/path-cause attribution, proven remedy, quality gain or gate
+closure; original counts, 8/10 target, no-go/defaults and G2–G5 remain unchanged.
+
 **2026-10-25 UTC — Frozen invalid-hash feedback comparison complete:** all four
 [original-T02 CLI cells](evals/projects/duodoro/HASH_FEEDBACK_RESULTS.md) ran once
 at e92f6a1/e416ce5: control 0/2 and treatment 0/2 accepted artifacts/completions.
