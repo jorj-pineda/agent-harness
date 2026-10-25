@@ -1,5 +1,9 @@
 # Duodoro real-project validation
 
+[Compatible-provider recording](COMPATIBLE_REQUEST_CAPTURE.md) now has bounded
+SDK/routing/guard/restart coverage using canned traffic. It adds no hosted trial
+or access/quality claim; actual client preflight and execution gates remain separate.
+
 The latest [offline timer request-boundary comparison](TIMER_REQUEST_BOUNDARY.md)
 finds matching parsed wire fields after only an explicit diagnostic workspace-line
 substitution between earlier returned and later timed-out calls. Actual inputs
