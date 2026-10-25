@@ -18,10 +18,12 @@ from typing import Any
 import httpx
 from openai import APIError, AsyncOpenAI
 from openai.types.chat import ChatCompletion, ChatCompletionMessageFunctionToolCall
+from pydantic import ValidationError
 
 from .base import (
     ChatMessage,
     ChatProvider,
+    ContinuationState,
     FinishReason,
     ProviderError,
     ProviderResponse,
@@ -32,17 +34,22 @@ from .base import (
 )
 
 
-def compatible_transport_options(transport: str) -> dict[str, Any]:
+def compatible_transport_options(
+    transport: str, *, replay_reasoning_content: bool = False
+) -> dict[str, Any]:
     """Only public configured options; never keys or per-conversation values."""
-    if transport == "generic":
-        return {}
-    if transport != "opencode_go":
+    if transport not in {"generic", "opencode_go"}:
         raise ValueError("Unknown compatible transport")
-    return {
-        "default_headers": {"User-Agent": "agent-harness/0.1"},
-        "conversation_header": "x-opencode-session",
-        "max_retries": 0,
-    }
+    options: dict[str, Any] = {}
+    if transport == "opencode_go":
+        options = {
+            "default_headers": {"User-Agent": "agent-harness/0.1"},
+            "conversation_header": "x-opencode-session",
+            "max_retries": 0,
+        }
+    if replay_reasoning_content:
+        options["replay_reasoning_content"] = True
+    return options
 
 
 _FINISH_REASON_MAP: dict[str, FinishReason] = {
@@ -68,11 +75,13 @@ class OpenAIProvider:
         max_retries: int = 2,
         default_headers: Mapping[str, str] | None = None,
         conversation_header: str | None = None,
+        replay_reasoning_content: bool = False,
         http_client: httpx.AsyncClient | None = None,
     ) -> None:
         self.name = provider_name
         self._model = model
         self._conversation_header = conversation_header
+        self._replay_reasoning_content = replay_reasoning_content
         self._client = AsyncOpenAI(
             api_key=api_key,
             base_url=base_url,
@@ -119,10 +128,14 @@ class OpenAIProvider:
         max_tokens: int | None,
         extra_headers: Mapping[str, str] | None = None,
     ) -> ProviderResponse:
-        reject_unsupported_continuation(messages)
+        if not self._replay_reasoning_content:
+            reject_unsupported_continuation(messages)
         kwargs: dict[str, Any] = {
             "model": self._model,
-            "messages": [_message_to_openai(m) for m in messages],
+            "messages": [
+                _message_to_openai(m, replay_reasoning_content=self._replay_reasoning_content)
+                for m in messages
+            ],
             "temperature": temperature,
         }
         if max_tokens is not None:
@@ -138,7 +151,12 @@ class OpenAIProvider:
         except APIError as exc:
             raise ProviderError(f"OpenAI chat request failed: {exc}") from exc
         latency_ms = (time.perf_counter() - start) * 1000
-        return _response_from_openai(completion, fallback_model=self._model, latency_ms=latency_ms)
+        return _response_from_openai(
+            completion,
+            fallback_model=self._model,
+            latency_ms=latency_ms,
+            replay_reasoning_content=self._replay_reasoning_content,
+        )
 
 
 class _ConversationView:
@@ -166,7 +184,9 @@ class _ConversationView:
         )
 
 
-def _message_to_openai(m: ChatMessage) -> dict[str, Any]:
+def _message_to_openai(m: ChatMessage, *, replay_reasoning_content: bool = False) -> dict[str, Any]:
+    if m.continuation is not None and (not replay_reasoning_content or m.role != "assistant"):
+        raise ProviderError("This message cannot replay assistant continuation state")
     if m.role == "tool":
         return {
             "role": "tool",
@@ -184,6 +204,8 @@ def _message_to_openai(m: ChatMessage) -> dict[str, Any]:
             }
             for tc in m.tool_calls
         ]
+    if m.continuation is not None:
+        out["reasoning_content"] = m.continuation.text
     return out
 
 
@@ -199,10 +221,22 @@ def _tool_to_openai(tool: ToolSpec) -> dict[str, Any]:
 
 
 def _response_from_openai(
-    completion: ChatCompletion, *, fallback_model: str, latency_ms: float
+    completion: ChatCompletion,
+    *,
+    fallback_model: str,
+    latency_ms: float,
+    replay_reasoning_content: bool = False,
 ) -> ProviderResponse:
     choice = completion.choices[0]
     message = choice.message
+    continuation = None
+    if replay_reasoning_content:
+        value = (message.model_extra or {}).get("reasoning_content")
+        if value is not None:
+            try:
+                continuation = ContinuationState(format="openai-reasoning-content-v1", text=value)
+            except (ValidationError, ValueError):
+                raise ProviderError("Invalid or oversized assistant continuation state") from None
 
     tool_calls: list[ToolCall] = []
     for tc in message.tool_calls or []:
@@ -229,4 +263,5 @@ def _response_from_openai(
         model=completion.model or fallback_model,
         latency_ms=latency_ms,
         raw=completion.model_dump(),
+        continuation=continuation,
     )

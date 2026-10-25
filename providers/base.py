@@ -124,6 +124,14 @@ class ProviderResponse(BaseModel):
     latency_ms: float
     raw: dict[str, Any] = Field(default_factory=dict)
     call_observation: ProviderCallObservation | None = None
+    continuation: ContinuationState | None = None
+
+    @model_serializer(mode="wrap")
+    def serialize_response(self, handler: SerializerFunctionWrapHandler) -> dict[str, Any]:
+        data: dict[str, Any] = handler(self)
+        if self.continuation is None:
+            data.pop("continuation", None)
+        return data
 
 
 @runtime_checkable

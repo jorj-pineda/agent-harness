@@ -8,7 +8,7 @@ the harness does not load one per model. The estimate takes the larger of:
 - the previous request's reported prompt tokens plus the heuristic for messages
   appended since (including the reply), which tracks the provider's own count.
   Reported output tokens are not reused: they can include hidden reasoning that
-  is never sent back.
+  may not be sent back. Explicit continuation state is counted by the byte heuristic.
 
 The heuristic alone matters because some backends omit cached prompt tokens
 from reported usage. Reported totals remain the authority after each request;

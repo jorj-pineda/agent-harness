@@ -60,7 +60,10 @@ def build_configured_provider(name: str, settings: Settings) -> ChatProvider:
         base_url=settings.openai_compatible_base_url,
         provider_name="openai_compatible",
         timeout_seconds=timeout,
-        **compatible_transport_options(settings.openai_compatible_transport),
+        **compatible_transport_options(
+            settings.openai_compatible_transport,
+            replay_reasoning_content=settings.openai_compatible_replay_reasoning_content,
+        ),
     )
 
 

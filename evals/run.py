@@ -410,6 +410,9 @@ async def _run_one(
             "coding_prompt_profile": settings.coding_prompt_profile,
             "load_root_agents": settings.load_root_agents,
             "openai_compatible_transport": settings.openai_compatible_transport,
+            "openai_compatible_replay_reasoning_content": (
+                settings.openai_compatible_replay_reasoning_content
+            ),
             "max_tool_iterations": settings.max_tool_iterations,
             "max_tool_calls_per_turn": settings.max_tool_calls_per_turn,
             "max_turn_wall_seconds": settings.max_turn_wall_seconds,

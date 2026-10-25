@@ -369,6 +369,9 @@ async def run_task(
                 if profiles and profiles[-1].repository_instructions is not None
                 else None,
                 "openai_compatible_transport": settings.openai_compatible_transport,
+                "openai_compatible_replay_reasoning_content": (
+                    settings.openai_compatible_replay_reasoning_content
+                ),
                 "tool_specs": [spec.model_dump(mode="json") for spec in registry.as_tool_specs()],
                 "max_tool_iterations": settings.max_tool_iterations,
                 "max_tool_calls_per_turn": settings.max_tool_calls_per_turn,
