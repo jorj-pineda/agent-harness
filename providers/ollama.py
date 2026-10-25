@@ -27,6 +27,7 @@ from .base import (
     ToolCall,
     ToolSpec,
     UsageFieldState,
+    reject_unsupported_continuation,
 )
 
 
@@ -65,6 +66,7 @@ class OllamaProvider:
         temperature: float = 0.0,
         max_tokens: int | None = None,
     ) -> ProviderResponse:
+        reject_unsupported_continuation(messages)
         options: dict[str, Any] = {"temperature": temperature}
         if max_tokens is not None:
             options["num_predict"] = max_tokens

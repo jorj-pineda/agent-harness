@@ -7,9 +7,17 @@ are normalized here at the boundary.
 
 from __future__ import annotations
 
-from typing import Any, Literal, Protocol, runtime_checkable
+from typing import Any, Literal, Protocol, Self, runtime_checkable
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    SerializerFunctionWrapHandler,
+    field_validator,
+    model_serializer,
+    model_validator,
+)
 
 Role = Literal["system", "user", "assistant", "tool"]
 FinishReason = Literal["stop", "tool_use", "length", "content_filter", "error"]
@@ -27,6 +35,22 @@ class ToolCall(BaseModel):
     arguments: dict[str, Any] = Field(default_factory=dict)
 
 
+class ContinuationState(BaseModel):
+    """Opaque assistant replay data, distinct from answer text or instructions."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True, hide_input_in_errors=True)
+
+    format: Literal["openai-reasoning-content-v1"]
+    text: str = Field(strict=True, max_length=65536)
+
+    @field_validator("text")
+    @classmethod
+    def bounded_utf8(cls, value: str) -> str:
+        if len(value.encode("utf-8")) > 65536:
+            raise ValueError("Assistant continuation exceeds 65536 UTF-8 bytes")
+        return value
+
+
 class ChatMessage(BaseModel):
     role: Role
     content: str = ""
@@ -36,6 +60,21 @@ class ChatMessage(BaseModel):
         default=None,
         description="Tool name for role=tool messages (Ollama wire format).",
     )
+    continuation: ContinuationState | None = None
+
+    @model_validator(mode="after")
+    def assistant_continuation_only(self) -> Self:
+        if self.continuation is not None and self.role != "assistant":
+            raise ValueError("Continuation state belongs only to assistant messages")
+        return self
+
+    @model_serializer(mode="wrap")
+    def serialize_message(self, handler: SerializerFunctionWrapHandler) -> dict[str, Any]:
+        data: dict[str, Any] = handler(self)
+        # Keep legacy transcripts and normalized input identities byte-compatible.
+        if self.continuation is None:
+            data.pop("continuation", None)
+        return data
 
 
 class ToolSpec(BaseModel):
@@ -143,3 +182,11 @@ class ProviderError(Exception):
     def __init__(self, message: str = "", *, failure: ProviderFailure | None = None) -> None:
         super().__init__(message)
         self.failure = failure if failure is not None else ProviderFailure()
+
+
+def reject_unsupported_continuation(messages: list[ChatMessage]) -> None:
+    """Do not silently drop replay data or send it through a different protocol."""
+    if any(message.continuation is not None for message in messages):
+        raise ProviderError(
+            "This provider configuration cannot replay assistant continuation state"
+        )

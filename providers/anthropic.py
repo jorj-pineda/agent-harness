@@ -25,6 +25,7 @@ from .base import (
     TokenUsage,
     ToolCall,
     ToolSpec,
+    reject_unsupported_continuation,
 )
 
 _STOP_REASON_MAP: dict[str, FinishReason] = {
@@ -70,6 +71,7 @@ class AnthropicProvider:
         temperature: float = 0.0,
         max_tokens: int | None = None,
     ) -> ProviderResponse:
+        reject_unsupported_continuation(messages)
         system, converted = _split_system(messages)
         kwargs: dict[str, Any] = {
             "model": self._model,

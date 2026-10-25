@@ -28,6 +28,7 @@ from .base import (
     TokenUsage,
     ToolCall,
     ToolSpec,
+    reject_unsupported_continuation,
 )
 
 
@@ -118,6 +119,7 @@ class OpenAIProvider:
         max_tokens: int | None,
         extra_headers: Mapping[str, str] | None = None,
     ) -> ProviderResponse:
+        reject_unsupported_continuation(messages)
         kwargs: dict[str, Any] = {
             "model": self._model,
             "messages": [_message_to_openai(m) for m in messages],
