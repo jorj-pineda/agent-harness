@@ -4,6 +4,16 @@ Updated: 2026-10-25
 
 ## Current release decision
 
+**2026-10-25 UTC — Refreshed Go metadata and replacement candidate:** the
+[access update](evals/projects/duodoro/GO_ACCESS_STATUS.md) records metadata HTTP
+200 after Jorge refreshed Go; this does not prove generation, allowance or billing.
+CLI/public catalogs omit the planned free LongCat ID. Jorge requested the cheapest
+Go option; currently declared-zero Beam Free is the replacement candidate, subject
+to region/time/access and actual compatibility gates, with no additional spend or
+fallback. The old unrun plan stays historical and cannot launch another model.
+No inference, default/criterion change or G2–G5/release closure. Bounded recording
+route/lifecycle mechanics and scripted CLI coverage are the next offline slices.
+
 **2026-10-25 UTC — Intended-model protocol prepared, access-blocked and unrun:**
 [Eight original T02/T08 CLI cells](evals/projects/duodoro/INTENDED_MODEL_PROTOCOL.md)
 compare the already used Gemma/free-Go LongCat configurations with unchanged
