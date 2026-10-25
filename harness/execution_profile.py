@@ -95,6 +95,16 @@ def _json_digest(value: object) -> str:
     return _digest(json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False))
 
 
+def _compatible_recipe_digest(settings: Settings) -> str | None:
+    options = compatible_transport_options(
+        settings.openai_compatible_transport,
+        replay_reasoning_content=settings.openai_compatible_replay_reasoning_content,
+    )
+    if settings.openai_compatible_replay_reasoning_content:
+        options["continuation_policy"] = "openai-reasoning-content-v1:65536-utf8-bytes"
+    return _json_digest(options) if options else None
+
+
 def _endpoint_digest(provider: str, settings: Settings, model: str | None) -> str | None:
     if model is None:
         return None
@@ -155,10 +165,8 @@ def capture_execution_profile(
         project_check_sha256=None
         if settings.project_check_argv is None
         else _json_digest(settings.project_check_argv),
-        provider_options_sha256=_json_digest(
-            compatible_transport_options(settings.openai_compatible_transport)
-        )
-        if provider == "openai_compatible" and settings.openai_compatible_transport != "generic"
+        provider_options_sha256=_compatible_recipe_digest(settings)
+        if provider == "openai_compatible"
         else None,
         memory_prompt_max_bytes=MAX_MEMORY_PROMPT_BYTES,
         memory_scope_version="workspace-path-v1",

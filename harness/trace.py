@@ -9,12 +9,13 @@ from __future__ import annotations
 
 import hashlib
 import json
-from typing import Literal
+from typing import Any, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, SerializerFunctionWrapHandler, model_serializer
 
 from providers.base import (
     ChatMessage,
+    ContinuationState,
     FinishReason,
     ProviderCallObservation,
     Role,
@@ -169,6 +170,14 @@ class ResponseTrace(BaseModel):
     model: str
     latency_ms: float
     call_observation: ProviderCallObservation | None = None
+    continuation: ContinuationState | None = None
+
+    @model_serializer(mode="wrap")
+    def serialize_response(self, handler: SerializerFunctionWrapHandler) -> dict[str, Any]:
+        data: dict[str, Any] = handler(self)
+        if self.continuation is None:
+            data.pop("continuation", None)
+        return data
 
 
 class MessageTrace(BaseModel):

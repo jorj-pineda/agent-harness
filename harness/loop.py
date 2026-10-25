@@ -328,6 +328,7 @@ async def run_turn(
                     model=response.model,
                     latency_ms=response.latency_ms,
                     call_observation=response.call_observation,
+                    continuation=response.continuation,
                 )
             )
         budget.record(response.usage, sent_count)
@@ -369,6 +370,7 @@ async def run_turn(
                 role="assistant",
                 content=response.content,
                 tool_calls=list(usable_calls),
+                continuation=response.continuation,
             )
         )
 

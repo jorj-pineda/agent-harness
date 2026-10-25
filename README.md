@@ -1629,7 +1629,8 @@ open.
 
 For OpenCode Go, configure the compatible endpoint/model and your key privately,
 then set `OPENAI_COMPATIBLE_TRANSPORT=opencode_go`. The transport requires a key
-and configured URL/model before provider creation. For the currently free preview:
+and configured URL/model before provider creation. The following is the historical
+LongCat preview configuration, now retired; it is not a current launch example:
 
 ```sh
 DEFAULT_PROVIDER=openai_compatible
@@ -1637,6 +1638,16 @@ OPENAI_COMPATIBLE_BASE_URL=https://opencode.ai/inference/go/v1
 OPENAI_COMPATIBLE_MODEL=longcat-2.5-preview-free
 OPENAI_COMPATIBLE_TRANSPORT=opencode_go
 ```
+
+Current model/access preparation is tracked in
+[Go access status](evals/projects/duodoro/GO_ACCESS_STATUS.md); the old LongCat
+comparison plan cannot launch a replacement model. Compatible APIs that require
+assistant `reasoning_content` replay can explicitly select
+`OPENAI_COMPATIBLE_REPLAY_REASONING_CONTENT=true` (default false). This retains
+bounded plaintext assistant continuation in history/traces, counts it in heuristic
+sizing and changes captured provider configuration identity. It does not enable
+backend thinking, invent missing state or establish Beam compatibility. See
+[continuation limits](ASSISTANT_CONTINUATION.md).
 
 Supply `OPENAI_COMPATIBLE_API_KEY` through private settings; account credentials are
 not imported automatically or shown here. Verify current pricing and account limits

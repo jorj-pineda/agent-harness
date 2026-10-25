@@ -128,6 +128,13 @@ class Settings(BaseSettings):
         return value
 
     openai_compatible_transport: Literal["generic", "opencode_go"] = "generic"
+    openai_compatible_replay_reasoning_content: bool = Field(
+        default=False,
+        description=(
+            "Opt in to bounded assistant reasoning_content replay on compatible chat APIs. "
+            "Retains plaintext continuation state in transcripts/traces; not answer text."
+        ),
+    )
 
     @field_validator("openai_compatible_transport")
     @classmethod

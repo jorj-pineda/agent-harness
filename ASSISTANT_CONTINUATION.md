@@ -25,7 +25,8 @@ the existing heuristic context/total-token estimate before dispatch. The size ca
 is per record, not a database quota, exact tokenizer, backend budget or hard RSS
 bound. State is plaintext and potentially sensitive, like existing transcripts.
 
-All current adapters reject supplied continuation state before HTTP rather than
+At the boundary introduction (#216), all adapters reject supplied continuation
+state before HTTP rather than
 silently dropping it or sending it through another protocol. This slice adds no
 response producer or replay option: ordinary messages and default response handling
 remain unchanged. Explicit compatible normalization/round trips and durable shared-
@@ -46,3 +47,49 @@ scripted-contract labels and metric limits were inspected. An import-order lint
 finding was corrected before the final static gate. The first focused invocation
 omitted the live filter; all four live cases skipped for absent configuration and
 no inference ran; the final focused invocation explicitly excluded them.
+
+## Explicit compatible replay
+
+`OPENAI_COMPATIBLE_REPLAY_REASONING_CONTENT=true` opts the shared configured
+compatible factory into this single protocol; it defaults false and is independent
+of the named profile. Dedicated Ollama/Anthropic paths remain unsupported. Direct
+SDK adapter construction may explicitly select `replay_reasoning_content=True`.
+Go still uses its stable conversation headers and zero SDK retries.
+
+On opt-in, absent/null native reasoning stays absent and an empty string stays
+exactly empty. Text is validated through the same 65,536-byte boundary before a
+normalized response can reach tool dispatch. Invalid types/overflow raise a generic
+provider error without echoing the raw field. Usable assistant responses retain
+state separately from content in shared history and optional normalized traces;
+subsequent compatible assistant messages send the original text as
+`reasoning_content`. Other messages receive no fabricated field. Default response
+handling and old no-state serialization stay unchanged.
+
+Replay state is counted by the existing pre-request heuristic. Reported output
+usage remains authoritative; replay does not bypass missing-usage, truncation or
+other completion gates. A large valid state can permit an already requested tool
+and then stop the next request for context pressure; this is not a preventive
+whole-response memory limit. No state is promoted into the final answer or source
+citations. Provider continuation is not an instruction from the harness.
+
+The allowlisted provider-options hash records enabled replay and its protocol/byte
+policy without credentials or state text. Disabled legacy generic/Go recipe hashes
+stay unchanged; enabling/disabling replay causes configuration drift for guarded
+continuation. Other provider identities are unaffected. Real-task/simulated-tool
+reports record the configured flag explicitly; historical reports stay unchanged.
+
+Synthetic SDK/loop tests cover exact Unicode/empty/missing round trips, tool IDs,
+bound session routing, JSON archive/trace round trips, malformed/oversized-state
+no-tool rejection, state-driven next-request context prevention, unchanged output/
+usage guards, default rejection and configured factory/profile drift. These are
+mechanics, not actual hosted behavior or model-quality evidence. Durable API
+restart and guarded-fork regression coverage follows in the third slice. Beam
+selection/price/account checks and a new reviewed actual execution freeze remain
+required before any replacement comparison; the old plan remains historical.
+
+Compatible-replay validation: 144 focused tests passed (one live deselected in the
+subset), 1,529 offline tests passed (five live deselected), Ruff/format/mypy passed.
+Both scripted matrices passed 90/90 at `/tmp/agent-harness-compatible-replay.L1A6Vq`,
+with contract labels/metric limits inspected. A routine test literal-style lint
+finding was fixed before the passing gate; the existing Chroma warning remains.
+No inference or model-quality comparison ran.
