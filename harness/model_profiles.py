@@ -34,6 +34,7 @@ class ModelProfile(BaseModel):
     ollama_think: bool | None = None
     max_completion_retries: int | None = Field(default=None, ge=0, le=3)
     max_tool_iterations: int | None = Field(default=None, ge=1, le=32, strict=True)
+    read_file_default_lines: int | None = Field(default=None, ge=0, le=500, strict=True)
 
     @model_validator(mode="after")
     def check_binding(self) -> ModelProfile:
@@ -57,6 +58,7 @@ class ModelProfile(BaseModel):
             "ollama_think",
             "max_completion_retries",
             "max_tool_iterations",
+            "read_file_default_lines",
         ):
             value = getattr(self, name)
             if value is not None:

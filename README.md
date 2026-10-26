@@ -505,6 +505,13 @@ uses the same validation. Required fields are `provider`, `model`, context token
 (256–1,048,576) and request output tokens (1–1,000,000, no larger than context).
 Optional byte/token calibration (1–8), Ollama thinking and completion-feedback
 retries (0–3) inherit existing settings when omitted/null. Thinking is Ollama-only.
+An optional `read_file_default_lines` integer (0–500) binds the default file-read
+window. Omitted/null inherits `READ_FILE_DEFAULT_LINES`; explicit 0 disables an
+inherited window. Only the selected profile applies it. Boolean, fractional and
+string values in profile JSON are rejected. Omitted/null values preserve earlier
+definition hashes; explicit values, including 0, participate in profile identity
+and the effective setting remains captured independently.
+
 Names use up to 64 ASCII alphanumeric/dot/underscore/hyphen characters; model IDs
 use up to 128 ASCII identifier characters and no whitespace. Unknown fields,
 invalid definitions/selections, oversized catalogs and missing hosted setup fail
@@ -513,7 +520,8 @@ existing provider credentials/OLLAMA_HOST/compatible URL and transport remain in
 operator settings. Validation error strings omit input values.
 
 Selected definition values take precedence over individual model/context/request-cap
-settings, including constructor arguments. Ollama profiles also request that same
+settings and selected read-window values, including constructor arguments. Ollama
+profiles also request that same
 context window from the server. Cumulative turn budgets, workspace/verification
 policy, prompt and toolset stay separately configured. Only the selected provider
 is constructed/allowed; there is no automatic fallback or per-turn selection.
@@ -818,8 +826,11 @@ or old history. It is not permission to ignore unread instructions or claim the
 whole file was inspected. API, real evaluator and live simulated-tool schemas share
 the setting; simulated results remain scripted overrides. Durable execution settings
 record it (legacy absence means 0); changed settings/schemas cause configuration
-drift. Named-profile binding is a separate follow-up. No model-quality improvement
-has been measured; defaults, prior evaluation inputs and criteria remain unchanged.
+drift. Named profiles may explicitly bind this window too; matching guarded forks
+retain it after restart, while policy/workspace drift still blocks before inference.
+These are scripted application-lifecycle checks, not a live-model or process-restart
+trial.
+No model-quality improvement has been measured; defaults, prior evaluation inputs and criteria remain unchanged.
 
 `MAX_REQUEST_OUTPUT_TOKENS` is an explicit output cap on each model request
 (default 0 disables this cap). The request sends the smallest applicable allowance
