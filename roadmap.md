@@ -4,6 +4,19 @@ Updated: 2026-10-26
 
 ## Current release decision
 
+**2026-10-26 UTC — Beam read-window actual freeze prepared, unrun:** the
+[execution freeze](evals/projects/duodoro/READ_WINDOW_EXECUTION_FREEZE.md) pins
+selected-factory first inputs with same per-task messages/allowance, only cross-arm
+read_file-description differences and exact within-arm repeats. Eighteen scripted
+CLI cases/54 owned API lifecycles pass completion, range override, budget/missing
+usage, timeout, billing refusal, cancellation and unchanged restart GET evidence.
+Fifty-seven helper contracts cover refusal/preservation/approval and supplementary
+instruction-range proof; partial ranges are not compliance or acceptance conditions.
+Exact runtime: 103 focused/1,563 offline (five live excluded), Ruff/format/mypy and
+both labeled 90/90 scripted matrices pass. Owned servers settled; actual cohort
+stores/inputs/outcomes/approval remain absent. Independent exact-head review/CI/merge
+and fresh gates remain before inference; no quality/default/old-cohort/no-go/G2–G5 change.
+
 **2026-10-26 UTC — Beam read-window comparison protocol prepared, unrun:** the
 [fixed plan](evals/projects/duodoro/READ_WINDOW_PROTOCOL.md) compares fresh control
 0-line-default/80-line-window arms on original T02/T08, two repeats/task/arm with

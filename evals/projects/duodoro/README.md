@@ -1,5 +1,11 @@
 # Duodoro real-project validation
 
+The [actual read-window freeze](READ_WINDOW_EXECUTION_FREEZE.md) now pins SDK
+inputs and scripted CLI/process proof in both arms. 18 scripted cases, 54 owned
+API lifecycles, 57 helper contracts and exact-runtime gates pass. Independent
+exact-head review/CI/merge and fresh launch gates still precede any generation;
+actual cells remain unrun. Instruction-range evidence stays supplementary.
+
 The [Beam read-window protocol](READ_WINDOW_PROTOCOL.md) prepares eight fresh
 original-task CLI cells comparing default reads with an 80-line window. Budgets
 and criteria stay fixed; actual client preflight and an independently reviewed
