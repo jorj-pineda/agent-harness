@@ -4,6 +4,20 @@ Updated: 2026-10-26
 
 ## Current release decision
 
+**2026-10-26 UTC — Named read-window binding and durable guards:** optional strict
+profile read_file_default_lines (0–500) overrides the global setting only when
+selected; omitted/null inherits and preserves legacy definition hashes. Explicit
+0 disables an inherited window and stays part of the selected identity. Real-file
+scripted evaluation records effective values and rejects unchanged failing artifacts.
+HTTP/SSE source reads/edits preserve unread user bytes, checkpoints and exact saved
+evidence after API lifecycle restart. Matching keyed forks retain the window and
+replayed keys do no new work; changed policy or workspace blocks before provider
+calls/tools/checkpoints. No live model calls, automatic selection/tuning, old-history
+rewrite, Duodoro edit or quality/release claim. Validation: 74 focused/1,563 offline (five live excluded), Ruff/format/mypy and
+both scripted 90/90 matrices passed with labels/limits inspected. This implements
+only the final part of the three-PR diagnostic/read-window/profile mechanics slice,
+not compaction, a measured gain or broad G2–G5.
+
 **2026-10-26 UTC — Opt-in default file-read window:** validated
 READ_FILE_DEFAULT_LINES (0 unchanged; 1–500 opt in) bounds replies only when
 end_line is omitted. Exact selected ranges and continuation metadata retain full-file
