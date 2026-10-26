@@ -3,8 +3,9 @@
 The [fresh Gemma/Beam protocol](BEAM_COMPARISON_PROTOCOL.md) prepares eight original
 T02/T08 CLI cells with unchanged criteria and approved limits. Current metadata
 lists Beam and Jorge attests existing Go availability; generation/billing remain
-unobserved. Actual client preflight, billing/no-forward gates and independent exact
-execution-freeze review remain before any inference. The old LongCat plan stays
+unobserved. The [actual execution freeze](BEAM_COMPARISON_EXECUTION_FREEZE.md) now records
+18 scripted CLI cases/54 API lifecycles, 41 refusal checks and exact-runtime gates.
+Independent exact-head review/CI/merge and fresh launch gates remain before inference. The old LongCat plan stays
 historical and unrun; this is a distinct comparison.
 
 The [current Go access update](GO_ACCESS_STATUS.md) records a refreshed metadata

@@ -1,8 +1,22 @@
 # Roadmap: a coding harness for lower-tier models
 
-Updated: 2026-10-25
+Updated: 2026-10-26
 
 ## Current release decision
+
+**2026-10-26 UTC — Gemma/Beam actual execution freeze prepared, unrun:** the
+[freeze](evals/projects/duodoro/BEAM_COMPARISON_EXECUTION_FREEZE.md) pins actual
+selected-factory first input/profile parity, original tasks and approved limits at
+a new disposable root. Eighteen scripted CLI cases across 54 owned API lifecycles
+cover completion, budget/missing usage, timeout, billing refusal, cancellation and
+unchanged default/review-only restart GET evidence; 41 offline refusal/preservation
+checks pass. Strict post-response billing metadata refusal cannot prevent an already
+incurred unexpected charge; metadata/user attestation does not prove entitlement.
+Exact runtime: 103 focused/1,539 offline (five live excluded), Ruff/format/mypy and
+both scripted 90/90 matrices with labels/limits inspected. Owned servers settled;
+Gemma remains unloaded and actual cohort stores/inputs/outcomes absent. Independent
+exact-head review/CI/merge and fresh launch gates remain before any inference. No
+quality claim, Duodoro edits, old-cohort/default/criterion change or G2–G5 closure.
 
 **2026-10-25 UTC — Fresh Gemma/Beam protocol prepared, unrun:** the
 [replacement protocol](evals/projects/duodoro/BEAM_COMPARISON_PROTOCOL.md) fixes eight
