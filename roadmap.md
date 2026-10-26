@@ -4,6 +4,18 @@ Updated: 2026-10-25
 
 ## Current release decision
 
+**2026-10-25 UTC — Fresh Gemma/Beam protocol prepared, unrun:** the
+[replacement protocol](evals/projects/duodoro/BEAM_COMPARISON_PROTOCOL.md) fixes eight
+original T02/T08 CLI cells, original source-review/criteria and approved limits.
+Authenticated metadata lists Beam; Jorge attests active Go/account-region access;
+public declared-free pricing is not generation or billing proof. Zero additional
+spend/no fallback and a post-response billing refusal are explicit, including its
+inability to prevent an already-incurred unexpected charge. Fresh original initial/
+reference checks and four provisional shared input contracts pass; 103 focused
+regressions pass without inference. Actual inputs/stores/client factories/G0 remain
+unset pending preflight and independently reviewed execution freeze. Old LongCat
+plan/cohorts, 8/10 target, no-go/defaults and G2–G5 remain unchanged.
+
 **2026-10-25 UTC — Durable compatible replay coverage:** HTTP/SSE synthetic-SDK
 cases save exact assistant state after real read/write/configured pytest operations;
 fresh API lifecycle GET retains identical SQLite session/run evidence. A matching
