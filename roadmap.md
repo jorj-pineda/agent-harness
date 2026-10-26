@@ -4,6 +4,20 @@ Updated: 2026-10-26
 
 ## Current release decision
 
+**2026-10-26 — Thin CLI recovery-context preview:** a bounded explicit JSON
+selection file drives one owner-scoped preview POST with no metadata fetch, retry
+or continuation submission. Shared client response validators retain original
+completion/check/omission/unknown evidence, exact saved source and terminal-safe
+output; ordered selections, common checkpoint/same-file metadata, source totals
+and combined hashes are checked before either human or JSON output. Scripted CLI
+review after API lifecycle restart preserves historical identity and later user
+edits without provider calls. This closes the deterministic assembly/API/CLI
+[preview slice](RECOVERY_CONTEXT.md), not prospective prompt/context-fit review,
+instruction retention, automatic compaction, execution or measured recovery.
+Defaults, historical cohorts, no-go/8-of-10 and broad G2–G5 remain unchanged.
+Validation: 210 focused regressions pass; full offline/static gates are required
+before merge. No inference or Duodoro edits ran.
+
 **2026-10-26 — Owner-checked recovery-context preview API:** structured POST
 computes the bounded historical bundle without creating work or durable state.
 Owner lookup precedes source access; extra execution fields, active runs, stale
@@ -13,8 +27,10 @@ hide private error text. Scripted HTTP/SSE partial-edit previews are identical a
 lifecycle restart despite later user work and a moved workspace, with unchanged
 archive/run/checkpoint identity and no new provider calls. This adds API access to
 the [preview contract](RECOVERY_CONTEXT.md), not automatic compaction or execution.
-CLI access follows separately. Original cohorts, defaults, no-go/8-of-10 and broad
-G2–G5 remain unchanged; no inference or Duodoro edits ran.
+CLI access follows separately. Validation before merge: 63 focused/1,752 offline
+tests (five live deselected), Ruff/format/mypy and both CI checks passed. Original
+cohorts, defaults, no-go/8-of-10 and broad G2–G5 remain unchanged; no inference or
+Duodoro edits ran.
 
 **2026-10-26 — Deterministic recovery-context assembly:** an explicit saved-run
 hash plus zero to four disjoint source ranges joins the bounded recovery packet

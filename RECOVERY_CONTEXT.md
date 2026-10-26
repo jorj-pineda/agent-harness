@@ -100,3 +100,53 @@ provider views. These checks establish historical assembly mechanics, not proces
 restart reliability, current-file attestation or live-model recovery. CLI access,
 prospective prompt/context-fit review and guarded use of smaller history remain
 separate work. All existing no-go and task acceptance criteria stay unchanged.
+
+## CLI selection and preview
+
+Save a deliberate selection as a UTF-8 JSON file containing exactly
+`expected_record_sha256` and `spans`, using the API example above without `user_id`.
+Obtain the run serialization hash from `recovery-review` and file hashes/ranges
+from that run's linked final checkpoint. Then:
+
+```sh
+agent-harness recovery-review <run-id> --user-id dev1 --json
+agent-harness recovery-context <run-id> --user-id dev1 \
+  --selection-file /path/to/selection.json
+```
+
+Add `--json` to print the server preview. Human output leads with original run,
+completion/check/workspace status and all recovery omissions/unknowns, followed by
+selected source, combined hash and explicit non-execution scope. Both modes escape
+saved text for terminal safety, including source terminators and control characters.
+Displayed indentation/escaping can exceed the compact server response size.
+
+The command reads only the owner-supplied selection file: regular UTF-8 input
+capped at 8,192 bytes plus an overflow sentinel, with POSIX final-component
+no-follow/nonblocking flags where available. Duplicate JSON keys,
+extra fields, invalid hashes/ranges, overlapping selections and excessive selection
+counts reject before HTTP. The API remains authoritative for canonical/excluded
+paths, ownership and saved checkpoint access. There is one 30-second preview POST,
+with no implicit metadata GET, retry, fallback, current-source read or continuation
+submission. Private input/transport/server failures print exception category only,
+plus explicit review guidance; file contents and error bodies are not echoed.
+
+Before printing, the thin client reuses existing recovery-review and span response
+validators, checks the requested run hash and ordered selections, final-checkpoint
+kind/common identity, same-file metadata consistency, aggregate source bytes and
+the combined evidence hash. Unsupported/inconsistent envelopes fail without partial
+output. These are consistency checks against the selected response, not independent
+verification that storage is truthful or that the checkpoint belongs to the run;
+server-side binding remains necessary. A self-consistent hash does not authenticate
+text, prove current state, validate context fit or grant execution permission.
+
+The 210 focused core/API/CLI regressions include 80 new CLI cases. Scripted CLI
+requests against a restarted real API preserve exact historical source and original
+run/archive identity while later user edits and a moved workspace survive; no new
+run or provider call occurs. Existing review/span commands pass after shared client
+validation extraction. One test's overbroad privacy assertion matched the generic
+word `saved` in error guidance; it was narrowed to detect actual evidence leakage.
+Full offline/static gates remain required before merge. No inference, quality gain,
+automatic compaction, execution or release-gate closure follows. This closes only
+the three-PR deterministic assembly/API/CLI slice. Prospective prompt assembly,
+instruction retention, context-fit review, guarded execution and measured recovery
+remain separate work; panel controls remain deferred.
