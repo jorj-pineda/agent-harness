@@ -233,6 +233,21 @@ class Settings(BaseSettings):
         default="full",
         description="whole_file omits replace_text; all other tools remain unchanged.",
     )
+    read_file_default_lines: int = Field(
+        default=0,
+        ge=0,
+        le=500,
+        description="Opt-in default read_file window when end_line is absent; 0 keeps full reads. "
+        "Explicit ranges and existing scan/byte/line limits remain unchanged.",
+    )
+
+    @field_validator("read_file_default_lines", mode="before")
+    @classmethod
+    def validate_read_window(cls, value: object) -> object:
+        if isinstance(value, (bool, float)):
+            raise ValueError("read_file_default_lines must be an integer")
+        return value
+
     require_verification_before_finish: bool = Field(
         default=False,
         description="Require the configured check after file-tool edits before completion.",

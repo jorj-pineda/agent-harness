@@ -269,6 +269,7 @@ async def run_task(
                     user_id="eval",
                     workspace_root=str(copy.workspace.root),
                     coding_toolset=settings.coding_toolset,
+                    read_file_default_lines=settings.read_file_default_lines,
                     command_env={"PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1"},
                     memory_session=session,
                 )
@@ -360,6 +361,7 @@ async def run_task(
             turn_trace=[record.model_dump(mode="json") for record in turn_trace],
             runtime_config={
                 "coding_toolset": settings.coding_toolset,
+                "read_file_default_lines": settings.read_file_default_lines,
                 "model_profile": identity.model_dump()
                 if (identity := settings.profile_identity()) is not None
                 else None,

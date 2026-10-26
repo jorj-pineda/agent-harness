@@ -178,6 +178,7 @@ def _build_live_simulated_registry(
     user_id: str,
     workspace_root: str,
     coding_toolset: CodingToolset = "full",
+    read_file_default_lines: int = 0,
 ) -> ToolRegistry:
     """Expose production coding specs without executing any repository tool.
 
@@ -206,6 +207,7 @@ def _build_live_simulated_registry(
         support_tools=support_tools,
         code_tool_transform=simulate,
         coding_toolset=coding_toolset,
+        read_file_default_lines=read_file_default_lines,
     )
 
 
@@ -355,6 +357,7 @@ async def _run_one(
                 user_id=user_id,
                 workspace_root=workspace_root,
                 coding_toolset=settings.coding_toolset,
+                read_file_default_lines=settings.read_file_default_lines,
             )
             response = await run_configured_turn(
                 settings=settings,
