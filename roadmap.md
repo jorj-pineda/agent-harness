@@ -4,6 +4,18 @@ Updated: 2026-10-26
 
 ## Current release decision
 
+**2026-10-26 — Owner-checked recovery-context preview API:** structured POST
+computes the bounded historical bundle without creating work or durable state.
+Owner lookup precedes source access; extra execution fields, active runs, stale
+hashes, unrelated/missing checkpoints and source/aggregate bounds refuse without
+partial evidence. Success prohibits caching; storage/inconsistent-record failures
+hide private error text. Scripted HTTP/SSE partial-edit previews are identical after
+lifecycle restart despite later user work and a moved workspace, with unchanged
+archive/run/checkpoint identity and no new provider calls. This adds API access to
+the [preview contract](RECOVERY_CONTEXT.md), not automatic compaction or execution.
+CLI access follows separately. Original cohorts, defaults, no-go/8-of-10 and broad
+G2–G5 remain unchanged; no inference or Duodoro edits ran.
+
 **2026-10-26 — Deterministic recovery-context assembly:** an explicit saved-run
 hash plus zero to four disjoint source ranges joins the bounded recovery packet
 with exact linked turn-after checkpoint spans. Run/session/pair identity rejects
@@ -12,8 +24,8 @@ without partial output. Original statuses, missing-final unknowns and omission
 metadata survive restart without current workspace access. The
 [preview contract](RECOVERY_CONTEXT.md) is historical owner evidence, not executable
 history, automatic compaction or a continuation permission. API/CLI access are the
-next separate slices. Fifty focused regressions and static checks pass; full offline
-validation is required before merge. No inference, quality/default change, Duodoro
+next separate slices. Fifty focused regressions, 1,732 offline tests (five live deselected) and static
+checks passed before merge. No inference, quality/default change, Duodoro
 edit or closure of no-go/8-of-10/broad G2–G5 follows.
 
 **2026-10-26 — CLI saved checkpoint-span selection:** explicit path/hash/range

@@ -52,3 +52,51 @@ overlapping/excess selections, aggregate source/escaped JSON limits and all-or-e
 selection. The initial test fixture incorrectly used manual checkpoint storage for
 turn checkpoints; it was corrected to exercise real atomic run binding. The full
 offline gate is required before merge; no live model result is claimed.
+
+## Owner-checked API preview
+
+`POST /runs/{run_id}/recovery-context` computes a read-only preview. POST carries
+explicit structured range selections; it creates no run, checkpoint, journal or
+saved bundle. The body contains `user_id`, `expected_record_sha256` and `spans`
+(an explicit list of zero to four selections). Extra fields, including execution
+options, are rejected. For example:
+
+```json
+{
+  "user_id": "dev1",
+  "expected_record_sha256": "<recovery-review source_record_sha256>",
+  "spans": [
+    {
+      "path": "src/example.py",
+      "expected_sha256": "<saved whole-file sha256>",
+      "start_line": 1,
+      "end_line": 20
+    }
+  ]
+}
+```
+
+Placeholders above must be replaced with actual 64-character lowercase SHA-256
+values. First review the existing owner-scoped recovery packet and run metadata;
+obtain file hashes from that run's `after_checkpoint_id` metadata. This route never
+accepts an arbitrary checkpoint ID or auto-selects/expands ranges. No current
+workspace needs to exist. A repeated preview recomputes the same historical result
+without dispatching work, but clients should report errors without automatic retry.
+
+Existing user-ID ownership lookup runs before assembly/source access; this is the
+project's existing ownership convention, not account authentication. Missing runs
+return 404, foreign owners 403, invalid/missing body fields 422. Running records,
+stale run/file hashes or missing/mismatched/corrupt checkpoint evidence return 409.
+Uncaptured paths return 404, nonexistent ranges 422, invalid selected UTF-8 415,
+and source/span/aggregate/encoded-response limits 413. Context errors and source
+refusals return fixed codes with no partial evidence; SQLite errors return a generic
+503. Invalid stored records return a generic 409 without private exception text.
+Successful source responses set `Cache-Control: no-store`.
+
+HTTP/SSE scripted real-file runs return byte-identical previews after application
+lifecycle restart despite later user edits and a moved workspace. Original run,
+archive, checkpoint and run count remain unchanged; preview builds no tools or
+provider views. These checks establish historical assembly mechanics, not process
+restart reliability, current-file attestation or live-model recovery. CLI access,
+prospective prompt/context-fit review and guarded use of smaller history remain
+separate work. All existing no-go and task acceptance criteria stay unchanged.

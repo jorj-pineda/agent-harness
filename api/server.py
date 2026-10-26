@@ -61,6 +61,11 @@ from harness.execution_profile import ExecutionProfile
 from harness.grounding import Grounder
 from harness.policy import classify_task, is_out_of_scope_request
 from harness.providers import build_configured_provider, configured_model, configured_provider_names
+from harness.recovery_context import (
+    RecoveryContext,
+    RecoveryContextUnavailable,
+    build_recovery_context,
+)
 from harness.recovery_review import RecoveryReview, build_recovery_review
 from harness.reverts import FileRevertInput, FileRevertOutcome, FileRevertRecord, revert_file
 from harness.router import ProviderNotFoundError, ProviderRouter
@@ -96,6 +101,7 @@ from .models import (
     DeleteMemoryResponse,
     ReclassifyMemoryRequest,
     ReclassifyMemoryResponse,
+    RecoveryContextRequest,
     RevertFileRequest,
     SubmitRunRequest,
 )
@@ -897,6 +903,50 @@ def _register_routes(app: FastAPI) -> None:
                 status_code=413,
                 detail="Saved metadata exceeds recovery review bounds; inspect the original run.",
             ) from exc
+
+    @app.post(
+        "/runs/{run_id}/recovery-context",
+        response_model=RecoveryContext,
+        responses={
+            409: {
+                "description": "Run active, record/checkpoint identity changed or corrupt source."
+            },
+            413: {"description": "Source, span or complete context preview exceeds bounds."},
+            415: {"description": "Selected historical source is not exact UTF-8 text."},
+        },
+    )
+    async def inspect_recovery_context(
+        run_id: str, req: RecoveryContextRequest, request: Request, response: Response
+    ) -> RecoveryContext:
+        """Read-only historical assembly with explicit selections; never submits execution."""
+        components: Components = request.app.state.components
+        try:
+            record = _lookup_run(components, run_id, req.user_id)
+            result = build_recovery_context(_session_store(components), record, req)
+        except RecoveryContextUnavailable as exc:
+            status = 413 if exc.code in {"context_too_large", "source_budget_exceeded"} else 409
+            raise HTTPException(status_code=status, detail={"code": exc.code}) from exc
+        except CheckpointSpanUnavailable as exc:
+            status = {
+                "file_not_captured": 404,
+                "hash_mismatch": 409,
+                "file_too_large": 413,
+                "span_too_large": 413,
+                "response_too_large": 413,
+                "range_unavailable": 422,
+                "invalid_utf8": 415,
+            }.get(exc.code, 409)
+            raise HTTPException(status_code=status, detail={"code": exc.code}) from exc
+        except sqlite3.Error as exc:
+            raise HTTPException(
+                status_code=503, detail="Saved recovery context storage unavailable."
+            ) from exc
+        except ValueError as exc:
+            raise HTTPException(
+                status_code=409, detail="Saved recovery context evidence is inconsistent."
+            ) from exc
+        response.headers["Cache-Control"] = "no-store"
+        return result
 
     @app.get("/runs/{run_id}/tool-progress", response_model=ToolProgress)
     async def inspect_tool_progress(
