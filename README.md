@@ -1046,6 +1046,20 @@ a hard return bound, SSE event replay, automatic polling/reconnection or crash r
 
 ### Submit and inspect durable runs
 
+Inspect a bounded saved-run recovery packet from the CLI:
+
+```sh
+agent-harness recovery-review <run-id> --user-id dev1
+agent-harness recovery-review <run-id> --user-id dev1 --json
+```
+
+The human view retains observed completion/check states, failed/unavailable checks,
+recent action outcomes and diffs, including source hashes, truncation and omitted
+counts. Missing-final counts display `unknown`. Both modes make one owner-scoped
+GET; failures exit without automatic retry or continuation. Human text is JSON
+escaped for terminal safety. The JSON packet and excerpts can contain sensitive
+saved source text; this is owner review, not a public redacted export.
+
 For a bounded recovery review, use
 `GET /runs/<run_id>/recovery-review?user_id=dev1`. This returns saved objective,
 statuses, failed/unavailable checks, recent action outcomes and bounded diffs with
