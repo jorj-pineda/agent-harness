@@ -1,0 +1,635 @@
+{
+  "actual_first_inputs": null,
+  "additional_paid_budget_usd": 0,
+  "all_model_execution_gate": "Prepared unrun protocol only. No generation before actual preflight, independently reviewed merged exact execution freeze, explicit parent receipt and fresh launch gates.",
+  "arms": {
+    "C": {
+      "label": "control current full default reads",
+      "read_file_default_lines": 0
+    },
+    "W": {
+      "label": "window default reads80 lines; explicit end override unchanged",
+      "read_file_default_lines": 80
+    }
+  },
+  "billing_policy": {
+    "additional_paid_budget_usd": 0,
+    "limits": "Metadata and user attestation do not prove entitlement or billing. Post-response refusal cannot prevent already-incurred unexpected charges; unknown costs stay unknown.",
+    "no_fallback": true,
+    "no_subscription_changes": true,
+    "pricing_check": "Current public Go pricing and exact model metadata before cohort and each hosted cell; unknown/nonzero blocks.",
+    "response_guard": "Finite numeric non-boolean usage.cost == 0, billing_source in free/go/go-plus, estimated absent or literal false; malformed/missing/positive/estimated/balance/byok data rejects before tool proposals/further dispatch."
+  },
+  "cells": [
+    {
+      "arm": "C",
+      "artifact_accepted": null,
+      "client": "CLI",
+      "completed_and_accepted": null,
+      "execution_status": "unrun",
+      "id": "T02-C1",
+      "model_key": "B",
+      "order": 1,
+      "preset": "full",
+      "read_file_default_lines": 0,
+      "repeat": 1,
+      "source_review": null,
+      "task": "T02"
+    },
+    {
+      "arm": "W",
+      "artifact_accepted": null,
+      "client": "CLI",
+      "completed_and_accepted": null,
+      "execution_status": "unrun",
+      "id": "T02-W1",
+      "model_key": "B",
+      "order": 2,
+      "preset": "full",
+      "read_file_default_lines": 80,
+      "repeat": 1,
+      "source_review": null,
+      "task": "T02"
+    },
+    {
+      "arm": "W",
+      "artifact_accepted": null,
+      "client": "CLI",
+      "completed_and_accepted": null,
+      "execution_status": "unrun",
+      "id": "T02-W2",
+      "model_key": "B",
+      "order": 3,
+      "preset": "full",
+      "read_file_default_lines": 80,
+      "repeat": 2,
+      "source_review": null,
+      "task": "T02"
+    },
+    {
+      "arm": "C",
+      "artifact_accepted": null,
+      "client": "CLI",
+      "completed_and_accepted": null,
+      "execution_status": "unrun",
+      "id": "T02-C2",
+      "model_key": "B",
+      "order": 4,
+      "preset": "full",
+      "read_file_default_lines": 0,
+      "repeat": 2,
+      "source_review": null,
+      "task": "T02"
+    },
+    {
+      "arm": "W",
+      "artifact_accepted": null,
+      "client": "CLI",
+      "completed_and_accepted": null,
+      "execution_status": "unrun",
+      "id": "T08-W1",
+      "model_key": "B",
+      "order": 5,
+      "preset": "full",
+      "read_file_default_lines": 80,
+      "repeat": 1,
+      "source_review": null,
+      "task": "T08"
+    },
+    {
+      "arm": "C",
+      "artifact_accepted": null,
+      "client": "CLI",
+      "completed_and_accepted": null,
+      "execution_status": "unrun",
+      "id": "T08-C1",
+      "model_key": "B",
+      "order": 6,
+      "preset": "full",
+      "read_file_default_lines": 0,
+      "repeat": 1,
+      "source_review": null,
+      "task": "T08"
+    },
+    {
+      "arm": "C",
+      "artifact_accepted": null,
+      "client": "CLI",
+      "completed_and_accepted": null,
+      "execution_status": "unrun",
+      "id": "T08-C2",
+      "model_key": "B",
+      "order": 7,
+      "preset": "full",
+      "read_file_default_lines": 0,
+      "repeat": 2,
+      "source_review": null,
+      "task": "T08"
+    },
+    {
+      "arm": "W",
+      "artifact_accepted": null,
+      "client": "CLI",
+      "completed_and_accepted": null,
+      "execution_status": "unrun",
+      "id": "T08-W2",
+      "model_key": "B",
+      "order": 8,
+      "preset": "full",
+      "read_file_default_lines": 80,
+      "repeat": 2,
+      "source_review": null,
+      "task": "T08"
+    }
+  ],
+  "cli_response_timeout_seconds": 600,
+  "client_preflight": null,
+  "common_settings": {
+    "coding_prompt_profile": "compact",
+    "enable_support_tools": false,
+    "load_root_agents": false,
+    "max_completion_retries": 1,
+    "max_context_tokens": 16384,
+    "max_files_touched_per_turn": 2,
+    "max_identical_tool_calls": 2,
+    "max_request_output_tokens": 2048,
+    "min_request_output_tokens": 256,
+    "ollama_num_ctx": 16384,
+    "ollama_think": false,
+    "project_check_argv": [
+      "python",
+      "-m",
+      "pytest",
+      "-q",
+      "test_visible.py"
+    ],
+    "prompt_estimate_bytes_per_token": 3,
+    "read_file_default_lines": 0,
+    "request_timeout_seconds": 180,
+    "require_plan_before_edit": false,
+    "require_verification_before_finish": true
+  },
+  "comparison_variable": "Only selected profile read_file_default_lines0 vs80 and its production read_file description/omitted-end result behavior. Both selected profiles named beam; other definition/settings equal.",
+  "execution_manifest": null,
+  "fresh_environment_model_price_access_receipts": null,
+  "g0": null,
+  "historical_results_unchanged": true,
+  "hosted_gate": {
+    "existing_user_attestation": "Active Go/account-region Beam availability attested2026-10-25; no account action/independent Console verification. Recheck metadata/pricing before each named cell.",
+    "generation_before_freeze_merge": false,
+    "metadata_gate_source_sha256": "9f15ae795e2b37e94dfff217a69890f836bde1ca9f4c87e4c69f766569d3e070",
+    "metadata_preparation_receipt": {
+      "additional_paid_budget_usd": 0,
+      "catalog_entries": 38,
+      "checked_at_UTC": "2026-10-26T04:53:17.941175+00:00",
+      "exact_model": "beam-free",
+      "generation": false,
+      "limits": [
+        "Metadata is not a documented authentication test or generation/entitlement/allowance/billing proof.",
+        "Declared-free can change; post-response refusal cannot prevent unexpected already-incurred charges."
+      ],
+      "listed": true,
+      "metadata_status": 200,
+      "public_Beam_rows": [
+        [
+          "Beam Free",
+          "Free",
+          "Free",
+          "Free",
+          "-",
+          "Unlimitedlimited time"
+        ],
+        [
+          "Beam Free",
+          "Free",
+          "Free",
+          "Free",
+          "-",
+          "Unlimitedlimited time"
+        ],
+        [
+          "Beam Free",
+          "Unlimited",
+          "Unlimited",
+          "Unlimited"
+        ],
+        [
+          "Beam Free",
+          "Unlimited",
+          "Unlimited",
+          "Unlimited"
+        ],
+        [
+          "Beam Free",
+          "beam-free",
+          "https://opencode.ai/inference/go/openai/v1/chat/completions",
+          "@ai-sdk/openai-compatible"
+        ],
+        [
+          "Beam Free",
+          "Not used",
+          "30 days"
+        ]
+      ],
+      "public_pricing_sha256": "1d7134c19959a2e897cfb9270675991db0285e2548ce1bfa6a4f4cfa90d70fb2",
+      "public_pricing_url": "https://opencode.ai/v2/docs/console/go/",
+      "user_attestation": "Jorge confirmed active Go and Beam availability in account/region on 2026-10-25. Not independently verified."
+    },
+    "metadata_preparation_receipt_sha256": "46f6174eb2e6e104578719c29e76e4f790c9084975eabb0f62b0b14dd86be14e",
+    "no_warmup": true,
+    "prior_observation": "All23returnedBeamresponses in previous distinct cohort reported cost0/sourcego; not proof of this cohort entitlement/allowance/billing."
+  },
+  "inference_preconditions": [
+    "Protocol review/CI/merge, actual client and SDK capture/negative preflight, exact-runtimeG0 and independent exact-freeze review/CI/merge.",
+    "Parent approval receipt plus immutable exact input/root/evidence/criterion checks before dispatch.",
+    "Current exact Beam listing and declared-zero public Go prices; existing attested subscription route only; no balance/paid fallback.",
+    "Finite nonboolean numeric response cost0, sourcefree/go/go-plus, estimate absent/literalFalse before tools/onward requests; any missing/invalid report stops all remaining cells.",
+    "Provider/account/rate/quota/transport error or missing usage stops remaining cohort; normal bounded harness budget/truncation stops remain unsuccessful cells, continue only complete evidence and valid gates.",
+    "One original CLI submission/key/cell; uncertain delivery allows original-key GET only, not resubmission."
+  ],
+  "inference_ran": false,
+  "initial_contract": "Same initial messages/temperature/2048 allowance per task; read_file.description is the sole cross-arm tool-schema difference. Pin exact first normalized/native wire per arm and require repeat equality within task/arm; never substitute roots/tool IDs/reasoning to fake equality.",
+  "instruction_observation": "Supplementary union of actual AGENTS.md read_file line ranges, total-lines/hash provenance and whether any portions remained unread; counts are not instruction understanding/compliance. Do not alter original acceptance or task hints. Smaller replies are not success and cannot authorize ignoring instructions. LOAD_ROOT_AGENTS=false remains common; whole-file root loader is not changed.",
+  "kind": "unrun-beam-read-window-comparison-plan",
+  "limits": [
+    "Same served model label/route and application runtime; hosted revision/caching/defaults/tokenizer and stateful order effects unknown. Two public tasks/temperature0repeats are not held out, statistical proof or a general task envelope.",
+    "Control is freshly run in new cohort, not historical counts reused as an arm. Native schemas intentionally differ only by read_file.description; later histories diverge.",
+    "Window80 is unmeasured, not a recommendation; explicit ranges may override it or unread evidence may hurt outcomes. No root instruction removal/summary/history rewriting.",
+    "No warmup/failed-input replay/followup/repair/replacement/new task hint/compaction/other model or repository; originalbudget/timeouts unchanged.",
+    "Reported usage/cost is backend evidence not tokenizer/cache/billing invoice attestation. Post-response billing refusal cannot prevent already-incurred unexpected charges.",
+    "Original cohorts,no-go/featurefreeze,8of10target,productiondefaults and G2-G5 unchanged."
+  ],
+  "max_coding_runs": 8,
+  "max_coding_runs_per_arm": 4,
+  "max_coding_runs_per_model": {
+    "beam-free": 8
+  },
+  "max_reserved_dispatch_seconds": 2400,
+  "max_reserved_iterations": 96,
+  "max_reserved_output_tokens": 65536,
+  "max_reserved_reported_tokens": 512000,
+  "max_reserved_tools": 192,
+  "model_profiles": {
+    "C": {
+      "beam": {
+        "max_completion_retries": 1,
+        "max_context_tokens": 16384,
+        "max_request_output_tokens": 2048,
+        "max_tool_iterations": 12,
+        "model": "beam-free",
+        "prompt_estimate_bytes_per_token": 3,
+        "provider": "openai_compatible",
+        "read_file_default_lines": 0
+      }
+    },
+    "W": {
+      "beam": {
+        "max_completion_retries": 1,
+        "max_context_tokens": 16384,
+        "max_request_output_tokens": 2048,
+        "max_tool_iterations": 12,
+        "model": "beam-free",
+        "prompt_estimate_bytes_per_token": 3,
+        "provider": "openai_compatible",
+        "read_file_default_lines": 80
+      }
+    }
+  },
+  "models": {
+    "B": {
+      "additional_paid_budget_usd": 0,
+      "backend_context": "harness cap16384; backend limit/compliance unobserved",
+      "capture_chat_path": "/inference/go/openai/v1/chat/completions",
+      "compatible_base_url": "https://opencode.ai/inference/go/openai/v1",
+      "continuation_policy": "openai-reasoning-content-v1:65536-utf8-bytes",
+      "conversation_header": "x-opencode-session",
+      "fresh_identity": null,
+      "local": false,
+      "model": "beam-free",
+      "profile": "beam",
+      "provider": "openai_compatible",
+      "replay_reasoning_content": true,
+      "sdk_max_retries": 0,
+      "thinking_option": "No thinking/effort option sent; continuation replay does not enable thinking; served defaults unknown",
+      "transport": "opencode_go",
+      "user_agent": "agent-harness/0.1"
+    }
+  },
+  "offline_preparation": {
+    "focused_regressions_passed": 103,
+    "local_root": "/Users/jorge/.local/share/agent-harness/trials/duodoro-read-window-plan-5k0t4dao",
+    "phase": "Two fresh original template validations and four provisional shared contracts only; actual selected SDK/CLI/stores/environment/freeze remain unset.",
+    "receipt": {
+      "arm_profile_definitions": {
+        "C": {
+          "max_completion_retries": 1,
+          "max_context_tokens": 16384,
+          "max_request_output_tokens": 2048,
+          "max_tool_iterations": 12,
+          "model": "beam-free",
+          "prompt_estimate_bytes_per_token": 3,
+          "provider": "openai_compatible",
+          "read_file_default_lines": 0
+        },
+        "W": {
+          "max_completion_retries": 1,
+          "max_context_tokens": 16384,
+          "max_request_output_tokens": 2048,
+          "max_tool_iterations": 12,
+          "model": "beam-free",
+          "prompt_estimate_bytes_per_token": 3,
+          "provider": "openai_compatible",
+          "read_file_default_lines": 80
+        }
+      },
+      "contracts": [
+        {
+          "arm": "C",
+          "heuristic_prompt_tokens": 3119,
+          "inference": false,
+          "initial_request_allowance": 2048,
+          "normalized_identity_at_provisional_contract_root": {
+            "format": "normalized-chat-request-v1",
+            "messages_sha256": "c2c0a9cf3ab3aa2efae74198ba714b0cf3c16f4c8dbc93b9453daad03ebd9610",
+            "request_sha256": "f66ac5627e793e3bb863e50876562aecc870de062c65c0f80c51cd14d1be0337",
+            "tool_specs_sha256": "ed9513f8ec9f445e896debdce70694aec434cf29756ba7c42d06f0557c029db2"
+          },
+          "only_selected_provider_configured": true,
+          "provider_constructed": false,
+          "read_file_default_lines": 0,
+          "selected_model": "beam-free",
+          "selected_profile_identity": {
+            "definition_sha256": "b13523d48ccc70e17534df757605d30841dbd9f3a7d3afd842716b9a182ee4d0",
+            "model": "beam-free",
+            "name": "beam",
+            "provider": "openai_compatible",
+            "schema_version": 1
+          },
+          "selected_provider": "openai_compatible",
+          "task": "T02",
+          "tool_names": [
+            "remember_fact",
+            "recall_facts",
+            "read_file",
+            "grep_repo",
+            "list_dir",
+            "tree",
+            "git_status",
+            "git_diff",
+            "emit_plan",
+            "write_file",
+            "replace_text",
+            "run_command"
+          ]
+        },
+        {
+          "arm": "W",
+          "heuristic_prompt_tokens": 3197,
+          "inference": false,
+          "initial_request_allowance": 2048,
+          "normalized_identity_at_provisional_contract_root": {
+            "format": "normalized-chat-request-v1",
+            "messages_sha256": "c2c0a9cf3ab3aa2efae74198ba714b0cf3c16f4c8dbc93b9453daad03ebd9610",
+            "request_sha256": "aadeca3b9f6a4da3a1fce1febffc3bc920d4b27b5123cf57106f3f9743f7ef08",
+            "tool_specs_sha256": "d50a23e40dc569b4953fd115989d813bba78932119115d92de42574e67823601"
+          },
+          "only_selected_provider_configured": true,
+          "provider_constructed": false,
+          "read_file_default_lines": 80,
+          "selected_model": "beam-free",
+          "selected_profile_identity": {
+            "definition_sha256": "65b0d613bff95e13c36c928b5f61240ecc81d7ca22223ea68dcdbe6f89a67ca3",
+            "model": "beam-free",
+            "name": "beam",
+            "provider": "openai_compatible",
+            "schema_version": 1
+          },
+          "selected_provider": "openai_compatible",
+          "task": "T02",
+          "tool_names": [
+            "remember_fact",
+            "recall_facts",
+            "read_file",
+            "grep_repo",
+            "list_dir",
+            "tree",
+            "git_status",
+            "git_diff",
+            "emit_plan",
+            "write_file",
+            "replace_text",
+            "run_command"
+          ]
+        },
+        {
+          "arm": "C",
+          "heuristic_prompt_tokens": 3223,
+          "inference": false,
+          "initial_request_allowance": 2048,
+          "normalized_identity_at_provisional_contract_root": {
+            "format": "normalized-chat-request-v1",
+            "messages_sha256": "eb6cf60e5ac95cc059842477a7e8aacaf14d92dc2e54dd7a445199930ddb3932",
+            "request_sha256": "f303fdf76ac84518cc2c9ba8759eab386011458e19f423991b462c0274e7a6b5",
+            "tool_specs_sha256": "ed9513f8ec9f445e896debdce70694aec434cf29756ba7c42d06f0557c029db2"
+          },
+          "only_selected_provider_configured": true,
+          "provider_constructed": false,
+          "read_file_default_lines": 0,
+          "selected_model": "beam-free",
+          "selected_profile_identity": {
+            "definition_sha256": "b13523d48ccc70e17534df757605d30841dbd9f3a7d3afd842716b9a182ee4d0",
+            "model": "beam-free",
+            "name": "beam",
+            "provider": "openai_compatible",
+            "schema_version": 1
+          },
+          "selected_provider": "openai_compatible",
+          "task": "T08",
+          "tool_names": [
+            "remember_fact",
+            "recall_facts",
+            "read_file",
+            "grep_repo",
+            "list_dir",
+            "tree",
+            "git_status",
+            "git_diff",
+            "emit_plan",
+            "write_file",
+            "replace_text",
+            "run_command"
+          ]
+        },
+        {
+          "arm": "W",
+          "heuristic_prompt_tokens": 3301,
+          "inference": false,
+          "initial_request_allowance": 2048,
+          "normalized_identity_at_provisional_contract_root": {
+            "format": "normalized-chat-request-v1",
+            "messages_sha256": "eb6cf60e5ac95cc059842477a7e8aacaf14d92dc2e54dd7a445199930ddb3932",
+            "request_sha256": "71cfca5f3df117c0c3a415334ca98055775bdfc0262781911c79f5d0ac89894a",
+            "tool_specs_sha256": "d50a23e40dc569b4953fd115989d813bba78932119115d92de42574e67823601"
+          },
+          "only_selected_provider_configured": true,
+          "provider_constructed": false,
+          "read_file_default_lines": 80,
+          "selected_model": "beam-free",
+          "selected_profile_identity": {
+            "definition_sha256": "65b0d613bff95e13c36c928b5f61240ecc81d7ca22223ea68dcdbe6f89a67ca3",
+            "model": "beam-free",
+            "name": "beam",
+            "provider": "openai_compatible",
+            "schema_version": 1
+          },
+          "selected_provider": "openai_compatible",
+          "task": "T08",
+          "tool_names": [
+            "remember_fact",
+            "recall_facts",
+            "read_file",
+            "grep_repo",
+            "list_dir",
+            "tree",
+            "git_status",
+            "git_diff",
+            "emit_plan",
+            "write_file",
+            "replace_text",
+            "run_command"
+          ]
+        }
+      ],
+      "duodoro_head_status_index_refs_unchanged": true,
+      "inference_ran": false,
+      "kind": "offline-read-window-protocol-contracts-NOT-inference",
+      "limits": [
+        "Provisional shared prompt/registry/allowance only; actual CLI/factory/SDK/wire/stores/environment and reviewed freeze remain required.",
+        "Cross-arm schemas/request identities intentionally differ only by read_file description; no root/history substitution.",
+        "Dummy settings credential never leaves process; no network or generation in this preparation.",
+        "Root instruction contents/criteria untouched; partial range is not full-file inspection."
+      ],
+      "local_root": "/Users/jorge/.local/share/agent-harness/trials/duodoro-read-window-plan-5k0t4dao",
+      "provider_constructed": false,
+      "recipe_sha256": "6320ac1f7055d995c05b48f3eb5bd974538996a6f1e0915b3c04837c5eff9dbe",
+      "runtime_candidate": "9f06bf19b7e361c8ec065f44df1835c5056442cc",
+      "tasks": [
+        {
+          "id": "T02",
+          "initial_visible_external_fail_reference_visible_external_pass": true,
+          "original_request_criteria_setup_reference_hashes_modes_match": true,
+          "root_instructions_full_file_sha256": "efc573cca6a89993e35535aea0cd077a9d7177596741518b54ebece3bb405d10",
+          "root_instructions_total_lines": 265,
+          "same_messages_and_allowance_only_read_file_description_schema_difference": true
+        },
+        {
+          "id": "T08",
+          "initial_visible_external_fail_reference_visible_external_pass": true,
+          "original_request_criteria_setup_reference_hashes_modes_match": true,
+          "root_instructions_full_file_sha256": "efc573cca6a89993e35535aea0cd077a9d7177596741518b54ebece3bb405d10",
+          "root_instructions_total_lines": 265,
+          "same_messages_and_allowance_only_read_file_description_schema_difference": true
+        }
+      ]
+    },
+    "receipt_sha256": "d5eee26faf8245d36f82f78102d101a93528be49086afe3e2b66f3eb0429ae10",
+    "recipe_sha256": "6320ac1f7055d995c05b48f3eb5bd974538996a6f1e0915b3c04837c5eff9dbe"
+  },
+  "owner": "duodoro-read-window-cli",
+  "per_turn": {
+    "max_completion_tokens_per_turn": 8192,
+    "max_tool_calls_per_turn": 24,
+    "max_tool_iterations": 12,
+    "max_total_tokens_per_turn": 64000,
+    "max_turn_wall_seconds": 300
+  },
+  "primary_outcome": "Completed-and-independent-artifact-accepted /4 per arm, /2 per task/arm; retain every planned cell and unsuccessful outcome. Visible checks, artifacts, stop causes, usage/cost uncertainty and scopes separate. No release envelope/general gain from2publictasks/2repeats.",
+  "recording": {
+    "evaluation_only": true,
+    "incomplete_evidence_stops_further_dispatch": true,
+    "maximum_bytes_per_file": 1048576,
+    "maximum_requests_per_phase": 12,
+    "maximum_total_bytes_per_phase": 8388608,
+    "raw_inputs_local_only": true
+  },
+  "release_gate_closure": false,
+  "runtime_candidate": "9f06bf19b7e361c8ec065f44df1835c5056442cc",
+  "schema_version": 1,
+  "source_review": {
+    "T08_required": true,
+    "pending_means_unknown": true,
+    "rubric": "acceptance/duration_refactor/source-review.md",
+    "rubric_sha256": "f0f5d549e94ad1aeee3e568ec27e3704d5885b4c27a8aa362d3586b953b7a6a7"
+  },
+  "source_revision": "5324cabba4ad3c8ad2e1cd1480218cf087d9b741",
+  "tasks": [
+    {
+      "acceptance_files_sha256": {
+        "baseline.json": "a2052accd1b601c157861a630fc5fa5169e7dcab1050dab62107c818ed8fafb7",
+        "test_acceptance.py": "71c615741d10b39668529f0b8e8cdab285e8a6f60bd97b8332717021e11f74ce"
+      },
+      "adapter": "timer_normalization",
+      "allowed_modified_paths": [
+        "server/payloadParsers.js"
+      ],
+      "category": "bugfix",
+      "comparison_client": "CLI",
+      "historical_client": "panel",
+      "id": "T02",
+      "reference_files_sha256": {
+        "server/payloadParsers.js": "56c19d07980e94727486714f8f727a4ab95a1cc49028a2190ccf4c8795b073bd"
+      },
+      "request": "In Duodoro, normalize parseStartSession focusDuration and breakDuration in server/payloadParsers.js to whole seconds by flooring the final defaulted/clamped numeric values. Preserve Number coercion, falsy/NaN defaults (1500 focus, 300 break), min/max clamps (60..7200 focus, 30..3600 break), Infinity clamping, string session-id validation, mode parsing and all other exported parser behavior. Inspect AGENTS.md and server/payloadParsers.test.js first. Only modify server/payloadParsers.js; preserve all other files and tests. This disposable pure-parser evaluation adds test_visible.py as a visible Node adapter: run [\"python\",\"-m\",\"pytest\",\"-q\",\"test_visible.py\"] after editing. It does not run the full Vitest/Socket.IO/server suite. Do not install dependencies, start services or touch Docker. Report actual checks and limits honestly.",
+      "request_utf8_sha256": "0824f29e080a293c6fdf0bba6b5f721a99084aa0ff2c67ba64e777ab09953680",
+      "requires_independent_source_review": false,
+      "setup_files": {
+        "preexisting-user-work.txt": {
+          "mode": 420,
+          "sha256": "0d1c51a1d68631ec595d6a59a23dffc86aea09e0c4d4c3bcd65183d1735e1c58"
+        },
+        "test_visible.py": {
+          "mode": 420,
+          "sha256": "a56f0b5c5a71967fc19c4cf9c28ede72bd7bb8b8499daac63248688af7441cc4"
+        }
+      }
+    },
+    {
+      "acceptance_files_sha256": {
+        "baseline.json": "bd1164ea4069327c0a0caed5cb01dec55545a9315e80d57dbe86f717e299c558",
+        "checks.mjs": "b53efa86e913731759ac3d786ccc5ef875b2514099289fbbba7d35a0101855f6",
+        "golden.json": "df3d2bd21984958ca1bc604300df67a6aca41e0a66823f9ea8d9140afc96b3f6",
+        "source-review.md": "f0f5d549e94ad1aeee3e568ec27e3704d5885b4c27a8aa362d3586b953b7a6a7",
+        "test_acceptance.py": "96f290ded070f1c566080c1892c27e91c7e3a6a26d64444ce32d996dcff8a87c"
+      },
+      "adapter": "duration_refactor",
+      "allowed_modified_paths": [
+        "server/payloadParsers.js"
+      ],
+      "category": "refactor",
+      "comparison_client": "CLI",
+      "historical_client": "panel",
+      "id": "T08",
+      "reference_files_sha256": {
+        "server/payloadParsers.js": "28890c306075b7de4dcb7ff8eb27b66b89d7f634ef8e24d756c55ed5685609cd"
+      },
+      "request": "In the disposable pinned Duodoro source, Extract and export boundedDuration(value, fallback, min, max), and use the same helper for both parseStartSession duration fields. Preserve Math.min(Math.max(Number(value) || fallback, min), max), including fractional seconds, defaults, infinity clamps and thrown Symbol coercion. Preserve session IDs, modes and every existing parser/export. This is a behavior-preserving refactor: do not floor durations. Besides executable behavioral checks, independent source review will verify actual reuse for both fields and removal of duplication; an unused exported helper does not satisfy the request. Inspect applicable instructions and relevant existing code/tests first. Only modify server/payloadParsers.js. Preserve every other file, tests and pre-existing work. This library task adds test_visible.py and visible_check.mjs as visible Node-native checks. After editing run [\"python\",\"-m\",\"pytest\",\"-q\",\"test_visible.py\"]. This is not full application/Vitest/typechecking coverage. Do not install dependencies, start services or touch Docker. Report actual check outcomes, unresolved issues and limits honestly.",
+      "request_utf8_sha256": "d360d89d7ea83b9968a89096cf44d1ebdd044d00dd46742c731fd85de45699ad",
+      "requires_independent_source_review": true,
+      "setup_files": {
+        "preexisting-user-work.txt": {
+          "mode": 420,
+          "sha256": "0d1c51a1d68631ec595d6a59a23dffc86aea09e0c4d4c3bcd65183d1735e1c58"
+        },
+        "test_visible.py": {
+          "mode": 420,
+          "sha256": "a11949e7a91097373c2722033ed35e2b8fbf1f9d79f0df77342b41757de94758"
+        },
+        "visible_check.mjs": {
+          "mode": 420,
+          "sha256": "449b3cebb914bec88aac664dec64ea8f227b8470b41a0bad3c4b663446cace27"
+        }
+      }
+    }
+  ],
+  "workspace_policy": "One new literal disposable root shared by8cells, independent absent stores/inputs and empty facts. Original full trees/modes/requests/criteria. Complete full archive/regrade/source-review/restart/input/hash/cleanup audits gate replacement. Preserve later external work and unrun/blocked rows."
+}
