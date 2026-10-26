@@ -1,5 +1,12 @@
 # Duodoro real-project validation
 
+The [fresh Gemma/Beam protocol](BEAM_COMPARISON_PROTOCOL.md) prepares eight original
+T02/T08 CLI cells with unchanged criteria and approved limits. Current metadata
+lists Beam and Jorge attests existing Go availability; generation/billing remain
+unobserved. Actual client preflight, billing/no-forward gates and independent exact
+execution-freeze review remain before any inference. The old LongCat plan stays
+historical and unrun; this is a distinct comparison.
+
 The [current Go access update](GO_ACCESS_STATUS.md) records a refreshed metadata
 200 and the unavailable old LongCat ID. Jorge selected the cheapest Go option;
 Beam Free is the replacement candidate, with zero additional spend and actual
