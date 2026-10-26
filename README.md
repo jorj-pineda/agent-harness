@@ -1081,6 +1081,8 @@ first to select the full saved file hash. It returns only the explicit bounded
 range, including exact terminators and saved version/range metadata, with no
 current-file access or new execution. Existing metadata routes still omit source
 contents. See [saved span limits and refusal codes](CHECKPOINT_SPANS.md).
+Explicit [recovery-context preview](RECOVERY_CONTEXT.md) joins selected final-checkpoint
+spans with saved run evidence without submitting continuation.
 
 For a bounded recovery review, use
 `GET /runs/<run_id>/recovery-review?user_id=dev1`. This returns saved objective,
