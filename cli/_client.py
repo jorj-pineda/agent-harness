@@ -8,6 +8,7 @@ directly. All agent logic stays in the server; the client calls /sessions and
 from __future__ import annotations
 
 import hashlib
+import json
 import uuid
 from dataclasses import dataclass, field
 from typing import Any
@@ -285,7 +286,10 @@ class AgentClient:
         resp.raise_for_status()
         if len(resp.content) > 32768:
             raise ValueError("Recovery review exceeds the supported wire size")
-        record = resp.json()
+        return self._validate_recovery_review(resp.json(), run_id)
+
+    @staticmethod
+    def _validate_recovery_review(record: Any, run_id: str) -> dict[str, Any]:
         if (
             not isinstance(record, dict)
             or type(record.get("schema_version")) is not int
@@ -341,6 +345,114 @@ class AgentClient:
         if not isinstance(record.get("objective"), dict):
             raise ValueError("Missing recovery objective evidence")
         return record
+
+    def recovery_context(
+        self, user_id: str, run_id: str, selection: dict[str, Any]
+    ) -> dict[str, Any]:
+        def digest(value: object) -> bool:
+            return (
+                isinstance(value, str)
+                and len(value) == 64
+                and all(char in "0123456789abcdef" for char in value)
+            )
+
+        if (
+            set(selection) != {"expected_record_sha256", "spans"}
+            or not digest(selection.get("expected_record_sha256"))
+            or not isinstance(selection.get("spans"), list)
+            or len(selection["spans"]) > 4
+        ):
+            raise ValueError("Invalid recovery context selection")
+        requested = selection["spans"]
+        for i, item in enumerate(requested):
+            if (
+                not isinstance(item, dict)
+                or set(item) != {"path", "expected_sha256", "start_line", "end_line"}
+                or not isinstance(item["path"], str)
+                or not 1 <= len(item["path"]) <= 1024
+                or not digest(item["expected_sha256"])
+                or type(item["start_line"]) is not int
+                or type(item["end_line"]) is not int
+                or not 1 <= item["start_line"] <= item["end_line"] <= 1_048_576
+                or item["end_line"] - item["start_line"] + 1 > 200
+            ):
+                raise ValueError("Invalid recovery context span selection")
+            for previous in requested[:i]:
+                if item["path"] == previous["path"] and (
+                    item["expected_sha256"] != previous["expected_sha256"]
+                    or max(item["start_line"], previous["start_line"])
+                    <= min(item["end_line"], previous["end_line"])
+                ):
+                    raise ValueError("Conflicting recovery context selections")
+        resp = httpx.post(
+            f"{self._base}/runs/{run_id}/recovery-context",
+            json={"user_id": user_id, **selection},
+            timeout=30,
+        )
+        resp.raise_for_status()
+        if len(resp.content) > 65536:
+            raise ValueError("Recovery context exceeds supported wire size")
+        data = resp.json()
+        if (
+            not isinstance(data, dict)
+            or type(data.get("schema_version")) is not int
+            or data["schema_version"] != 1
+            or data.get("read_only") is not True
+            or data.get("execution_supported") is not False
+            or type(data.get("max_serialized_bytes")) is not int
+            or data["max_serialized_bytes"] != 65536
+            or not isinstance(data.get("scope_note"), str)
+            or not digest(data.get("evidence_sha256"))
+            or not isinstance(data.get("spans"), list)
+            or len(data["spans"]) != len(requested)
+            or type(data.get("selected_source_bytes")) is not int
+            or not 0 <= data["selected_source_bytes"] <= 16384
+        ):
+            raise ValueError("Unsupported recovery context response")
+        review = self._validate_recovery_review(data.get("review"), run_id)
+        if review["source_record_sha256"] != selection["expected_record_sha256"]:
+            raise ValueError("Mismatched recovery context run hash")
+        source_bytes = 0
+        checkpoint_identity = None
+        file_metadata: dict[str, tuple[Any, ...]] = {}
+        for span, item in zip(data["spans"], requested, strict=True):
+            if (
+                not isinstance(span, dict)
+                or span.get("checkpoint_kind") != "turn_after"
+                or not isinstance(span.get("session_id"), str)
+                or not span["session_id"]
+                or not isinstance(span.get("checkpoint_id"), str)
+                or not span["checkpoint_id"]
+            ):
+                raise ValueError("Invalid final-checkpoint source identity")
+            self._validate_checkpoint_span(
+                span,
+                span["session_id"],
+                span["checkpoint_id"],
+                item["path"],
+                item["expected_sha256"],
+                item["start_line"],
+                item["end_line"],
+            )
+            identity = (span["session_id"], span["checkpoint_id"], span["checkpoint_record_sha256"])
+            if checkpoint_identity is not None and identity != checkpoint_identity:
+                raise ValueError("Mixed final-checkpoint source identities")
+            checkpoint_identity = identity
+            metadata = (span["file_sha256"], span["file_bytes"], span["total_lines"], span["mode"])
+            if span["path"] in file_metadata and metadata != file_metadata[span["path"]]:
+                raise ValueError("Contradictory saved file metadata across ranges")
+            file_metadata[span["path"]] = metadata
+            source_bytes += span["selected_bytes"]
+        if source_bytes != data["selected_source_bytes"]:
+            raise ValueError("Contradictory recovery context source totals")
+
+        def compact(value: object) -> str:
+            return json.dumps(value, ensure_ascii=False, separators=(",", ":"))
+
+        evidence = compact(review) + "\n" + "\n".join(compact(s) for s in data["spans"])
+        if hashlib.sha256(evidence.encode()).hexdigest() != data["evidence_sha256"]:
+            raise ValueError("Recovery context evidence hash mismatch")
+        return data
 
     def tool_progress(self, user_id: str, run_id: str) -> dict[str, Any]:
         resp = httpx.get(
@@ -420,7 +532,27 @@ class AgentClient:
         resp.raise_for_status()
         if len(resp.content) > 32768:
             raise ValueError("Checkpoint span response exceeds the supported size")
-        data = resp.json()
+        return self._validate_checkpoint_span(
+            resp.json(), session_id, checkpoint_id, path, expected_sha256, start_line, end_line
+        )
+
+    @staticmethod
+    def _validate_checkpoint_span(
+        data: Any,
+        session_id: str,
+        checkpoint_id: str,
+        path: str,
+        expected_sha256: str,
+        start_line: int,
+        end_line: int,
+    ) -> dict[str, Any]:
+        def digest(value: object) -> bool:
+            return (
+                isinstance(value, str)
+                and len(value) == 64
+                and all(char in "0123456789abcdef" for char in value)
+            )
+
         if (
             not isinstance(data, dict)
             or type(data.get("schema_version")) is not int

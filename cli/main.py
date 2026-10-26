@@ -790,6 +790,10 @@ def recovery_review(
         typer.echo(json.dumps(review, indent=2))
         return
 
+    _show_recovery_review(review)
+
+
+def _show_recovery_review(review: dict[str, Any]) -> None:
     # JSON-escape every saved value so repository/model text cannot control the terminal.
     def value(name: str) -> str:
         item = review.get(name)
@@ -819,6 +823,59 @@ def recovery_review(
     typer.echo("Excerpt truncation and omitted items require inspection of the original saved run.")
     typer.echo("Returned tools are not proof of success; saved diffs do not attest current files.")
     typer.echo(value("scope_note"))
+
+
+@app.command()
+def recovery_context(
+    run_id: str = typer.Argument(...),
+    selection_file: Path = typer.Option(
+        ..., "--selection-file", help="Explicit UTF-8 JSON selections."
+    ),
+    base_url: str = typer.Option("http://localhost:8000", "--base-url"),
+    user_id: str = typer.Option("cli-user", "--user-id"),
+    raw: bool = typer.Option(False, "--json", help="Print the bounded historical preview."),
+) -> None:
+    """Preview selected saved recovery context; never submits continuation."""
+    try:
+        fd = os.open(selection_file, os.O_RDONLY | os.O_NONBLOCK | getattr(os, "O_NOFOLLOW", 0))
+        with os.fdopen(fd, "rb") as source:
+            if not stat.S_ISREG(os.fstat(source.fileno()).st_mode):
+                raise ValueError("Selection input must be a regular file")
+            content = source.read(8193)
+        if len(content) > 8192:
+            raise ValueError("Selection input exceeds 8192 bytes")
+
+        def unique_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+            result: dict[str, Any] = {}
+            for key, value in pairs:
+                if key in result:
+                    raise ValueError("Duplicate JSON selection key")
+                result[key] = value
+            return result
+
+        selection = json.loads(content.decode("utf-8"), object_pairs_hook=unique_keys)
+        if not isinstance(selection, dict):
+            raise ValueError("Selection must be a JSON object")
+        preview = AgentClient(base_url).recovery_context(user_id, run_id, selection)
+    except Exception as exc:
+        typer.echo(
+            f"Recovery context unavailable ({type(exc).__name__}). Review saved hashes/ranges; "
+            "no continuation was submitted. No automatic retry.",
+            err=True,
+        )
+        raise typer.Exit(code=1) from exc
+    if raw:
+        typer.echo(json.dumps(preview, indent=2))
+        return
+    _show_recovery_review(preview["review"])
+    typer.echo("Historical context preview only; execution_supported=false.")
+    typer.echo(
+        f"selected_source_bytes={preview['selected_source_bytes']} spans={len(preview['spans'])}"
+    )
+    typer.echo(f"evidence_sha256={json.dumps(preview['evidence_sha256'])}")
+    for span in preview["spans"]:
+        typer.echo(f"saved_span={json.dumps(span)}")
+    typer.echo(json.dumps(preview["scope_note"]))
 
 
 @app.command()
