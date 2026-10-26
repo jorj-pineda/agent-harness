@@ -4,6 +4,20 @@ Updated: 2026-10-26
 
 ## Current release decision
 
+**2026-10-26 UTC — Fixed Gemma/Beam cohort complete:** the
+[results](evals/projects/duodoro/BEAM_COMPARISON_RESULTS.md) retain all eight
+original T02/T08 CLI cells: Gemma 2/4 accepted completions (both refactors), Beam
+1/4 (one timer fix). Two local timer read timeouts retain unknown usage/absent
+final responses; hosted truncation and two token-gate stops leave unchanged files.
+External acceptance/regrade and all original T08 source verdicts are recorded.
+All 23 returned hosted responses report zero Go cost, not independently verified
+invoices; no hosted stop-all error occurred. Exact freeze review/CI/merge preceded
+inference; one pre-submission HOME/keyring correction is disclosed. All archives,
+inputs, one-run stores and restart evidence pass final audit; 24 owned API lifecycles
+settled and evaluation-loaded Gemma was unloaded. No repair/fallback/replacement or
+Duodoro edits. This closes only the protocol/freeze/results slice, not public-task
+quality generalization, the original 8/10 target, release no-go or broad G2–G5.
+
 **2026-10-26 UTC — Gemma/Beam actual execution freeze prepared, unrun:** the
 [freeze](evals/projects/duodoro/BEAM_COMPARISON_EXECUTION_FREEZE.md) pins actual
 selected-factory first input/profile parity, original tasks and approved limits at

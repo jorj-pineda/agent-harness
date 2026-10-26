@@ -17,6 +17,25 @@ simulated-tool results live elsewhere and are not comparable.
 Raw reports (traces, diffs, acceptance output, usage, runtime config) are in
 `evals/results/`.
 
+## 2026-10-26 — Original Duodoro T02/T08, Gemma / Beam descriptive cohort
+
+The [results and limits](projects/duodoro/BEAM_COMPARISON_RESULTS.md) and
+[raw sanitized rows](results/2026-10-26-gemma-beam-original-t02-t08-cli.json) record
+eight actual CLI/shared-runtime attempts after independent protocol/freeze review
+and CI/merge. Runtime `de6083d`, original public source/criteria, two repeats/model/
+task and identical approved limits remain fixed. Gemma accepted completions: T02
+0/2, T08 2/2 (2/4 total). Beam: T02 1/2, T08 0/2 (1/4 total). These are distinct
+native model/provider configurations, not a causal or general ranking.
+
+Both local timer calls time out on their second request with unknown aggregate
+usage/absent TurnResponse. Hosted failures are truncation and two token-gate stops;
+all failed artifacts remain initial. Successful patches pass external acceptance/
+regrade; refactors also pass original source review. All 23 returned hosted responses
+report zero Go cost, with backend/invoice limits retained. All eight original keyed
+runs, archives/inputs/restart evidence and 24 owned API cleanup records are audited;
+Gemma is unloaded and Duodoro unchanged. No repair/replacement/fallback. Original
+cohorts/no-go, held-out targets and G2–G5 are unchanged.
+
 ## 2026-09-29 — `gemma4:12b`, server context 4,096 (baseline)
 
 | Field | Value |

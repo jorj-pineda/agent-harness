@@ -1,5 +1,12 @@
 # Duodoro real-project validation
 
+The [Gemma/Beam results](BEAM_COMPARISON_RESULTS.md) close all eight original
+T02/T08 CLI cells: Gemma 2/4 and Beam 1/4 completed-and-accepted. Two local timer
+timeouts, one hosted truncation and two hosted token-gate stops remain in the raw
+report. All 23 returned hosted responses reported zero Go cost; this is backend
+evidence, not invoice verification. All archives/restarts/cleanup passed, with no
+Duodoro edits or repairs. Public-task results do not change release no-go/G2–G5.
+
 The [fresh Gemma/Beam protocol](BEAM_COMPARISON_PROTOCOL.md) prepares eight original
 T02/T08 CLI cells with unchanged criteria and approved limits. Current metadata
 lists Beam and Jorge attests existing Go availability; generation/billing remain
