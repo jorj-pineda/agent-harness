@@ -4,6 +4,16 @@ Updated: 2026-10-26
 
 ## Current release decision
 
+**2026-10-26 UTC — Retained Beam payload diagnosis:**
+[offline attribution](evals/projects/duodoro/BEAM_PAYLOAD_DIAGNOSIS.md) pairs all
+23 original Beam inputs with existing hashes/budget records. Each cell read AGENTS.md
+once; its 17,387-byte serialized reply persisted in later requests. Tool replies
+dominate final refactor message payloads; continuation state is smaller. Counts are
+heuristic payload bytes, not provider tokens/cache/causal proof. No replay/inference,
+fixture/history/budget/default change or quality claim. Next slices are an opt-in
+default read window with explicit range/hash evidence, then named-profile binding
+and restart/drift coverage; any live comparison stays separate. No-go/G2–G5 remain.
+
 **2026-10-26 UTC — Fixed Gemma/Beam cohort complete:** the
 [results](evals/projects/duodoro/BEAM_COMPARISON_RESULTS.md) retain all eight
 original T02/T08 CLI cells: Gemma 2/4 accepted completions (both refactors), Beam

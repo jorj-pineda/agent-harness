@@ -1,5 +1,10 @@
 # Duodoro real-project validation
 
+The [retained Beam payload diagnosis](BEAM_PAYLOAD_DIAGNOSIS.md) attributes actual
+input bytes without inference: large tool replies, including one AGENTS.md read
+per cell, persist in later requests. This motivates an opt-in read-window experiment,
+not a measured improvement or permission to change old cohorts.
+
 The [Gemma/Beam results](BEAM_COMPARISON_RESULTS.md) close all eight original
 T02/T08 CLI cells: Gemma 2/4 and Beam 1/4 completed-and-accepted. Two local timer
 timeouts, one hosted truncation and two hosted token-gate stops remain in the raw
