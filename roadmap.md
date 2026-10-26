@@ -4,6 +4,18 @@ Updated: 2026-10-26
 
 ## Current release decision
 
+**2026-10-26 UTC — Beam read-window comparison protocol prepared, unrun:** the
+[fixed plan](evals/projects/duodoro/READ_WINDOW_PROTOCOL.md) compares fresh control
+0-line-default/80-line-window arms on original T02/T08, two repeats/task/arm with
+unchanged budgets/criteria. Initial messages/allowances match; only the production
+read_file description differs across arm schemas, with per-arm repeat identity
+required at actual freeze. Fresh original initial/reference validations and four
+provisional contracts pass; 103 focused regressions pass, with no generation. Current
+metadata lists Beam at declared-zero Go prices, not entitlement/invoice proof.
+Instruction-range coverage is supplementary, not permission to ignore unread text
+or an easier criterion. Actual client preflight/G0/independent exact execution freeze
+remain before inference; no historical-cohort/default/quality/no-go/G2–G5 change.
+
 **2026-10-26 UTC — Named read-window binding and durable guards:** optional strict
 profile read_file_default_lines (0–500) overrides the global setting only when
 selected; omitted/null inherits and preserves legacy definition hashes. Explicit
