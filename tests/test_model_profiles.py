@@ -399,3 +399,100 @@ async def test_profile_iteration_limit_is_enforced_and_recorded_in_real_runtime(
     assert result.runtime_config["max_tool_iterations"] == limit
     assert result.runtime_config["model_profile"] == settings.profile_identity().model_dump()
     assert result.verification_status == "not_run"
+
+
+def test_read_window_profile_inheritance_selection_and_legacy_hash():
+    import hashlib
+
+    legacy = hashlib.sha256(
+        json.dumps(PROFILE, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+    assert ModelProfile(**PROFILE).identity("local").definition_sha256 == legacy
+    assert (
+        ModelProfile(**PROFILE, read_file_default_lines=None).identity("local").definition_sha256
+        == legacy
+    )
+    inherited = Settings(
+        _env_file=None,
+        model_profiles={"local": PROFILE},
+        model_profile="local",
+        read_file_default_lines=5,
+    )
+    assert inherited.read_file_default_lines == 5
+    for window in [0, 80, 500]:
+        catalog = {"local": {**PROFILE, "read_file_default_lines": window}}
+        selected = Settings(
+            _env_file=None, model_profiles=catalog, model_profile="local", read_file_default_lines=5
+        )
+        assert selected.read_file_default_lines == window
+        assert selected.profile_identity() != inherited.profile_identity()
+        assert (
+            Settings(
+                _env_file=None, model_profiles=catalog, read_file_default_lines=5
+            ).read_file_default_lines
+            == 5
+        )
+    assert Settings(_env_file=None).read_file_default_lines == 0
+
+
+@pytest.mark.parametrize("window", [-1, 501, True, 1.5, "80"])
+def test_profile_read_window_rejects_invalid_catalog_values(window):
+    with patch("harness.providers.create_chat_provider") as factory, pytest.raises(ValidationError):
+        Settings(
+            _env_file=None,
+            model_profiles={
+                "local": {
+                    **PROFILE,
+                    "read_file_default_lines": window,
+                }
+            },
+            model_profile="local",
+        )
+    factory.assert_not_called()
+
+
+@pytest.mark.parametrize("window", [0, 1])
+async def test_profile_read_window_is_used_and_recorded_by_real_evaluator(window):
+    from evals.real_run import load_tasks, run_task
+    from providers.base import ToolCall
+
+    provider = ScriptedProvider()
+    provider.name = "ollama"
+    provider.script(
+        make_response(
+            prompt_tokens=10,
+            completion_tokens=5,
+            tool_calls=[
+                ToolCall(
+                    id="read",
+                    name="read_file",
+                    arguments={"path": "calc.py"},
+                )
+            ],
+        ),
+        make_response(content="Inspected.", prompt_tokens=10, completion_tokens=5),
+    )
+    settings = Settings(
+        _env_file=None,
+        model_profiles={
+            "local": {
+                **PROFILE,
+                "max_context_tokens": 8192,
+                "read_file_default_lines": window,
+            }
+        },
+        model_profile="local",
+        read_file_default_lines=3,
+    )
+    task = load_tasks()[0]
+    original = (task.fixture / "calc.py").read_bytes()
+    result = await run_task(task, provider=provider, settings=settings, mode="harness")
+    reply = json.loads(next(m.content for m in provider.calls[-1][0] if m.role == "tool"))
+    if window:
+        assert reply["end_line"] == 1 and reply["read_window"]["has_more"]
+    else:
+        assert reply["end_line"] == reply["total_lines"] and "read_window" not in reply
+    assert result.runtime_config["read_file_default_lines"] == window
+    assert result.runtime_config["model_profile"] == settings.profile_identity().model_dump()
+    assert not result.passed  # Unchanged artifact still fails independent acceptance.
+    assert (task.fixture / "calc.py").read_bytes() == original
