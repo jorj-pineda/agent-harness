@@ -4,6 +4,18 @@ Updated: 2026-10-26
 
 ## Current release decision
 
+**2026-10-26 — Owner-checked checkpoint-span API:** explicit historical-source
+GET binds session/checkpoint ownership, selected path, expected whole-file hash and
+inclusive range before saved blob access. Exact saved text and version metadata
+survive API lifecycle restart despite later edits or a removed workspace; original
+manual/turn-after kinds, archives and run identities remain intact. Metadata routes
+still omit contents. Bounded refusals return fixed codes without partial text;
+storage errors are generic and successful source responses prohibit caching.
+This is deliberate owner review, not compaction, current-file attestation or
+continuation permission. CLI selection follows; defaults, old cohorts, no-go/8-of-10
+and broad G2–G5 remain unchanged. Validation: 50 focused/1,657 offline tests
+(five live deselected), Ruff/format/mypy and local documentation links pass.
+
 **2026-10-26 — Exact saved checkpoint-span extraction:** a typed selection
 binds canonical non-excluded paths, full-file hashes and explicit bounded line
 ranges to historical captured bytes. The [span contract](CHECKPOINT_SPANS.md)

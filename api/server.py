@@ -48,6 +48,12 @@ from harness.admission import turn_admission
 from harness.budget_evidence import BudgetObservation
 from harness.cancellation import TurnCancellation
 from harness.check_suggestions import CheckSuggestions, suggest_project_checks
+from harness.checkpoint_spans import (
+    CheckpointSpan,
+    CheckpointSpanSelection,
+    CheckpointSpanUnavailable,
+    read_checkpoint_span,
+)
 from harness.checkpoints import CheckpointRecord, CheckpointSummary, capture_checkpoint
 from harness.configuration_review import ConfigurationReview, review_configuration
 from harness.continuation import ContinuationBlocked, check_continuation
@@ -672,6 +678,66 @@ def _register_routes(app: FastAPI) -> None:
         if record is None or record.session_id != session_id:
             raise HTTPException(status_code=404, detail="Checkpoint not found for this session.")
         return record
+
+    @app.get(
+        "/sessions/{session_id}/checkpoints/{checkpoint_id}/span",
+        response_model=CheckpointSpan,
+        responses={
+            409: {"description": "Expected hash differs or saved blob is inconsistent."},
+            413: {"description": "Saved source, selected span or encoded response exceeds limits."},
+            415: {"description": "Selected bytes are not exact UTF-8 text."},
+        },
+    )
+    async def inspect_checkpoint_span(
+        session_id: str,
+        checkpoint_id: str,
+        request: Request,
+        response: Response,
+        user_id: str = Query(min_length=1),
+        path: str = Query(min_length=1, max_length=1024),
+        expected_sha256: str = Query(pattern=r"^[0-9a-f]{64}$"),
+        start_line: int = Query(ge=1, le=1_048_576),
+        end_line: int = Query(ge=1, le=1_048_576),
+    ) -> CheckpointSpan:
+        """Explicit historical source review; never reads current files or starts execution."""
+        components: Components = request.app.state.components
+        store = _session_store(components)
+        try:
+            _lookup_archive(components, session_id, user_id)
+            checkpoint = store.get_checkpoint(checkpoint_id)
+            if checkpoint is None or checkpoint.session_id != session_id:
+                raise HTTPException(
+                    status_code=404, detail="Checkpoint not found for this session."
+                )
+            try:
+                selection = CheckpointSpanSelection(
+                    path=path,
+                    expected_sha256=expected_sha256,
+                    start_line=start_line,
+                    end_line=end_line,
+                )
+            except ValueError as exc:
+                raise HTTPException(
+                    status_code=422, detail="Invalid checkpoint span selection."
+                ) from exc
+            result = read_checkpoint_span(store, checkpoint, selection)
+        except CheckpointSpanUnavailable as exc:
+            status = {
+                "file_not_captured": 404,
+                "hash_mismatch": 409,
+                "file_too_large": 413,
+                "span_too_large": 413,
+                "response_too_large": 413,
+                "range_unavailable": 422,
+                "invalid_utf8": 415,
+            }.get(exc.code, 409)
+            raise HTTPException(status_code=status, detail={"code": exc.code}) from exc
+        except sqlite3.Error as exc:
+            raise HTTPException(
+                status_code=503, detail="Saved checkpoint span storage unavailable."
+            ) from exc
+        response.headers["Cache-Control"] = "no-store"
+        return result
 
     @app.post("/sessions/{session_id}/configuration-review", response_model=ConfigurationReview)
     async def inspect_configuration(
