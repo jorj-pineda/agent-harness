@@ -26,6 +26,8 @@ class CapturedRuntimeSettings(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     coding_toolset: CodingToolset
+    # Legacy reads had no default window; explicit ranges were already supported.
+    read_file_default_lines: int = Field(default=0, ge=0, le=500)
     load_root_agents: bool = False
     enable_support_tools: bool
     max_tool_iterations: int

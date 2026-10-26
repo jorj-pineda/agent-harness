@@ -52,6 +52,7 @@ def build_registry(
     workspace_root: str | None,
     support_tools: Iterable[Tool] = (),
     coding_toolset: CodingToolset = "full",
+    read_file_default_lines: int = 0,
     code_tool_transform: Callable[[Tool], Tool] | None = None,
     command_env: Mapping[str, str] | None = None,
     memory_session: Session | None = None,
@@ -79,7 +80,11 @@ def build_registry(
     )
     if workspace_root is not None:
         code_registry = ToolRegistry()
-        for tool in build_code_tools(Workspace(root=Path(workspace_root)), command_env=command_env):
+        for tool in build_code_tools(
+            Workspace(root=Path(workspace_root)),
+            command_env=command_env,
+            read_file_default_lines=read_file_default_lines,
+        ):
             if coding_toolset == "whole_file" and tool.name == "replace_text":
                 continue
             code_registry.register(tool)

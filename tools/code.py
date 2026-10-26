@@ -217,9 +217,20 @@ def _atomic_write_file(target: Path, content: bytes) -> None:
 
 
 def build_code_tools(
-    workspace: Workspace, *, command_env: Mapping[str, str] | None = None
+    workspace: Workspace,
+    *,
+    command_env: Mapping[str, str] | None = None,
+    read_file_default_lines: int = 0,
 ) -> list[Tool]:
     """Build code tools bound to a specific workspace."""
+
+    if (
+        type(read_file_default_lines) is not int
+        or not 0 <= read_file_default_lines <= MAX_READ_LINES
+    ):
+        raise ValueError(
+            f"read_file_default_lines must be an integer between 0 and {MAX_READ_LINES}"
+        )
 
     def read_file(args: ReadFileInput) -> dict[str, Any]:
         log.info("code_tool=read_file path=%s", args.path)
@@ -231,6 +242,8 @@ def build_code_tools(
             raise ToolError(f"Not a file: {args.path}")
 
         start = args.start_line or 1
+        windowed = read_file_default_lines > 0 and args.end_line is None
+        requested_end = start + read_file_default_lines - 1 if windowed else args.end_line
         if args.end_line is not None and args.end_line < start:
             raise ToolError("end_line must be >= start_line")
         if args.end_line is not None and args.end_line - start + 1 > MAX_READ_LINES:
@@ -255,7 +268,7 @@ def build_code_tools(
                 digest.update(raw_line)
                 total_lines += 1
                 if total_lines < start or (
-                    args.end_line is not None and total_lines > args.end_line
+                    requested_end is not None and total_lines > requested_end
                 ):
                     continue
                 if len(selected) >= MAX_READ_LINES:
@@ -280,7 +293,7 @@ def build_code_tools(
             raise ToolError(f"start_line {start} beyond file length {total_lines}")
         if not total_lines and start != 1:
             raise ToolError(f"start_line {start} beyond file length 0")
-        end = min(args.end_line or total_lines, total_lines)
+        end = min(requested_end or total_lines, total_lines)
         content = "".join(selected)
         # Omit only the selected span's final terminator. Internal terminators
         # are exact source evidence for multiline replace_text preconditions.
@@ -288,7 +301,7 @@ def build_code_tools(
             content = content[:-1]
             if content.endswith("\r"):
                 content = content[:-1]
-        return {
+        result: dict[str, Any] = {
             "path": workspace.relative_str(target),
             "start_line": start,
             "end_line": end,
@@ -296,6 +309,13 @@ def build_code_tools(
             "total_lines": total_lines,
             "sha256": digest.hexdigest(),
         }
+        if windowed:
+            result["read_window"] = {
+                "default_lines": read_file_default_lines,
+                "has_more": end < total_lines,
+                "next_start_line": end + 1 if end < total_lines else None,
+            }
+        return result
 
     async def grep_repo(args: GrepRepoInput) -> list[dict[str, Any]]:
         log.info("code_tool=grep_repo pattern=%r path=%s", args.pattern, args.path)
@@ -513,6 +533,14 @@ def build_code_tools(
                 "Read a UTF-8 text file under the workspace. Returns repo-relative path, "
                 "line range, and content. Use before editing or citing code. "
                 f"Whole-file hash/line scanning is limited to {MAX_READ_SCAN_BYTES} bytes."
+                + (
+                    f" Without end_line, returns at most {read_file_default_lines} lines from "
+                    "start_line with read_window continuation metadata. Read remaining relevant "
+                    "content using next_start_line; an explicit end_line overrides this default "
+                    f"within the existing {MAX_READ_LINES}-line limit."
+                    if read_file_default_lines
+                    else ""
+                )
             ),
             input_model=ReadFileInput,
             fn=read_file,
@@ -610,9 +638,12 @@ def register_code_tools(
     *,
     workspace: Workspace,
     command_env: Mapping[str, str] | None = None,
+    read_file_default_lines: int = 0,
 ) -> None:
     """Register code tools (read, write, verify) on the given registry."""
-    for tool in build_code_tools(workspace, command_env=command_env):
+    for tool in build_code_tools(
+        workspace, command_env=command_env, read_file_default_lines=read_file_default_lines
+    ):
         registry.register(tool)
 
 
