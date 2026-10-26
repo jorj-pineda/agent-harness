@@ -4,6 +4,19 @@ Updated: 2026-10-26
 
 ## Current release decision
 
+**2026-10-26 — Deterministic recovery review extraction:** a typed bounded
+saved-run packet retains the objective, observed completion/check/workspace states,
+failed/unavailable check flags, recent actions and saved diffs with source hashes,
+UTF-8 truncation and omitted counts. Missing final responses keep work/check counts
+unknown. Extraction does not read current files, alter transcripts/budgets or call
+providers; it is review evidence, not a compacted prompt or permission to continue.
+The [contract](RECOVERY_REVIEW.md) bounds compact JSON to 32,768 bytes, failing
+explicitly on oversized metadata. API/CLI access follows separately; file spans,
+automatic compaction and measured recovery remain open. Default 0, old cohorts,
+release no-go/8-of-10 and broad G2–G5 remain unchanged. Validation: five focused/
+1,568 offline tests (five live deselected), Ruff/format/mypy; all eight retained
+Beam records extract within bounds without changes or inference.
+
 **2026-10-26 UTC — Fixed Beam read-window cohort complete:** the
 [results](evals/projects/duodoro/READ_WINDOW_RESULTS.md) retain all eight actual
 CLI/shared-runtime attempts. Both control and 80-line-window arms have 0/4 completed
