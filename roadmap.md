@@ -4,6 +4,17 @@ Updated: 2026-10-26
 
 ## Current release decision
 
+**2026-10-26 — Exact saved checkpoint-span extraction:** a typed selection
+binds canonical non-excluded paths, full-file hashes and explicit bounded line
+ranges to historical captured bytes. The [span contract](CHECKPOINT_SPANS.md)
+retains exact UTF-8/terminators, full/selected hashes, total lines and checkpoint
+kind without current-file reads or mutations. Source, range, response and corruption
+limits fail explicitly without partial text. This supplies the missing file-span
+primitive after recovery review packets; owner-checked API/CLI access follows.
+It does not assemble/execute a compacted prompt or demonstrate recovery quality;
+defaults, old cohorts, no-go/8-of-10 and broad G2–G5 remain unchanged. Validation:
+37 focused/1,638 offline tests (five live deselected), Ruff/format/mypy pass.
+
 **2026-10-26 — CLI saved recovery review:** a thin `recovery-review` command
 renders the server's bounded packet through one owner-scoped GET, with human/JSON
 views. Observed status leads; truncation, original text hashes, selected/omitted
