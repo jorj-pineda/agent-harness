@@ -4,6 +4,19 @@ Updated: 2026-10-26
 
 ## Current release decision
 
+**2026-10-26 — CLI saved checkpoint-span selection:** explicit path/hash/range
+options make one owner-scoped source GET, with human/JSON views retaining historical
+kind, exact terminators, range/coverage, mode, byte counts and hashes. The thin client
+checks identity, selected content/hash/line counts and full-file/nonfinal-range
+consistency before escaped output. Invalid inputs, private errors and contradictory
+responses refuse without retries, metadata fetches, current-file access or new work.
+Scripted CLI → restarted API checks retain exact saved bytes while preserving later
+user edits and original archive/checkpoint identity. This closes the span extractor/
+API/CLI review slice, not assembled context, compaction, execution or measured
+recovery. Defaults, old cohorts, no-go/8-of-10 and broad G2–G5 remain unchanged.
+Validation: 109 focused/1,715 offline tests (five live deselected), Ruff/format/mypy,
+installed command help and local documentation links pass.
+
 **2026-10-26 — Owner-checked checkpoint-span API:** explicit historical-source
 GET binds session/checkpoint ownership, selected path, expected whole-file hash and
 inclusive range before saved blob access. Exact saved text and version metadata
