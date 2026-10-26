@@ -803,6 +803,24 @@ this validates reported values, not backend billing or tokenizer accuracy.
 Existing invalid negative archive values fail validation rather than being
 silently repaired; historical files are not rewritten.
 
+`READ_FILE_DEFAULT_LINES` optionally limits a `read_file` reply when `end_line`
+is omitted (0 keeps existing full reads; positive values 1–500 select a window).
+For example, 80 returns at most 80 lines beginning at `start_line` or line 1.
+The result includes the actual selected range and `read_window` metadata with
+`default_lines`, `has_more` and `next_start_line` (null at EOF). Explicit `end_line`
+requests override this default within the existing 500-line/byte limits.
+
+Whole-file hashing/line counting and scan limits stay unchanged, including refusal
+when a complete hash is unavailable. Selected text retains exact internal line
+terminators; stale edits still compare the full-file hash, including unread bytes.
+This limits default reply size, not total tokens, scan work, future explicit reads
+or old history. It is not permission to ignore unread instructions or claim the
+whole file was inspected. API, real evaluator and live simulated-tool schemas share
+the setting; simulated results remain scripted overrides. Durable execution settings
+record it (legacy absence means 0); changed settings/schemas cause configuration
+drift. Named-profile binding is a separate follow-up. No model-quality improvement
+has been measured; defaults, prior evaluation inputs and criteria remain unchanged.
+
 `MAX_REQUEST_OUTPUT_TOKENS` is an explicit output cap on each model request
 (default 0 disables this cap). The request sends the smallest applicable allowance
 from this cap, remaining turn output/total budgets and estimated context room.

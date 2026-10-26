@@ -4,6 +4,19 @@ Updated: 2026-10-26
 
 ## Current release decision
 
+**2026-10-26 UTC — Opt-in default file-read window:** validated
+READ_FILE_DEFAULT_LINES (0 unchanged; 1–500 opt in) bounds replies only when
+end_line is omitted. Exact selected ranges and continuation metadata retain full-file
+hashes/line counts, scan/byte limits and stale-edit protection; explicit ranges
+still override the default. Shared API/real-eval construction, simulated schemas
+and captured settings record the policy; legacy absence means 0 and drift is
+visible. This is reply-size control, not compaction, tokenizer/billing protection
+or permission to ignore unread instructions. Validation: 118 focused/1,549 offline
+(five live excluded), Ruff/format/mypy and both scripted 90/90 matrices passed with
+labels/limits inspected. Default tool specs match the prior implementation. No
+inference or quality claim; named-profile/restart coverage stays next, with release
+no-go, historical cohorts and G2–G5 unchanged.
+
 **2026-10-26 UTC — Retained Beam payload diagnosis:**
 [offline attribution](evals/projects/duodoro/BEAM_PAYLOAD_DIAGNOSIS.md) pairs all
 23 original Beam inputs with existing hashes/budget records. Each cell read AGENTS.md
