@@ -4,7 +4,7 @@ A recovery review packet contains saved objectives, diffs, failed checks and rec
 actions. Preparing a smaller context also needs deliberately selected file spans.
 `harness.checkpoint_spans.read_checkpoint_span` supplies exact ranges from an
 existing saved checkpoint without reading or changing the current workspace.
-This shared extraction slice precedes owner-checked API and CLI access. It does
+Owner-checked API access is available; CLI access follows separately. It does
 not build or execute a compacted prompt.
 
 Selection requires a canonical relative POSIX path, expected full-file SHA-256,
@@ -56,3 +56,35 @@ review after restart without the original workspace, strict path/range inputs,
 metadata refusal before blob reads, empty files, invalid selected UTF-8, source/
 span/escaped-response limits and corruption outside the selected range. These
 validate deterministic evidence access, not live-model recovery or compaction.
+
+## Owner-checked content API
+
+`GET /sessions/{session_id}/checkpoints/{checkpoint_id}/span` requires query fields
+`user_id`, `path`, `expected_sha256`, `start_line` and `end_line`. Obtain the saved
+whole-file hash from the existing checkpoint metadata route, then deliberately
+select the path and inclusive range. This endpoint returns source text; the existing
+checkpoint list/detail routes remain metadata-only. Successful content responses
+carry `Cache-Control: no-store`.
+
+The route checks the existing user-ID ownership convention and checkpoint/session
+binding before reading a blob. This convention is not a new authentication system.
+Unknown/cross-session checkpoints or uncaptured files return 404; other owners
+return 403. Invalid selections/nonexistent ranges return 422; expected-hash mismatch
+or inconsistent saved content returns 409; source/span/response limits return 413;
+invalid selected UTF-8 returns 415. SQLite read failures return generic 503 errors.
+Fixed refusal codes include no partial source or underlying exception text.
+
+Manual and turn-bound checkpoints are reviewable with their original kinds. API
+lifecycle restart, later user edits and a moved/missing original workspace do not
+change historical spans. The GET never resolves current files, constructs tools,
+selects a provider, captures new data, changes archives or starts a run. It supplies
+historical evidence, not a current-workspace lease, automatic context selection,
+compacted prompt or continuation/revert permission. Explicit source disclosure
+retains the untrusted/sensitive owner-data limits above.
+
+API validation: 50 focused regressions and 1,657 offline tests (five live excluded),
+Ruff/format/mypy and local documentation links pass. Nineteen new endpoint cases
+cover manual and real-file scripted turn-after checkpoints, exact restart responses,
+later edits/missing original workspace, owner/cross-session and pre-blob selection
+guards, fixed refusal codes, wire bounds and private SQLite lookup/blob errors.
+These are scripted lifecycle checks, not live-model or OS-process recovery evidence.
