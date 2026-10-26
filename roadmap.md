@@ -4,6 +4,22 @@ Updated: 2026-10-26
 
 ## Current release decision
 
+**2026-10-26 UTC — Fixed Beam read-window cohort complete:** the
+[results](evals/projects/duodoro/READ_WINDOW_RESULTS.md) retain all eight actual
+CLI/shared-runtime attempts. Both control and 80-line-window arms have 0/4 completed
+and independently accepted workflows; artifact acceptance is 1/4 versus 3/4. All
+attempts stop at context or total-token gates. Window requests/tokens are higher;
+smaller final payloads do not demonstrate efficiency or completed-task gains.
+Three window cells observe only original AGENTS.md lines 1–80 via read_file;
+range proof is supplementary, not comprehension/compliance/acceptance. All full
+archives, original source verdicts, input pairs and restart evidence pass audit;
+24 owned API lifecycles settle and Duodoro is unchanged. All 57 responses report
+zero Go cost, with backend/invoice limits preserved. Exact freeze review/CI/merge
+preceded inference; no repair/fallback/replacement. Keep default 0. Public tasks,
+original cohorts, 8/10 target, release no-go and broad G2–G5 remain unchanged.
+This closes the protocol/freeze/results slice; any recovery/compaction design or
+narrower supported envelope is separate work, not another automatic cohort.
+
 **2026-10-26 UTC — Beam read-window actual freeze prepared, unrun:** the
 [execution freeze](evals/projects/duodoro/READ_WINDOW_EXECUTION_FREEZE.md) pins
 selected-factory first inputs with same per-task messages/allowance, only cross-arm

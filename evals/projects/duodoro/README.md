@@ -1,16 +1,15 @@
 # Duodoro real-project validation
 
-The [actual read-window freeze](READ_WINDOW_EXECUTION_FREEZE.md) now pins SDK
-inputs and scripted CLI/process proof in both arms. 18 scripted cases, 54 owned
-API lifecycles, 57 helper contracts and exact-runtime gates pass. Independent
-exact-head review/CI/merge and fresh launch gates still precede any generation;
-actual cells remain unrun. Instruction-range evidence stays supplementary.
-
-The [Beam read-window protocol](READ_WINDOW_PROTOCOL.md) prepares eight fresh
-original-task CLI cells comparing default reads with an 80-line window. Budgets
-and criteria stay fixed; actual client preflight and an independently reviewed
-execution freeze remain before inference. Instruction coverage is reported alongside
-outcomes; smaller replies alone are not a quality gain.
+The [completed read-window results](READ_WINDOW_RESULTS.md) retain all eight fresh
+Beam CLI attempts: both arms have 0/4 completed-and-accepted workflows; artifact
+acceptance is control 1/4 versus window 3/4. Every attempt stops at a context or
+total-token gate. All archives/restarts/input pairs and 24 API cleanup records pass;
+57 returned responses report zero Go cost, with backend/invoice limits retained.
+Three window cells show only AGENTS.md lines 1–80 through read_file; this is
+supplementary evidence, not compliance or an acceptance condition. Default 0,
+original cohorts, release no-go and G2–G5 stay unchanged. The
+[protocol](READ_WINDOW_PROTOCOL.md) and [freeze](READ_WINDOW_EXECUTION_FREEZE.md)
+retain historical preparation status; exact-head review/CI/merge preceded inference.
 
 The [retained Beam payload diagnosis](BEAM_PAYLOAD_DIAGNOSIS.md) attributes actual
 input bytes without inference: large tool replies, including one AGENTS.md read

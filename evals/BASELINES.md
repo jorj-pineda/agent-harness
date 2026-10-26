@@ -17,6 +17,22 @@ simulated-tool results live elsewhere and are not comparable.
 Raw reports (traces, diffs, acceptance output, usage, runtime config) are in
 `evals/results/`.
 
+## 2026-10-26 — Beam default-read-window fixed cohort
+
+The [results and limits](projects/duodoro/READ_WINDOW_RESULTS.md) and
+[sanitized rows](results/2026-10-26-beam-read-window-t02-t08-cli.json) retain eight
+actual CLI/shared-runtime attempts, two per original T02/T08 task/arm. Both arms
+have 0/4 completed-and-accepted workflows. Artifact acceptance is control 1/4,
+80-line window 3/4; all attempts stop at context or total-token gates. The window
+arm makes more requests (34 vs 23) and reports more total tokens (219,117 vs
+171,600); smaller final payloads are not lower total resource use or completion.
+Three window cells observe only original AGENTS.md lines 1–80 through read_file;
+coverage is supplementary, not comprehension/compliance/acceptance. All full
+archives, source verdicts, input pairs and restart evidence pass audit, with 24
+owned API lifecycles settled and Duodoro unchanged. All 57 responses report zero
+Go cost, not invoice verification. No repair/replacement/fallback. Default 0,
+original cohorts/no-go/8-of-10 and broad G2–G5 remain unchanged.
+
 ## 2026-10-26 — Original Duodoro T02/T08, Gemma / Beam descriptive cohort
 
 The [results and limits](projects/duodoro/BEAM_COMPARISON_RESULTS.md) and
