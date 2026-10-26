@@ -4,6 +4,17 @@ Updated: 2026-10-26
 
 ## Current release decision
 
+**2026-10-26 — Read-only recovery packet API:** owner-checked terminal-run
+GET extracts the [bounded saved-run packet](RECOVERY_REVIEW.md) without resolving
+current files, constructing tools/providers or changing archive/run identity.
+Active work is rejected before extraction and oversized metadata returns an explicit
+error. Scripted HTTP/SSE partial edits retain identical packets after lifecycle
+restart despite later user edits or a missing original workspace; absent-final
+failed/interrupted work retains unknown counts. This is review access, not a
+compacted prompt, safe-resume lease or live-model recovery. CLI rendering follows;
+defaults, original cohorts, no-go/8-of-10 and broad G2–G5 stay unchanged. Validation:
+51 focused/1,575 offline tests (five live deselected), Ruff/format/mypy pass.
+
 **2026-10-26 — Deterministic recovery review extraction:** a typed bounded
 saved-run packet retains the objective, observed completion/check/workspace states,
 failed/unavailable check flags, recent actions and saved diffs with source hashes,

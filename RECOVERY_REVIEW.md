@@ -4,7 +4,8 @@
 evidence for review. The Beam read-window cohort left acceptable partial patches
 without completed workflows; reviewers need the objective, observed diffs, failures
 and recent actions before deciding how to recover. This extractor is the first
-piece of that workflow. API and CLI access follow separately.
+piece of that workflow. Owner-checked API access is now available; CLI access
+follows separately.
 
 The v1 packet retains the submitted objective, run/completion/check/workspace
 statuses, saved stop/error text, up to eight failed/unavailable check observations,
@@ -49,3 +50,29 @@ tests (five live deselected), Ruff/format/mypy pass. Offline extraction from all
 eight retained Beam read-window run records yields 4,110–5,600-byte packets with
 unchanged source bytes and original budget-exhausted states. This is deterministic
 review compatibility, without replay, inference or evidence of recovery success.
+
+## Read-only API access
+
+`GET /runs/{run_id}/recovery-review?user_id=dev1` extracts the packet from the
+committed saved run. It applies the same user-ID ownership check as run lookup
+(the existing user-ID convention is not a new authentication mechanism). Missing
+runs return 404, other owners 403, and missing/empty user IDs 422. Active runs
+return 409 before extraction; oversized metadata returns 413 with no partial packet.
+Finished, failed, interrupted and cancelled terminal records remain reviewable,
+including those without a final response. No new packet table or schema migration
+is needed: extraction is computed from authoritative saved evidence on each GET.
+
+The endpoint does not resolve a workspace, construct tools, select a provider,
+create a run or alter an archive. An API lifecycle restart returns the same packet
+for unchanged saved records, even if the original workspace was moved or changed.
+Stable equality applies to the same validated record and extraction version, not
+unrelated future serializer/contract versions. The response includes the source
+record hash; it is not a lease for editing later user work. Existing guarded
+continuation requirements and the original saved history remain unchanged.
+
+API validation: 51 focused regressions and 1,575 offline tests (five live excluded),
+Ruff/format/mypy pass. Seven endpoint cases cover scripted HTTP/SSE partial-work
+restart preservation, unknown failed/interrupted final evidence, active/owner/input
+guards, control-character/Unicode wire bounds and explicit metadata refusal.
+These are deterministic application-lifecycle checks, not live-model recovery or
+an OS-process restart observation.

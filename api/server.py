@@ -55,6 +55,7 @@ from harness.execution_profile import ExecutionProfile
 from harness.grounding import Grounder
 from harness.policy import classify_task, is_out_of_scope_request
 from harness.providers import build_configured_provider, configured_model, configured_provider_names
+from harness.recovery_review import RecoveryReview, build_recovery_review
 from harness.reverts import FileRevertInput, FileRevertOutcome, FileRevertRecord, revert_file
 from harness.router import ProviderNotFoundError, ProviderRouter
 from harness.runs import RequestConflictError, RequestId, RunInput, RunRecord
@@ -805,6 +806,31 @@ def _register_routes(app: FastAPI) -> None:
             limit=limit,
             offset=offset,
         )
+
+    @app.get(
+        "/runs/{run_id}/recovery-review",
+        response_model=RecoveryReview,
+        responses={
+            409: {"description": "Run remains active; no recovery packet returned."},
+            413: {"description": "Saved metadata exceeds the bounded packet size."},
+        },
+    )
+    async def inspect_recovery_review(
+        run_id: str, request: Request, user_id: str = Query(min_length=1)
+    ) -> RecoveryReview:
+        """Bounded saved terminal evidence only; no workspace read, inference or continuation."""
+        record = _lookup_run(request.app.state.components, run_id, user_id)
+        if record.status == "running":
+            raise HTTPException(
+                status_code=409, detail="Run is still active; review after it settles."
+            )
+        try:
+            return build_recovery_review(record)
+        except ValueError as exc:
+            raise HTTPException(
+                status_code=413,
+                detail="Saved metadata exceeds recovery review bounds; inspect the original run.",
+            ) from exc
 
     @app.get("/runs/{run_id}/tool-progress", response_model=ToolProgress)
     async def inspect_tool_progress(
