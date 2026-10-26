@@ -1046,6 +1046,14 @@ a hard return bound, SSE event replay, automatic polling/reconnection or crash r
 
 ### Submit and inspect durable runs
 
+For a bounded recovery review, use
+`GET /runs/<run_id>/recovery-review?user_id=dev1`. This returns saved objective,
+statuses, failed/unavailable checks, recent action outcomes and bounded diffs with
+source hashes, truncation and omitted counts. Active runs return 409; oversized
+metadata returns 413. Missing final work evidence stays unknown. This owner-scoped
+GET survives API restart without workspace access or inference; it grants no
+permission to continue editing. See the [packet contract](RECOVERY_REVIEW.md).
+
 `POST /runs` accepts the chat input plus a required `request_id`, returns a
 `RunRecord` immediately (202 while running, 200 for a saved record), and executes
 under the existing budgets independently of the HTTP connection. Inspect with
