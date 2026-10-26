@@ -4,6 +4,18 @@ Updated: 2026-10-26
 
 ## Current release decision
 
+**2026-10-26 — Deterministic recovery-context assembly:** an explicit saved-run
+hash plus zero to four disjoint source ranges joins the bounded recovery packet
+with exact linked turn-after checkpoint spans. Run/session/pair identity rejects
+substituted checkpoints before blob reads; aggregate source/JSON bounds refuse
+without partial output. Original statuses, missing-final unknowns and omission
+metadata survive restart without current workspace access. The
+[preview contract](RECOVERY_CONTEXT.md) is historical owner evidence, not executable
+history, automatic compaction or a continuation permission. API/CLI access are the
+next separate slices. Fifty focused regressions and static checks pass; full offline
+validation is required before merge. No inference, quality/default change, Duodoro
+edit or closure of no-go/8-of-10/broad G2–G5 follows.
+
 **2026-10-26 — CLI saved checkpoint-span selection:** explicit path/hash/range
 options make one owner-scoped source GET, with human/JSON views retaining historical
 kind, exact terminators, range/coverage, mode, byte counts and hashes. The thin client
