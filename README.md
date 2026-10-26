@@ -1082,7 +1082,15 @@ range, including exact terminators and saved version/range metadata, with no
 current-file access or new execution. Existing metadata routes still omit source
 contents. See [saved span limits and refusal codes](CHECKPOINT_SPANS.md).
 Explicit [recovery-context preview](RECOVERY_CONTEXT.md) joins selected final-checkpoint
-spans with saved run evidence without submitting continuation.
+spans with saved run evidence without submitting continuation:
+
+```sh
+agent-harness recovery-context <run-id> --user-id dev1 \
+  --selection-file /path/to/selection.json --json
+```
+
+The selection file pins the reviewed run hash and explicit final-checkpoint ranges.
+The command sends one read-only preview POST and does not compact or execute history.
 
 For a bounded recovery review, use
 `GET /runs/<run_id>/recovery-review?user_id=dev1`. This returns saved objective,
