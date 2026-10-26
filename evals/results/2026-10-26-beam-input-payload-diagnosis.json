@@ -1,0 +1,1104 @@
+{
+  "kind": "offline retained-input byte attribution, NOT inference/counterfactual/model quality",
+  "UTC": "2026-10-26T01:50:36.869194+00:00",
+  "runtime_revision": "de6083d1c69afb715d212704f3c25742b596e9f1",
+  "source_results_sha256": "06d526e305d59a5e9181fc900cb4702052d44e4ea4115bc91e465287f013a4fe",
+  "local_receipt_root": "/Users/jorge/.local/share/agent-harness/trials/duodoro-beam-payload-8uetyrkx",
+  "cells": [
+    {
+      "cell": "T02-B1",
+      "saved_run_sha256": "a65fb057868433863d232a507a5c56d7818ff61beb9bf6a2d43f1e56416b9fc9",
+      "requests": [
+        {
+          "sequence": 1,
+          "normalized_input_sha256": "36ee3d50ea8a1e4acaa93da9337c8c2009793a7d7e5f3446ac02c65c495949c5",
+          "wire_input_sha256": "d8edb1eda42d2b5b11d77fcfbc2fbb3ea8bdb3e9d79832d26d9b095da60c13b5",
+          "role_payload_bytes": {
+            "system": 855,
+            "user": 839
+          },
+          "all_message_payload_bytes": 1694,
+          "continuation_serialized_bytes": 0,
+          "root_instruction_reply_content_bytes": 0,
+          "tool_reply_content_bytes": 0,
+          "tool_replies": [],
+          "message_estimate_tokens": 573,
+          "schema_estimate_tokens": 2541,
+          "saved_estimated_prompt_tokens": 3114,
+          "saved_max_tokens": 2048,
+          "provider_reported_usage": {
+            "completion_tokens": 53,
+            "prompt_tokens": 1676
+          }
+        },
+        {
+          "sequence": 2,
+          "normalized_input_sha256": "eb9d749fa93c0d0d47db14d0fa6c58178f797be334acd4190dffdbcb4ad1e0f4",
+          "wire_input_sha256": "ba8c0b1b13276445efbec3a1210ff4c8af33b3defb7e60d65160a19ac284d485",
+          "role_payload_bytes": {
+            "system": 855,
+            "user": 839,
+            "assistant": 179,
+            "tool": 18152
+          },
+          "all_message_payload_bytes": 20025,
+          "continuation_serialized_bytes": 128,
+          "root_instruction_reply_content_bytes": 17387,
+          "tool_reply_content_bytes": 18135,
+          "tool_replies": [
+            {
+              "tool": "list_dir",
+              "payload_bytes": 756,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 17396,
+              "root_instructions": true
+            }
+          ],
+          "message_estimate_tokens": 6695,
+          "schema_estimate_tokens": 2541,
+          "saved_estimated_prompt_tokens": 9236,
+          "saved_max_tokens": 2048,
+          "provider_reported_usage": {
+            "completion_tokens": 62,
+            "prompt_tokens": 6008
+          }
+        },
+        {
+          "sequence": 3,
+          "normalized_input_sha256": "e29e1637ff0b09d0236d3f0ffc35dca10b43f40fea57572d9805424e58a82d1b",
+          "wire_input_sha256": "8e34ace798643af4f63da2b357087d52b26aa173b286adc51cbd47e368f36b86",
+          "role_payload_bytes": {
+            "system": 855,
+            "user": 839,
+            "assistant": 376,
+            "tool": 29350
+          },
+          "all_message_payload_bytes": 31420,
+          "continuation_serialized_bytes": 230,
+          "root_instruction_reply_content_bytes": 17387,
+          "tool_reply_content_bytes": 29315,
+          "tool_replies": [
+            {
+              "tool": "list_dir",
+              "payload_bytes": 756,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 17396,
+              "root_instructions": true
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 6168,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 5030,
+              "root_instructions": false
+            }
+          ],
+          "message_estimate_tokens": 10506,
+          "schema_estimate_tokens": 2541,
+          "saved_estimated_prompt_tokens": 13047,
+          "saved_max_tokens": 2048,
+          "provider_reported_usage": {
+            "completion_tokens": 34,
+            "prompt_tokens": 9410
+          }
+        },
+        {
+          "sequence": 4,
+          "normalized_input_sha256": "ff1488dcdd4da70e0771142322ca29fa8e7392dd663cce5c38ad52895bac55a8",
+          "wire_input_sha256": "6c9bd5035e634a9e617c342c3136acdf400a92c04c5ba3b4ab1be53b614aebef",
+          "role_payload_bytes": {
+            "system": 855,
+            "user": 839,
+            "assistant": 516,
+            "tool": 30531
+          },
+          "all_message_payload_bytes": 32741,
+          "continuation_serialized_bytes": 334,
+          "root_instruction_reply_content_bytes": 17387,
+          "tool_reply_content_bytes": 30487,
+          "tool_replies": [
+            {
+              "tool": "list_dir",
+              "payload_bytes": 756,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 17396,
+              "root_instructions": true
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 6168,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 5030,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 1181,
+              "root_instructions": false
+            }
+          ],
+          "message_estimate_tokens": 10954,
+          "schema_estimate_tokens": 2541,
+          "saved_estimated_prompt_tokens": 13495,
+          "saved_max_tokens": 2048,
+          "provider_reported_usage": {
+            "completion_tokens": 2048,
+            "prompt_tokens": 9817
+          }
+        }
+      ],
+      "completion_status": "incomplete",
+      "completion_reason": "The model response was truncated.",
+      "aggregate_usage": {
+        "completion_tokens": 2197,
+        "prompt_tokens": 26911
+      },
+      "stop_events": []
+    },
+    {
+      "cell": "T02-B2",
+      "saved_run_sha256": "6013ca6ab1c1a9a1026f16b2194acb060b3a7b28d14683e099f3d3f2d426e079",
+      "requests": [
+        {
+          "sequence": 1,
+          "normalized_input_sha256": "36ee3d50ea8a1e4acaa93da9337c8c2009793a7d7e5f3446ac02c65c495949c5",
+          "wire_input_sha256": "d8edb1eda42d2b5b11d77fcfbc2fbb3ea8bdb3e9d79832d26d9b095da60c13b5",
+          "role_payload_bytes": {
+            "system": 855,
+            "user": 839
+          },
+          "all_message_payload_bytes": 1694,
+          "continuation_serialized_bytes": 0,
+          "root_instruction_reply_content_bytes": 0,
+          "tool_reply_content_bytes": 0,
+          "tool_replies": [],
+          "message_estimate_tokens": 573,
+          "schema_estimate_tokens": 2541,
+          "saved_estimated_prompt_tokens": 3114,
+          "saved_max_tokens": 2048,
+          "provider_reported_usage": {
+            "completion_tokens": 53,
+            "prompt_tokens": 1676
+          }
+        },
+        {
+          "sequence": 2,
+          "normalized_input_sha256": "4cb457bd05e1de74a121c84d6ccc1e6af74654e97218652dbfa883ab0a360931",
+          "wire_input_sha256": "0670310aa2709eb526b8a965da38497030f6119dffc5e0f786746eddad6a3651",
+          "role_payload_bytes": {
+            "system": 855,
+            "user": 839,
+            "assistant": 179,
+            "tool": 18152
+          },
+          "all_message_payload_bytes": 20025,
+          "continuation_serialized_bytes": 128,
+          "root_instruction_reply_content_bytes": 17387,
+          "tool_reply_content_bytes": 18135,
+          "tool_replies": [
+            {
+              "tool": "list_dir",
+              "payload_bytes": 756,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 17396,
+              "root_instructions": true
+            }
+          ],
+          "message_estimate_tokens": 6695,
+          "schema_estimate_tokens": 2541,
+          "saved_estimated_prompt_tokens": 9236,
+          "saved_max_tokens": 2048,
+          "provider_reported_usage": {
+            "completion_tokens": 62,
+            "prompt_tokens": 6008
+          }
+        },
+        {
+          "sequence": 3,
+          "normalized_input_sha256": "6cc88c9eea735578148270aee44f8786434f91b739594785cdc7342c301144b7",
+          "wire_input_sha256": "ade33699fcf67cbe39a5d2a3bc5a6561a6ced0024a0d70af76cd04a13d7952a0",
+          "role_payload_bytes": {
+            "system": 855,
+            "user": 839,
+            "assistant": 376,
+            "tool": 29350
+          },
+          "all_message_payload_bytes": 31420,
+          "continuation_serialized_bytes": 230,
+          "root_instruction_reply_content_bytes": 17387,
+          "tool_reply_content_bytes": 29315,
+          "tool_replies": [
+            {
+              "tool": "list_dir",
+              "payload_bytes": 756,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 17396,
+              "root_instructions": true
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 6168,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 5030,
+              "root_instructions": false
+            }
+          ],
+          "message_estimate_tokens": 10506,
+          "schema_estimate_tokens": 2541,
+          "saved_estimated_prompt_tokens": 13047,
+          "saved_max_tokens": 2048,
+          "provider_reported_usage": {
+            "completion_tokens": 34,
+            "prompt_tokens": 9410
+          }
+        },
+        {
+          "sequence": 4,
+          "normalized_input_sha256": "ebd4aaf8f5a039c5dd45cf7bccb759e6c1c76e52545004bdb5e92afe08b9cf0a",
+          "wire_input_sha256": "3e2d41a5db8731aeb02256c87466e9d73def0769b706380dbffdc2483dbc94de",
+          "role_payload_bytes": {
+            "system": 855,
+            "user": 839,
+            "assistant": 516,
+            "tool": 30531
+          },
+          "all_message_payload_bytes": 32741,
+          "continuation_serialized_bytes": 334,
+          "root_instruction_reply_content_bytes": 17387,
+          "tool_reply_content_bytes": 30487,
+          "tool_replies": [
+            {
+              "tool": "list_dir",
+              "payload_bytes": 756,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 17396,
+              "root_instructions": true
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 6168,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 5030,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 1181,
+              "root_instructions": false
+            }
+          ],
+          "message_estimate_tokens": 10954,
+          "schema_estimate_tokens": 2541,
+          "saved_estimated_prompt_tokens": 13495,
+          "saved_max_tokens": 2048,
+          "provider_reported_usage": {
+            "completion_tokens": 1891,
+            "prompt_tokens": 9817
+          }
+        },
+        {
+          "sequence": 5,
+          "normalized_input_sha256": "1340d9ffa14fbded057f3429de5a9566594245e7b07dbaa521e58bfe9e6205a6",
+          "wire_input_sha256": "36e26eebfb1f362036b5d30e4363ad0ecf1043eecd5651ddf2cc629afa0f3eaf",
+          "role_payload_bytes": {
+            "system": 855,
+            "user": 839,
+            "assistant": 6757,
+            "tool": 31355
+          },
+          "all_message_payload_bytes": 39806,
+          "continuation_serialized_bytes": 5442,
+          "root_instruction_reply_content_bytes": 17387,
+          "tool_reply_content_bytes": 31299,
+          "tool_replies": [
+            {
+              "tool": "list_dir",
+              "payload_bytes": 756,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 17396,
+              "root_instructions": true
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 6168,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 5030,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 1181,
+              "root_instructions": false
+            },
+            {
+              "tool": "replace_text",
+              "payload_bytes": 824,
+              "root_instructions": false
+            }
+          ],
+          "message_estimate_tokens": 13317,
+          "schema_estimate_tokens": 2541,
+          "saved_estimated_prompt_tokens": 15858,
+          "saved_max_tokens": 526,
+          "provider_reported_usage": {
+            "completion_tokens": 44,
+            "prompt_tokens": 12034
+          }
+        },
+        {
+          "sequence": 6,
+          "normalized_input_sha256": "04be9feaf8fe220c7a3f2f42cbd48396243d822773c785489480c2d35700fb96",
+          "wire_input_sha256": "76ab790d66b006066b06555d174e230c2d2a53a981b290b563e9e9da84ae1299",
+          "role_payload_bytes": {
+            "system": 855,
+            "user": 839,
+            "assistant": 6905,
+            "tool": 31642
+          },
+          "all_message_payload_bytes": 40241,
+          "continuation_serialized_bytes": 5518,
+          "root_instruction_reply_content_bytes": 17387,
+          "tool_reply_content_bytes": 31575,
+          "tool_replies": [
+            {
+              "tool": "list_dir",
+              "payload_bytes": 756,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 17396,
+              "root_instructions": true
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 6168,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 5030,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 1181,
+              "root_instructions": false
+            },
+            {
+              "tool": "replace_text",
+              "payload_bytes": 824,
+              "root_instructions": false
+            },
+            {
+              "tool": "run_command",
+              "payload_bytes": 287,
+              "root_instructions": false
+            }
+          ],
+          "message_estimate_tokens": 13470,
+          "schema_estimate_tokens": 2541,
+          "saved_estimated_prompt_tokens": 16011,
+          "saved_max_tokens": 373,
+          "provider_reported_usage": {
+            "completion_tokens": 160,
+            "prompt_tokens": 12163
+          }
+        }
+      ],
+      "completion_status": "completed",
+      "completion_reason": null,
+      "aggregate_usage": {
+        "completion_tokens": 2244,
+        "prompt_tokens": 51108
+      },
+      "stop_events": []
+    },
+    {
+      "cell": "T08-B1",
+      "saved_run_sha256": "8518e96fb585cf92570fb36264327ca76d6556e8197b515d1f5b65eda85f45cb",
+      "requests": [
+        {
+          "sequence": 1,
+          "normalized_input_sha256": "0410aa1ddb912abe8b2aa7ca76375d14becb110c51108c2fec63d1a02d6139bb",
+          "wire_input_sha256": "3d3f0cd42c3fc09ce7174f9a2c521520d1600ea81b0916e09e2b9d6b568d8192",
+          "role_payload_bytes": {
+            "system": 855,
+            "user": 1150
+          },
+          "all_message_payload_bytes": 2005,
+          "continuation_serialized_bytes": 0,
+          "root_instruction_reply_content_bytes": 0,
+          "tool_reply_content_bytes": 0,
+          "tool_replies": [],
+          "message_estimate_tokens": 677,
+          "schema_estimate_tokens": 2541,
+          "saved_estimated_prompt_tokens": 3218,
+          "saved_max_tokens": 2048,
+          "provider_reported_usage": {
+            "completion_tokens": 30,
+            "prompt_tokens": 1699
+          }
+        },
+        {
+          "sequence": 2,
+          "normalized_input_sha256": "08509199e29ea37709290428be0bc8c0ebf292070234c35d6f72bbee8114de9e",
+          "wire_input_sha256": "cacaabbc1982b76ac0da2211eea953903ae18d3e802735b023a17b1fb35ac2b0",
+          "role_payload_bytes": {
+            "system": 855,
+            "user": 1150,
+            "assistant": 121,
+            "tool": 803
+          },
+          "all_message_payload_bytes": 2929,
+          "continuation_serialized_bytes": 100,
+          "root_instruction_reply_content_bytes": 0,
+          "tool_reply_content_bytes": 795,
+          "tool_replies": [
+            {
+              "tool": "list_dir",
+              "payload_bytes": 803,
+              "root_instructions": false
+            }
+          ],
+          "message_estimate_tokens": 993,
+          "schema_estimate_tokens": 2541,
+          "saved_estimated_prompt_tokens": 3534,
+          "saved_max_tokens": 2048,
+          "provider_reported_usage": {
+            "completion_tokens": 56,
+            "prompt_tokens": 2004
+          }
+        },
+        {
+          "sequence": 3,
+          "normalized_input_sha256": "e91e0d6d87a6c63328c739c0770a0a77d78a6faf133e07847f1e716be0915a33",
+          "wire_input_sha256": "7f29a3c6cf6e2e7f4ccdd6575dd778798cf37a4de8a356bdb5844aa15b48b782",
+          "role_payload_bytes": {
+            "system": 855,
+            "user": 1150,
+            "assistant": 304,
+            "tool": 18419
+          },
+          "all_message_payload_bytes": 20728,
+          "continuation_serialized_bytes": 207,
+          "root_instruction_reply_content_bytes": 17387,
+          "tool_reply_content_bytes": 18393,
+          "tool_replies": [
+            {
+              "tool": "list_dir",
+              "payload_bytes": 803,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 17396,
+              "root_instructions": true
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 220,
+              "root_instructions": false
+            }
+          ],
+          "message_estimate_tokens": 6938,
+          "schema_estimate_tokens": 2541,
+          "saved_estimated_prompt_tokens": 9479,
+          "saved_max_tokens": 2048,
+          "provider_reported_usage": {
+            "completion_tokens": 73,
+            "prompt_tokens": 6198
+          }
+        },
+        {
+          "sequence": 4,
+          "normalized_input_sha256": "f97d6798bf7cb1d1ecc22d8a44ff619a7214dc0625f53d8ee80911fc4a287c36",
+          "wire_input_sha256": "e08deb1a3307fe948b5f0749e9797f166cdd45b75fd049cd3cbc12f70e1ae25c",
+          "role_payload_bytes": {
+            "system": 855,
+            "user": 1150,
+            "assistant": 512,
+            "tool": 22793
+          },
+          "all_message_payload_bytes": 25310,
+          "continuation_serialized_bytes": 315,
+          "root_instruction_reply_content_bytes": 17387,
+          "tool_reply_content_bytes": 22741,
+          "tool_replies": [
+            {
+              "tool": "list_dir",
+              "payload_bytes": 803,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 17396,
+              "root_instructions": true
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 220,
+              "root_instructions": false
+            },
+            {
+              "tool": "list_dir",
+              "payload_bytes": 3278,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 665,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 431,
+              "root_instructions": false
+            }
+          ],
+          "message_estimate_tokens": 8481,
+          "schema_estimate_tokens": 2541,
+          "saved_estimated_prompt_tokens": 11022,
+          "saved_max_tokens": 2048,
+          "provider_reported_usage": {
+            "completion_tokens": 34,
+            "prompt_tokens": 7666
+          }
+        },
+        {
+          "sequence": 5,
+          "normalized_input_sha256": "8549ddd5bd245f2ea51430cb91987e1b4c9ce29849d43977e736e65b86033d3f",
+          "wire_input_sha256": "129de61787752e41402bcd63aed50d5a2949cd5cde63b665549986664d74498c",
+          "role_payload_bytes": {
+            "system": 855,
+            "user": 1150,
+            "assistant": 637,
+            "tool": 28961
+          },
+          "all_message_payload_bytes": 31603,
+          "continuation_serialized_bytes": 395,
+          "root_instruction_reply_content_bytes": 17387,
+          "tool_reply_content_bytes": 28900,
+          "tool_replies": [
+            {
+              "tool": "list_dir",
+              "payload_bytes": 803,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 17396,
+              "root_instructions": true
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 220,
+              "root_instructions": false
+            },
+            {
+              "tool": "list_dir",
+              "payload_bytes": 3278,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 665,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 431,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 6168,
+              "root_instructions": false
+            }
+          ],
+          "message_estimate_tokens": 10587,
+          "schema_estimate_tokens": 2541,
+          "saved_estimated_prompt_tokens": 13128,
+          "saved_max_tokens": 2048,
+          "provider_reported_usage": {
+            "completion_tokens": 33,
+            "prompt_tokens": 9454
+          }
+        },
+        {
+          "sequence": 6,
+          "normalized_input_sha256": "6b38501642d8c2575d8d48e863fed054373c6d7a42029f3f167e98c517bf0fd1",
+          "wire_input_sha256": "420f62550098f709522e65eca9b524112334525cfca3e9c7ac03789c77e4f293",
+          "role_payload_bytes": {
+            "system": 855,
+            "user": 1150,
+            "assistant": 758,
+            "tool": 33991
+          },
+          "all_message_payload_bytes": 36754,
+          "continuation_serialized_bytes": 466,
+          "root_instruction_reply_content_bytes": 17387,
+          "tool_reply_content_bytes": 33921,
+          "tool_replies": [
+            {
+              "tool": "list_dir",
+              "payload_bytes": 803,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 17396,
+              "root_instructions": true
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 220,
+              "root_instructions": false
+            },
+            {
+              "tool": "list_dir",
+              "payload_bytes": 3278,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 665,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 431,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 6168,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 5030,
+              "root_instructions": false
+            }
+          ],
+          "message_estimate_tokens": 12312,
+          "schema_estimate_tokens": 2541,
+          "saved_estimated_prompt_tokens": 14853,
+          "saved_max_tokens": 1531,
+          "provider_reported_usage": {
+            "completion_tokens": 1086,
+            "prompt_tokens": 11075
+          }
+        }
+      ],
+      "completion_status": "budget_exhausted",
+      "completion_reason": "Estimated prompt of ~16379 tokens leaves fewer than 256 output tokens in the 16384-token context limit.",
+      "aggregate_usage": {
+        "completion_tokens": 1312,
+        "prompt_tokens": 38096
+      },
+      "stop_events": [
+        {
+          "anchor_adjustment_tokens": 0,
+          "call_observation": null,
+          "completion_tokens_used": 1312,
+          "estimated_prompt_tokens": 16379,
+          "heuristic_prompt_tokens": 16379,
+          "identity": null,
+          "iteration": 6,
+          "kind": "pre_request_stop",
+          "max_tokens": null,
+          "message_count": 17,
+          "prompt_tokens_used": 38096,
+          "usage": null
+        }
+      ]
+    },
+    {
+      "cell": "T08-B2",
+      "saved_run_sha256": "934d21a1a4c9c709ddbaceb9f917a696696ca73b0e457161bf976548288e85f1",
+      "requests": [
+        {
+          "sequence": 1,
+          "normalized_input_sha256": "0410aa1ddb912abe8b2aa7ca76375d14becb110c51108c2fec63d1a02d6139bb",
+          "wire_input_sha256": "3d3f0cd42c3fc09ce7174f9a2c521520d1600ea81b0916e09e2b9d6b568d8192",
+          "role_payload_bytes": {
+            "system": 855,
+            "user": 1150
+          },
+          "all_message_payload_bytes": 2005,
+          "continuation_serialized_bytes": 0,
+          "root_instruction_reply_content_bytes": 0,
+          "tool_reply_content_bytes": 0,
+          "tool_replies": [],
+          "message_estimate_tokens": 677,
+          "schema_estimate_tokens": 2541,
+          "saved_estimated_prompt_tokens": 3218,
+          "saved_max_tokens": 2048,
+          "provider_reported_usage": {
+            "completion_tokens": 30,
+            "prompt_tokens": 1699
+          }
+        },
+        {
+          "sequence": 2,
+          "normalized_input_sha256": "a8cb82f6fd2c96a0cc48bbba3cff45ff1003fba2a4f9decd70fc350ff939a9b5",
+          "wire_input_sha256": "901a1671a803e1228576537831c2ef086dafe684c09c7cc94b840ec6cccd401c",
+          "role_payload_bytes": {
+            "system": 855,
+            "user": 1150,
+            "assistant": 121,
+            "tool": 803
+          },
+          "all_message_payload_bytes": 2929,
+          "continuation_serialized_bytes": 100,
+          "root_instruction_reply_content_bytes": 0,
+          "tool_reply_content_bytes": 795,
+          "tool_replies": [
+            {
+              "tool": "list_dir",
+              "payload_bytes": 803,
+              "root_instructions": false
+            }
+          ],
+          "message_estimate_tokens": 993,
+          "schema_estimate_tokens": 2541,
+          "saved_estimated_prompt_tokens": 3534,
+          "saved_max_tokens": 2048,
+          "provider_reported_usage": {
+            "completion_tokens": 49,
+            "prompt_tokens": 2004
+          }
+        },
+        {
+          "sequence": 3,
+          "normalized_input_sha256": "e8f19c6f88b2803853debaaab41deac82c7f20d1239c96cd82950f5186310243",
+          "wire_input_sha256": "862482253d563dabab4c0a4c2669bf85c2de7fc5ae2188f1653e00e625b492af",
+          "role_payload_bytes": {
+            "system": 855,
+            "user": 1150,
+            "assistant": 268,
+            "tool": 21477
+          },
+          "all_message_payload_bytes": 23750,
+          "continuation_serialized_bytes": 191,
+          "root_instruction_reply_content_bytes": 17387,
+          "tool_reply_content_bytes": 21452,
+          "tool_replies": [
+            {
+              "tool": "list_dir",
+              "payload_bytes": 803,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 17396,
+              "root_instructions": true
+            },
+            {
+              "tool": "list_dir",
+              "payload_bytes": 3278,
+              "root_instructions": false
+            }
+          ],
+          "message_estimate_tokens": 7945,
+          "schema_estimate_tokens": 2541,
+          "saved_estimated_prompt_tokens": 10486,
+          "saved_max_tokens": 2048,
+          "provider_reported_usage": {
+            "completion_tokens": 38,
+            "prompt_tokens": 7046
+          }
+        },
+        {
+          "sequence": 4,
+          "normalized_input_sha256": "e335d0a9f018af6c35621361cdcbd9672c645a040e8b954a76ae2e9c95db699c",
+          "wire_input_sha256": "0fd6298d5193d0ae60bd6ab5d339135f2b16f60ba0c407fd0c09499570693b49",
+          "role_payload_bytes": {
+            "system": 855,
+            "user": 1150,
+            "assistant": 424,
+            "tool": 27645
+          },
+          "all_message_payload_bytes": 30074,
+          "continuation_serialized_bytes": 302,
+          "root_instruction_reply_content_bytes": 17387,
+          "tool_reply_content_bytes": 27611,
+          "tool_replies": [
+            {
+              "tool": "list_dir",
+              "payload_bytes": 803,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 17396,
+              "root_instructions": true
+            },
+            {
+              "tool": "list_dir",
+              "payload_bytes": 3278,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 6168,
+              "root_instructions": false
+            }
+          ],
+          "message_estimate_tokens": 10061,
+          "schema_estimate_tokens": 2541,
+          "saved_estimated_prompt_tokens": 12602,
+          "saved_max_tokens": 2048,
+          "provider_reported_usage": {
+            "completion_tokens": 33,
+            "prompt_tokens": 8838
+          }
+        },
+        {
+          "sequence": 5,
+          "normalized_input_sha256": "d67bc5b6817be8f0d37803ef6613053d44af7efd5fb71173788178ce1b947a9c",
+          "wire_input_sha256": "09130cc1f2f1ccb9eaddd7053ba05881ca3f45af837a68656e3abb32e18d49da",
+          "role_payload_bytes": {
+            "system": 855,
+            "user": 1150,
+            "assistant": 545,
+            "tool": 32675
+          },
+          "all_message_payload_bytes": 35225,
+          "continuation_serialized_bytes": 373,
+          "root_instruction_reply_content_bytes": 17387,
+          "tool_reply_content_bytes": 32632,
+          "tool_replies": [
+            {
+              "tool": "list_dir",
+              "payload_bytes": 803,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 17396,
+              "root_instructions": true
+            },
+            {
+              "tool": "list_dir",
+              "payload_bytes": 3278,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 6168,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 5030,
+              "root_instructions": false
+            }
+          ],
+          "message_estimate_tokens": 11786,
+          "schema_estimate_tokens": 2541,
+          "saved_estimated_prompt_tokens": 14327,
+          "saved_max_tokens": 2048,
+          "provider_reported_usage": {
+            "completion_tokens": 55,
+            "prompt_tokens": 10459
+          }
+        },
+        {
+          "sequence": 6,
+          "normalized_input_sha256": "e0b42ddef7676cbaaa8ad3648b0ef732ba2c32c53ec446ec35b131061b4fd57b",
+          "wire_input_sha256": "8d9fa3825f8feddf4c499af02c113ad9ca0eac1557cab5a4cdf7a18fa5a5464e",
+          "role_payload_bytes": {
+            "system": 855,
+            "user": 1150,
+            "assistant": 720,
+            "tool": 33771
+          },
+          "all_message_payload_bytes": 36496,
+          "continuation_serialized_bytes": 474,
+          "root_instruction_reply_content_bytes": 17387,
+          "tool_reply_content_bytes": 33710,
+          "tool_replies": [
+            {
+              "tool": "list_dir",
+              "payload_bytes": 803,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 17396,
+              "root_instructions": true
+            },
+            {
+              "tool": "list_dir",
+              "payload_bytes": 3278,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 6168,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 5030,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 431,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 665,
+              "root_instructions": false
+            }
+          ],
+          "message_estimate_tokens": 12222,
+          "schema_estimate_tokens": 2541,
+          "saved_estimated_prompt_tokens": 14763,
+          "saved_max_tokens": 1621,
+          "provider_reported_usage": {
+            "completion_tokens": 229,
+            "prompt_tokens": 10937
+          }
+        },
+        {
+          "sequence": 7,
+          "normalized_input_sha256": "4ebdbbdac34d44ac0d2f18816bdb6a5d28fcf8eafc4adaf8175e8f4ddf047cad",
+          "wire_input_sha256": "79fd31ba89feaa8fd51c3816ef2281a1a4253f845a37530ac3097df03a625843",
+          "role_payload_bytes": {
+            "system": 855,
+            "user": 1150,
+            "assistant": 1811,
+            "tool": 33991
+          },
+          "all_message_payload_bytes": 37807,
+          "continuation_serialized_bytes": 1519,
+          "root_instruction_reply_content_bytes": 17387,
+          "tool_reply_content_bytes": 33921,
+          "tool_replies": [
+            {
+              "tool": "list_dir",
+              "payload_bytes": 803,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 17396,
+              "root_instructions": true
+            },
+            {
+              "tool": "list_dir",
+              "payload_bytes": 3278,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 6168,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 5030,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 431,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 665,
+              "root_instructions": false
+            },
+            {
+              "tool": "read_file",
+              "payload_bytes": 220,
+              "root_instructions": false
+            }
+          ],
+          "message_estimate_tokens": 12667,
+          "schema_estimate_tokens": 2541,
+          "saved_estimated_prompt_tokens": 15208,
+          "saved_max_tokens": 1176,
+          "provider_reported_usage": {
+            "completion_tokens": 23,
+            "prompt_tokens": 11285
+          }
+        }
+      ],
+      "completion_status": "budget_exhausted",
+      "completion_reason": "Total token budget cannot fit another model request after these tools.",
+      "aggregate_usage": {
+        "completion_tokens": 457,
+        "prompt_tokens": 52268
+      },
+      "stop_events": [
+        {
+          "anchor_adjustment_tokens": 0,
+          "call_observation": null,
+          "completion_tokens_used": 457,
+          "estimated_prompt_tokens": 15240,
+          "heuristic_prompt_tokens": 15240,
+          "identity": null,
+          "iteration": 6,
+          "kind": "post_response_stop",
+          "max_tokens": null,
+          "message_count": 17,
+          "prompt_tokens_used": 52268,
+          "usage": null
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "All measurements describe retained actual normalized inputs; no request/model was replayed.",
+    "Role payload bytes use the existing byte heuristic; continuation bytes are a subset of assistant bytes.",
+    "Tool reply content and role payload bytes have different scopes (tool name bytes are included in role payload).",
+    "Bytes and heuristic token estimates are not provider tokenization, cache accounting or causal attribution.",
+    "No prompt/history/criteria/limit changes or model-quality improvement are demonstrated.",
+    "Root instructions may be relevant; byte attribution does not authorize deleting them or ignoring instructions.",
+    "An opt-in default read window would change model-visible evidence and still permit explicit ranges; it requires separate validation and a future reviewed comparison."
+  ],
+  "recipe_sha256": "5f484f5005b664d3723441360d5f58b7c29fa285e851449df3519c30de56744d"
+}
