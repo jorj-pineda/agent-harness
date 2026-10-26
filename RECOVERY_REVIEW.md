@@ -93,6 +93,9 @@ and truncation flag; JSON output retains the full bounded packet. Both modes esc
 saved values as JSON so control sequences cannot operate the terminal. Display
 escaping/indentation can exceed the compact server encoding size.
 
+Final responses require integer totals and omission counts: each total must equal
+selected items plus omissions, and each selected list must contain the v1 minimum
+of its total and eight items. Missing-final counts alone remain unknown.
 Version/identity/shape/count mismatches, oversized packets and missing-final
 contradictions fail before printing packet data. Transport/server failures exit with
 an exception category only, without private exception/body text, retry, alternate
@@ -102,10 +105,11 @@ This command does not refresh the workspace, change settings or submit continuat
 Panel access, file-span selection, compacted prompts and measured recovery remain
 separate work. The original release no-go and task acceptance criteria are unchanged.
 
-CLI validation: 91 focused regressions and 1,596 offline tests (five live excluded),
+CLI validation: 105 focused regressions and 1,610 offline tests (five live excluded),
 Ruff/format/mypy pass, along with the installed command help and local documentation
-links. Twenty-one new CLI cases include omitted/truncated/stale/unknown evidence,
-terminal escaping, malformed/oversized packets, private errors and server refusals,
+links. Thirty-five new CLI cases include omitted/truncated/stale/unknown evidence,
+terminal escaping, malformed/oversized packets, contradictory totals/selection/omissions,
+private errors and server refusals,
 and human/JSON owner-scoped GETs against a restarted application lifecycle. Original
 run/archive evidence and later user edits survive with no new inference. These
 scripted checks establish client mechanics, not successful live task recovery.

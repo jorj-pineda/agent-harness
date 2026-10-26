@@ -13,8 +13,8 @@ retry or fallback. Scripted CLI → restarted API → saved record checks preser
 user edits and run/archive identity with no inference/new work. This closes only
 the extraction/API/CLI review slice, not file-span selection, prompt compaction,
 continuation execution or measured recovery. Panel work remains separate; defaults,
-old cohorts, no-go/8-of-10 and broad G2–G5 remain unchanged. Validation: 91 focused/
-1,596 offline tests (five live deselected), Ruff/format/mypy, installed CLI help
+old cohorts, no-go/8-of-10 and broad G2–G5 remain unchanged. Validation: 105 focused/
+1,610 offline tests (five live deselected), Ruff/format/mypy, installed CLI help
 and local documentation links pass.
 
 **2026-10-26 — Read-only recovery packet API:** owner-checked terminal-run
