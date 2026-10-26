@@ -159,6 +159,46 @@ def test_missing_final_rejects_invented_evidence(field, value):
     assert "completed" not in result.output
 
 
+@pytest.mark.parametrize("raw", [False, True])
+@pytest.mark.parametrize(
+    "change",
+    [
+        "zero_actions",
+        "unknown_actions",
+        "unknown_omissions",
+        "wrong_diffs",
+        "wrong_checks",
+        "unknown_check_omissions",
+        "short_selection",
+    ],
+)
+def test_contradictory_counts_fail_before_either_output_mode(change, raw):
+    data = packet()
+    if change == "zero_actions":
+        data.update(action_count=0, omitted_actions=0)
+    elif change == "unknown_actions":
+        data["action_count"] = None
+    elif change == "unknown_omissions":
+        data["omitted_actions"] = None
+    elif change == "wrong_diffs":
+        data["diff_count"] = 2
+    elif change == "wrong_checks":
+        data["unresolved_check_count"] = 0
+    elif change == "unknown_check_omissions":
+        data["omitted_unresolved_checks"] = None
+    else:
+        data["recent_actions"].pop()
+        data["omitted_actions"] += 1  # Arithmetic matches, but v1 requires the full eight.
+    data["objective"]["text"] = "private-marker"
+    with patch("httpx.get", return_value=response(data)) as get, patch("httpx.post") as post:
+        result = runner.invoke(app, ["recovery-review", "r1", *(["--json"] if raw else [])])
+    assert result.exit_code == 1
+    assert "private-marker" not in result.output
+    assert "recovery_review run_id=" not in result.output
+    assert get.call_count == 1
+    post.assert_not_called()
+
+
 def test_real_cli_get_after_lifecycle_restart_preserves_user_edits_and_evidence(tmp_path):
     repo = tmp_path / "repo"
     repo.mkdir()

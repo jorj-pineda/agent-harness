@@ -317,8 +317,19 @@ class AgentClient:
             value = record.get(name)
             if name not in record or (value is not None and (type(value) is not int or value < 0)):
                 raise ValueError("Invalid recovery review counts")
+            if record["final_response_available"] and value is None:
+                raise ValueError("Final-response recovery counts must be recorded")
             if not record["final_response_available"] and value is not None:
                 raise ValueError("Missing-final recovery counts must remain unknown")
+        if record["final_response_available"]:
+            for items, count, omitted in (
+                ("unresolved_checks", "unresolved_check_count", "omitted_unresolved_checks"),
+                ("recent_actions", "action_count", "omitted_actions"),
+                ("diffs", "diff_count", "omitted_diffs"),
+            ):
+                selected = len(record[items])
+                if record[count] != selected + record[omitted] or selected != min(record[count], 8):
+                    raise ValueError("Recovery review counts contradict selected evidence")
         if not record["final_response_available"] and (
             any(record[name] for name in ("unresolved_checks", "recent_actions", "diffs"))
             or any(
