@@ -772,6 +772,56 @@ def run(
 
 
 @app.command()
+def recovery_review(
+    run_id: str = typer.Argument(...),
+    base_url: str = typer.Option("http://localhost:8000", "--base-url"),
+    user_id: str = typer.Option("cli-user", "--user-id"),
+    raw: bool = typer.Option(False, "--json", help="Print the bounded server packet."),
+) -> None:
+    """Inspect saved recovery evidence; never starts or continues execution."""
+    try:
+        review = AgentClient(base_url).recovery_review(user_id, run_id)
+    except Exception as exc:
+        typer.echo(
+            f"Recovery review unavailable ({type(exc).__name__}). No automatic retry.", err=True
+        )
+        raise typer.Exit(code=1) from exc
+    if raw:
+        typer.echo(json.dumps(review, indent=2))
+        return
+
+    # JSON-escape every saved value so repository/model text cannot control the terminal.
+    def value(name: str) -> str:
+        item = review.get(name)
+        return "unknown" if item is None else json.dumps(item)
+
+    typer.echo(f"recovery_review run_id={value('run_id')} status={value('run_status')}")
+    typer.echo(
+        f"completion={value('completion_status')} checks={value('verification_status')} "
+        f"workspace={value('workspace_status')}"
+    )
+    typer.echo(f"final_response_available={value('final_response_available')}")
+    typer.echo("Saved evidence only; no command, inference or continuation was started.")
+    typer.echo(f"source_record_sha256={value('source_record_sha256')}")
+    for name in ("objective", "run_error", "completion_reason", "workspace_reason"):
+        if review.get(name) is not None:
+            typer.echo(f"{name}={value(name)}")
+    for label, items, count, omitted in (
+        ("check", "unresolved_checks", "unresolved_check_count", "omitted_unresolved_checks"),
+        ("action", "recent_actions", "action_count", "omitted_actions"),
+        ("diff", "diffs", "diff_count", "omitted_diffs"),
+    ):
+        typer.echo(
+            f"{label}_count={value(count)} selected={len(review[items])} omitted={value(omitted)}"
+        )
+        for row in review[items]:
+            typer.echo(f"{label}={json.dumps(row)}")
+    typer.echo("Excerpt truncation and omitted items require inspection of the original saved run.")
+    typer.echo("Returned tools are not proof of success; saved diffs do not attest current files.")
+    typer.echo(value("scope_note"))
+
+
+@app.command()
 def tool_progress(
     run_id: str = typer.Argument(...),
     base_url: str = typer.Option("http://localhost:8000", "--base-url"),

@@ -276,6 +276,61 @@ class AgentClient:
         resp.raise_for_status()
         return dict(resp.json())
 
+    def recovery_review(self, user_id: str, run_id: str) -> dict[str, Any]:
+        resp = httpx.get(
+            f"{self._base}/runs/{run_id}/recovery-review",
+            params={"user_id": user_id},
+            timeout=30,
+        )
+        resp.raise_for_status()
+        if len(resp.content) > 32768:
+            raise ValueError("Recovery review exceeds the supported wire size")
+        record = resp.json()
+        if (
+            not isinstance(record, dict)
+            or type(record.get("schema_version")) is not int
+            or record["schema_version"] != 1
+            or record.get("run_id") != run_id
+            or record.get("run_status") not in {"finished", "cancelled", "failed", "interrupted"}
+            or type(record.get("final_response_available")) is not bool
+            or record.get("max_serialized_bytes") != 32768
+            or not isinstance(record.get("source_record_sha256"), str)
+            or not isinstance(record.get("scope_note"), str)
+        ):
+            raise ValueError("Unsupported recovery review response")
+        for name in ("unresolved_checks", "recent_actions", "diffs"):
+            items = record.get(name)
+            if (
+                not isinstance(items, list)
+                or len(items) > 8
+                or any(not isinstance(item, dict) for item in items)
+            ):
+                raise ValueError("Invalid recovery review items")
+        for name in (
+            "unresolved_check_count",
+            "action_count",
+            "diff_count",
+            "omitted_unresolved_checks",
+            "omitted_actions",
+            "omitted_diffs",
+        ):
+            value = record.get(name)
+            if name not in record or (value is not None and (type(value) is not int or value < 0)):
+                raise ValueError("Invalid recovery review counts")
+            if not record["final_response_available"] and value is not None:
+                raise ValueError("Missing-final recovery counts must remain unknown")
+        if not record["final_response_available"] and (
+            any(record[name] for name in ("unresolved_checks", "recent_actions", "diffs"))
+            or any(
+                record.get(name) is not None
+                for name in ("completion_status", "verification_status", "workspace_status")
+            )
+        ):
+            raise ValueError("Missing-final recovery evidence must remain unknown")
+        if not isinstance(record.get("objective"), dict):
+            raise ValueError("Missing recovery objective evidence")
+        return record
+
     def tool_progress(self, user_id: str, run_id: str) -> dict[str, Any]:
         resp = httpx.get(
             f"{self._base}/runs/{run_id}/tool-progress",
