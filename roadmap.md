@@ -4,6 +4,19 @@ Updated: 2026-10-26
 
 ## Current release decision
 
+**2026-10-26 — CLI saved recovery review:** a thin `recovery-review` command
+renders the server's bounded packet through one owner-scoped GET, with human/JSON
+views. Observed status leads; truncation, original text hashes, selected/omitted
+counts and missing-final unknowns remain visible. Saved values are JSON-escaped;
+unsupported envelopes/private transport errors fail before evidence output without
+retry or fallback. Scripted CLI → restarted API → saved record checks preserve later
+user edits and run/archive identity with no inference/new work. This closes only
+the extraction/API/CLI review slice, not file-span selection, prompt compaction,
+continuation execution or measured recovery. Panel work remains separate; defaults,
+old cohorts, no-go/8-of-10 and broad G2–G5 remain unchanged. Validation: 91 focused/
+1,596 offline tests (five live deselected), Ruff/format/mypy, installed CLI help
+and local documentation links pass.
+
 **2026-10-26 — Read-only recovery packet API:** owner-checked terminal-run
 GET extracts the [bounded saved-run packet](RECOVERY_REVIEW.md) without resolving
 current files, constructing tools/providers or changing archive/run identity.

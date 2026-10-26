@@ -4,8 +4,7 @@
 evidence for review. The Beam read-window cohort left acceptable partial patches
 without completed workflows; reviewers need the objective, observed diffs, failures
 and recent actions before deciding how to recover. This extractor is the first
-piece of that workflow. Owner-checked API access is now available; CLI access
-follows separately.
+piece of that workflow. Owner-checked API and CLI review access are available.
 
 The v1 packet retains the submitted objective, run/completion/check/workspace
 statuses, saved stop/error text, up to eight failed/unavailable check observations,
@@ -76,3 +75,37 @@ restart preservation, unknown failed/interrupted final evidence, active/owner/in
 guards, control-character/Unicode wire bounds and explicit metadata refusal.
 These are deterministic application-lifecycle checks, not live-model recovery or
 an OS-process restart observation.
+
+## CLI review
+
+```sh
+agent-harness recovery-review <run-id> --user-id dev1
+agent-harness recovery-review <run-id> --user-id dev1 --json
+```
+
+The thin client calls only the recovery-review GET, validates the supported v1
+terminal envelope and wire size, then renders the server's evidence. It does not
+extract or reconstruct evidence from transcripts. Human output shows observed
+completion/check/workspace state first, source-record identity, excerpts, selected
+items and total/omitted counts. Missing-final counts stay `unknown`; returned actions
+are not labeled successful. Excerpts retain their text, original byte length/hash
+and truncation flag; JSON output retains the full bounded packet. Both modes escape
+saved values as JSON so control sequences cannot operate the terminal. Display
+escaping/indentation can exceed the compact server encoding size.
+
+Version/identity/shape/count mismatches, oversized packets and missing-final
+contradictions fail before printing packet data. Transport/server failures exit with
+an exception category only, without private exception/body text, retry, alternate
+endpoint, POST or new work. This boundary validation is not independent verification
+of packet claims. Use the original owner-scoped run to inspect omitted evidence.
+This command does not refresh the workspace, change settings or submit continuation.
+Panel access, file-span selection, compacted prompts and measured recovery remain
+separate work. The original release no-go and task acceptance criteria are unchanged.
+
+CLI validation: 91 focused regressions and 1,596 offline tests (five live excluded),
+Ruff/format/mypy pass, along with the installed command help and local documentation
+links. Twenty-one new CLI cases include omitted/truncated/stale/unknown evidence,
+terminal escaping, malformed/oversized packets, private errors and server refusals,
+and human/JSON owner-scoped GETs against a restarted application lifecycle. Original
+run/archive evidence and later user edits survive with no new inference. These
+scripted checks establish client mechanics, not successful live task recovery.
