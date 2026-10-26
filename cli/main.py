@@ -911,6 +911,67 @@ def continue_session(
 
 
 @app.command()
+def checkpoint_span(
+    session_id: str = typer.Argument(...),
+    checkpoint_id: str = typer.Argument(...),
+    path: str = typer.Option(..., "--path"),
+    expected_sha256: str = typer.Option(..., "--expected-sha256"),
+    start_line: int = typer.Option(..., "--start-line", min=1, max=1_048_576),
+    end_line: int = typer.Option(..., "--end-line", min=1, max=1_048_576),
+    base_url: str = typer.Option("http://localhost:8000", "--base-url"),
+    user_id: str = typer.Option("cli-user", "--user-id"),
+    raw: bool = typer.Option(False, "--json", help="Print the bounded saved-source response."),
+) -> None:
+    """Read an explicit historical checkpoint span; never reads or restores current files."""
+    try:
+        span = AgentClient(base_url).checkpoint_span(
+            user_id,
+            session_id,
+            checkpoint_id,
+            path=path,
+            expected_sha256=expected_sha256,
+            start_line=start_line,
+            end_line=end_line,
+        )
+    except Exception as exc:
+        typer.echo(
+            f"Checkpoint span unavailable ({type(exc).__name__}). "
+            "Review checkpoint metadata, hash and range. No automatic retry.",
+            err=True,
+        )
+        raise typer.Exit(code=1) from exc
+    if raw:
+        typer.echo(json.dumps(span, indent=2))
+        return
+
+    # All saved/input values are JSON-escaped; source text cannot control the terminal.
+    def value(name: str) -> str:
+        return json.dumps(span[name])
+
+    typer.echo(
+        f"saved_checkpoint_span session={value('session_id')} "
+        f"checkpoint={value('checkpoint_id')} kind={value('checkpoint_kind')}"
+    )
+    typer.echo("Historical source only; no current-file read, capture, inference or execution.")
+    typer.echo(
+        f"path={value('path')} lines={span['start_line']}..{span['end_line']} "
+        f"total_lines={span['total_lines']} has_more={value('has_more')}"
+    )
+    typer.echo(
+        f"selected_bytes={span['selected_bytes']} file_bytes={span['file_bytes']} "
+        f"saved_mode={span['mode']:04o}"
+    )
+    for name in (
+        "file_sha256",
+        "content_sha256",
+        "checkpoint_record_sha256",
+        "content",
+        "scope_note",
+    ):
+        typer.echo(f"{name}={value(name)}")
+
+
+@app.command()
 def checkpoint_create(
     session_id: str = typer.Argument(...),
     base_url: str = typer.Option("http://localhost:8000", "--base-url"),

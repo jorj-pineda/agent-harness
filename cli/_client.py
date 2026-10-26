@@ -380,6 +380,98 @@ class AgentClient:
         resp.raise_for_status()
         return dict(resp.json())
 
+    def checkpoint_span(
+        self,
+        user_id: str,
+        session_id: str,
+        checkpoint_id: str,
+        *,
+        path: str,
+        expected_sha256: str,
+        start_line: int,
+        end_line: int,
+    ) -> dict[str, Any]:
+        def digest(value: object) -> bool:
+            return (
+                isinstance(value, str)
+                and len(value) == 64
+                and all(char in "0123456789abcdef" for char in value)
+            )
+
+        if (
+            not digest(expected_sha256)
+            or type(start_line) is not int
+            or type(end_line) is not int
+            or not 1 <= start_line <= end_line <= 1_048_576
+            or end_line - start_line + 1 > 200
+        ):
+            raise ValueError("Use a saved file SHA-256 and an explicit range of at most 200 lines")
+        resp = httpx.get(
+            f"{self._base}/sessions/{session_id}/checkpoints/{checkpoint_id}/span",
+            params={
+                "user_id": user_id,
+                "path": path,
+                "expected_sha256": expected_sha256,
+                "start_line": start_line,
+                "end_line": end_line,
+            },
+            timeout=30,
+        )
+        resp.raise_for_status()
+        if len(resp.content) > 32768:
+            raise ValueError("Checkpoint span response exceeds the supported size")
+        data = resp.json()
+        if (
+            not isinstance(data, dict)
+            or type(data.get("schema_version")) is not int
+            or data["schema_version"] != 1
+            or data.get("session_id") != session_id
+            or data.get("checkpoint_id") != checkpoint_id
+            or data.get("path") != path
+            or data.get("file_sha256") != expected_sha256
+            or data.get("start_line") != start_line
+            or data.get("end_line") != end_line
+            or data.get("checkpoint_kind") not in {"manual", "turn_before", "turn_after"}
+            or data.get("read_only") is not True
+            or type(data.get("has_more")) is not bool
+            or not digest(data.get("checkpoint_record_sha256"))
+            or not isinstance(data.get("scope_note"), str)
+            or not isinstance(data.get("content"), str)
+        ):
+            raise ValueError("Unsupported or mismatched checkpoint span response")
+        for name, minimum, maximum in (
+            ("file_bytes", 1, 1_048_576),
+            ("selected_bytes", 1, 8192),
+            ("total_lines", end_line, 1_048_576),
+            ("mode", 0, 0o7777),
+            ("start_line", 1, 1_048_576),
+            ("end_line", 1, 1_048_576),
+        ):
+            value = data.get(name)
+            if type(value) is not int or not minimum <= value <= maximum:
+                raise ValueError("Invalid checkpoint span counts or range")
+        selected = data["content"].encode("utf-8")
+        line_count = selected.count(b"\n") + (not selected.endswith(b"\n"))
+        if (
+            data["selected_bytes"] != len(selected)
+            or data.get("content_sha256") != hashlib.sha256(selected).hexdigest()
+            or line_count != end_line - start_line + 1
+            or data["selected_bytes"] > data["file_bytes"]
+            or data["total_lines"] > data["file_bytes"]
+            or data["has_more"] != (end_line < data["total_lines"])
+            or (data["has_more"] and not selected.endswith(b"\n"))
+            or (
+                start_line == 1
+                and end_line == data["total_lines"]
+                and (
+                    len(selected) != data["file_bytes"]
+                    or data["content_sha256"] != data["file_sha256"]
+                )
+            )
+        ):
+            raise ValueError("Checkpoint span content/counts contradict saved metadata")
+        return data
+
     def revert_file(self, user_id: str, run_id: str, path: str, request_id: str) -> dict[str, Any]:
         resp = httpx.post(
             f"{self._base}/runs/{run_id}/revert-file",
