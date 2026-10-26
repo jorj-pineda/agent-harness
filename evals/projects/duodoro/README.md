@@ -1,5 +1,11 @@
 # Duodoro real-project validation
 
+The [Beam read-window protocol](READ_WINDOW_PROTOCOL.md) prepares eight fresh
+original-task CLI cells comparing default reads with an 80-line window. Budgets
+and criteria stay fixed; actual client preflight and an independently reviewed
+execution freeze remain before inference. Instruction coverage is reported alongside
+outcomes; smaller replies alone are not a quality gain.
+
 The [retained Beam payload diagnosis](BEAM_PAYLOAD_DIAGNOSIS.md) attributes actual
 input bytes without inference: large tool replies, including one AGENTS.md read
 per cell, persist in later requests. This motivates an opt-in read-window experiment,
