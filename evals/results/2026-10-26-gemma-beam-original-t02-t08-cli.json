@@ -1,0 +1,2462 @@
+{
+  "cleanup": {
+    "Docker_touched": false,
+    "UTC": "2026-10-26T01:35:27.863568+00:00",
+    "evaluation_loaded_gemma_unloaded": true,
+    "listener_released": true,
+    "user_Ollama_service_preserved": true
+  },
+  "duodoro_unchanged": true,
+  "freeze_PR": "https://github.com/jorj-pineda/agent-harness/pull/220",
+  "freeze_sha256": "736b0150ea4a5440eec2326858e70af4fdfaee1de57b219fa43d41a6a8cf78d8",
+  "kind": "real coding observations using actual CLI/shared runtime/disposable original Duodoro tasks",
+  "limits": [
+    "Four planned cells/model and two/task/model remain denominators. Unrun is not failure or accepted.",
+    "Partial cohorts are not equal-cohort model ranking. Two public-task repeats are not held out or a causal model comparison.",
+    "Initial parity is normalized per task and exact wire within provider; native providers/defaults differ.",
+    "Known returned usage/cost prefixes do not establish missing aggregate totals; billing is backend-reported.",
+    "Dispatch300sec excludes settled final review/storage/cleanup; HTTP180 and CLI600 experimental, not defaults.",
+    "No patch repair/fallback/replacement. Original no-go/8of10/G2-G5 unchanged."
+  ],
+  "local_evidence_root": "/Users/jorge/.local/share/agent-harness/trials/duodoro-beam-live-1bt9rl3i",
+  "onward_dispatch_stopped": false,
+  "operator_prelaunch_environment_correction": {
+    "actual_stores_inputs_outcomes_absent": true,
+    "correction": "HOME supplied to operator/gh only. API/CLI subprocess environment stays frozen and strips it. No secret value added.",
+    "inference_before_correction": false,
+    "no_cohort_submission_replayed": true,
+    "original_prelaunch_failed": "GitHub keyring discovery without HOME"
+  },
+  "packaging_recipe_sha256": "9a08b88b4bd25160a431683bb690bbacadae23a469c973de8f18bb20784e6467",
+  "protocol_PR": "https://github.com/jorj-pineda/agent-harness/pull/219",
+  "recorded_UTC": "2026-10-26T01:37:48.239580+00:00",
+  "results_evidence_index_sha256": "2b0a8e6334c6f3b78d5ad6beef126b82339f827b42533efd1654e459480ef8cb",
+  "rows": [
+    {
+      "after_checkpoint_present": false,
+      "aggregate_reported_cost_usd": null,
+      "aggregate_usage": null,
+      "aggregate_usage_known": false,
+      "artifact_accepted": false,
+      "artifact_accepted_executable": false,
+      "audit_complete": true,
+      "before_checkpoint_present": true,
+      "cell": "T02-G1",
+      "changed_paths": [],
+      "client": "CLI",
+      "coding_followups": 0,
+      "completed_and_accepted": false,
+      "completion_reason": null,
+      "completion_status": null,
+      "cost_scope": "Backend-reported billing, not invoice; unknown failed/cancelled usage not zero. Local is unpriced.",
+      "created_at": "2026-10-26T01:18:27.629626Z",
+      "diff_coverage": {
+        "bytes": 0,
+        "max_bytes": 64000,
+        "max_file_bytes": 131072,
+        "omitted_paths": [],
+        "scope": "text review only; mode/type/full bytes remain in full archive manifests",
+        "truncated": false
+      },
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "external_exit_code": 1,
+      "failure_count": 1,
+      "files_touched": null,
+      "final_tool_error_count": null,
+      "final_tool_record_count": null,
+      "finished_at": "2026-10-26T01:21:53.552330Z",
+      "hosted_stop_required": false,
+      "independent_source_review": null,
+      "initial_identity": {
+        "format": "normalized-chat-request-v1",
+        "messages_sha256": "22467bc0402f10074671a0fc6bbf59ce857e0c525a82319c2ad1d76fea35bb8f",
+        "request_sha256": "f13eb20cc186f918ae5c2138293b5290acd50442119718a93f9731ea6dd29581",
+        "tool_specs_sha256": "ed9513f8ec9f445e896debdce70694aec434cf29756ba7c42d06f0557c029db2"
+      },
+      "initial_wire_sha256": "c3bdecfd66bbe3f91491f124bc8e0073589f138343b1f53594f97ff71fe448ec",
+      "input_analysis_complete": true,
+      "known_response_prefix_count": 1,
+      "known_response_prefix_usage": {
+        "completion_tokens": 22,
+        "prompt_tokens": 1962
+      },
+      "known_returned_cost_sum_usd": null,
+      "local_cell_audit_sha256": "989497b85d227c0f6b4f2891daa8b9ff5365f600ca221c5184ae9ad23b35a23f",
+      "local_input_files_sha256": {
+        "request-0001-normalized.json": "36ee3d50ea8a1e4acaa93da9337c8c2009793a7d7e5f3446ac02c65c495949c5",
+        "request-0001-wire.json": "c3bdecfd66bbe3f91491f124bc8e0073589f138343b1f53594f97ff71fe448ec",
+        "request-0002-normalized.json": "f24876257f81c38b4ece118498085f2103c9bf52829611eeefdb3c141612b383",
+        "request-0002-wire.json": "861a48a4cc67db17c56995ca085b4160c0f9985ff587e0fc0e810b4535ea9ba6"
+      },
+      "loop_latency_ms": null,
+      "manual_patch_repairs": 0,
+      "model": "gemma4:12b",
+      "model_key": "G",
+      "modes_preserved": true,
+      "planned": true,
+      "protected_preserved": true,
+      "provider_failure": {
+        "call_observation": {
+          "completion_usage_field": null,
+          "content_empty": null,
+          "duration_ms": 180027.28633303195,
+          "prompt_usage_field": null,
+          "terminal_reason": null,
+          "tool_call_count": null
+        },
+        "http_status": null,
+        "kind": "read_timeout"
+      },
+      "provider_observations": [
+        {
+          "billing_scope": "local-not-priced",
+          "content_bytes": 0,
+          "continuation_bytes": null,
+          "continuation_present": false,
+          "cost_known": false,
+          "finish_reason": "tool_use",
+          "kind": "response",
+          "sequence": 1,
+          "tool_call_count": 1,
+          "usage": {
+            "completion_tokens": 22,
+            "prompt_tokens": 1962
+          }
+        },
+        {
+          "cost_known": false,
+          "failure_kind": "read_timeout",
+          "http_status": null,
+          "kind": "provider_failure",
+          "sequence": 2
+        }
+      ],
+      "raw_input_bytes": 74686,
+      "repeat": 1,
+      "replacements": 0,
+      "reported_aggregate_cost_known": false,
+      "request_count": 2,
+      "request_id": "61e74a49226c4aa88341c106cd623cc7",
+      "response_count": 1,
+      "restart_identical": true,
+      "review_evidence_sha256": {
+        "acceptance.json": "49b7e6c57f7efc3209b4ddfde3de65feed7163dbf4b13d721902456e9879cebd",
+        "final.diff": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "input-analysis.json": "2a927889bb10c05d77f0b9607d0e3ef2257d0aee6cd8d1d3d54053b44afd4b9c",
+        "regrade.json": "dd0d0816c6571c1667bdf907bbda3bc3aab676b4502c5f092b896e6dce91d00f",
+        "restarted-run.json": "ea4fe451a85986ac6f812bcc64830c36499ee5f9106f1db6baa0cea78019c3f6",
+        "restarted-session.json": "2779a1be69888bf70523ccfb6eac2a6d95fa44fa64521233e993bcd0f51e5429",
+        "saved-run.json": "ea4fe451a85986ac6f812bcc64830c36499ee5f9106f1db6baa0cea78019c3f6",
+        "saved-session.json": "2779a1be69888bf70523ccfb6eac2a6d95fa44fa64521233e993bcd0f51e5429",
+        "source/observations.jsonl": "03dfd9daea357760006d50638a669c4966c7a22f28331243975e1025929ad9a9",
+        "source/transport-routing.jsonl": "7f20eb4398cffb228eba2527e34452fedf2470240ab53df5d339746781ec2f23",
+        "summary.json": "cc86c5d51615ea4181f6a1adb022213b6f6b144610467c9e56dee04564ce58fc"
+      },
+      "run_id": "7b2b47b5fdec40ac9d26a038ce4ebceb",
+      "source_review_required": false,
+      "status": "failed",
+      "task": "T02",
+      "tool_progress": [
+        {
+          "coverage": "recorded",
+          "events": [
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:18:53.501660Z",
+              "sequence": 1,
+              "tool": "read_file",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 2.426582932472229,
+              "observed_at": "2026-10-26T01:18:53.505443Z",
+              "sequence": 2,
+              "tool": "read_file",
+              "type": "tool_end"
+            }
+          ],
+          "events_truncated": false,
+          "observed_events": 2,
+          "read_only": true,
+          "run_id": "7b2b47b5fdec40ac9d26a038ce4ebceb",
+          "scope_note": "Bounded prefix of observed tool-start/end metadata; arguments, results, error text, model messages and tool-call IDs are not stored here. Start precedes tool gates, so it does not prove dispatch or mutation. End/error presence is not patch acceptance or verification. A missing end may mean interrupted work or unsaved evidence; file changes may exist. This is not a transcript, checkpoint, replay, repair, or permission to resume. Unknown tool names are recorded as unknown_tool.",
+          "updated_at": "2026-10-26T01:18:53.505443Z"
+        }
+      ],
+      "verification_status": null,
+      "workspace_review_ms": null
+    },
+    {
+      "after_checkpoint_present": true,
+      "aggregate_reported_cost_usd": 0,
+      "aggregate_usage": {
+        "completion_tokens": 2197,
+        "prompt_tokens": 26911
+      },
+      "aggregate_usage_known": true,
+      "artifact_accepted": false,
+      "artifact_accepted_executable": false,
+      "audit_complete": true,
+      "before_checkpoint_present": true,
+      "cell": "T02-B1",
+      "changed_paths": [],
+      "client": "CLI",
+      "coding_followups": 0,
+      "completed_and_accepted": false,
+      "completion_reason": "The model response was truncated.",
+      "completion_status": "incomplete",
+      "cost_scope": "Backend-reported billing, not invoice; unknown failed/cancelled usage not zero. Local is unpriced.",
+      "created_at": "2026-10-26T01:22:19.506745Z",
+      "diff_coverage": {
+        "bytes": 0,
+        "max_bytes": 64000,
+        "max_file_bytes": 131072,
+        "omitted_paths": [],
+        "scope": "text review only; mode/type/full bytes remain in full archive manifests",
+        "truncated": false
+      },
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "external_exit_code": 1,
+      "failure_count": 0,
+      "files_touched": [],
+      "final_tool_error_count": 0,
+      "final_tool_record_count": 5,
+      "finished_at": "2026-10-26T01:22:29.771251Z",
+      "hosted_stop_required": false,
+      "independent_source_review": null,
+      "initial_identity": {
+        "format": "normalized-chat-request-v1",
+        "messages_sha256": "22467bc0402f10074671a0fc6bbf59ce857e0c525a82319c2ad1d76fea35bb8f",
+        "request_sha256": "f13eb20cc186f918ae5c2138293b5290acd50442119718a93f9731ea6dd29581",
+        "tool_specs_sha256": "ed9513f8ec9f445e896debdce70694aec434cf29756ba7c42d06f0557c029db2"
+      },
+      "initial_wire_sha256": "d8edb1eda42d2b5b11d77fcfbc2fbb3ea8bdb3e9d79832d26d9b095da60c13b5",
+      "input_analysis_complete": true,
+      "known_response_prefix_count": 4,
+      "known_response_prefix_usage": {
+        "completion_tokens": 2197,
+        "prompt_tokens": 26911
+      },
+      "known_returned_cost_sum_usd": 0,
+      "local_cell_audit_sha256": "b4c6e329ba136dfbd9c2441984e6b5f342345fe0893bcb0cff948915ec8ff475",
+      "local_input_files_sha256": {
+        "request-0001-normalized.json": "36ee3d50ea8a1e4acaa93da9337c8c2009793a7d7e5f3446ac02c65c495949c5",
+        "request-0001-wire.json": "d8edb1eda42d2b5b11d77fcfbc2fbb3ea8bdb3e9d79832d26d9b095da60c13b5",
+        "request-0002-normalized.json": "eb9d749fa93c0d0d47db14d0fa6c58178f797be334acd4190dffdbcb4ad1e0f4",
+        "request-0002-wire.json": "ba8c0b1b13276445efbec3a1210ff4c8af33b3defb7e60d65160a19ac284d485",
+        "request-0003-normalized.json": "e29e1637ff0b09d0236d3f0ffc35dca10b43f40fea57572d9805424e58a82d1b",
+        "request-0003-wire.json": "8e34ace798643af4f63da2b357087d52b26aa173b286adc51cbd47e368f36b86",
+        "request-0004-normalized.json": "ff1488dcdd4da70e0771142322ca29fa8e7392dd663cce5c38ad52895bac55a8",
+        "request-0004-wire.json": "6c9bd5035e634a9e617c342c3136acdf400a92c04c5ba3b4ab1be53b614aebef"
+      },
+      "loop_latency_ms": 10087.803833007812,
+      "manual_patch_repairs": 0,
+      "model": "beam-free",
+      "model_key": "B",
+      "modes_preserved": true,
+      "planned": true,
+      "protected_preserved": true,
+      "provider_failure": null,
+      "provider_observations": [
+        {
+          "billing_guard_passed": true,
+          "billing_source": "go",
+          "content_bytes": 0,
+          "continuation_bytes": 78,
+          "continuation_present": true,
+          "cost_known": true,
+          "estimated_state": "absent",
+          "finish_reason": "tool_use",
+          "kind": "response",
+          "observed_cost_usd": 0,
+          "sequence": 1,
+          "tool_call_count": 2,
+          "usage": {
+            "completion_tokens": 53,
+            "prompt_tokens": 1676
+          }
+        },
+        {
+          "billing_guard_passed": true,
+          "billing_source": "go",
+          "content_bytes": 0,
+          "continuation_bytes": 52,
+          "continuation_present": true,
+          "cost_known": true,
+          "estimated_state": "absent",
+          "finish_reason": "tool_use",
+          "kind": "response",
+          "observed_cost_usd": 0,
+          "sequence": 2,
+          "tool_call_count": 2,
+          "usage": {
+            "completion_tokens": 62,
+            "prompt_tokens": 6008
+          }
+        },
+        {
+          "billing_guard_passed": true,
+          "billing_source": "go",
+          "content_bytes": 0,
+          "continuation_bytes": 54,
+          "continuation_present": true,
+          "cost_known": true,
+          "estimated_state": "absent",
+          "finish_reason": "tool_use",
+          "kind": "response",
+          "observed_cost_usd": 0,
+          "sequence": 3,
+          "tool_call_count": 1,
+          "usage": {
+            "completion_tokens": 34,
+            "prompt_tokens": 9410
+          }
+        },
+        {
+          "billing_guard_passed": true,
+          "billing_source": "go",
+          "content_bytes": 0,
+          "continuation_bytes": 6426,
+          "continuation_present": true,
+          "cost_known": true,
+          "estimated_state": "absent",
+          "finish_reason": "length",
+          "kind": "response",
+          "observed_cost_usd": 0,
+          "sequence": 4,
+          "tool_call_count": 1,
+          "usage": {
+            "completion_tokens": 2048,
+            "prompt_tokens": 9817
+          }
+        }
+      ],
+      "raw_input_bytes": 245154,
+      "repeat": 1,
+      "replacements": 0,
+      "reported_aggregate_cost_known": true,
+      "request_count": 4,
+      "request_id": "50710c270ab34be2a0e74243eba586a4",
+      "response_count": 4,
+      "restart_identical": true,
+      "review_evidence_sha256": {
+        "acceptance.json": "811b494dff0732064c05a27062c4db00b98e3680858b63babbaa63ad1d854e32",
+        "final.diff": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "input-analysis.json": "98aa58d1615c2a0383a5bae355a537bcd441fb0297942f8a6c7f392b029e67e5",
+        "regrade.json": "2e4625d5e2f49cb230aaa628c408a788842f20c7d1b1cb73da92f54c5d54b335",
+        "restarted-run.json": "a65fb057868433863d232a507a5c56d7818ff61beb9bf6a2d43f1e56416b9fc9",
+        "restarted-session.json": "9b3ee4ea621870ddcb174a14e0e1237e9a7355329088db40fb4ec44350cf0920",
+        "saved-run.json": "a65fb057868433863d232a507a5c56d7818ff61beb9bf6a2d43f1e56416b9fc9",
+        "saved-session.json": "9b3ee4ea621870ddcb174a14e0e1237e9a7355329088db40fb4ec44350cf0920",
+        "source/observations.jsonl": "b852a96291b7ec387f7f2bb54dc4047eb4e1e66f286fc66eec590d4af6acb4df",
+        "source/transport-routing.jsonl": "b6cb1bd79bfd14fd1862c8ce13b24c2851208c6677eb084ef0fe99d98a6fa69b",
+        "summary.json": "6dba1aa840c1af0b8eb69ff1e651fe0fe123de1e94cec5aaaf78d048212a34d2"
+      },
+      "run_id": "f6ef4ae6a48a49eb8a7c0cbff5bf3a12",
+      "source_review_required": false,
+      "status": "finished",
+      "task": "T02",
+      "tool_progress": [
+        {
+          "coverage": "recorded",
+          "events": [
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:22:20.485243Z",
+              "sequence": 1,
+              "tool": "list_dir",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 1.7036669254302979,
+              "observed_at": "2026-10-26T01:22:20.488173Z",
+              "sequence": 2,
+              "tool": "list_dir",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:22:20.489103Z",
+              "sequence": 3,
+              "tool": "read_file",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 0.823667049407959,
+              "observed_at": "2026-10-26T01:22:20.490780Z",
+              "sequence": 4,
+              "tool": "read_file",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:22:21.537865Z",
+              "sequence": 5,
+              "tool": "read_file",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 0.6521250009536743,
+              "observed_at": "2026-10-26T01:22:21.539167Z",
+              "sequence": 6,
+              "tool": "read_file",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:22:21.539896Z",
+              "sequence": 7,
+              "tool": "read_file",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 0.47962498664855957,
+              "observed_at": "2026-10-26T01:22:21.540844Z",
+              "sequence": 8,
+              "tool": "read_file",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:22:22.530168Z",
+              "sequence": 9,
+              "tool": "read_file",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 0.7972090244293213,
+              "observed_at": "2026-10-26T01:22:22.531881Z",
+              "sequence": 10,
+              "tool": "read_file",
+              "type": "tool_end"
+            }
+          ],
+          "events_truncated": false,
+          "observed_events": 10,
+          "read_only": true,
+          "run_id": "f6ef4ae6a48a49eb8a7c0cbff5bf3a12",
+          "scope_note": "Bounded prefix of observed tool-start/end metadata; arguments, results, error text, model messages and tool-call IDs are not stored here. Start precedes tool gates, so it does not prove dispatch or mutation. End/error presence is not patch acceptance or verification. A missing end may mean interrupted work or unsaved evidence; file changes may exist. This is not a transcript, checkpoint, replay, repair, or permission to resume. Unknown tool names are recorded as unknown_tool.",
+          "updated_at": "2026-10-26T01:22:22.531881Z"
+        }
+      ],
+      "verification_status": "not_run",
+      "workspace_review_ms": 76.00000011734664
+    },
+    {
+      "after_checkpoint_present": true,
+      "aggregate_reported_cost_usd": 0,
+      "aggregate_usage": {
+        "completion_tokens": 2244,
+        "prompt_tokens": 51108
+      },
+      "aggregate_usage_known": true,
+      "artifact_accepted": true,
+      "artifact_accepted_executable": true,
+      "audit_complete": true,
+      "before_checkpoint_present": true,
+      "cell": "T02-B2",
+      "changed_paths": [
+        "server/payloadParsers.js"
+      ],
+      "client": "CLI",
+      "coding_followups": 0,
+      "completed_and_accepted": true,
+      "completion_reason": null,
+      "completion_status": "completed",
+      "cost_scope": "Backend-reported billing, not invoice; unknown failed/cancelled usage not zero. Local is unpriced.",
+      "created_at": "2026-10-26T01:22:51.332001Z",
+      "diff_coverage": {
+        "bytes": 627,
+        "max_bytes": 64000,
+        "max_file_bytes": 131072,
+        "omitted_paths": [],
+        "scope": "text review only; mode/type/full bytes remain in full archive manifests",
+        "truncated": false
+      },
+      "diff_sha256": "b877455e9112c352a69e78af51a33d4c95dd65f69243f4cec48c9677c672d7bd",
+      "external_exit_code": 0,
+      "failure_count": 0,
+      "files_touched": [
+        "server/payloadParsers.js"
+      ],
+      "final_tool_error_count": 0,
+      "final_tool_record_count": 7,
+      "finished_at": "2026-10-26T01:23:03.177524Z",
+      "hosted_stop_required": false,
+      "independent_source_review": null,
+      "initial_identity": {
+        "format": "normalized-chat-request-v1",
+        "messages_sha256": "22467bc0402f10074671a0fc6bbf59ce857e0c525a82319c2ad1d76fea35bb8f",
+        "request_sha256": "f13eb20cc186f918ae5c2138293b5290acd50442119718a93f9731ea6dd29581",
+        "tool_specs_sha256": "ed9513f8ec9f445e896debdce70694aec434cf29756ba7c42d06f0557c029db2"
+      },
+      "initial_wire_sha256": "d8edb1eda42d2b5b11d77fcfbc2fbb3ea8bdb3e9d79832d26d9b095da60c13b5",
+      "input_analysis_complete": true,
+      "known_response_prefix_count": 6,
+      "known_response_prefix_usage": {
+        "completion_tokens": 2244,
+        "prompt_tokens": 51108
+      },
+      "known_returned_cost_sum_usd": 0,
+      "local_cell_audit_sha256": "6b9c48cecebaf210d33b621c04a9a6595c9522dc4dc4c43cb9871fdec360d281",
+      "local_input_files_sha256": {
+        "request-0001-normalized.json": "36ee3d50ea8a1e4acaa93da9337c8c2009793a7d7e5f3446ac02c65c495949c5",
+        "request-0001-wire.json": "d8edb1eda42d2b5b11d77fcfbc2fbb3ea8bdb3e9d79832d26d9b095da60c13b5",
+        "request-0002-normalized.json": "4cb457bd05e1de74a121c84d6ccc1e6af74654e97218652dbfa883ab0a360931",
+        "request-0002-wire.json": "0670310aa2709eb526b8a965da38497030f6119dffc5e0f786746eddad6a3651",
+        "request-0003-normalized.json": "6cc88c9eea735578148270aee44f8786434f91b739594785cdc7342c301144b7",
+        "request-0003-wire.json": "ade33699fcf67cbe39a5d2a3bc5a6561a6ced0024a0d70af76cd04a13d7952a0",
+        "request-0004-normalized.json": "ebd4aaf8f5a039c5dd45cf7bccb759e6c1c76e52545004bdb5e92afe08b9cf0a",
+        "request-0004-wire.json": "3e2d41a5db8731aeb02256c87466e9d73def0769b706380dbffdc2483dbc94de",
+        "request-0005-normalized.json": "1340d9ffa14fbded057f3429de5a9566594245e7b07dbaa521e58bfe9e6205a6",
+        "request-0005-wire.json": "36e26eebfb1f362036b5d30e4363ad0ecf1043eecd5651ddf2cc629afa0f3eaf",
+        "request-0006-normalized.json": "04be9feaf8fe220c7a3f2f42cbd48396243d822773c785489480c2d35700fb96",
+        "request-0006-wire.json": "76ab790d66b006066b06555d174e230c2d2a53a981b290b563e9e9da84ae1299"
+      },
+      "loop_latency_ms": 11666.868707895279,
+      "manual_patch_repairs": 0,
+      "model": "beam-free",
+      "model_key": "B",
+      "modes_preserved": true,
+      "planned": true,
+      "protected_preserved": true,
+      "provider_failure": null,
+      "provider_observations": [
+        {
+          "billing_guard_passed": true,
+          "billing_source": "go",
+          "content_bytes": 0,
+          "continuation_bytes": 78,
+          "continuation_present": true,
+          "cost_known": true,
+          "estimated_state": "absent",
+          "finish_reason": "tool_use",
+          "kind": "response",
+          "observed_cost_usd": 0,
+          "sequence": 1,
+          "tool_call_count": 2,
+          "usage": {
+            "completion_tokens": 53,
+            "prompt_tokens": 1676
+          }
+        },
+        {
+          "billing_guard_passed": true,
+          "billing_source": "go",
+          "content_bytes": 0,
+          "continuation_bytes": 52,
+          "continuation_present": true,
+          "cost_known": true,
+          "estimated_state": "absent",
+          "finish_reason": "tool_use",
+          "kind": "response",
+          "observed_cost_usd": 0,
+          "sequence": 2,
+          "tool_call_count": 2,
+          "usage": {
+            "completion_tokens": 62,
+            "prompt_tokens": 6008
+          }
+        },
+        {
+          "billing_guard_passed": true,
+          "billing_source": "go",
+          "content_bytes": 0,
+          "continuation_bytes": 54,
+          "continuation_present": true,
+          "cost_known": true,
+          "estimated_state": "absent",
+          "finish_reason": "tool_use",
+          "kind": "response",
+          "observed_cost_usd": 0,
+          "sequence": 3,
+          "tool_call_count": 1,
+          "usage": {
+            "completion_tokens": 34,
+            "prompt_tokens": 9410
+          }
+        },
+        {
+          "billing_guard_passed": true,
+          "billing_source": "go",
+          "content_bytes": 0,
+          "continuation_bytes": 4939,
+          "continuation_present": true,
+          "cost_known": true,
+          "estimated_state": "absent",
+          "finish_reason": "tool_use",
+          "kind": "response",
+          "observed_cost_usd": 0,
+          "sequence": 4,
+          "tool_call_count": 1,
+          "usage": {
+            "completion_tokens": 1891,
+            "prompt_tokens": 9817
+          }
+        },
+        {
+          "billing_guard_passed": true,
+          "billing_source": "go",
+          "content_bytes": 0,
+          "continuation_bytes": 26,
+          "continuation_present": true,
+          "cost_known": true,
+          "estimated_state": "absent",
+          "finish_reason": "tool_use",
+          "kind": "response",
+          "observed_cost_usd": 0,
+          "sequence": 5,
+          "tool_call_count": 1,
+          "usage": {
+            "completion_tokens": 44,
+            "prompt_tokens": 12034
+          }
+        },
+        {
+          "billing_guard_passed": true,
+          "billing_source": "go",
+          "content_bytes": 346,
+          "continuation_bytes": 329,
+          "continuation_present": true,
+          "cost_known": true,
+          "estimated_state": "absent",
+          "finish_reason": "stop",
+          "kind": "response",
+          "observed_cost_usd": 0,
+          "sequence": 6,
+          "tool_call_count": 0,
+          "usage": {
+            "completion_tokens": 160,
+            "prompt_tokens": 12163
+          }
+        }
+      ],
+      "raw_input_bytes": 447465,
+      "repeat": 2,
+      "replacements": 0,
+      "reported_aggregate_cost_known": true,
+      "request_count": 6,
+      "request_id": "22610e9590d34e6eb5070ad949b622e9",
+      "response_count": 6,
+      "restart_identical": true,
+      "review_evidence_sha256": {
+        "acceptance.json": "e96780700878b31e03bf0b29e5f76e5be8460fa5afc034b12d05995c0ce3c462",
+        "final.diff": "b877455e9112c352a69e78af51a33d4c95dd65f69243f4cec48c9677c672d7bd",
+        "input-analysis.json": "f6f9430911ef6b4278eb49161cc27cc5da5f9266fa44b8737240d98f603bb819",
+        "regrade.json": "e96780700878b31e03bf0b29e5f76e5be8460fa5afc034b12d05995c0ce3c462",
+        "restarted-run.json": "6013ca6ab1c1a9a1026f16b2194acb060b3a7b28d14683e099f3d3f2d426e079",
+        "restarted-session.json": "8f94098908bee75f721d6301a5e17a30fcc89e6a3f3bae1710832379fa5a22b8",
+        "saved-run.json": "6013ca6ab1c1a9a1026f16b2194acb060b3a7b28d14683e099f3d3f2d426e079",
+        "saved-session.json": "8f94098908bee75f721d6301a5e17a30fcc89e6a3f3bae1710832379fa5a22b8",
+        "source/observations.jsonl": "c00ab03d4228862248f3bdd80755d302c69548dedb350f52b0070e92cb91e24c",
+        "source/transport-routing.jsonl": "f3d164ee7ee03bc8bebbb99d24f5c9bf11452bc9910f71e46165300b1cab4e0e",
+        "summary.json": "dcba6b89753f9fe8134bdc8037c2589587099a4ef5ffc4a0d8071617244be131"
+      },
+      "run_id": "97d24ebcb2064712b0c8ebe28646b2e8",
+      "source_review_required": false,
+      "status": "finished",
+      "task": "T02",
+      "tool_progress": [
+        {
+          "coverage": "recorded",
+          "events": [
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:22:52.218050Z",
+              "sequence": 1,
+              "tool": "list_dir",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 1.6236670017242432,
+              "observed_at": "2026-10-26T01:22:52.221169Z",
+              "sequence": 2,
+              "tool": "list_dir",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:22:52.221931Z",
+              "sequence": 3,
+              "tool": "read_file",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 0.8452919721603394,
+              "observed_at": "2026-10-26T01:22:52.223578Z",
+              "sequence": 4,
+              "tool": "read_file",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:22:55.042340Z",
+              "sequence": 5,
+              "tool": "read_file",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 1.0248750448226929,
+              "observed_at": "2026-10-26T01:22:55.044215Z",
+              "sequence": 6,
+              "tool": "read_file",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:22:55.045089Z",
+              "sequence": 7,
+              "tool": "read_file",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 0.7444579601287842,
+              "observed_at": "2026-10-26T01:22:55.046629Z",
+              "sequence": 8,
+              "tool": "read_file",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:22:55.668202Z",
+              "sequence": 9,
+              "tool": "read_file",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 1.1734579801559448,
+              "observed_at": "2026-10-26T01:22:55.670634Z",
+              "sequence": 10,
+              "tool": "read_file",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:23:00.709885Z",
+              "sequence": 11,
+              "tool": "replace_text",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 3.1135001182556152,
+              "observed_at": "2026-10-26T01:23:00.714151Z",
+              "sequence": 12,
+              "tool": "replace_text",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:23:01.349303Z",
+              "sequence": 13,
+              "tool": "run_command",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 284.29583299160004,
+              "observed_at": "2026-10-26T01:23:01.634925Z",
+              "sequence": 14,
+              "tool": "run_command",
+              "type": "tool_end"
+            }
+          ],
+          "events_truncated": false,
+          "observed_events": 14,
+          "read_only": true,
+          "run_id": "97d24ebcb2064712b0c8ebe28646b2e8",
+          "scope_note": "Bounded prefix of observed tool-start/end metadata; arguments, results, error text, model messages and tool-call IDs are not stored here. Start precedes tool gates, so it does not prove dispatch or mutation. End/error presence is not patch acceptance or verification. A missing end may mean interrupted work or unsaved evidence; file changes may exist. This is not a transcript, checkpoint, replay, repair, or permission to resume. Unknown tool names are recorded as unknown_tool.",
+          "updated_at": "2026-10-26T01:23:01.634925Z"
+        }
+      ],
+      "verification_status": "passed",
+      "workspace_review_ms": 79.99999984167516
+    },
+    {
+      "after_checkpoint_present": false,
+      "aggregate_reported_cost_usd": null,
+      "aggregate_usage": null,
+      "aggregate_usage_known": false,
+      "artifact_accepted": false,
+      "artifact_accepted_executable": false,
+      "audit_complete": true,
+      "before_checkpoint_present": true,
+      "cell": "T02-G2",
+      "changed_paths": [],
+      "client": "CLI",
+      "coding_followups": 0,
+      "completed_and_accepted": false,
+      "completion_reason": null,
+      "completion_status": null,
+      "cost_scope": "Backend-reported billing, not invoice; unknown failed/cancelled usage not zero. Local is unpriced.",
+      "created_at": "2026-10-26T01:23:29.544843Z",
+      "diff_coverage": {
+        "bytes": 0,
+        "max_bytes": 64000,
+        "max_file_bytes": 131072,
+        "omitted_paths": [],
+        "scope": "text review only; mode/type/full bytes remain in full archive manifests",
+        "truncated": false
+      },
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "external_exit_code": 1,
+      "failure_count": 1,
+      "files_touched": null,
+      "final_tool_error_count": null,
+      "final_tool_record_count": null,
+      "finished_at": "2026-10-26T01:26:36.976995Z",
+      "hosted_stop_required": false,
+      "independent_source_review": null,
+      "initial_identity": {
+        "format": "normalized-chat-request-v1",
+        "messages_sha256": "22467bc0402f10074671a0fc6bbf59ce857e0c525a82319c2ad1d76fea35bb8f",
+        "request_sha256": "f13eb20cc186f918ae5c2138293b5290acd50442119718a93f9731ea6dd29581",
+        "tool_specs_sha256": "ed9513f8ec9f445e896debdce70694aec434cf29756ba7c42d06f0557c029db2"
+      },
+      "initial_wire_sha256": "c3bdecfd66bbe3f91491f124bc8e0073589f138343b1f53594f97ff71fe448ec",
+      "input_analysis_complete": true,
+      "known_response_prefix_count": 1,
+      "known_response_prefix_usage": {
+        "completion_tokens": 22,
+        "prompt_tokens": 1962
+      },
+      "known_returned_cost_sum_usd": null,
+      "local_cell_audit_sha256": "494f1eab6b52e9be17e893368782d1edf92fc3f90f690f21bd8c593b48027815",
+      "local_input_files_sha256": {
+        "request-0001-normalized.json": "36ee3d50ea8a1e4acaa93da9337c8c2009793a7d7e5f3446ac02c65c495949c5",
+        "request-0001-wire.json": "c3bdecfd66bbe3f91491f124bc8e0073589f138343b1f53594f97ff71fe448ec",
+        "request-0002-normalized.json": "91852040efc930b9e316ae279074dcdd20b66264baa7193987d99dd8d333b447",
+        "request-0002-wire.json": "861a48a4cc67db17c56995ca085b4160c0f9985ff587e0fc0e810b4535ea9ba6"
+      },
+      "loop_latency_ms": null,
+      "manual_patch_repairs": 0,
+      "model": "gemma4:12b",
+      "model_key": "G",
+      "modes_preserved": true,
+      "planned": true,
+      "protected_preserved": true,
+      "provider_failure": {
+        "call_observation": {
+          "completion_usage_field": null,
+          "content_empty": null,
+          "duration_ms": 180014.45199991576,
+          "prompt_usage_field": null,
+          "terminal_reason": null,
+          "tool_call_count": null
+        },
+        "http_status": null,
+        "kind": "read_timeout"
+      },
+      "provider_observations": [
+        {
+          "billing_scope": "local-not-priced",
+          "content_bytes": 0,
+          "continuation_bytes": null,
+          "continuation_present": false,
+          "cost_known": false,
+          "finish_reason": "tool_use",
+          "kind": "response",
+          "sequence": 1,
+          "tool_call_count": 1,
+          "usage": {
+            "completion_tokens": 22,
+            "prompt_tokens": 1962
+          }
+        },
+        {
+          "cost_known": false,
+          "failure_kind": "read_timeout",
+          "http_status": null,
+          "kind": "provider_failure",
+          "sequence": 2
+        }
+      ],
+      "raw_input_bytes": 74686,
+      "repeat": 2,
+      "replacements": 0,
+      "reported_aggregate_cost_known": false,
+      "request_count": 2,
+      "request_id": "19b487ff4aa243e790715fc36cbf3078",
+      "response_count": 1,
+      "restart_identical": true,
+      "review_evidence_sha256": {
+        "acceptance.json": "4555279155b8ef75a5d57f98824e296fa1943cb6254ba82bbf40681188f644cc",
+        "final.diff": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "input-analysis.json": "61134618f441c0c66286e31c12dd9d723121747bc02d21b36b5ce2b608485d05",
+        "regrade.json": "5b78fad7075091f1fef42d2cdc2793f9c7dfe128771d77c07faac9cde898a0fd",
+        "restarted-run.json": "f3728839bd575dc72dd7b67ab4ad21348ee662b556ea8c84539f8e580bcfa53d",
+        "restarted-session.json": "640b214376d6c4bc27529d93731ace8a8edc6f5fbc91a4bec775b857bca29a69",
+        "saved-run.json": "f3728839bd575dc72dd7b67ab4ad21348ee662b556ea8c84539f8e580bcfa53d",
+        "saved-session.json": "640b214376d6c4bc27529d93731ace8a8edc6f5fbc91a4bec775b857bca29a69",
+        "source/observations.jsonl": "03dfd9daea357760006d50638a669c4966c7a22f28331243975e1025929ad9a9",
+        "source/transport-routing.jsonl": "7f20eb4398cffb228eba2527e34452fedf2470240ab53df5d339746781ec2f23",
+        "summary.json": "438544650fd568e08e6b5e92a0a920950cf6c038f1d9846fcb7d47c14b0d2c78"
+      },
+      "run_id": "a605884ffd4d40039082e98dc218b86c",
+      "source_review_required": false,
+      "status": "failed",
+      "task": "T02",
+      "tool_progress": [
+        {
+          "coverage": "recorded",
+          "events": [
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:23:36.959942Z",
+              "sequence": 1,
+              "tool": "read_file",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 1.6089578866958618,
+              "observed_at": "2026-10-26T01:23:36.962423Z",
+              "sequence": 2,
+              "tool": "read_file",
+              "type": "tool_end"
+            }
+          ],
+          "events_truncated": false,
+          "observed_events": 2,
+          "read_only": true,
+          "run_id": "a605884ffd4d40039082e98dc218b86c",
+          "scope_note": "Bounded prefix of observed tool-start/end metadata; arguments, results, error text, model messages and tool-call IDs are not stored here. Start precedes tool gates, so it does not prove dispatch or mutation. End/error presence is not patch acceptance or verification. A missing end may mean interrupted work or unsaved evidence; file changes may exist. This is not a transcript, checkpoint, replay, repair, or permission to resume. Unknown tool names are recorded as unknown_tool.",
+          "updated_at": "2026-10-26T01:23:36.962423Z"
+        }
+      ],
+      "verification_status": null,
+      "workspace_review_ms": null
+    },
+    {
+      "after_checkpoint_present": true,
+      "aggregate_reported_cost_usd": 0,
+      "aggregate_usage": {
+        "completion_tokens": 1312,
+        "prompt_tokens": 38096
+      },
+      "aggregate_usage_known": true,
+      "artifact_accepted": false,
+      "artifact_accepted_executable": false,
+      "audit_complete": true,
+      "before_checkpoint_present": true,
+      "cell": "T08-B1",
+      "changed_paths": [],
+      "client": "CLI",
+      "coding_followups": 0,
+      "completed_and_accepted": false,
+      "completion_reason": "Estimated prompt of ~16379 tokens leaves fewer than 256 output tokens in the 16384-token context limit.",
+      "completion_status": "budget_exhausted",
+      "cost_scope": "Backend-reported billing, not invoice; unknown failed/cancelled usage not zero. Local is unpriced.",
+      "created_at": "2026-10-26T01:27:02.627362Z",
+      "diff_coverage": {
+        "bytes": 0,
+        "max_bytes": 64000,
+        "max_file_bytes": 131072,
+        "omitted_paths": [],
+        "scope": "text review only; mode/type/full bytes remain in full archive manifests",
+        "truncated": false
+      },
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "external_exit_code": 1,
+      "failure_count": 0,
+      "files_touched": [],
+      "final_tool_error_count": 1,
+      "final_tool_record_count": 9,
+      "finished_at": "2026-10-26T01:27:10.032222Z",
+      "hosted_stop_required": false,
+      "independent_source_review": {
+        "criterion_sha256": "f0f5d549e94ad1aeee3e568ec27e3704d5885b4c27a8aa362d3586b953b7a6a7",
+        "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "explanation": "Inspected full final target and empty complete diff. No boundedDuration implementation or export exists; both parseStartSession duration fields retain their original duplicated coercion/default/clamp expressions. Required extraction/reuse/removal criteria 1-3 fail. Protected bytes/modes and original parser behavior remain unchanged, but external acceptance and regrade exit1. No unrelated edits or test weakening. This is criterion-tied source inspection plus executable evidence, not answer-text/model quality scoring.",
+        "reviewer": "Codex static artifact inspection alongside independent executable acceptance/regrade",
+        "verdict": "fail"
+      },
+      "initial_identity": {
+        "format": "normalized-chat-request-v1",
+        "messages_sha256": "a26535e8b8542cbd1b44d7dbaee273543bcb331e3a6fc0027b189a349a348926",
+        "request_sha256": "55e91c1704c3030f1f1dece9e94e3beff7e05296f12287dd39fdc5fe7d895e13",
+        "tool_specs_sha256": "ed9513f8ec9f445e896debdce70694aec434cf29756ba7c42d06f0557c029db2"
+      },
+      "initial_wire_sha256": "3d3f0cd42c3fc09ce7174f9a2c521520d1600ea81b0916e09e2b9d6b568d8192",
+      "input_analysis_complete": true,
+      "known_response_prefix_count": 6,
+      "known_response_prefix_usage": {
+        "completion_tokens": 1312,
+        "prompt_tokens": 38096
+      },
+      "known_returned_cost_sum_usd": 0,
+      "local_cell_audit_sha256": "b4bfbaa3ba279cc718c1d765c170ea02e13038ac854745ad240ee0b47cea674e",
+      "local_input_files_sha256": {
+        "request-0001-normalized.json": "0410aa1ddb912abe8b2aa7ca76375d14becb110c51108c2fec63d1a02d6139bb",
+        "request-0001-wire.json": "3d3f0cd42c3fc09ce7174f9a2c521520d1600ea81b0916e09e2b9d6b568d8192",
+        "request-0002-normalized.json": "08509199e29ea37709290428be0bc8c0ebf292070234c35d6f72bbee8114de9e",
+        "request-0002-wire.json": "cacaabbc1982b76ac0da2211eea953903ae18d3e802735b023a17b1fb35ac2b0",
+        "request-0003-normalized.json": "e91e0d6d87a6c63328c739c0770a0a77d78a6faf133e07847f1e716be0915a33",
+        "request-0003-wire.json": "7f29a3c6cf6e2e7f4ccdd6575dd778798cf37a4de8a356bdb5844aa15b48b782",
+        "request-0004-normalized.json": "f97d6798bf7cb1d1ecc22d8a44ff619a7214dc0625f53d8ee80911fc4a287c36",
+        "request-0004-wire.json": "e08deb1a3307fe948b5f0749e9797f166cdd45b75fd049cd3cbc12f70e1ae25c",
+        "request-0005-normalized.json": "8549ddd5bd245f2ea51430cb91987e1b4c9ce29849d43977e736e65b86033d3f",
+        "request-0005-wire.json": "129de61787752e41402bcd63aed50d5a2949cd5cde63b665549986664d74498c",
+        "request-0006-normalized.json": "6b38501642d8c2575d8d48e863fed054373c6d7a42029f3f167e98c517bf0fd1",
+        "request-0006-wire.json": "420f62550098f709522e65eca9b524112334525cfca3e9c7ac03789c77e4f293"
+      },
+      "loop_latency_ms": 7228.979583024979,
+      "manual_patch_repairs": 0,
+      "model": "beam-free",
+      "model_key": "B",
+      "modes_preserved": true,
+      "planned": true,
+      "protected_preserved": true,
+      "provider_failure": null,
+      "provider_observations": [
+        {
+          "billing_guard_passed": true,
+          "billing_source": "go",
+          "content_bytes": 0,
+          "continuation_bytes": 50,
+          "continuation_present": true,
+          "cost_known": true,
+          "estimated_state": "absent",
+          "finish_reason": "tool_use",
+          "kind": "response",
+          "observed_cost_usd": 0,
+          "sequence": 1,
+          "tool_call_count": 1,
+          "usage": {
+            "completion_tokens": 30,
+            "prompt_tokens": 1699
+          }
+        },
+        {
+          "billing_guard_passed": true,
+          "billing_source": "go",
+          "content_bytes": 0,
+          "continuation_bytes": 57,
+          "continuation_present": true,
+          "cost_known": true,
+          "estimated_state": "absent",
+          "finish_reason": "tool_use",
+          "kind": "response",
+          "observed_cost_usd": 0,
+          "sequence": 2,
+          "tool_call_count": 2,
+          "usage": {
+            "completion_tokens": 56,
+            "prompt_tokens": 2004
+          }
+        },
+        {
+          "billing_guard_passed": true,
+          "billing_source": "go",
+          "content_bytes": 0,
+          "continuation_bytes": 58,
+          "continuation_present": true,
+          "cost_known": true,
+          "estimated_state": "absent",
+          "finish_reason": "tool_use",
+          "kind": "response",
+          "observed_cost_usd": 0,
+          "sequence": 3,
+          "tool_call_count": 3,
+          "usage": {
+            "completion_tokens": 73,
+            "prompt_tokens": 6198
+          }
+        },
+        {
+          "billing_guard_passed": true,
+          "billing_source": "go",
+          "content_bytes": 0,
+          "continuation_bytes": 30,
+          "continuation_present": true,
+          "cost_known": true,
+          "estimated_state": "absent",
+          "finish_reason": "tool_use",
+          "kind": "response",
+          "observed_cost_usd": 0,
+          "sequence": 4,
+          "tool_call_count": 1,
+          "usage": {
+            "completion_tokens": 34,
+            "prompt_tokens": 7666
+          }
+        },
+        {
+          "billing_guard_passed": true,
+          "billing_source": "go",
+          "content_bytes": 0,
+          "continuation_bytes": 21,
+          "continuation_present": true,
+          "cost_known": true,
+          "estimated_state": "absent",
+          "finish_reason": "tool_use",
+          "kind": "response",
+          "observed_cost_usd": 0,
+          "sequence": 5,
+          "tool_call_count": 1,
+          "usage": {
+            "completion_tokens": 33,
+            "prompt_tokens": 9454
+          }
+        },
+        {
+          "billing_guard_passed": true,
+          "billing_source": "go",
+          "content_bytes": 0,
+          "continuation_bytes": 2951,
+          "continuation_present": true,
+          "cost_known": true,
+          "estimated_state": "absent",
+          "finish_reason": "tool_use",
+          "kind": "response",
+          "observed_cost_usd": 0,
+          "sequence": 6,
+          "tool_call_count": 1,
+          "usage": {
+            "completion_tokens": 1086,
+            "prompt_tokens": 11075
+          }
+        }
+      ],
+      "raw_input_bytes": 355031,
+      "repeat": 1,
+      "replacements": 0,
+      "reported_aggregate_cost_known": true,
+      "request_count": 6,
+      "request_id": "ac76c7071d4d4331a4d2cfa2311a5d08",
+      "response_count": 6,
+      "restart_identical": true,
+      "review_evidence_sha256": {
+        "acceptance.json": "8f6ecc57ed64c397b8c99d13dc9362e3eb7e13b7795a211e6ad00df3b76679e9",
+        "final.diff": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "input-analysis.json": "d82cb9e37f8fffb2cd82a506317837e8bf83c639e0dc39f299c30963e0d98f3a",
+        "regrade.json": "a9a51fca7311f8e923d1eef230a0eaa2411ba788391fd72224c204fcb9d4d73a",
+        "restarted-run.json": "8518e96fb585cf92570fb36264327ca76d6556e8197b515d1f5b65eda85f45cb",
+        "restarted-session.json": "11ce5f2b7daf2c78fd5f87e16d800744c107d6ad4f40000a9d0dfceab2a7ae79",
+        "saved-run.json": "8518e96fb585cf92570fb36264327ca76d6556e8197b515d1f5b65eda85f45cb",
+        "saved-session.json": "11ce5f2b7daf2c78fd5f87e16d800744c107d6ad4f40000a9d0dfceab2a7ae79",
+        "source/observations.jsonl": "9beff66bea117e0d9e54b0e4ab60274e33e5fdbd17fc30a35505162307eca619",
+        "source/transport-routing.jsonl": "f3d164ee7ee03bc8bebbb99d24f5c9bf11452bc9910f71e46165300b1cab4e0e",
+        "summary.json": "a3826a1435d9c29e2c0fa4e3757f2dd9b28aae8bc3a3024fc685ce1d26e6a994"
+      },
+      "run_id": "8ec913e0af364058bfdef47f42e7fefa",
+      "source_review_required": true,
+      "status": "finished",
+      "task": "T08",
+      "tool_progress": [
+        {
+          "coverage": "recorded",
+          "events": [
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:27:03.437822Z",
+              "sequence": 1,
+              "tool": "list_dir",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 1.776542067527771,
+              "observed_at": "2026-10-26T01:27:03.440780Z",
+              "sequence": 2,
+              "tool": "list_dir",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:27:04.048020Z",
+              "sequence": 3,
+              "tool": "read_file",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 1.2726670503616333,
+              "observed_at": "2026-10-26T01:27:04.050295Z",
+              "sequence": 4,
+              "tool": "read_file",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:27:04.051110Z",
+              "sequence": 5,
+              "tool": "read_file",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 0.5862500667572021,
+              "observed_at": "2026-10-26T01:27:04.052407Z",
+              "sequence": 6,
+              "tool": "read_file",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:27:04.914481Z",
+              "sequence": 7,
+              "tool": "list_dir",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 3.6255420446395874,
+              "observed_at": "2026-10-26T01:27:04.919549Z",
+              "sequence": 8,
+              "tool": "list_dir",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:27:04.920657Z",
+              "sequence": 9,
+              "tool": "read_file",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 0.7039999961853027,
+              "observed_at": "2026-10-26T01:27:04.922271Z",
+              "sequence": 10,
+              "tool": "read_file",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:27:04.923099Z",
+              "sequence": 11,
+              "tool": "read_file",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 0.5402501821517944,
+              "observed_at": "2026-10-26T01:27:04.924415Z",
+              "sequence": 12,
+              "tool": "read_file",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:27:05.730830Z",
+              "sequence": 13,
+              "tool": "read_file",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 1.4044169187545776,
+              "observed_at": "2026-10-26T01:27:05.733678Z",
+              "sequence": 14,
+              "tool": "read_file",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:27:06.268375Z",
+              "sequence": 15,
+              "tool": "read_file",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 0.6253750324249268,
+              "observed_at": "2026-10-26T01:27:06.269682Z",
+              "sequence": 16,
+              "tool": "read_file",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:27:09.931530Z",
+              "sequence": 17,
+              "tool": "replace_text",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": true,
+              "latency_ms": 1.426332950592041,
+              "observed_at": "2026-10-26T01:27:09.934329Z",
+              "sequence": 18,
+              "tool": "replace_text",
+              "type": "tool_end"
+            }
+          ],
+          "events_truncated": false,
+          "observed_events": 18,
+          "read_only": true,
+          "run_id": "8ec913e0af364058bfdef47f42e7fefa",
+          "scope_note": "Bounded prefix of observed tool-start/end metadata; arguments, results, error text, model messages and tool-call IDs are not stored here. Start precedes tool gates, so it does not prove dispatch or mutation. End/error presence is not patch acceptance or verification. A missing end may mean interrupted work or unsaved evidence; file changes may exist. This is not a transcript, checkpoint, replay, repair, or permission to resume. Unknown tool names are recorded as unknown_tool.",
+          "updated_at": "2026-10-26T01:27:09.934329Z"
+        }
+      ],
+      "verification_status": "not_run",
+      "workspace_review_ms": 73.00000009126961
+    },
+    {
+      "after_checkpoint_present": true,
+      "aggregate_reported_cost_usd": null,
+      "aggregate_usage": {
+        "completion_tokens": 1125,
+        "prompt_tokens": 45294
+      },
+      "aggregate_usage_known": true,
+      "artifact_accepted": true,
+      "artifact_accepted_executable": true,
+      "audit_complete": true,
+      "before_checkpoint_present": true,
+      "cell": "T08-G1",
+      "changed_paths": [
+        "server/payloadParsers.js"
+      ],
+      "client": "CLI",
+      "coding_followups": 0,
+      "completed_and_accepted": true,
+      "completion_reason": null,
+      "completion_status": "completed",
+      "cost_scope": "Backend-reported billing, not invoice; unknown failed/cancelled usage not zero. Local is unpriced.",
+      "created_at": "2026-10-26T01:28:02.473283Z",
+      "diff_coverage": {
+        "bytes": 978,
+        "max_bytes": 64000,
+        "max_file_bytes": 131072,
+        "omitted_paths": [],
+        "scope": "text review only; mode/type/full bytes remain in full archive manifests",
+        "truncated": false
+      },
+      "diff_sha256": "4f4c043b1e87a276b0227f3c216c73691985c628580961317f219c29f9ea1a92",
+      "external_exit_code": 0,
+      "failure_count": 0,
+      "files_touched": [
+        "server/payloadParsers.js"
+      ],
+      "final_tool_error_count": 0,
+      "final_tool_record_count": 6,
+      "finished_at": "2026-10-26T01:30:37.330956Z",
+      "hosted_stop_required": false,
+      "independent_source_review": {
+        "criterion_sha256": "f0f5d549e94ad1aeee3e568ec27e3704d5885b4c27a8aa362d3586b953b7a6a7",
+        "diff_sha256": "4f4c043b1e87a276b0227f3c216c73691985c628580961317f219c29f9ea1a92",
+        "explanation": "Inspected complete diff and final target. Lines110-112 define exported boundedDuration(value,fallback,min,max) with original Number(value)||fallback then Math.max/min semantics. parseStartSession focus and break at lines118-119 both invoke this same helper with their unchanged defaults/min/max; both duplicated inline implementations are removed. No flooring added, so fractions survive; Number(Symbol) still throws. Session-ID guard, modes and other parsers retain their code. Only extraction/reuse/export changes appear; no unrelated edit/test weakening. Protected bytes/modes and independent acceptance/regrade both pass. This is original-rubric source inspection plus executable evidence, not patch-similarity scoring.",
+        "reviewer": "Codex static artifact inspection alongside independent executable acceptance/regrade",
+        "verdict": "pass"
+      },
+      "initial_identity": {
+        "format": "normalized-chat-request-v1",
+        "messages_sha256": "a26535e8b8542cbd1b44d7dbaee273543bcb331e3a6fc0027b189a349a348926",
+        "request_sha256": "55e91c1704c3030f1f1dece9e94e3beff7e05296f12287dd39fdc5fe7d895e13",
+        "tool_specs_sha256": "ed9513f8ec9f445e896debdce70694aec434cf29756ba7c42d06f0557c029db2"
+      },
+      "initial_wire_sha256": "029357498ec96dd2741d7515adb83c6a7a9e63d3ba298a124f35dee43e1f9714",
+      "input_analysis_complete": true,
+      "known_response_prefix_count": 8,
+      "known_response_prefix_usage": {
+        "completion_tokens": 1125,
+        "prompt_tokens": 45294
+      },
+      "known_returned_cost_sum_usd": null,
+      "local_cell_audit_sha256": "91f60879f53d873c21dc0f408589a4146c5ef9553b29879c86331124f78ba635",
+      "local_input_files_sha256": {
+        "request-0001-normalized.json": "0410aa1ddb912abe8b2aa7ca76375d14becb110c51108c2fec63d1a02d6139bb",
+        "request-0001-wire.json": "029357498ec96dd2741d7515adb83c6a7a9e63d3ba298a124f35dee43e1f9714",
+        "request-0002-normalized.json": "2bd13da064a943522e535164dad60f2a0d12ad340ba56f04fca67557cd9a2c20",
+        "request-0002-wire.json": "5b84ffc8c8540142e7fd2143ee8d1466421f00d0a58ba5952195ad0567db80bd",
+        "request-0003-normalized.json": "20cefb92e34e7564f3d727ecf6e6d7e13f57bbbf142932e85abab972bfc82ffb",
+        "request-0003-wire.json": "d81c2c75fe0cce7a9d7bd23e62a7f45a399da78423dfcfccb0e07ff4653a120c",
+        "request-0004-normalized.json": "9a92da294e6db71dddbaf14cdf03ede3451b9653086a3acbcfaa9f66a8e22e41",
+        "request-0004-wire.json": "2beda93c4eac425b8c303196aaf24d3061ed858129c06703f278c9ee81730ceb",
+        "request-0005-normalized.json": "20b150398efba3c0c0707dc4f56a3613e89185c7eb60efb843c745bb72eef984",
+        "request-0005-wire.json": "d1efa3459952002d2672953baf39e4ee8a8cda835a79796bdbe6fedb72fa1f4e",
+        "request-0006-normalized.json": "219ae41413e41c38442b247974590fc8e8e81ba66e490af5c503d1d75201cf4b",
+        "request-0006-wire.json": "db02a6964ffe34fb9ab7b6e39de2419606341f046fb78fc6d49c9a9168fda535",
+        "request-0007-normalized.json": "99221511725480301b6934c611ce7e7e3db331c0c547cad46a4b92dd27f18831",
+        "request-0007-wire.json": "bb402f50c5c6fd46812066f8f4472e488e8adca10e3f1f37c1cfc4b79a714f45",
+        "request-0008-normalized.json": "e8953e478c74babbd40f3a9558d732f894176b760ad625b02d709bf9dd62a9ca",
+        "request-0008-wire.json": "9f9920a418fc8df010fd7dbb2e04f3ae46c919c8051fa6a43b32268d78510401"
+      },
+      "loop_latency_ms": 154638.56474995613,
+      "manual_patch_repairs": 0,
+      "model": "gemma4:12b",
+      "model_key": "G",
+      "modes_preserved": true,
+      "planned": true,
+      "protected_preserved": true,
+      "provider_failure": null,
+      "provider_observations": [
+        {
+          "billing_scope": "local-not-priced",
+          "content_bytes": 0,
+          "continuation_bytes": null,
+          "continuation_present": false,
+          "cost_known": false,
+          "finish_reason": "stop",
+          "kind": "response",
+          "sequence": 1,
+          "tool_call_count": 0,
+          "usage": {
+            "completion_tokens": 7,
+            "prompt_tokens": 1991
+          }
+        },
+        {
+          "billing_scope": "local-not-priced",
+          "content_bytes": 0,
+          "continuation_bytes": null,
+          "continuation_present": false,
+          "cost_known": false,
+          "finish_reason": "tool_use",
+          "kind": "response",
+          "sequence": 2,
+          "tool_call_count": 1,
+          "usage": {
+            "completion_tokens": 7,
+            "prompt_tokens": 2029
+          }
+        },
+        {
+          "billing_scope": "local-not-priced",
+          "content_bytes": 0,
+          "continuation_bytes": null,
+          "continuation_present": false,
+          "cost_known": false,
+          "finish_reason": "tool_use",
+          "kind": "response",
+          "sequence": 3,
+          "tool_call_count": 1,
+          "usage": {
+            "completion_tokens": 25,
+            "prompt_tokens": 4572
+          }
+        },
+        {
+          "billing_scope": "local-not-priced",
+          "content_bytes": 0,
+          "continuation_bytes": null,
+          "continuation_present": false,
+          "cost_known": false,
+          "finish_reason": "tool_use",
+          "kind": "response",
+          "sequence": 4,
+          "tool_call_count": 1,
+          "usage": {
+            "completion_tokens": 126,
+            "prompt_tokens": 6483
+          }
+        },
+        {
+          "billing_scope": "local-not-priced",
+          "content_bytes": 0,
+          "continuation_bytes": null,
+          "continuation_present": false,
+          "cost_known": false,
+          "finish_reason": "tool_use",
+          "kind": "response",
+          "sequence": 5,
+          "tool_call_count": 1,
+          "usage": {
+            "completion_tokens": 417,
+            "prompt_tokens": 6724
+          }
+        },
+        {
+          "billing_scope": "local-not-priced",
+          "content_bytes": 0,
+          "continuation_bytes": null,
+          "continuation_present": false,
+          "cost_known": false,
+          "finish_reason": "tool_use",
+          "kind": "response",
+          "sequence": 6,
+          "tool_call_count": 1,
+          "usage": {
+            "completion_tokens": 162,
+            "prompt_tokens": 7563
+          }
+        },
+        {
+          "billing_scope": "local-not-priced",
+          "content_bytes": 0,
+          "continuation_bytes": null,
+          "continuation_present": false,
+          "cost_known": false,
+          "finish_reason": "tool_use",
+          "kind": "response",
+          "sequence": 7,
+          "tool_call_count": 1,
+          "usage": {
+            "completion_tokens": 41,
+            "prompt_tokens": 7902
+          }
+        },
+        {
+          "billing_scope": "local-not-priced",
+          "content_bytes": 1221,
+          "continuation_bytes": null,
+          "continuation_present": false,
+          "cost_known": false,
+          "finish_reason": "stop",
+          "kind": "response",
+          "sequence": 8,
+          "tool_call_count": 0,
+          "usage": {
+            "completion_tokens": 340,
+            "prompt_tokens": 8030
+          }
+        }
+      ],
+      "raw_input_bytes": 363422,
+      "repeat": 1,
+      "replacements": 0,
+      "reported_aggregate_cost_known": false,
+      "request_count": 8,
+      "request_id": "6f6fee90e3c9438ca4fb402e38c5a44f",
+      "response_count": 8,
+      "restart_identical": true,
+      "review_evidence_sha256": {
+        "acceptance.json": "091d3ee06435a87acaa843105d2eddbdb4a5c2c53af1106312c962bc25fd6553",
+        "final.diff": "4f4c043b1e87a276b0227f3c216c73691985c628580961317f219c29f9ea1a92",
+        "input-analysis.json": "3af8577e83f504c33942aa97a67216641c9588d0403140f14aee7333cb555923",
+        "regrade.json": "5871bdef6d56d7099624c1045e1e71aa1c6102f18dfa1392af822e5a3f3bc939",
+        "restarted-run.json": "964964b334fd1b9a2705d0c3c1a45966c38c0473bd25f2a76511c9b5259db79a",
+        "restarted-session.json": "15eb745809a13b3373a1f669d318e9ffcbd67bd0fed52c1501eb686b3ac32764",
+        "saved-run.json": "964964b334fd1b9a2705d0c3c1a45966c38c0473bd25f2a76511c9b5259db79a",
+        "saved-session.json": "15eb745809a13b3373a1f669d318e9ffcbd67bd0fed52c1501eb686b3ac32764",
+        "source/observations.jsonl": "70f14e8b223c0670e2bb84434d879859a43f0f1dd086204247b90038c04af25c",
+        "source/transport-routing.jsonl": "02c5684187dc70345b6ba4755b8b6eb6ad2c70247304b8d88c459ed817fe7922",
+        "summary.json": "47494360aa52a2901ec55d0058e40183598c53bdc71661679c3ccdcd326bd8af"
+      },
+      "run_id": "5d0117a9f7d74610982a53003766e7a1",
+      "source_review_required": true,
+      "status": "finished",
+      "task": "T08",
+      "tool_progress": [
+        {
+          "coverage": "recorded",
+          "events": [
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:28:10.444538Z",
+              "sequence": 1,
+              "tool": "tree",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 6.829167008399963,
+              "observed_at": "2026-10-26T01:28:10.452595Z",
+              "sequence": 2,
+              "tool": "tree",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:28:36.235311Z",
+              "sequence": 3,
+              "tool": "read_file",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 1.664167046546936,
+              "observed_at": "2026-10-26T01:28:36.238110Z",
+              "sequence": 4,
+              "tool": "read_file",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:29:05.982164Z",
+              "sequence": 5,
+              "tool": "emit_plan",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 1.1850831508636475,
+              "observed_at": "2026-10-26T01:29:05.984072Z",
+              "sequence": 6,
+              "tool": "emit_plan",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:29:39.919802Z",
+              "sequence": 7,
+              "tool": "replace_text",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 4.747958064079285,
+              "observed_at": "2026-10-26T01:29:39.925615Z",
+              "sequence": 8,
+              "tool": "replace_text",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:30:01.972872Z",
+              "sequence": 9,
+              "tool": "replace_text",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 1.927833080291748,
+              "observed_at": "2026-10-26T01:30:01.975395Z",
+              "sequence": 10,
+              "tool": "replace_text",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:30:09.276456Z",
+              "sequence": 11,
+              "tool": "run_command",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 589.6852079629898,
+              "observed_at": "2026-10-26T01:30:09.866811Z",
+              "sequence": 12,
+              "tool": "run_command",
+              "type": "tool_end"
+            }
+          ],
+          "events_truncated": false,
+          "observed_events": 12,
+          "read_only": true,
+          "run_id": "5d0117a9f7d74610982a53003766e7a1",
+          "scope_note": "Bounded prefix of observed tool-start/end metadata; arguments, results, error text, model messages and tool-call IDs are not stored here. Start precedes tool gates, so it does not prove dispatch or mutation. End/error presence is not patch acceptance or verification. A missing end may mean interrupted work or unsaved evidence; file changes may exist. This is not a transcript, checkpoint, replay, repair, or permission to resume. Unknown tool names are recorded as unknown_tool.",
+          "updated_at": "2026-10-26T01:30:09.866811Z"
+        }
+      ],
+      "verification_status": "passed",
+      "workspace_review_ms": 116.99999985285103
+    },
+    {
+      "after_checkpoint_present": true,
+      "aggregate_reported_cost_usd": null,
+      "aggregate_usage": {
+        "completion_tokens": 1127,
+        "prompt_tokens": 45294
+      },
+      "aggregate_usage_known": true,
+      "artifact_accepted": true,
+      "artifact_accepted_executable": true,
+      "audit_complete": true,
+      "before_checkpoint_present": true,
+      "cell": "T08-G2",
+      "changed_paths": [
+        "server/payloadParsers.js"
+      ],
+      "client": "CLI",
+      "coding_followups": 0,
+      "completed_and_accepted": true,
+      "completion_reason": null,
+      "completion_status": "completed",
+      "cost_scope": "Backend-reported billing, not invoice; unknown failed/cancelled usage not zero. Local is unpriced.",
+      "created_at": "2026-10-26T01:31:26.314721Z",
+      "diff_coverage": {
+        "bytes": 978,
+        "max_bytes": 64000,
+        "max_file_bytes": 131072,
+        "omitted_paths": [],
+        "scope": "text review only; mode/type/full bytes remain in full archive manifests",
+        "truncated": false
+      },
+      "diff_sha256": "4f4c043b1e87a276b0227f3c216c73691985c628580961317f219c29f9ea1a92",
+      "external_exit_code": 0,
+      "failure_count": 0,
+      "files_touched": [
+        "server/payloadParsers.js"
+      ],
+      "final_tool_error_count": 0,
+      "final_tool_record_count": 6,
+      "finished_at": "2026-10-26T01:34:02.367642Z",
+      "hosted_stop_required": false,
+      "independent_source_review": {
+        "criterion_sha256": "f0f5d549e94ad1aeee3e568ec27e3704d5885b4c27a8aa362d3586b953b7a6a7",
+        "diff_sha256": "4f4c043b1e87a276b0227f3c216c73691985c628580961317f219c29f9ea1a92",
+        "explanation": "Separately inspected this final target, export block and complete diff. Exported boundedDuration at lines110-112 retains Number(value)||fallback and Math.max/min, without flooring. Both parseStartSession fields at118-119 call that shared helper with unchanged default/min/max; both inline implementations are removed. Fractions, Symbol conversion error, defaults/clamps, session-ID guard, mode selection and all other parsers retain original behavior. Diff changes only extraction/reuse/export, with protected bytes/modes unchanged and no test weakening. External acceptance and regrade pass. Verdict rests on original-rubric source inspection and executable evidence, not equality to another patch.",
+        "reviewer": "Codex static artifact inspection alongside independent executable acceptance/regrade",
+        "verdict": "pass"
+      },
+      "initial_identity": {
+        "format": "normalized-chat-request-v1",
+        "messages_sha256": "a26535e8b8542cbd1b44d7dbaee273543bcb331e3a6fc0027b189a349a348926",
+        "request_sha256": "55e91c1704c3030f1f1dece9e94e3beff7e05296f12287dd39fdc5fe7d895e13",
+        "tool_specs_sha256": "ed9513f8ec9f445e896debdce70694aec434cf29756ba7c42d06f0557c029db2"
+      },
+      "initial_wire_sha256": "029357498ec96dd2741d7515adb83c6a7a9e63d3ba298a124f35dee43e1f9714",
+      "input_analysis_complete": true,
+      "known_response_prefix_count": 8,
+      "known_response_prefix_usage": {
+        "completion_tokens": 1127,
+        "prompt_tokens": 45294
+      },
+      "known_returned_cost_sum_usd": null,
+      "local_cell_audit_sha256": "41b66bf34100916aeba07540279b893197896f033741578fd04652de6f28c3f5",
+      "local_input_files_sha256": {
+        "request-0001-normalized.json": "0410aa1ddb912abe8b2aa7ca76375d14becb110c51108c2fec63d1a02d6139bb",
+        "request-0001-wire.json": "029357498ec96dd2741d7515adb83c6a7a9e63d3ba298a124f35dee43e1f9714",
+        "request-0002-normalized.json": "2bd13da064a943522e535164dad60f2a0d12ad340ba56f04fca67557cd9a2c20",
+        "request-0002-wire.json": "5b84ffc8c8540142e7fd2143ee8d1466421f00d0a58ba5952195ad0567db80bd",
+        "request-0003-normalized.json": "9e2947da0f291c1f4e14807f5662d8a2c63fd52027f8e5ae836a6b69d49d540d",
+        "request-0003-wire.json": "d81c2c75fe0cce7a9d7bd23e62a7f45a399da78423dfcfccb0e07ff4653a120c",
+        "request-0004-normalized.json": "573c72eb9ae8f46486e52e72567cfd1990be0057911086d3b5e9b32f7313426f",
+        "request-0004-wire.json": "2beda93c4eac425b8c303196aaf24d3061ed858129c06703f278c9ee81730ceb",
+        "request-0005-normalized.json": "3c0bf245db6a4c16e6c2458feeb467a906bd1bfd140c1217283b8bfdf20dfc41",
+        "request-0005-wire.json": "d1efa3459952002d2672953baf39e4ee8a8cda835a79796bdbe6fedb72fa1f4e",
+        "request-0006-normalized.json": "1665a5d173f2fce4d6b957c7da6faf8c55f523b21eb4071d3f4c301b1711aa0f",
+        "request-0006-wire.json": "db02a6964ffe34fb9ab7b6e39de2419606341f046fb78fc6d49c9a9168fda535",
+        "request-0007-normalized.json": "27446ce40885d0ccdce9d5b3d94cb75e1aba30d6469347409e582560d780b530",
+        "request-0007-wire.json": "bb402f50c5c6fd46812066f8f4472e488e8adca10e3f1f37c1cfc4b79a714f45",
+        "request-0008-normalized.json": "a26b56d6d6d602f58136fc805509f163d81f399517c9a8c0617b0668331e78f0",
+        "request-0008-wire.json": "f3d55f4b66357c736311cb0989172ecc80afa72c15f1bad1099bfd88ee061d4d"
+      },
+      "loop_latency_ms": 155811.45095801353,
+      "manual_patch_repairs": 0,
+      "model": "gemma4:12b",
+      "model_key": "G",
+      "modes_preserved": true,
+      "planned": true,
+      "protected_preserved": true,
+      "provider_failure": null,
+      "provider_observations": [
+        {
+          "billing_scope": "local-not-priced",
+          "content_bytes": 0,
+          "continuation_bytes": null,
+          "continuation_present": false,
+          "cost_known": false,
+          "finish_reason": "stop",
+          "kind": "response",
+          "sequence": 1,
+          "tool_call_count": 0,
+          "usage": {
+            "completion_tokens": 7,
+            "prompt_tokens": 1991
+          }
+        },
+        {
+          "billing_scope": "local-not-priced",
+          "content_bytes": 0,
+          "continuation_bytes": null,
+          "continuation_present": false,
+          "cost_known": false,
+          "finish_reason": "tool_use",
+          "kind": "response",
+          "sequence": 2,
+          "tool_call_count": 1,
+          "usage": {
+            "completion_tokens": 7,
+            "prompt_tokens": 2029
+          }
+        },
+        {
+          "billing_scope": "local-not-priced",
+          "content_bytes": 0,
+          "continuation_bytes": null,
+          "continuation_present": false,
+          "cost_known": false,
+          "finish_reason": "tool_use",
+          "kind": "response",
+          "sequence": 3,
+          "tool_call_count": 1,
+          "usage": {
+            "completion_tokens": 25,
+            "prompt_tokens": 4572
+          }
+        },
+        {
+          "billing_scope": "local-not-priced",
+          "content_bytes": 0,
+          "continuation_bytes": null,
+          "continuation_present": false,
+          "cost_known": false,
+          "finish_reason": "tool_use",
+          "kind": "response",
+          "sequence": 4,
+          "tool_call_count": 1,
+          "usage": {
+            "completion_tokens": 126,
+            "prompt_tokens": 6483
+          }
+        },
+        {
+          "billing_scope": "local-not-priced",
+          "content_bytes": 0,
+          "continuation_bytes": null,
+          "continuation_present": false,
+          "cost_known": false,
+          "finish_reason": "tool_use",
+          "kind": "response",
+          "sequence": 5,
+          "tool_call_count": 1,
+          "usage": {
+            "completion_tokens": 417,
+            "prompt_tokens": 6724
+          }
+        },
+        {
+          "billing_scope": "local-not-priced",
+          "content_bytes": 0,
+          "continuation_bytes": null,
+          "continuation_present": false,
+          "cost_known": false,
+          "finish_reason": "tool_use",
+          "kind": "response",
+          "sequence": 6,
+          "tool_call_count": 1,
+          "usage": {
+            "completion_tokens": 162,
+            "prompt_tokens": 7563
+          }
+        },
+        {
+          "billing_scope": "local-not-priced",
+          "content_bytes": 0,
+          "continuation_bytes": null,
+          "continuation_present": false,
+          "cost_known": false,
+          "finish_reason": "tool_use",
+          "kind": "response",
+          "sequence": 7,
+          "tool_call_count": 1,
+          "usage": {
+            "completion_tokens": 41,
+            "prompt_tokens": 7902
+          }
+        },
+        {
+          "billing_scope": "local-not-priced",
+          "content_bytes": 1225,
+          "continuation_bytes": null,
+          "continuation_present": false,
+          "cost_known": false,
+          "finish_reason": "stop",
+          "kind": "response",
+          "sequence": 8,
+          "tool_call_count": 0,
+          "usage": {
+            "completion_tokens": 342,
+            "prompt_tokens": 8030
+          }
+        }
+      ],
+      "raw_input_bytes": 363422,
+      "repeat": 2,
+      "replacements": 0,
+      "reported_aggregate_cost_known": false,
+      "request_count": 8,
+      "request_id": "fa431b1e66204c88a2d252b32b50e068",
+      "response_count": 8,
+      "restart_identical": true,
+      "review_evidence_sha256": {
+        "acceptance.json": "9fc5077a4b17ac69ff6e2ccb302b69567085698fd87c9b2661048f60850b5b14",
+        "final.diff": "4f4c043b1e87a276b0227f3c216c73691985c628580961317f219c29f9ea1a92",
+        "input-analysis.json": "528698708be53dfbaf0edaad0b431a876ad2284104313602cdd1baa77723df42",
+        "regrade.json": "07586dc266c33b75319a3cf8cdaded1702d4af390aede44448afcbd50e82ee33",
+        "restarted-run.json": "4ebb9615f5fa5b4318be8fc1daf648bfc01d05baf0626e47536fd065ad56ff90",
+        "restarted-session.json": "9883bb0401c31fdafee76abe71f116873616514b9ede3979ece5c6113ba1f75b",
+        "saved-run.json": "4ebb9615f5fa5b4318be8fc1daf648bfc01d05baf0626e47536fd065ad56ff90",
+        "saved-session.json": "9883bb0401c31fdafee76abe71f116873616514b9ede3979ece5c6113ba1f75b",
+        "source/observations.jsonl": "6bfb16100ed1da66b0ffd93a73daf8aacf929a925eb0d3ed568fd4c4f5158a0a",
+        "source/transport-routing.jsonl": "02c5684187dc70345b6ba4755b8b6eb6ad2c70247304b8d88c459ed817fe7922",
+        "summary.json": "624ebd27b19bac8088c06b7051bbe7e7ecbd324716c115b8715d7878e5c55c70"
+      },
+      "run_id": "0d9561fbcb104e1fb6eafd7f58b0f7ab",
+      "source_review_required": true,
+      "status": "finished",
+      "task": "T08",
+      "tool_progress": [
+        {
+          "coverage": "recorded",
+          "events": [
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:31:34.546559Z",
+              "sequence": 1,
+              "tool": "tree",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 9.415459036827087,
+              "observed_at": "2026-10-26T01:31:34.558303Z",
+              "sequence": 2,
+              "tool": "tree",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:32:00.287627Z",
+              "sequence": 3,
+              "tool": "read_file",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 1.5277080535888672,
+              "observed_at": "2026-10-26T01:32:00.289835Z",
+              "sequence": 4,
+              "tool": "read_file",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:32:30.168060Z",
+              "sequence": 5,
+              "tool": "emit_plan",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 1.0833330154418945,
+              "observed_at": "2026-10-26T01:32:30.169860Z",
+              "sequence": 6,
+              "tool": "emit_plan",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:33:04.111544Z",
+              "sequence": 7,
+              "tool": "replace_text",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 15.087041974067688,
+              "observed_at": "2026-10-26T01:33:04.128019Z",
+              "sequence": 8,
+              "tool": "replace_text",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:33:26.386348Z",
+              "sequence": 9,
+              "tool": "replace_text",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 14.850458979606628,
+              "observed_at": "2026-10-26T01:33:26.402989Z",
+              "sequence": 10,
+              "tool": "replace_text",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:33:34.042310Z",
+              "sequence": 11,
+              "tool": "run_command",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 655.6492921113968,
+              "observed_at": "2026-10-26T01:33:34.700570Z",
+              "sequence": 12,
+              "tool": "run_command",
+              "type": "tool_end"
+            }
+          ],
+          "events_truncated": false,
+          "observed_events": 12,
+          "read_only": true,
+          "run_id": "0d9561fbcb104e1fb6eafd7f58b0f7ab",
+          "scope_note": "Bounded prefix of observed tool-start/end metadata; arguments, results, error text, model messages and tool-call IDs are not stored here. Start precedes tool gates, so it does not prove dispatch or mutation. End/error presence is not patch acceptance or verification. A missing end may mean interrupted work or unsaved evidence; file changes may exist. This is not a transcript, checkpoint, replay, repair, or permission to resume. Unknown tool names are recorded as unknown_tool.",
+          "updated_at": "2026-10-26T01:33:34.700570Z"
+        }
+      ],
+      "verification_status": "passed",
+      "workspace_review_ms": 115.9999999217689
+    },
+    {
+      "after_checkpoint_present": true,
+      "aggregate_reported_cost_usd": 0,
+      "aggregate_usage": {
+        "completion_tokens": 457,
+        "prompt_tokens": 52268
+      },
+      "aggregate_usage_known": true,
+      "artifact_accepted": false,
+      "artifact_accepted_executable": false,
+      "audit_complete": true,
+      "before_checkpoint_present": true,
+      "cell": "T08-B2",
+      "changed_paths": [],
+      "client": "CLI",
+      "coding_followups": 0,
+      "completed_and_accepted": false,
+      "completion_reason": "Total token budget cannot fit another model request after these tools.",
+      "completion_status": "budget_exhausted",
+      "cost_scope": "Backend-reported billing, not invoice; unknown failed/cancelled usage not zero. Local is unpriced.",
+      "created_at": "2026-10-26T01:34:38.220002Z",
+      "diff_coverage": {
+        "bytes": 0,
+        "max_bytes": 64000,
+        "max_file_bytes": 131072,
+        "omitted_paths": [],
+        "scope": "text review only; mode/type/full bytes remain in full archive manifests",
+        "truncated": false
+      },
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "external_exit_code": 1,
+      "failure_count": 0,
+      "files_touched": [],
+      "final_tool_error_count": 1,
+      "final_tool_record_count": 9,
+      "finished_at": "2026-10-26T01:34:45.277068Z",
+      "hosted_stop_required": false,
+      "independent_source_review": {
+        "criterion_sha256": "f0f5d549e94ad1aeee3e568ec27e3704d5885b4c27a8aa362d3586b953b7a6a7",
+        "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "explanation": "Separately inspected final target, export block and empty complete diff. boundedDuration is absent and unexported, both parseStartSession fields retain duplicated inline coercion/default/clamps, so rubric criteria1-3 fail. Original fractions/Symbol/default/clamp/mode/session-ID/other-parser code remains unchanged, with protected bytes/modes and no test weakening. External acceptance and regrade exit1. Failure is objective missing extraction/reuse plus executable evidence, not answer wording or similarity scoring.",
+        "reviewer": "Codex static artifact inspection alongside independent executable acceptance/regrade",
+        "verdict": "fail"
+      },
+      "initial_identity": {
+        "format": "normalized-chat-request-v1",
+        "messages_sha256": "a26535e8b8542cbd1b44d7dbaee273543bcb331e3a6fc0027b189a349a348926",
+        "request_sha256": "55e91c1704c3030f1f1dece9e94e3beff7e05296f12287dd39fdc5fe7d895e13",
+        "tool_specs_sha256": "ed9513f8ec9f445e896debdce70694aec434cf29756ba7c42d06f0557c029db2"
+      },
+      "initial_wire_sha256": "3d3f0cd42c3fc09ce7174f9a2c521520d1600ea81b0916e09e2b9d6b568d8192",
+      "input_analysis_complete": true,
+      "known_response_prefix_count": 7,
+      "known_response_prefix_usage": {
+        "completion_tokens": 457,
+        "prompt_tokens": 52268
+      },
+      "known_returned_cost_sum_usd": 0,
+      "local_cell_audit_sha256": "e432043b0b323a6c84cf307ddff33a51251faa94036aeebeda4d75aa0e0b8b65",
+      "local_input_files_sha256": {
+        "request-0001-normalized.json": "0410aa1ddb912abe8b2aa7ca76375d14becb110c51108c2fec63d1a02d6139bb",
+        "request-0001-wire.json": "3d3f0cd42c3fc09ce7174f9a2c521520d1600ea81b0916e09e2b9d6b568d8192",
+        "request-0002-normalized.json": "a8cb82f6fd2c96a0cc48bbba3cff45ff1003fba2a4f9decd70fc350ff939a9b5",
+        "request-0002-wire.json": "901a1671a803e1228576537831c2ef086dafe684c09c7cc94b840ec6cccd401c",
+        "request-0003-normalized.json": "e8f19c6f88b2803853debaaab41deac82c7f20d1239c96cd82950f5186310243",
+        "request-0003-wire.json": "862482253d563dabab4c0a4c2669bf85c2de7fc5ae2188f1653e00e625b492af",
+        "request-0004-normalized.json": "e335d0a9f018af6c35621361cdcbd9672c645a040e8b954a76ae2e9c95db699c",
+        "request-0004-wire.json": "0fd6298d5193d0ae60bd6ab5d339135f2b16f60ba0c407fd0c09499570693b49",
+        "request-0005-normalized.json": "d67bc5b6817be8f0d37803ef6613053d44af7efd5fb71173788178ce1b947a9c",
+        "request-0005-wire.json": "09130cc1f2f1ccb9eaddd7053ba05881ca3f45af837a68656e3abb32e18d49da",
+        "request-0006-normalized.json": "e0b42ddef7676cbaaa8ad3648b0ef732ba2c32c53ec446ec35b131061b4fd57b",
+        "request-0006-wire.json": "8d9fa3825f8feddf4c499af02c113ad9ca0eac1557cab5a4cdf7a18fa5a5464e",
+        "request-0007-normalized.json": "4ebdbbdac34d44ac0d2f18816bdb6a5d28fcf8eafc4adaf8175e8f4ddf047cad",
+        "request-0007-wire.json": "79fd31ba89feaa8fd51c3816ef2281a1a4253f845a37530ac3097df03a625843"
+      },
+      "loop_latency_ms": 6882.4106249809265,
+      "manual_patch_repairs": 0,
+      "model": "beam-free",
+      "model_key": "B",
+      "modes_preserved": true,
+      "planned": true,
+      "protected_preserved": true,
+      "provider_failure": null,
+      "provider_observations": [
+        {
+          "billing_guard_passed": true,
+          "billing_source": "go",
+          "content_bytes": 0,
+          "continuation_bytes": 50,
+          "continuation_present": true,
+          "cost_known": true,
+          "estimated_state": "absent",
+          "finish_reason": "tool_use",
+          "kind": "response",
+          "observed_cost_usd": 0,
+          "sequence": 1,
+          "tool_call_count": 1,
+          "usage": {
+            "completion_tokens": 30,
+            "prompt_tokens": 1699
+          }
+        },
+        {
+          "billing_guard_passed": true,
+          "billing_source": "go",
+          "content_bytes": 0,
+          "continuation_bytes": 41,
+          "continuation_present": true,
+          "cost_known": true,
+          "estimated_state": "absent",
+          "finish_reason": "tool_use",
+          "kind": "response",
+          "observed_cost_usd": 0,
+          "sequence": 2,
+          "tool_call_count": 2,
+          "usage": {
+            "completion_tokens": 49,
+            "prompt_tokens": 2004
+          }
+        },
+        {
+          "billing_guard_passed": true,
+          "billing_source": "go",
+          "content_bytes": 0,
+          "continuation_bytes": 61,
+          "continuation_present": true,
+          "cost_known": true,
+          "estimated_state": "absent",
+          "finish_reason": "tool_use",
+          "kind": "response",
+          "observed_cost_usd": 0,
+          "sequence": 3,
+          "tool_call_count": 1,
+          "usage": {
+            "completion_tokens": 38,
+            "prompt_tokens": 7046
+          }
+        },
+        {
+          "billing_guard_passed": true,
+          "billing_source": "go",
+          "content_bytes": 0,
+          "continuation_bytes": 21,
+          "continuation_present": true,
+          "cost_known": true,
+          "estimated_state": "absent",
+          "finish_reason": "tool_use",
+          "kind": "response",
+          "observed_cost_usd": 0,
+          "sequence": 4,
+          "tool_call_count": 1,
+          "usage": {
+            "completion_tokens": 33,
+            "prompt_tokens": 8838
+          }
+        },
+        {
+          "billing_guard_passed": true,
+          "billing_source": "go",
+          "content_bytes": 0,
+          "continuation_bytes": 51,
+          "continuation_present": true,
+          "cost_known": true,
+          "estimated_state": "absent",
+          "finish_reason": "tool_use",
+          "kind": "response",
+          "observed_cost_usd": 0,
+          "sequence": 5,
+          "tool_call_count": 2,
+          "usage": {
+            "completion_tokens": 55,
+            "prompt_tokens": 10459
+          }
+        },
+        {
+          "billing_guard_passed": true,
+          "billing_source": "go",
+          "content_bytes": 0,
+          "continuation_bytes": 983,
+          "continuation_present": true,
+          "cost_known": true,
+          "estimated_state": "absent",
+          "finish_reason": "tool_use",
+          "kind": "response",
+          "observed_cost_usd": 0,
+          "sequence": 6,
+          "tool_call_count": 1,
+          "usage": {
+            "completion_tokens": 229,
+            "prompt_tokens": 10937
+          }
+        },
+        {
+          "billing_guard_passed": true,
+          "billing_source": "go",
+          "content_bytes": 0,
+          "continuation_bytes": 23,
+          "continuation_present": true,
+          "cost_known": true,
+          "estimated_state": "absent",
+          "finish_reason": "tool_use",
+          "kind": "response",
+          "observed_cost_usd": 0,
+          "sequence": 7,
+          "tool_call_count": 1,
+          "usage": {
+            "completion_tokens": 23,
+            "prompt_tokens": 11285
+          }
+        }
+      ],
+      "raw_input_bytes": 474956,
+      "repeat": 2,
+      "replacements": 0,
+      "reported_aggregate_cost_known": true,
+      "request_count": 7,
+      "request_id": "3669e348a1a64476801e94156e12b726",
+      "response_count": 7,
+      "restart_identical": true,
+      "review_evidence_sha256": {
+        "acceptance.json": "51ddc4573d909db181c34e129337772de1133316242d9a4fe12548349d16bd62",
+        "final.diff": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "input-analysis.json": "c7aae61e6139a88b1f8b9bbf92e42f086377f916f17e3a42617c5269c24cb250",
+        "regrade.json": "007797165a6d3d4226cf97b1841ca921edde5abadc4eccfe7e08ab41c1e589f3",
+        "restarted-run.json": "934d21a1a4c9c709ddbaceb9f917a696696ca73b0e457161bf976548288e85f1",
+        "restarted-session.json": "a715315937d8844f4bfd5c58827b3aedd6136d323cccd4467c38889d342a4287",
+        "saved-run.json": "934d21a1a4c9c709ddbaceb9f917a696696ca73b0e457161bf976548288e85f1",
+        "saved-session.json": "a715315937d8844f4bfd5c58827b3aedd6136d323cccd4467c38889d342a4287",
+        "source/observations.jsonl": "ee021234bdbd9283fa018cffacbcf28dd88917701c43d60a80a14a9d6c6f9e38",
+        "source/transport-routing.jsonl": "8768dd286ede5078bfd7a26251fd4d18e797a764429db0327d9e51d7b1576fd6",
+        "summary.json": "525b4e46daf7aee4e056fe0bfb8ee5ecde593a7125788982e90fb0355e17058a"
+      },
+      "run_id": "1206f6ae4b5b48f295baa0ff53a02dba",
+      "source_review_required": true,
+      "status": "finished",
+      "task": "T08",
+      "tool_progress": [
+        {
+          "coverage": "recorded",
+          "events": [
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:34:39.032462Z",
+              "sequence": 1,
+              "tool": "list_dir",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 1.920915961265564,
+              "observed_at": "2026-10-26T01:34:39.036393Z",
+              "sequence": 2,
+              "tool": "list_dir",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:34:39.623072Z",
+              "sequence": 3,
+              "tool": "read_file",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 1.1454170942306519,
+              "observed_at": "2026-10-26T01:34:39.625711Z",
+              "sequence": 4,
+              "tool": "read_file",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:34:39.626577Z",
+              "sequence": 5,
+              "tool": "list_dir",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 2.363999843597412,
+              "observed_at": "2026-10-26T01:34:39.629691Z",
+              "sequence": 6,
+              "tool": "list_dir",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:34:40.541604Z",
+              "sequence": 7,
+              "tool": "read_file",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 1.3098750114440918,
+              "observed_at": "2026-10-26T01:34:40.543954Z",
+              "sequence": 8,
+              "tool": "read_file",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:34:41.750507Z",
+              "sequence": 9,
+              "tool": "read_file",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 1.3228750228881836,
+              "observed_at": "2026-10-26T01:34:41.753093Z",
+              "sequence": 10,
+              "tool": "read_file",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:34:42.548606Z",
+              "sequence": 11,
+              "tool": "read_file",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 1.0235830545425415,
+              "observed_at": "2026-10-26T01:34:42.550989Z",
+              "sequence": 12,
+              "tool": "read_file",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:34:42.552062Z",
+              "sequence": 13,
+              "tool": "read_file",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 0.7573339939117432,
+              "observed_at": "2026-10-26T01:34:42.553872Z",
+              "sequence": 14,
+              "tool": "read_file",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:34:44.584019Z",
+              "sequence": 15,
+              "tool": "read_file",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": false,
+              "latency_ms": 1.1299999952316284,
+              "observed_at": "2026-10-26T01:34:44.586596Z",
+              "sequence": 16,
+              "tool": "read_file",
+              "type": "tool_end"
+            },
+            {
+              "error_observed": null,
+              "latency_ms": null,
+              "observed_at": "2026-10-26T01:34:45.182655Z",
+              "sequence": 17,
+              "tool": "git_status",
+              "type": "tool_start"
+            },
+            {
+              "error_observed": true,
+              "latency_ms": 0.022499918937683105,
+              "observed_at": "2026-10-26T01:34:45.183815Z",
+              "sequence": 18,
+              "tool": "git_status",
+              "type": "tool_end"
+            }
+          ],
+          "events_truncated": false,
+          "observed_events": 18,
+          "read_only": true,
+          "run_id": "1206f6ae4b5b48f295baa0ff53a02dba",
+          "scope_note": "Bounded prefix of observed tool-start/end metadata; arguments, results, error text, model messages and tool-call IDs are not stored here. Start precedes tool gates, so it does not prove dispatch or mutation. End/error presence is not patch acceptance or verification. A missing end may mean interrupted work or unsaved evidence; file changes may exist. This is not a transcript, checkpoint, replay, repair, or permission to resume. Unknown tool names are recorded as unknown_tool.",
+          "updated_at": "2026-10-26T01:34:45.183815Z"
+        }
+      ],
+      "verification_status": "not_run",
+      "workspace_review_ms": 73.00000009126961
+    }
+  ],
+  "runtime_revision": "de6083d1c69afb715d212704f3c25742b596e9f1",
+  "source_revision": "5324cabba4ad3c8ad2e1cd1480218cf087d9b741",
+  "summary": {
+    "B": {
+      "artifact_accepted": 1,
+      "attempted": 4,
+      "completed_and_accepted": 1,
+      "planned": 4,
+      "task_counts": {
+        "T02": {
+          "completed_and_accepted": 1,
+          "planned": 2
+        },
+        "T08": {
+          "completed_and_accepted": 0,
+          "planned": 2
+        }
+      },
+      "unrun": 0
+    },
+    "G": {
+      "artifact_accepted": 2,
+      "attempted": 4,
+      "completed_and_accepted": 2,
+      "planned": 4,
+      "task_counts": {
+        "T02": {
+          "completed_and_accepted": 0,
+          "planned": 2
+        },
+        "T08": {
+          "completed_and_accepted": 2,
+          "planned": 2
+        }
+      },
+      "unrun": 0
+    }
+  }
+}
