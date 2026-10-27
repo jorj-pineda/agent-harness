@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-27 — Source wait/dispatch interaction protocol prepared:** the
+[new local protocol](evals/projects/duodoro/SOURCE_WAIT_PROTOCOL.md) fixes four
+fresh original T02 cells at provider60/180/180/60 with unchanged150-second source
+budgets. Expected read-timeout/native wall stops are explicit outcomes only after
+settled preservation; other errors still stop the cohort. Fresh initial/reference
+checks and settings/contracts validate offline. Actual inputs/preflight/G0, exact
+reviewed freeze/CI/merge/parent approval and fresh gates precede generation. No
+inference, old-cohort retry, default change, quality gain or no-go/G2–G5 closure.
+
 **2026-10-27 — Stopped-source backend chronology checked offline:** the
 [diagnosis](evals/projects/duodoro/PROJECTED_RECOVERY_BACKEND_DIAGNOSIS.md)
 finds completed prompt processing and generation progress through `n_gen = 180`

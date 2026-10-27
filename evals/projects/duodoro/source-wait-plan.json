@@ -1,0 +1,168 @@
+{
+  "actual_inputs": null,
+  "backend_policy": "new owned backend lifecycle per cell; authorized copied model only, no warmup/download/user-service mutation",
+  "boundary_metrics": [
+    "request2 returned valid complete response",
+    "provider read_timeout versus native dispatch wall-budget stop",
+    "artifact acceptance and checks",
+    "known/unknown usage and safe budget evidence"
+  ],
+  "cells": [
+    {
+      "artifact_accepted": null,
+      "completed_and_accepted": null,
+      "execution_status": "unrun",
+      "id": "R60-1",
+      "order": 1,
+      "request_timeout_seconds": 60,
+      "run_id": null,
+      "task": "T02",
+      "usage_known": null,
+      "within_known_phase_budget": null
+    },
+    {
+      "artifact_accepted": null,
+      "completed_and_accepted": null,
+      "execution_status": "unrun",
+      "id": "R180-1",
+      "order": 2,
+      "request_timeout_seconds": 180,
+      "run_id": null,
+      "task": "T02",
+      "usage_known": null,
+      "within_known_phase_budget": null
+    },
+    {
+      "artifact_accepted": null,
+      "completed_and_accepted": null,
+      "execution_status": "unrun",
+      "id": "R180-2",
+      "order": 3,
+      "request_timeout_seconds": 180,
+      "run_id": null,
+      "task": "T02",
+      "usage_known": null,
+      "within_known_phase_budget": null
+    },
+    {
+      "artifact_accepted": null,
+      "completed_and_accepted": null,
+      "execution_status": "unrun",
+      "id": "R60-2",
+      "order": 4,
+      "request_timeout_seconds": 60,
+      "run_id": null,
+      "task": "T02",
+      "usage_known": null,
+      "within_known_phase_budget": null
+    }
+  ],
+  "cli_response_inactivity_seconds": 600,
+  "execution_freeze": null,
+  "expected_outcomes_allowed_to_continue": [
+    "provider read_timeout only",
+    "native runtime dispatch wall-budget exhaustion",
+    "other normal bounded runtime stops or completed turns"
+  ],
+  "g0_result": null,
+  "inference_ran": false,
+  "kind": "unrun-source-wait-interaction-plan",
+  "maximum_physical_reserved_limits": {
+    "completion_tokens": 16384,
+    "dispatch_seconds": 600,
+    "model_iterations": 24,
+    "model_turns": 4,
+    "reported_total_tokens": 128000,
+    "tool_calls": 48
+  },
+  "model": {
+    "additional_paid_budget_usd": 0,
+    "digest": "4eb23ef187e2c5462566d6a1d3bbbc2f1346d0b4327cbb66d58fffbcc9b2b05c",
+    "hosted_models": [],
+    "name": "gemma4:12b",
+    "observed_version": "0.33.2",
+    "provider": "ollama"
+  },
+  "parent_approval_receipt": null,
+  "phase_limits": {
+    "max_completion_tokens_per_turn": 4096,
+    "max_request_output_tokens": 2048,
+    "max_tool_calls_per_turn": 12,
+    "max_tool_iterations": 6,
+    "max_total_tokens_per_turn": 32000,
+    "max_turn_wall_seconds": 150,
+    "min_request_output_tokens": 256
+  },
+  "preparation": {
+    "path": "/Users/jorge/.local/share/agent-harness/trials/source-wait-protocol-kdhhxdxh",
+    "receipt_sha256": "ba604fb6be49fa72a0c3a4d71036cdc049ac32fa7d7af4e7af2923f99f117ae0"
+  },
+  "primary_metric": "completed and independently accepted artifacts per arm /2, with all four rows retained; no ranking if stopped incomplete",
+  "release_gate_closure_claim": false,
+  "runtime_candidate": "94993c5ec424438e315bea388c935aeee5c95fe1",
+  "schema_version": 1,
+  "settings": {
+    "coding_prompt_profile": "compact",
+    "coding_toolset": "full",
+    "enable_support_tools": false,
+    "load_root_agents": false,
+    "max_completion_retries": 1,
+    "max_context_tokens": 16384,
+    "max_files_touched_per_turn": 2,
+    "max_identical_tool_calls": 2,
+    "ollama_num_ctx": 16384,
+    "ollama_think": false,
+    "project_check_argv": [
+      "python",
+      "-m",
+      "pytest",
+      "-q",
+      "test_visible.py"
+    ],
+    "prompt_estimate_bytes_per_token": 3,
+    "read_file_default_lines": 0,
+    "require_plan_before_edit": false,
+    "require_verification_before_finish": true,
+    "temperature": 0
+  },
+  "source_revision": "5324cabba4ad3c8ad2e1cd1480218cf087d9b741",
+  "status": "protocol-only-not-launch-authorization",
+  "stop_all_on": [
+    "other provider/transport failure",
+    "returned missing/malformed usage",
+    "unexplained cancellation",
+    "input/recording failure",
+    "model/runtime/environment/criterion drift",
+    "uncertain submission without finalized original-key record",
+    "incomplete preservation or unsettled cleanup"
+  ],
+  "task": {
+    "allowed_modified_paths": [
+      "server/payloadParsers.js"
+    ],
+    "contract_files": {
+      "acceptance/timer_normalization/test_acceptance.py": {
+        "mode": 420,
+        "sha256": "71c615741d10b39668529f0b8e8cdab285e8a6f60bd97b8332717021e11f74ce"
+      },
+      "reference/timer_normalization/server/payloadParsers.js": {
+        "mode": 420,
+        "sha256": "56c19d07980e94727486714f8f727a4ab95a1cc49028a2190ccf4c8795b073bd"
+      },
+      "task_timer.json": {
+        "mode": 420,
+        "sha256": "b6df589932ea619011a55ca87726bf8ab44b23076ae5c8e6d8bdabffcf859975"
+      },
+      "visible_timer.py": {
+        "mode": 420,
+        "sha256": "a56f0b5c5a71967fc19c4cf9c28ede72bd7bb8b8499daac63248688af7441cc4"
+      }
+    },
+    "id": "T02",
+    "metadata_file": "task_timer.json",
+    "request": "In Duodoro, normalize parseStartSession focusDuration and breakDuration in server/payloadParsers.js to whole seconds by flooring the final defaulted/clamped numeric values. Preserve Number coercion, falsy/NaN defaults (1500 focus, 300 break), min/max clamps (60..7200 focus, 30..3600 break), Infinity clamping, string session-id validation, mode parsing and all other exported parser behavior. Inspect AGENTS.md and server/payloadParsers.test.js first. Only modify server/payloadParsers.js; preserve all other files and tests. This disposable pure-parser evaluation adds test_visible.py as a visible Node adapter: run [\"python\",\"-m\",\"pytest\",\"-q\",\"test_visible.py\"] after editing. It does not run the full Vitest/Socket.IO/server suite. Do not install dependencies, start services or touch Docker. Report actual checks and limits honestly.",
+    "request_utf8_sha256": "0824f29e080a293c6fdf0bba6b5f721a99084aa0ff2c67ba64e777ab09953680",
+    "requires_independent_source_review": false,
+    "task_name": "timer_normalization"
+  }
+}
