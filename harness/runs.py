@@ -4,14 +4,15 @@ from __future__ import annotations
 
 import uuid
 from datetime import UTC, datetime
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, SerializerFunctionWrapHandler, model_serializer
 
 from providers.base import ProviderFailure
 
 from .budget_evidence import BudgetEvidence
 from .execution_profile import ExecutionProfile
+from .recovery_identity import RecoverySource
 from .state import ContinuationSource, TurnResponse
 
 RequestId = Annotated[
@@ -26,6 +27,14 @@ class RunInput(BaseModel):
     provider: str | None = None
     request_id: RequestId
     continuation_source: ContinuationSource | None = None
+    recovery_source: RecoverySource | None = Field(default=None, frozen=True)
+
+    @model_serializer(mode="wrap")
+    def serialize_input(self, handler: SerializerFunctionWrapHandler) -> dict[str, Any]:
+        data: dict[str, Any] = handler(self)
+        if self.recovery_source is None:
+            data.pop("recovery_source", None)
+        return data
 
 
 class RunRecord(BaseModel):
