@@ -181,3 +181,40 @@ validation is required before merge. This completes only prospective constructio
 API/CLI review, not automatic compaction, safe execution or measured recovery.
 Defaults, original cohorts, release no-go/8-of-10 and broad G2–G5 remain unchanged;
 no inference, Duodoro edit, paid call or model-quality claim follows.
+
+## Panel draft review
+
+After selecting a saved run, the panel's Recovery draft review section loads nothing
+automatically. `Load saved recovery evidence` makes one owner-scoped review GET and
+pins the returned saved-run representation hash. Completion/check/lifecycle states
+lead; full bounded evidence, truncation, omitted counts, unknowns and scope notes
+remain in collapsed details. Failed/interrupted runs without final evidence can be
+inspected but cannot supply a prospective draft through this control.
+
+Enter an explicit proposal of at most 4,096 UTF-8 bytes and select the provider used
+for review (or retain the server default). Optionally add up to four disjoint saved
+file ranges with exact relative paths, whole-file hashes and inclusive line numbers
+from the source run's final checkpoint. Each range is at most 200 lines. Zero ranges
+is allowed. The panel does not choose ranges, discover relevant files, fetch source
+contents or silently refresh the source hash. Server validation remains authoritative.
+
+`Preview smaller input` makes one read-only draft POST. Supported versions, source/
+provider/message identities, normalized message hash, embedded historical evidence
+hash, range identities/content hashes, count/status consistency and current review
+metadata are checked before display. Context/configuration states and retained-user/
+omitted-nonuser counts remain visible; full messages, hashes, current root instructions
+and estimates are in collapsed details. Review may display changed, unknown, blocked
+or unbounded states; none authorize execution or demonstrate token savings.
+
+Changing the proposal/provider/ranges clears the old draft without fetching. Selecting
+another run clears source and draft state; generation checks ignore delayed responses
+and an abort limits browser waiting. A 30-second wait timeout does not prove server
+comparison work stopped. Errors are generic and never display private response text.
+No retry, polling or fallback runs. All repository/model text uses DOM text nodes;
+there is no HTML interpretation, local-storage approval cache or execution route.
+Reload requires fresh explicit review and retains no draft.
+
+The panel remains a thin client. It calls neither models nor tools and contains no
+harness policy or budget calculation. This slice adds review access only. Explicit
+panel submission with pinned approval, acknowledgments and ambiguous-outcome recovery
+is the next separate PR; measured live recovery remains open.

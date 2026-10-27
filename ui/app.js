@@ -105,6 +105,7 @@ function scrollToBottom() {
 
 function setBusy(value) {
   busy = value;
+  globalThis.recoveryDraftPanel?.refresh();
   const canSend = !busy && !pendingReversal && !reversalRecoveryBlocked && sessionId != null && sessionUsable;
   els.send.disabled = !canSend;
   els.input.disabled = sessionId == null || !sessionUsable;
@@ -650,6 +651,7 @@ async function cancelTurn() {
 // ---- saved session reviews: observations, separate from explicit work ----
 
 function selectReviewTarget(record) {
+  globalThis.recoveryDraftPanel?.select(record);
   // Object identity prevents a delayed response from rendering on another selection.
   reviewTarget = record ? { sessionId: record.request.session_id, runId: record.run_id } : null;
   els.sessionReview.hidden = reviewTarget == null;

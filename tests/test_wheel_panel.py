@@ -38,7 +38,7 @@ def test_built_wheel_serves_panel_outside_checkout(tmp_path: Path) -> None:
         assert all(req.marker and not req.marker.evaluate({"extra": ""}) for req in chroma)
         for extra in ("support", "dev"):
             assert any(req.marker and req.marker.evaluate({"extra": extra}) for req in chroma)
-        for name in ("index.html", "app.js", "memory.js", "style.css"):
+        for name in ("index.html", "app.js", "memory.js", "recovery.js", "style.css"):
             assert archive.read(f"api/ui/{name}") == (root / "ui" / name).read_bytes()
     installed = tmp_path / "installed"
     install = subprocess.run(
@@ -73,6 +73,7 @@ def test_built_wheel_serves_panel_outside_checkout(tmp_path: Path) -> None:
             html = client.get('/')
             assert html.status_code == 200 and '/app.js' in html.text
             for name, media in [('app.js', 'javascript'), ('memory.js', 'javascript'),
+                                ('recovery.js', 'javascript'),
                                 ('style.css', 'css')]:
                 result = client.get('/' + name)
                 assert result.status_code == 200, name

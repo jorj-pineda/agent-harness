@@ -4,6 +4,20 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-27 — Panel recovery draft review:** explicit owner evidence GET and
+prospective draft POST retain pinned saved source, structured optional final-capture
+ranges and exact proposal/provider inputs. Source completion/check/lifecycle status
+leads; full historical omissions, current configuration/context and prospective
+messages remain inspectable. Supported identities/counts/message and evidence hashes
+are checked before text-only rendering. Input/selection changes invalidate previews,
+late responses cannot replace another selection, and reload retains no draft or
+submission. The [panel review contract](RECOVERY_DRAFT.md#panel-draft-review) adds
+no execution route or permission. Explicit panel submission and separately frozen
+live recovery measurement remain next work. Validation: 120 focused and 2,104 offline
+tests (five live deselected), Ruff/format/mypy, JS syntax, packaged asset serving,
+diff and browser fixture checks pass. No inference, Duodoro edit, model-quality/
+default claim or original cohort/no-go/8-of-10/broad G2–G5 change.
+
 **2026-10-27 — Explicit CLI recovery submission:** a bounded regular JSON
 approval file retains the reviewed pins, ordered spans and exact proposal; owner,
 provider, stable key and all three scope/new-budget acknowledgments stay explicit

@@ -136,6 +136,32 @@
             <button id="submit-continuation" disabled>Fork and submit task</button>
           </details>
         </section>
+        <section id="recovery-review" hidden aria-label="Recovery draft review">
+          <h2>Recovery draft review</h2>
+          <p id="recovery-target" class="review-note"></p>
+          <p class="review-note">Build a smaller prospective input from saved evidence and all saved user messages. Earlier assistant/tool history is omitted and can lose agreements. Review only; this does not submit a task.</p>
+          <button id="load-recovery">Load saved recovery evidence</button>
+          <p id="recovery-status" class="review-note" aria-live="polite">Nothing loaded automatically.</p>
+          <div id="recovery-evidence"></div>
+          <details>
+            <summary>Optional saved-file ranges (maximum four)</summary>
+            <p class="review-note">Use exact paths and whole-file hashes from the source run's final checkpoint. Ranges refer to captured bytes, not current files. Zero ranges is allowed.</p>
+            <div id="recovery-ranges"></div>
+            <button id="add-recovery-range">Add saved range</button>
+          </details>
+          <label for="recovery-provider">Provider for draft review</label>
+          <select id="recovery-provider">
+            <option value="">server default</option>
+            <option value="ollama">ollama</option>
+            <option value="anthropic">anthropic</option>
+            <option value="openai">openai</option>
+            <option value="openai_compatible">openai_compatible</option>
+          </select>
+          <label for="recovery-message">Proposed next input (review only; at most 4,096 UTF-8 bytes)</label>
+          <textarea id="recovery-message" rows="3" maxlength="4096"></textarea>
+          <button id="preview-recovery" disabled>Preview smaller input</button>
+          <div id="recovery-draft-results" aria-live="polite"></div>
+        </section>
         <section id="file-reversal" hidden aria-label="Explicit single-file reversal">
           <h2>Single-file reversal</h2>
           <p id="reversal-target" class="review-note"></p>
@@ -161,5 +187,6 @@
 
     <script src="/app.js"></script>
     <script src="/memory.js"></script>
+    <script src="/recovery.js"></script>
   </body>
 </html>
