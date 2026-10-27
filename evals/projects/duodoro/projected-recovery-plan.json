@@ -1,0 +1,300 @@
+{
+  "schema_version": 1,
+  "kind": "unrun-projected-recovery-protocol-plan",
+  "status": "protocol-only-not-execution-freeze",
+  "runtime_candidate": "998dae4a2713adc9b0a353ba456371844d7b0feb",
+  "source_revision": "5324cabba4ad3c8ad2e1cd1480218cf087d9b741",
+  "client": "actual CLI over application API",
+  "model": {
+    "provider": "ollama",
+    "name": "gemma4:12b",
+    "digest": null,
+    "ollama_version": null,
+    "additional_paid_budget_usd": 0,
+    "hosted_models": []
+  },
+  "arms": {
+    "C": {
+      "route": "POST /sessions/{source_session_id}/continue",
+      "label": "full saved history with native continuation guards"
+    },
+    "P": {
+      "route": "POST /runs/{source_run_id}/recover",
+      "label": "explicit reviewed projected input with fresh recovery and first-input guards"
+    }
+  },
+  "phase_limits": {
+    "max_turn_wall_seconds": 150,
+    "max_total_tokens_per_turn": 32000,
+    "max_completion_tokens_per_turn": 4096,
+    "max_tool_calls_per_turn": 12,
+    "max_tool_iterations": 6,
+    "max_request_output_tokens": 2048,
+    "min_request_output_tokens": 256
+  },
+  "per_policy_workflow_reserved_limits": {
+    "dispatch_seconds": 300,
+    "reported_total_tokens": 64000,
+    "completion_tokens": 8192,
+    "tool_calls": 24,
+    "model_iterations": 12
+  },
+  "maximum_physical_model_turns": 12,
+  "maximum_physical_reserved_limits": {
+    "dispatch_seconds": 1800,
+    "reported_total_tokens": 384000,
+    "completion_tokens": 49152,
+    "tool_calls": 144,
+    "model_iterations": 72
+  },
+  "settings": {
+    "coding_prompt_profile": "compact",
+    "coding_toolset": "full",
+    "read_file_default_lines": 0,
+    "max_context_tokens": 16384,
+    "ollama_num_ctx": 16384,
+    "ollama_think": false,
+    "temperature": 0,
+    "prompt_estimate_bytes_per_token": 3,
+    "request_timeout_seconds": 60,
+    "max_completion_retries": 1,
+    "max_identical_tool_calls": 2,
+    "max_files_touched_per_turn": 2,
+    "require_verification_before_finish": true,
+    "project_check_argv": [
+      "python",
+      "-m",
+      "pytest",
+      "-q",
+      "test_visible.py"
+    ],
+    "require_plan_before_edit": false,
+    "load_root_agents": false,
+    "enable_support_tools": false
+  },
+  "session_policy": {
+    "checkpoint_turns": true,
+    "inspection_only": false,
+    "source_facts": "empty isolated store per source; clone settled resulting facts identically per arm"
+  },
+  "followup_message": "Continue the original bounded task. Preserve existing work and all original requirements; inspect current instructions and code, run the configured check after edits, and report actual checks and unresolved limits.",
+  "followup_utf8_sha256": "06ff56d130a54b47e36e64df4a4e74e24937fc9ac43b8c5ff6d7155f2061cf19",
+  "span_policy": {
+    "paths": "exact task allowed_modified_paths in declared order",
+    "start_line": 1,
+    "end_line": "min(saved total_lines, 80)",
+    "maximum_spans": 4,
+    "maximum_selected_utf8_bytes": 16384,
+    "missing_deleted_nontext_or_unavailable": "projected arm blocked; no substitution or dropped span"
+  },
+  "source_disposition": "Source completed and independently accepted: both workflows succeed at source, no followups, arms not-needed. Otherwise both predeclared arms count; structural refusal is blocked, not omitted.",
+  "staging_policy": "One frozen literal owned canonical root/inode. Preserve every artifact and eligible file/type/mode proof before any replacement. Closed source SQLite/fact images cloned independently per arm without rewriting records; stop on unknown/unsettled work. Never reset user checkout.",
+  "stop_all_policy": "Provider/transport/unknown usage, changed model/runtime/environment/criteria, unsettled cleanup, external mutation or invalid preservation proof: stop remaining rows, retain failed/blocked/unrun states, no replacement/fallback/repair.",
+  "tasks": [
+    {
+      "id": "T02",
+      "task_name": "timer_normalization",
+      "metadata_file": "task_timer.json",
+      "request": "In Duodoro, normalize parseStartSession focusDuration and breakDuration in server/payloadParsers.js to whole seconds by flooring the final defaulted/clamped numeric values. Preserve Number coercion, falsy/NaN defaults (1500 focus, 300 break), min/max clamps (60..7200 focus, 30..3600 break), Infinity clamping, string session-id validation, mode parsing and all other exported parser behavior. Inspect AGENTS.md and server/payloadParsers.test.js first. Only modify server/payloadParsers.js; preserve all other files and tests. This disposable pure-parser evaluation adds test_visible.py as a visible Node adapter: run [\"python\",\"-m\",\"pytest\",\"-q\",\"test_visible.py\"] after editing. It does not run the full Vitest/Socket.IO/server suite. Do not install dependencies, start services or touch Docker. Report actual checks and limits honestly.",
+      "request_utf8_sha256": "0824f29e080a293c6fdf0bba6b5f721a99084aa0ff2c67ba64e777ab09953680",
+      "allowed_modified_paths": [
+        "server/payloadParsers.js"
+      ],
+      "requires_independent_source_review": false,
+      "contract_files": {
+        "acceptance/timer_normalization/test_acceptance.py": {
+          "sha256": "71c615741d10b39668529f0b8e8cdab285e8a6f60bd97b8332717021e11f74ce",
+          "mode": 420
+        },
+        "reference/timer_normalization/server/payloadParsers.js": {
+          "sha256": "56c19d07980e94727486714f8f727a4ab95a1cc49028a2190ccf4c8795b073bd",
+          "mode": 420
+        },
+        "task_timer.json": {
+          "sha256": "b6df589932ea619011a55ca87726bf8ab44b23076ae5c8e6d8bdabffcf859975",
+          "mode": 420
+        },
+        "visible_timer.py": {
+          "sha256": "a56f0b5c5a71967fc19c4cf9c28ede72bd7bb8b8499daac63248688af7441cc4",
+          "mode": 420
+        }
+      }
+    },
+    {
+      "id": "T04",
+      "task_name": "share_storage",
+      "metadata_file": "task_share_storage.json",
+      "request": "In the disposable pinned Duodoro source, Make pending share-invite storage resilient to unavailable browser storage. Preserve the exact token validator and URL behavior. SSR returns false for store and null for read and clears without error. Valid tokens round-trip; malformed stored tokens are removed. Throwing getItem/setItem/removeItem or the sessionStorage accessor must not escape: store returns false on a failed set, read returns null on a failed read/cleanup, and clear no-ops on failure. Do not weaken validation. Inspect applicable instructions and relevant existing code/tests first. Only modify client/src/lib/shareInvite.ts. Preserve every other file, tests and pre-existing work. This library task adds test_visible.py and visible_check.mjs as visible Node-native checks. After editing run [\"python\",\"-m\",\"pytest\",\"-q\",\"test_visible.py\"]. This is not full application/Vitest/typechecking coverage. Do not install dependencies, start services or touch Docker. Report actual check outcomes, unresolved issues and limits honestly.",
+      "request_utf8_sha256": "93b8cde7f4ea0e097a87b1e59ee388d65acc43f17e5a861f739d6d87e4c4c318",
+      "allowed_modified_paths": [
+        "client/src/lib/shareInvite.ts"
+      ],
+      "requires_independent_source_review": false,
+      "contract_files": {
+        "acceptance/share_storage/checks.mjs": {
+          "sha256": "832eedcdc1c6c17e62d3f1a4d58f95cf391ffc451f253af54de720f581b70dd4",
+          "mode": 420
+        },
+        "acceptance/share_storage/test_acceptance.py": {
+          "sha256": "9395e0743c45e8d1568d8fe2898adea5c21d191dac2c9d69e51e6aef979e7af3",
+          "mode": 420
+        },
+        "reference/share_storage/client/src/lib/shareInvite.ts": {
+          "sha256": "76723da20067a3ccfe23c7ed3bca2a5a45e683782954d094655d2cb474d44ac3",
+          "mode": 420
+        },
+        "task_share_storage.json": {
+          "sha256": "a2462bdfe1561457622dc0302ee361854471ee60850d4d08f91cf0d636213e37",
+          "mode": 420
+        },
+        "visible_share_storage.mjs": {
+          "sha256": "64283b912a4b869fc2f071f33235edb0d511e8c14b0986540d6b9a2a9a6eaab3",
+          "mode": 420
+        },
+        "visible_trial.py": {
+          "sha256": "a11949e7a91097373c2722033ed35e2b8fbf1f9d79f0df77342b41757de94758",
+          "mode": 420
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "order": 1,
+      "id": "T02-S1",
+      "task": "T02",
+      "repeat": 1,
+      "execution_status": "unrun",
+      "run_id": null,
+      "source_completed_and_accepted": null,
+      "needs_recovery": null,
+      "arms": [
+        {
+          "id": "T02-C1",
+          "arm": "C",
+          "execution_status": "unrun",
+          "run_id": null,
+          "artifact_accepted": null,
+          "completed_and_accepted": null,
+          "within_known_workflow_budget": null
+        },
+        {
+          "id": "T02-P1",
+          "arm": "P",
+          "execution_status": "unrun",
+          "run_id": null,
+          "artifact_accepted": null,
+          "completed_and_accepted": null,
+          "within_known_workflow_budget": null
+        }
+      ]
+    },
+    {
+      "order": 2,
+      "id": "T04-S1",
+      "task": "T04",
+      "repeat": 1,
+      "execution_status": "unrun",
+      "run_id": null,
+      "source_completed_and_accepted": null,
+      "needs_recovery": null,
+      "arms": [
+        {
+          "id": "T04-P1",
+          "arm": "P",
+          "execution_status": "unrun",
+          "run_id": null,
+          "artifact_accepted": null,
+          "completed_and_accepted": null,
+          "within_known_workflow_budget": null
+        },
+        {
+          "id": "T04-C1",
+          "arm": "C",
+          "execution_status": "unrun",
+          "run_id": null,
+          "artifact_accepted": null,
+          "completed_and_accepted": null,
+          "within_known_workflow_budget": null
+        }
+      ]
+    },
+    {
+      "order": 3,
+      "id": "T02-S2",
+      "task": "T02",
+      "repeat": 2,
+      "execution_status": "unrun",
+      "run_id": null,
+      "source_completed_and_accepted": null,
+      "needs_recovery": null,
+      "arms": [
+        {
+          "id": "T02-P2",
+          "arm": "P",
+          "execution_status": "unrun",
+          "run_id": null,
+          "artifact_accepted": null,
+          "completed_and_accepted": null,
+          "within_known_workflow_budget": null
+        },
+        {
+          "id": "T02-C2",
+          "arm": "C",
+          "execution_status": "unrun",
+          "run_id": null,
+          "artifact_accepted": null,
+          "completed_and_accepted": null,
+          "within_known_workflow_budget": null
+        }
+      ]
+    },
+    {
+      "order": 4,
+      "id": "T04-S2",
+      "task": "T04",
+      "repeat": 2,
+      "execution_status": "unrun",
+      "run_id": null,
+      "source_completed_and_accepted": null,
+      "needs_recovery": null,
+      "arms": [
+        {
+          "id": "T04-C2",
+          "arm": "C",
+          "execution_status": "unrun",
+          "run_id": null,
+          "artifact_accepted": null,
+          "completed_and_accepted": null,
+          "within_known_workflow_budget": null
+        },
+        {
+          "id": "T04-P2",
+          "arm": "P",
+          "execution_status": "unrun",
+          "run_id": null,
+          "artifact_accepted": null,
+          "completed_and_accepted": null,
+          "within_known_workflow_budget": null
+        }
+      ]
+    }
+  ],
+  "primary_denominator_per_policy": 4,
+  "primary_denominator_per_task_policy": 2,
+  "primary_metric": "completed and independently accepted workflow: source success OR own followup success; source shared but charged to both policy workflows",
+  "conditional_rescue_metric": "completed-and-accepted followups / all sources needing recovery, including structural blocked arms; distinguish already-accepted partial source artifacts from patch repair",
+  "preparation": {
+    "path": "/Users/jorge/.local/share/agent-harness/trials/projected-recovery-protocol-bb_zr5_k",
+    "receipt_sha256": "0dcb905659637e544525399b89689c0c3ebf3fca37f7892ddefb13012c12d048",
+    "initial_fail_reference_pass": true,
+    "source_unchanged": true
+  },
+  "execution_freeze": null,
+  "parent_approval_receipt": null,
+  "actual_first_inputs": null,
+  "g0_result": null,
+  "inference_ran": false,
+  "execution_gate": "No generation from protocol merge. Require offline paired staging/client preflight, clean pinned runtime/model/environment, exact reviewed merged execution freeze, parent approval receipt and fresh launch gates for each named phase.",
+  "release_gate_closure_claim": false
+}
