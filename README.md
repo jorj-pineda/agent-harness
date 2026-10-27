@@ -1119,7 +1119,10 @@ The [CLI approval format](RECOVERY_EXECUTION.md#explicit-cli-submission) require
 reviewed pins, exact selections and proposal. Keep the file/provider/key for an
 explicit retry after inspecting saved runs; the command makes one POST and never
 polls, refreshes or retries automatically. Panel submission and measured live
-recovery remain separate work.
+recovery remain separate work. The panel now offers [draft review](RECOVERY_DRAFT.md#panel-draft-review)
+after selecting a saved run: load evidence, enter a proposal and optional saved ranges,
+then preview the smaller input. Changing inputs clears the preview; reload submits
+nothing and retains no draft.
 
 For a bounded recovery review, use
 `GET /runs/<run_id>/recovery-review?user_id=dev1`. This returns saved objective,
