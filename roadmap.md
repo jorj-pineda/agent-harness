@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-27 — Fresh token-gated recovery protocol prepared:** the
+[new paired protocol](evals/projects/duodoro/TOKEN_RECOVERY_PROTOCOL.md) fixes four
+new original T02 sources and balanced C/P arms, with 180-second provider waits
+inside unchanged 150-second phase/300-second policy-workflow allowances. Source
+cost is charged to both policies but physically once; native wall stops keep unknown
+usage, while provider failures stop the cohort. Projection may lose instruction
+history and is not presumed beneficial. Fresh initial/reference checks and settings/
+contracts/reservations validate offline. No inference, reused completed cell, default
+change, quality gain or no-go/G2–G5 closure; exact reviewed freeze remains required.
+
 **2026-10-27 — Source token gate replayed offline:** the
 [diagnosis](evals/projects/duodoro/TOKEN_CONTEXT_DIAGNOSIS.md) reproduces all four
 source-wait stops: 5,519 reported tokens remain, but the last prompt lower bound

@@ -1,0 +1,257 @@
+{
+  "actual_inputs": null,
+  "backend_policy": "fresh owned backend lifecycle per actual phase; independent source parent/store clones for previews and each arm",
+  "cli_response_inactivity_seconds": 600,
+  "execution_freeze": null,
+  "expected_boundaries": [
+    "ordinary completed or bounded native results",
+    "exact finalized native wall-budget exhaustion; unknown in-flight usage remains unknown"
+  ],
+  "followup_message": "Continue the original bounded task. Preserve existing work and all original requirements; inspect current instructions and code, run the configured check after edits, and report actual checks and unresolved limits.",
+  "followup_utf8_sha256": "06ff56d130a54b47e36e64df4a4e74e24937fc9ac43b8c5ff6d7155f2061cf19",
+  "g0_result": null,
+  "inference_ran": false,
+  "kind": "unrun-token-recovery-paired-plan",
+  "maximum_physical_model_turns": 12,
+  "maximum_physical_reserved_limits": {
+    "completion_tokens": 49152,
+    "dispatch_seconds": 1800,
+    "model_iterations": 72,
+    "reported_total_tokens": 384000,
+    "tool_calls": 144
+  },
+  "model": {
+    "additional_paid_budget_usd": 0,
+    "digest": "4eb23ef187e2c5462566d6a1d3bbbc2f1346d0b4327cbb66d58fffbcc9b2b05c",
+    "hosted_models": [],
+    "name": "gemma4:12b",
+    "observed_version": "0.33.2",
+    "provider": "ollama"
+  },
+  "parent_approval_receipt": null,
+  "per_policy_reserved_limits": {
+    "completion_tokens": 32768,
+    "dispatch_seconds": 1200,
+    "model_iterations": 48,
+    "reported_total_tokens": 256000,
+    "tool_calls": 96,
+    "workflows": 4
+  },
+  "per_policy_workflow_reserved_limits": {
+    "completion_tokens": 8192,
+    "dispatch_seconds": 300,
+    "model_iterations": 12,
+    "reported_total_tokens": 64000,
+    "tool_calls": 24
+  },
+  "phase_limits": {
+    "max_completion_tokens_per_turn": 4096,
+    "max_request_output_tokens": 2048,
+    "max_tool_calls_per_turn": 12,
+    "max_tool_iterations": 6,
+    "max_total_tokens_per_turn": 32000,
+    "max_turn_wall_seconds": 150,
+    "min_request_output_tokens": 256
+  },
+  "preparation": {
+    "path": "/Users/jorge/.local/share/agent-harness/trials/token-recovery-protocol-_j4moieu",
+    "receipt_sha256": "f47867edacb4bd81bdcb803cb948465b78d7bbb08397660223dc67f877a3d00a"
+  },
+  "primary_denominator_per_policy": 4,
+  "primary_metric": "completed and independently accepted workflow: source success OR own followup success, source charged to both policies but physically once",
+  "release_gate_closure_claim": false,
+  "runtime_candidate": "6e115c8ac65d1550af6c24ebcb9f4ad1c095ba8a",
+  "schema_version": 1,
+  "settings": {
+    "coding_prompt_profile": "compact",
+    "coding_toolset": "full",
+    "enable_support_tools": false,
+    "load_root_agents": false,
+    "max_completion_retries": 1,
+    "max_context_tokens": 16384,
+    "max_files_touched_per_turn": 2,
+    "max_identical_tool_calls": 2,
+    "ollama_num_ctx": 16384,
+    "ollama_think": false,
+    "project_check_argv": [
+      "python",
+      "-m",
+      "pytest",
+      "-q",
+      "test_visible.py"
+    ],
+    "prompt_estimate_bytes_per_token": 3,
+    "read_file_default_lines": 0,
+    "request_timeout_seconds": 180,
+    "require_plan_before_edit": false,
+    "require_verification_before_finish": true,
+    "temperature": 0
+  },
+  "source_disposition": "Source completed and independently accepted: both workflows succeed at source, no followups, arms not-needed. Otherwise both predeclared arms count; structural refusal is blocked, not omitted.",
+  "source_revision": "5324cabba4ad3c8ad2e1cd1480218cf087d9b741",
+  "sources": [
+    {
+      "arms": [
+        {
+          "arm": "C",
+          "artifact_accepted": null,
+          "completed_and_accepted": null,
+          "execution_status": "unrun",
+          "id": "T02-C1",
+          "run_id": null,
+          "within_known_workflow_budget": null
+        },
+        {
+          "arm": "P",
+          "artifact_accepted": null,
+          "completed_and_accepted": null,
+          "execution_status": "unrun",
+          "id": "T02-P1",
+          "run_id": null,
+          "within_known_workflow_budget": null
+        }
+      ],
+      "execution_status": "unrun",
+      "id": "T02-S1",
+      "needs_recovery": null,
+      "order": 1,
+      "run_id": null,
+      "source_completed_and_accepted": null,
+      "task": "T02"
+    },
+    {
+      "arms": [
+        {
+          "arm": "P",
+          "artifact_accepted": null,
+          "completed_and_accepted": null,
+          "execution_status": "unrun",
+          "id": "T02-P2",
+          "run_id": null,
+          "within_known_workflow_budget": null
+        },
+        {
+          "arm": "C",
+          "artifact_accepted": null,
+          "completed_and_accepted": null,
+          "execution_status": "unrun",
+          "id": "T02-C2",
+          "run_id": null,
+          "within_known_workflow_budget": null
+        }
+      ],
+      "execution_status": "unrun",
+      "id": "T02-S2",
+      "needs_recovery": null,
+      "order": 2,
+      "run_id": null,
+      "source_completed_and_accepted": null,
+      "task": "T02"
+    },
+    {
+      "arms": [
+        {
+          "arm": "P",
+          "artifact_accepted": null,
+          "completed_and_accepted": null,
+          "execution_status": "unrun",
+          "id": "T02-P3",
+          "run_id": null,
+          "within_known_workflow_budget": null
+        },
+        {
+          "arm": "C",
+          "artifact_accepted": null,
+          "completed_and_accepted": null,
+          "execution_status": "unrun",
+          "id": "T02-C3",
+          "run_id": null,
+          "within_known_workflow_budget": null
+        }
+      ],
+      "execution_status": "unrun",
+      "id": "T02-S3",
+      "needs_recovery": null,
+      "order": 3,
+      "run_id": null,
+      "source_completed_and_accepted": null,
+      "task": "T02"
+    },
+    {
+      "arms": [
+        {
+          "arm": "C",
+          "artifact_accepted": null,
+          "completed_and_accepted": null,
+          "execution_status": "unrun",
+          "id": "T02-C4",
+          "run_id": null,
+          "within_known_workflow_budget": null
+        },
+        {
+          "arm": "P",
+          "artifact_accepted": null,
+          "completed_and_accepted": null,
+          "execution_status": "unrun",
+          "id": "T02-P4",
+          "run_id": null,
+          "within_known_workflow_budget": null
+        }
+      ],
+      "execution_status": "unrun",
+      "id": "T02-S4",
+      "needs_recovery": null,
+      "order": 4,
+      "run_id": null,
+      "source_completed_and_accepted": null,
+      "task": "T02"
+    }
+  ],
+  "span_policy": {
+    "end_line": "min(saved total_lines, 80)",
+    "maximum_selected_utf8_bytes": 16384,
+    "maximum_spans": 4,
+    "missing_deleted_nontext_or_unavailable": "projected arm blocked; no substitution or dropped span",
+    "paths": "exact task allowed_modified_paths in declared order",
+    "start_line": 1
+  },
+  "status": "protocol-only-not-generation-authorization",
+  "stop_all_policy": [
+    "any provider/transport failure including read_timeout",
+    "returned missing/malformed usage",
+    "unexplained cancellation",
+    "uncertain submission without finalized original-key record",
+    "input/recording/storage failure",
+    "runtime/model/environment/criteria drift",
+    "unknown work or incomplete preservation/cleanup"
+  ],
+  "task": {
+    "allowed_modified_paths": [
+      "server/payloadParsers.js"
+    ],
+    "contract_files": {
+      "acceptance/timer_normalization/test_acceptance.py": {
+        "mode": 420,
+        "sha256": "71c615741d10b39668529f0b8e8cdab285e8a6f60bd97b8332717021e11f74ce"
+      },
+      "reference/timer_normalization/server/payloadParsers.js": {
+        "mode": 420,
+        "sha256": "56c19d07980e94727486714f8f727a4ab95a1cc49028a2190ccf4c8795b073bd"
+      },
+      "task_timer.json": {
+        "mode": 420,
+        "sha256": "b6df589932ea619011a55ca87726bf8ab44b23076ae5c8e6d8bdabffcf859975"
+      },
+      "visible_timer.py": {
+        "mode": 420,
+        "sha256": "a56f0b5c5a71967fc19c4cf9c28ede72bd7bb8b8499daac63248688af7441cc4"
+      }
+    },
+    "id": "T02",
+    "metadata_file": "task_timer.json",
+    "request": "In Duodoro, normalize parseStartSession focusDuration and breakDuration in server/payloadParsers.js to whole seconds by flooring the final defaulted/clamped numeric values. Preserve Number coercion, falsy/NaN defaults (1500 focus, 300 break), min/max clamps (60..7200 focus, 30..3600 break), Infinity clamping, string session-id validation, mode parsing and all other exported parser behavior. Inspect AGENTS.md and server/payloadParsers.test.js first. Only modify server/payloadParsers.js; preserve all other files and tests. This disposable pure-parser evaluation adds test_visible.py as a visible Node adapter: run [\"python\",\"-m\",\"pytest\",\"-q\",\"test_visible.py\"] after editing. It does not run the full Vitest/Socket.IO/server suite. Do not install dependencies, start services or touch Docker. Report actual checks and limits honestly.",
+    "request_utf8_sha256": "0824f29e080a293c6fdf0bba6b5f721a99084aa0ff2c67ba64e777ab09953680",
+    "requires_independent_source_review": false,
+    "task_name": "timer_normalization"
+  }
+}
