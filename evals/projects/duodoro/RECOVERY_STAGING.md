@@ -47,8 +47,10 @@ Every scoring/staging/store-copy call requires a caller-supplied settlement chec
 that raises while any owned API, tool worker or listener is unresolved. Staging
 checks it again immediately before replacement. The function is an integration
 obligation, not evidence that this module can discover detached processes. The
-offline client preflight must supply/test the actual lifecycle checker before live
-use; a successful no-process unit fixture cannot stand in for that launch gate.
+[offline client preflight](PROJECTED_RECOVERY_PREFLIGHT.md) now supplies/tests an
+append-only owned-API process/group/listener checker over real local HTTP lifecycles.
+Actual backend shutdown and fresh launch gates still remain; a successful no-process
+unit fixture cannot stand in for them.
 
 `clone_closed_stores` creates a fresh private directory containing exactly
 `sessions.sqlite` and `facts.sqlite`. Each input is a bounded regular standalone
