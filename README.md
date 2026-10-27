@@ -1102,6 +1102,12 @@ agent-harness recovery-draft <run-id> --user-id dev1 \
 This also makes one review request. Estimated fit does not authorize execution or
 reset/transfer the saved run's allowance; omitted assistant context remains explicit.
 
+Advanced API callers can explicitly submit one reviewed, separately budgeted turn
+with `POST /runs/<run_id>/recover`; see the [guarded execution contract](RECOVERY_EXECUTION.md)
+for required pins, acknowledgments and fresh workspace checks. HTTP 202 records intent,
+not success. Recovery forks cannot be extended through ordinary chat or continuation.
+CLI/panel recovery submission and measured live recovery remain separate work.
+
 For a bounded recovery review, use
 `GET /runs/<run_id>/recovery-review?user_id=dev1`. This returns saved objective,
 statuses, failed/unavailable checks, recent action outcomes and bounded diffs with

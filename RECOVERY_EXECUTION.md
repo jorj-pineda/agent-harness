@@ -1,9 +1,11 @@
-# Guarded recovery execution: admission foundation
+# Guarded recovery execution
 
-The prospective draft is review-only. Executing a smaller history requires fresh
-workspace/configuration/context checks, durable provenance and exact first-input
-binding. This first slice adds shared checks and a provider-neutral dispatch gate;
-no API, CLI, runtime option or recovery execution path is enabled yet.
+The prospective draft remains review-only. The explicit API described below can
+submit one separately budgeted recovery turn after review. Shared admission and
+durable provenance are prerequisites, not reusable execution leases. There is no
+automatic compaction, retry, CLI submission or panel submission.
+
+## Shared admission foundation (first slice)
 
 `RecoveryApproval` pins the saved run representation, archived session, rendered
 draft messages, current tool schema identity and positive first-request output
@@ -65,7 +67,7 @@ or be counted as an original within-budget unattended success. Persisted approva
 atomic fork seeding, fresh execution integration, restart/keyed replay, explicit
 client submission and measured recovery remain separate work. Existing defaults,
 release no-go/8-of-10 targets and broader G2–G5 remain unchanged. No inference or
-Duodoro edits occur in this slice.
+Duodoro edits occur in the foundation slice.
 
 ## Durable provenance and projected fork intent
 
@@ -119,3 +121,77 @@ release-gate closure follows from storage mechanics.
 Provenance validation: 114 focused and 2,040 offline tests (five live deselected),
 Ruff/format/mypy and diff checks passed. These are storage/coordination mechanics,
 not model-quality or live recovery evidence. No provider inference was run.
+
+
+## Explicit guarded one-turn API
+
+`POST /runs/{run_id}/recover` accepts the complete reviewed `RecoveryApproval`,
+plus `user_id`, a required `request_id` and optional configured `provider` selector.
+The approval contains the proposed `message`, original `expected_record_sha256`,
+explicit `spans`, `expected_archive_sha256`, `expected_messages_sha256`,
+`expected_tool_specs_sha256`, `expected_request_output_allowance` and all three
+literal-true acknowledgments above. Use the owner-checked recovery-draft preview
+to inspect those inputs first. Do not substitute a preview's `estimated_fit` or
+`execution_supported=false` field for the explicit approval. Extra fields refuse.
+Existing caller-supplied user ownership is not a new authentication system.
+
+The route returns HTTP 202 with a durable `RunRecord` intent, not a completion
+claim. Inspect `GET /runs/{run_id}?user_id=...` and the saved fork archive for the
+actual result. Source and fork IDs differ. Owner history, tool/budget observations,
+checkpoint evidence and existing explicit cancellation remain available. The API
+adds no streaming recovery endpoint or client workflow in this slice.
+
+Preparation claims process-local source session/workspace admission, rebuilds the
+current shared draft, checks the reviewed profile/context/pins, and atomically saves
+the projected fork and run intent. Execution then acquires ordinary runtime
+admission. Before binding its initial checkpoint it captures current scoped files
+and repeats source/archive/checkpoint/newer-work/configuration/context/message checks.
+A mismatch produces a blocked run with no provider dispatch; pre-intent refusals
+create no run. A later race in actual prompt refresh is stopped by the first-input
+provider guard before forwarding. External writers can still race after capture;
+these checks do not provide process isolation or a cross-process workspace lock.
+
+The runtime appends the proposal exactly once, refreshes current root instructions,
+notes and configured check settings through shared helpers, and appends the same
+recovery framing used in the reviewed draft. The execution profile treats that
+framing as a custom logical base (`prompt_version=null`); it does not claim an
+ordinary versioned prompt match. Immutable provenance binds the exact first
+normalized messages, schemas and allowance. Normal token/tool/iteration/dispatch
+wall budgets, inspection policy and tool validation govern all subsequent actions.
+Missing usage remains unknown and can stop tools; a guard refusal/provider failure
+never fabricates a final result. This new configured turn neither transfers old
+allowances nor counts as an original within-budget unattended success.
+
+A recovery fork permits only its seeded run. Ordinary chat, asynchronous run creation,
+SSE chat, full-history continuation and nested recovery cannot extend it. Terminal
+success, failure, cancellation and rejection retire its live session. Restart loads
+review evidence without restoring an editing session. Matching keyed replay returns
+the original run before refreshing or reseeding, even if files/source/settings have
+since changed. Changed input on that key conflicts. A different key is a new explicit
+attempt, subject to fresh guards; newer failed/interrupted related work can block it.
+No automatic retry follows storage or provider failure.
+
+Cancellation after tools settle retains partial changes, unknown interrupted usage
+and bounded review evidence. Final persistence failure can leave real edits and
+checkpoint observations without a saved final response; inspect before starting new
+work. Checkpoint/diff evidence is bounded review, not a durable workspace transaction
+or safe revert. Cleanup, snapshots and review can exceed dispatch deadlines.
+
+Deterministic tests use fake inference and real tools in disposable repositories:
+HTTP/SSE source runs survive restart; the exact reviewed first input is forwarded;
+real writes and a configured pytest check are recorded; later user work, staged Git
+state, modes and original source archives survive. Negative coverage includes
+strict acknowledgments/ownership/pins, busy admission, changes between seed and
+execution (files/modes/instructions/facts/configuration), actual first-input drift,
+inspection restrictions, missing usage, generic-chat bypass, cancellation after an
+edit, provider/final-storage failure and read-only replay. These are mechanics tests,
+not evidence of model recovery quality or independent live-task acceptance.
+
+CLI/panel explicit submission, operator usability and a separately frozen live
+recovery comparison remain unfinished. Original cohorts, defaults, release no-go,
+8-of-10 and broad G2–G5 gates remain unchanged. No inference or Duodoro edits ran.
+
+API integration validation: 155 focused and 2,063 offline tests (five live deselected),
+Ruff/format/mypy, diff and local documentation link checks pass. Both offline
+scripted matrices passed 90/90 escalation decisions at unique temporary paths;
+contract labels and metric limits were inspected. No model inference ran.

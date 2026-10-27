@@ -4,6 +4,23 @@ Updated: 2026-10-26
 
 ## Current release decision
 
+**2026-10-26 — Explicit guarded recovery API:** one owner-scoped POST binds
+reviewed source/archive/message/schema/allowance pins and strict scope/new-budget
+acknowledgments to an atomic projected fork intent. Fresh linked-checkpoint,
+workspace bytes/modes/root, newer-work, configuration/context and input checks run
+under execution admission; actual first-input drift refuses before provider dispatch.
+Shared runtime framing and budgets apply, inspection policy survives, and terminal
+forks cannot be extended through ordinary chat/async/SSE/continuation/nested recovery.
+Cancellation, provider/storage failures and keyed replay after restart retain honest
+partial/unknown evidence without redispatch or source rewriting. The
+[execution contract](RECOVERY_EXECUTION.md) closes the admission/provenance/API
+integration batch only. CLI/panel submission, usability and separately frozen live
+recovery measurement remain unfinished. Validation: 155 focused and 2,063 offline tests
+(five live deselected), Ruff/format/mypy and diff checks pass. Both scripted matrices
+pass 90/90 escalation decisions with contract labels/limits inspected.
+No inference, Duodoro edit, model-quality/default claim or original cohort/no-go/
+8-of-10/broad G2–G5 change.
+
 **2026-10-26 — Durable recovery provenance and fork intent:** bounded immutable
 approval/source/message/schema/allowance metadata is shared by saved session and
 run input, while absent fields retain legacy JSON/hash identities. Projected seeds
