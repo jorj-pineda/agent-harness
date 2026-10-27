@@ -18,6 +18,7 @@ from .context import BudgetStop, TokenBudget
 from .execution_profile import capture_execution_profile
 from .prompts import coding_prompt
 from .recovery_context import RecoveryContextSelection, build_recovery_context
+from .recovery_identity import recovery_messages_sha256
 from .recovery_review import ReviewModel
 from .repository_instructions import RepositoryInstructionReview, load_repository_instructions
 from .runs import RunRecord
@@ -221,9 +222,7 @@ def build_recovery_draft(
         source_record_sha256=recovery.review.source_record_sha256,
         source_archive_sha256=hashlib.sha256(archive.model_dump_json().encode()).hexdigest(),
         recovery_evidence_sha256=recovery.evidence_sha256,
-        messages_sha256=hashlib.sha256(
-            "\n".join(m.model_dump_json() for m in messages).encode()
-        ).hexdigest(),
+        messages_sha256=recovery_messages_sha256(messages),
         tool_specs_sha256=profile.tool_specs_sha256,
         messages=messages,
         source_message_count=len(session.messages),

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from collections.abc import Sequence
 from typing import Literal
 from urllib.parse import urlsplit
 
@@ -11,6 +12,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from memory.store import MAX_MEMORY_PROMPT_BYTES
 from providers import compatible_transport_options
+from providers.base import ToolSpec
 from tools import ToolRegistry
 
 from .config import CodingToolset, Settings
@@ -97,6 +99,11 @@ def _json_digest(value: object) -> str:
     return _digest(json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False))
 
 
+def tool_specs_digest(specs: Sequence[ToolSpec]) -> str:
+    """Same normalized schema identity for capture and pre-dispatch checks."""
+    return _json_digest([spec.model_dump(mode="json") for spec in specs])
+
+
 def _compatible_recipe_digest(settings: Settings) -> str | None:
     options = compatible_transport_options(
         settings.openai_compatible_transport,
@@ -162,7 +169,7 @@ def capture_execution_profile(
             if system_prompt is None
             else system_prompt
         ),
-        tool_specs_sha256=_json_digest([spec.model_dump(mode="json") for spec in specs]),
+        tool_specs_sha256=tool_specs_digest(specs),
         tool_names=[spec.name for spec in specs],
         project_check_sha256=None
         if settings.project_check_argv is None
