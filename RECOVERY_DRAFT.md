@@ -80,3 +80,49 @@ names, frozen policy setup, shared response aliasing, minimum configured window 
 which aggregate bound fires first) and literal constant typing were corrected
 before the passing focused/static gate. Full offline validation is required before
 merge; these deterministic checks do not measure live model recovery.
+
+## Owner-checked API draft review
+
+`POST /runs/{run_id}/recovery-draft` accepts `user_id`, `expected_record_sha256`,
+`spans` and the explicit proposed `message`, plus an optional currently configured
+`provider`. It carries no request key or execution flag, creates no run/journal/
+checkpoint, and returns no executable seed or continuation lease. Unknown fields
+are rejected. The same source selection as recovery-context is used; requests for
+missing final responses or older runs whose session archive has advanced refuse.
+
+The run and archive ownership convention is checked before current registry/provider
+review. Active runs and overlapping session/workspace work refuse with 409 before
+resource construction. Shared process-local admission covers the whole current
+registry, instruction/note refresh, saved-source read and estimate computation;
+all error paths release it. There is no cross-process/external-writer lock. The
+existing lifecycle-owned FactStore stays on its event-loop thread. Review is
+synchronous under admission, like configuration review; no blocking I/O deadline,
+OS isolation or atomic comparison of all current resources is implied.
+
+Success returns `Cache-Control: no-store` because complete current instructions,
+notes, user text and selected source are sensitive owner data. Repeating the review
+after API lifecycle restart retains identical draft bytes when relevant current
+resources/settings are unchanged. Changed root instructions produce a new system/
+message hash and configuration drift while original saved evidence stays unchanged.
+Later source-file edits do not invalidate historical selections; this endpoint does
+not perform workspace comparison and still cannot grant execution permission.
+Unlike the historical-only preview, constructing current file-tool definitions needs
+a usable configured workspace. Missing current resources return generic 503;
+existing historical `recovery-context` review remains usable without the workspace.
+
+Missing/foreign owned records return 404/403; malformed selection/proposal fields
+422. Active/busy/stale/mismatched archive/source or unavailable enabled instructions
+return fixed 409 codes. User-history/source/span/complete-draft bounds return 413;
+invalid selected source UTF-8 415; uncaptured paths 404/nonexistent ranges 422.
+SQLite/resource errors are generic 503 and inconsistent saved evidence is generic
+409, without private exception text or partial draft output. A 200 response may
+report blocked or unbounded estimated context; none of these states enables execution.
+
+Scripted HTTP/SSE partial-edit regressions cover exact restart draft bytes, refreshed
+instructions/drift, later edit and archive/run/checkpoint preservation, no additional
+model calls/runs, owner/active/busy/complete-admission guards, source archive advance,
+invalid proposal fields, aggregate user-history/instruction limits, storage privacy/
+reservation release and missing-current-workspace versus historical-only access.
+Negative record run-ID, saved profile, configured-model and provider cases close the
+additional identity-test coverage suggested by the core PR review. CLI access and
+actual execution/recovery remain separate; original release gates stay unchanged.
