@@ -522,3 +522,9 @@ button:disabled {
 #recovery-review pre { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 320px; overflow: auto; }
 #recovery-review fieldset { min-width: 0; margin-top: 10px; }
 #recovery-review button { margin: 8px 0; }
+
+#recovery-submit { border: 1px solid var(--border); padding: 10px; margin: 16px 0; }
+#recovery-submit label { display: block; font-size: 12px; margin: 10px 0; }
+#recovery-submit button { margin: 8px 0; }
+#recovery-submit pre { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 320px; overflow: auto; }
+#recovery-retained-identity { overflow-wrap: anywhere; }

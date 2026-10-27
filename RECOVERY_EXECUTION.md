@@ -3,7 +3,7 @@
 The prospective draft remains review-only. The explicit API described below can
 submit one separately budgeted recovery turn after review. Shared admission and
 durable provenance are prerequisites, not reusable execution leases. There is no
-automatic compaction, retry or panel submission.
+automatic compaction or retry.
 
 ## Shared admission foundation (first slice)
 
@@ -245,4 +245,79 @@ Scripted CLI/API restart tests include real disposable edits and configured pyte
 source archive/Git-index and later-user-edit preservation, malformed/duplicate/
 oversized/nonregular inputs, all scope flags, response identity corruption and
 ambiguous transport failure. No inference or measured recovery gain follows.
-Panel review/submission and separately frozen live recovery evaluation remain open.
+Panel review/submission is described below; separately frozen live recovery evaluation remains open.
+
+## Explicit panel submission and retained intent
+
+After inspecting a panel draft, all three scope/context/new-budget checkboxes must
+be selected. Submission requires a known matching configuration and bounded estimated
+fit; an Ollama draft must include explicit context configuration. This client gate
+is convenience only: the server repeats fresh authoritative guards before dispatch.
+Changing the reviewed inputs/run clears the candidate and checkboxes. The command's
+proposal is retained exactly, without trimming or regenerating its contents.
+
+`Fork and submit reviewed input` creates one request key and saves the exact source
+IDs, proposed message, ordered selections, pins, provider selector and literal
+acknowledgments in `panel_pending_recovery_v1` before sending one recovery POST.
+This is bounded versioned plaintext local storage, not a public export or secure
+credential store. No full draft/history is cached there. A failed save/readback
+sends no submission and blocks new panel coding work until explicitly released.
+
+Editing controls remain disabled at startup until the module has inspected retained
+intent. While a request is retained or unreadable, chat/session creation, ordinary
+continuation and file-reversal submission/retry are blocked in this page. Read-only
+history/review remains available. This is client coordination, not authentication,
+a cross-tab/process lock or protection against direct API callers. Existing server
+admission and workspace limitations remain authoritative.
+
+Returned intent/result records must match owner/key/proposal/provider, deterministic
+fork identity, source/provenance pins and canonical approval/hash, version/scope and
+final response identity/status and server lifecycle mapping. Running, failed and
+interrupted records must have no durable final response; finished records require a
+non-cancelled final response, and cancelled records require a cancelled final response.
+The CLI applies the same consistency checks. Human text leads with observed completion/check/
+lifecycle states; absent final work stays unknown. Full saved provenance/results
+are collapsed text-only details, with an explicit link to normal saved-run review.
+Unsupported, oversized (over 4 MiB) or inconsistent responses remain unconfirmed.
+A successful submission does not prove guards passed, tools ran or the task was
+accepted. Recovery still consumes a separate configured turn allowance.
+
+Retained requests offer explicit actions:
+
+- **Check saved recovery** makes one owner/key GET, validates at most one returned
+  record and renders saved evidence. It starts no work and does not refresh a draft.
+- **Retry exact recovery submission** posts the retained route/body/key/provider
+  unchanged, even if another draft or current settings differ. It never creates a
+  new key automatically. Matching server replay returns the existing run; missing
+  intent still faces fresh source/workspace/input guards. Terminal saved results
+  disable retry because they are already available for review.
+- **Request recovery cancellation** targets only a validated running fork. An
+  acknowledgment is a request to stop; owned work can still be settling. Explicitly
+  check the saved result for final partial changes and unknown usage.
+- **Forget local recovery intent** removes only this browser record. It cancels no
+  server work, reconciles no files and restores no editing session. Inspect saved
+  runs/current files before creating new work. Removal failure keeps the block.
+
+Reload restores only bounded, structurally consistent intent with the same owner;
+it makes no GET/POST or model call. Invalid JSON, duplicate/noncanonical data,
+unsupported metadata or changed/unreadable local state refuses retry and keeps
+coding controls blocked until inspection/release. The 30-second transport wait
+limits browser waiting, not server execution or cleanup. Delivery errors reveal no
+private error bodies and never trigger polling, fallback, repair or automatic retry.
+Clearing the whole browser store outside the app can lose the local key; server run
+history remains the place to inspect uncertain work. Concurrent pages and external
+writers remain outside a transactional guarantee.
+
+Deterministic tests run the actual app/review/submission scripts against real API
+provenance from fake-model disposable edits and a configured pytest check. They cover
+startup gating, acknowledgments, retained-before-network order, exact retry, empty
+reload network activity, saved final lookup, cancellation target binding, malformed
+storage and response identities, storage failure/races and other editing-route
+refusals. Browser fixtures additionally exercise preview → submit → reload → check,
+unknown running state, malformed retained data, explicit release and empty preview
+state. These are client/runtime contracts, not a live-model recovery comparison.
+
+This completes the three-PR CLI submission/panel review/panel submission batch.
+Separately frozen live recovery measurement and release-readiness/quality criteria
+remain unfinished; no automatic compaction, changed defaults, inference, Duodoro
+edits or original cohort/no-go/8-of-10/G2–G5 closure follows.

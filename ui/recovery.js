@@ -11,6 +11,7 @@
   const rows = [];
   let target = null;
   let source = null;
+  let candidate = null;
   let epoch = 0;
   let loading = false;
   let controller = null;
@@ -34,6 +35,8 @@
   }
 
   function invalidate() {
+    candidate = null;
+    globalThis.recoverySubmitPanel?.invalidate();
     epoch += 1;
     controller?.abort();
     ui["recovery-draft-results"].replaceChildren();
@@ -282,10 +285,13 @@
         details.appendChild(node("pre", JSON.stringify(data, null, 2)));
         card.appendChild(details);
         ui["recovery-draft-results"].replaceChildren(card);
+        candidate = { source_run_id: selected.runId, source_session_id: selected.sessionId,
+          input: JSON.parse(JSON.stringify(input)), draft: JSON.parse(JSON.stringify(data)) };
+        globalThis.recoverySubmitPanel?.refresh();
       }
-      ui["recovery-status"].textContent = "Review loaded. Current files, omitted meaning and backend state remain unconfirmed. No execution submitted.";
+      ui["recovery-status"].textContent = "Review loaded. Current files, omitted meaning and backend state remain unconfirmed. This review submitted no execution.";
     } catch (_) {
-      if (generation === epoch && target === selected) ui["recovery-status"].textContent = "Recovery review unavailable, inconsistent or timed out. No execution submitted. Inspect saved evidence and retry this review explicitly.";
+      if (generation === epoch && target === selected) ui["recovery-status"].textContent = "Recovery review unavailable, inconsistent or timed out. This review submitted no execution. Inspect saved evidence and retry this review explicitly.";
     } finally {
       clearTimeout(timeout);
       loading = false;
@@ -300,6 +306,6 @@
   ui["add-recovery-range"].addEventListener("click", addRange);
   ui["recovery-message"].addEventListener("input", invalidate);
   ui["recovery-provider"].addEventListener("change", invalidate);
-  globalThis.recoveryDraftPanel = { select, refresh };
+  globalThis.recoveryDraftPanel = { select, refresh, invalidate, reviewed: () => candidate ? JSON.parse(JSON.stringify(candidate)) : null };
   refresh();
 })();

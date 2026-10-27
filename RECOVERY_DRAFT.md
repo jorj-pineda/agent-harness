@@ -216,5 +216,6 @@ Reload requires fresh explicit review and retains no draft.
 
 The panel remains a thin client. It calls neither models nor tools and contains no
 harness policy or budget calculation. This slice adds review access only. Explicit
-panel submission with pinned approval, acknowledgments and ambiguous-outcome recovery
-is the next separate PR; measured live recovery remains open.
+panel submission is now documented in the [execution contract](RECOVERY_EXECUTION.md#explicit-panel-submission-and-retained-intent);
+it remains a separate action with pinned approval and acknowledgments. Measured live
+recovery remains open.

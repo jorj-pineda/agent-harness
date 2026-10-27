@@ -162,6 +162,26 @@
           <button id="preview-recovery" disabled>Preview smaller input</button>
           <div id="recovery-draft-results" aria-live="polite"></div>
         </section>
+        <section id="recovery-submit" aria-label="Explicit recovery submission">
+          <details>
+            <summary>Submit the reviewed recovery turn</summary>
+            <p class="review-note">Inspect the full prospective messages first. This forks one separately budgeted turn; omitted assistant/tool history can lose agreements. Server guards run again before work. The exact proposal and review pins are retained as plaintext in this browser before sending.</p>
+            <label class="scope-ack"><input id="recovery-ack-state" type="checkbox" />I accept uncaptured files/metadata, external-writer races and unrecorded backend/tool state.</label>
+            <label class="scope-ack"><input id="recovery-ack-context" type="checkbox" />I reviewed the smaller input and accept loss from omitted assistant/tool context.</label>
+            <label class="scope-ack"><input id="recovery-ack-budget" type="checkbox" />I authorize a separate new configured turn budget; no source allowance is transferred.</label>
+            <button id="submit-recovery" disabled>Fork and submit reviewed input</button>
+          </details>
+          <p id="recovery-submit-status" class="review-note" aria-live="polite">Preview a draft before submission.</p>
+          <div id="recovery-retained" hidden>
+            <p id="recovery-retained-identity" class="review-note"></p>
+            <button id="check-recovery">Check saved recovery</button>
+            <button id="retry-recovery">Retry exact recovery submission</button>
+            <button id="cancel-recovery" disabled>Request recovery cancellation</button>
+            <button id="forget-recovery">Forget local recovery intent</button>
+            <p class="review-note">Reload sends nothing. Check first; retry keeps the same route, input and key. Forgetting does not cancel server work or reconcile files. Inspect saved results and current files before new work.</p>
+          </div>
+          <div id="recovery-submit-results" aria-live="polite"></div>
+        </section>
         <section id="file-reversal" hidden aria-label="Explicit single-file reversal">
           <h2>Single-file reversal</h2>
           <p id="reversal-target" class="review-note"></p>
@@ -188,5 +208,6 @@
     <script src="/app.js"></script>
     <script src="/memory.js"></script>
     <script src="/recovery.js"></script>
+    <script src="/recovery-submit.js"></script>
   </body>
 </html>

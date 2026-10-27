@@ -4,6 +4,26 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-27 — Explicit panel recovery submission:** reviewed matching/bounded
+inputs plus three acknowledgments produce one exactly retained, separately budgeted
+fork request. Startup stays closed until local intent inspection; retained or
+unreadable intent blocks new coding/reversal/continuation actions in this page.
+Owner/key/proposal/provider, canonical approval/provenance and deterministic fork
+identities are checked before observed status output. Explicit Check/Retry/Cancel/
+Forget actions preserve uncertainty, exact replay and cancellation-settling limits;
+reload sends nothing and restores no editing session. The
+[panel execution contract](RECOVERY_EXECUTION.md#explicit-panel-submission-and-retained-intent)
+closes the CLI submission/panel review/panel submission batch, not automatic
+compaction or measured recovery. A review follow-up binds final-response presence and
+cancelled completion to the server lifecycle in both recovery clients, with exhaustive
+state matrices rejecting contradictory success displays. Validation: 97 focused and 2,135 offline tests
+(five live deselected), Ruff/format/mypy, JS syntax, packaged asset serving and diff
+checks pass. Actual scripts consume real API provenance from disposable fake-model
+edits/checks; browser fixture interactions cover submission/reload/lookup/corrupt
+storage/release. Screenshot capture was unavailable; DOM layout/interaction checks
+passed. No inference, Duodoro edit, default/quality claim or original cohort/no-go/
+8-of-10/broad G2–G5 change. Separately frozen live recovery measurement remains open.
+
 **2026-10-27 — Panel recovery draft review:** explicit owner evidence GET and
 prospective draft POST retain pinned saved source, structured optional final-capture
 ranges and exact proposal/provider inputs. Source completion/check/lifecycle status
