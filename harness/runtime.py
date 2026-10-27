@@ -101,6 +101,7 @@ def refresh_system_message(
     system_prompt: str = BASE_SYSTEM_PROMPT,
     project_check_argv: list[str] | None = None,
     repository_instructions: RepositoryInstructions | None = None,
+    system_suffix: str | None = None,
 ) -> None:
     blocks = [system_prompt]
     if session.inspection_only:
@@ -127,6 +128,8 @@ def refresh_system_message(
     )
     if facts:
         blocks.append(facts)
+    if system_suffix:
+        blocks.append(system_suffix)
     message = ChatMessage(role="system", content="\n\n".join(blocks))
     if session.messages and session.messages[0].role == "system":
         session.messages[0] = message
@@ -160,6 +163,7 @@ async def run_configured_turn(
     grounder: Grounder | None = None,
     on_event: EventCallback | None = None,
     system_prompt: str | None = None,
+    system_suffix: str | None = None,
     trace: list[TurnTraceRecord] | None = None,
     on_budget_observation: Callable[[BudgetObservation], None] | None = None,
     on_finalized: Callable[[Session, TurnResponse], None] | None = None,
@@ -233,13 +237,25 @@ async def run_configured_turn(
                 provider="policy",
                 latency_ms=0.0,
             )
+        captured_prompt = system_prompt
+        if system_suffix:
+            # Explicit framing is a custom logical base; injected blocks stay separate.
+            captured_prompt = (
+                (
+                    system_prompt
+                    if system_prompt is not None
+                    else coding_prompt(settings.coding_toolset, settings.coding_prompt_profile)
+                )
+                + "\n\n"
+                + system_suffix
+            )
         if on_execution_profile is not None:
             on_execution_profile(
                 capture_execution_profile(
                     settings,
                     provider.name,
                     registry,
-                    system_prompt=system_prompt,
+                    system_prompt=captured_prompt,
                     inspection_only=session.inspection_only,
                     repository_instructions=instructions.review
                     if settings.load_root_agents
@@ -255,6 +271,7 @@ async def run_configured_turn(
             else coding_prompt(settings.coding_toolset, settings.coding_prompt_profile),
             project_check_argv=settings.project_check_argv,
             repository_instructions=instructions,
+            system_suffix=system_suffix,
         )
         tracked_root = (
             Path(session.workspace_root)
