@@ -4,6 +4,20 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-27 — Owned paired-recovery staging primitives:** a new evaluation-owned
+root retains its canonical device/inode while hash-pinned eligible artifact bytes,
+file/directory modes and independent grade/regrade outputs gate replacement.
+Unknown work, damaged evidence, criteria/reference/source drift and unsupported
+entries refuse; closed standalone session/fact images clone without identity or
+checkpoint rewrites. Private evidence survives sibling staging. The
+[staging contract](evals/projects/duodoro/RECOVERY_STAGING.md) documents mandatory
+caller settlement checks, ignored-content limits and non-atomic I/O failure stops.
+Fresh pinned T02/T04 full-source fixture exercises preserve the root and Duodoro
+head/status/index/refs. This is the second preparation slice only: actual CLI/API
+preflight with lifecycle checks, reviewed execution freeze/approval and conditional
+bounded results remain. No inference, hosted calls, application restore, model-quality
+gain, default change or original cohort/no-go/8-of-10/G2–G5 closure.
+
 **2026-10-27 — Local projected-recovery comparison protocol:** a fixed unrun
 plan compares native full-history continuation with explicit projected recovery from
 four fresh T02/T04 source states, using authorized local Gemma and unchanged original
