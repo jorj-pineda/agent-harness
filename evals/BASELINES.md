@@ -1,5 +1,16 @@
 # Real-task baselines
 
+## 2026-10-27 — Source wait/dispatch comparison
+
+The [four-cell local T02 cohort](projects/duodoro/SOURCE_WAIT_RESULTS.md) completes
+provider waits 60/180/180/60 at frozen `4d57cc0`: both arms 0/2 accepted artifacts and
+completed-and-accepted. All second calls return; no provider wait or wall deadline
+binds. Every source stops at the total-token gate after three reads, with unchanged
+rejected artifacts, no check and known 26,325 prompt/156 output usage per cell. All
+independent regrades and input/restart/preservation/cleanup audits pass. This is
+no observed timeout benefit, general equivalence, recovery result, default adoption
+or no-go/8-of-10/G2–G5 closure. The prior stopped cohort remains distinct.
+
 ## 2026-10-27 — Local projected-recovery cohort stopped
 
 The [bounded comparison](projects/duodoro/PROJECTED_RECOVERY_RESULTS.md) stopped
