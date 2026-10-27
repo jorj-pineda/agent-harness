@@ -1,0 +1,537 @@
+{
+  "analysis_script_path": "/Users/jorge/.local/share/agent-harness/trials/token-context-diagnosis-d6s9r5eq/analyze.py",
+  "analysis_script_sha256": "70718461e0f12128a2c833f41d78c57367816d3057fb43bf85dacfb1e1497195",
+  "budget_code_matches_observed_runtime": true,
+  "budget_code_sha256": "dc78a6467df739af507cc9cfba20953de9b290dac8f8f973edf3feeedff05a3d",
+  "cells": [
+    {
+      "cell": "R60-1",
+      "last_reported_prompt_lower_bound": 9845,
+      "message_payload_bytes_across_sent_requests": 76580,
+      "minimum_output_allowance": 256,
+      "next_request_lower_bound_plus_minimum_output": 10101,
+      "observed_budget_stop_replayed": true,
+      "request_timeout_seconds": 60,
+      "requests": [
+        {
+          "cumulative_reported_output_tokens": 22,
+          "cumulative_reported_prompt_tokens": 1963,
+          "effective_prompt_estimate": 3116,
+          "heuristic_message_tokens": 575,
+          "heuristic_schema_tokens": 2541,
+          "message_count": 2,
+          "message_payload_bytes": 1699,
+          "post_response_stop": null,
+          "reads_in_request": [],
+          "reported_output_tokens": 22,
+          "reported_prompt_tokens": 1963,
+          "request": 1,
+          "tool_reply_payload_bytes": 0
+        },
+        {
+          "cumulative_reported_output_tokens": 47,
+          "cumulative_reported_prompt_tokens": 8266,
+          "effective_prompt_estimate": 8932,
+          "heuristic_message_tokens": 6391,
+          "heuristic_schema_tokens": 2541,
+          "message_count": 4,
+          "message_payload_bytes": 19125,
+          "post_response_stop": null,
+          "reads_in_request": [
+            {
+              "end_line": 265,
+              "path": "AGENTS.md",
+              "saved_file_sha256": "efc573cca6a89993e35535aea0cd077a9d7177596741518b54ebece3bb405d10",
+              "serialized_reply_content_utf8_bytes": 17387,
+              "start_line": 1,
+              "total_lines": 265
+            }
+          ],
+          "reported_output_tokens": 25,
+          "reported_prompt_tokens": 6303,
+          "request": 2,
+          "tool_reply_payload_bytes": 17396
+        },
+        {
+          "cumulative_reported_output_tokens": 78,
+          "cumulative_reported_prompt_tokens": 16480,
+          "effective_prompt_estimate": 11011,
+          "heuristic_message_tokens": 8470,
+          "heuristic_schema_tokens": 2541,
+          "message_count": 6,
+          "message_payload_bytes": 25338,
+          "post_response_stop": null,
+          "reads_in_request": [
+            {
+              "end_line": 265,
+              "path": "AGENTS.md",
+              "saved_file_sha256": "efc573cca6a89993e35535aea0cd077a9d7177596741518b54ebece3bb405d10",
+              "serialized_reply_content_utf8_bytes": 17387,
+              "start_line": 1,
+              "total_lines": 265
+            },
+            {
+              "end_line": 174,
+              "path": "server/payloadParsers.js",
+              "saved_file_sha256": "1feec11cc434e66bbc0d7054fdc08411c54a40336d7e24c575ab049c2af08f6c",
+              "serialized_reply_content_utf8_bytes": 6159,
+              "start_line": 1,
+              "total_lines": 174
+            }
+          ],
+          "reported_output_tokens": 31,
+          "reported_prompt_tokens": 8214,
+          "request": 3,
+          "tool_reply_payload_bytes": 23564
+        },
+        {
+          "cumulative_reported_output_tokens": 156,
+          "cumulative_reported_prompt_tokens": 26325,
+          "effective_prompt_estimate": 12713,
+          "heuristic_message_tokens": 10172,
+          "heuristic_schema_tokens": 2541,
+          "message_count": 8,
+          "message_payload_bytes": 30418,
+          "post_response_stop": "Total token budget cannot fit another model request after these tools.",
+          "reads_in_request": [
+            {
+              "end_line": 265,
+              "path": "AGENTS.md",
+              "saved_file_sha256": "efc573cca6a89993e35535aea0cd077a9d7177596741518b54ebece3bb405d10",
+              "serialized_reply_content_utf8_bytes": 17387,
+              "start_line": 1,
+              "total_lines": 265
+            },
+            {
+              "end_line": 174,
+              "path": "server/payloadParsers.js",
+              "saved_file_sha256": "1feec11cc434e66bbc0d7054fdc08411c54a40336d7e24c575ab049c2af08f6c",
+              "serialized_reply_content_utf8_bytes": 6159,
+              "start_line": 1,
+              "total_lines": 174
+            },
+            {
+              "end_line": 167,
+              "path": "server/payloadParsers.test.js",
+              "saved_file_sha256": "ff9c88ee3e1025219af6a817e9f01efba1a341c101db01cc660eebf7508d6688",
+              "serialized_reply_content_utf8_bytes": 5021,
+              "start_line": 1,
+              "total_lines": 167
+            }
+          ],
+          "reported_output_tokens": 78,
+          "reported_prompt_tokens": 9845,
+          "request": 4,
+          "tool_reply_payload_bytes": 28594
+        }
+      ],
+      "tool_reply_payload_bytes_across_sent_requests": 69554,
+      "unused_reported_total_allowance": 5519
+    },
+    {
+      "cell": "R180-1",
+      "last_reported_prompt_lower_bound": 9845,
+      "message_payload_bytes_across_sent_requests": 76580,
+      "minimum_output_allowance": 256,
+      "next_request_lower_bound_plus_minimum_output": 10101,
+      "observed_budget_stop_replayed": true,
+      "request_timeout_seconds": 180,
+      "requests": [
+        {
+          "cumulative_reported_output_tokens": 22,
+          "cumulative_reported_prompt_tokens": 1963,
+          "effective_prompt_estimate": 3116,
+          "heuristic_message_tokens": 575,
+          "heuristic_schema_tokens": 2541,
+          "message_count": 2,
+          "message_payload_bytes": 1699,
+          "post_response_stop": null,
+          "reads_in_request": [],
+          "reported_output_tokens": 22,
+          "reported_prompt_tokens": 1963,
+          "request": 1,
+          "tool_reply_payload_bytes": 0
+        },
+        {
+          "cumulative_reported_output_tokens": 47,
+          "cumulative_reported_prompt_tokens": 8266,
+          "effective_prompt_estimate": 8932,
+          "heuristic_message_tokens": 6391,
+          "heuristic_schema_tokens": 2541,
+          "message_count": 4,
+          "message_payload_bytes": 19125,
+          "post_response_stop": null,
+          "reads_in_request": [
+            {
+              "end_line": 265,
+              "path": "AGENTS.md",
+              "saved_file_sha256": "efc573cca6a89993e35535aea0cd077a9d7177596741518b54ebece3bb405d10",
+              "serialized_reply_content_utf8_bytes": 17387,
+              "start_line": 1,
+              "total_lines": 265
+            }
+          ],
+          "reported_output_tokens": 25,
+          "reported_prompt_tokens": 6303,
+          "request": 2,
+          "tool_reply_payload_bytes": 17396
+        },
+        {
+          "cumulative_reported_output_tokens": 78,
+          "cumulative_reported_prompt_tokens": 16480,
+          "effective_prompt_estimate": 11011,
+          "heuristic_message_tokens": 8470,
+          "heuristic_schema_tokens": 2541,
+          "message_count": 6,
+          "message_payload_bytes": 25338,
+          "post_response_stop": null,
+          "reads_in_request": [
+            {
+              "end_line": 265,
+              "path": "AGENTS.md",
+              "saved_file_sha256": "efc573cca6a89993e35535aea0cd077a9d7177596741518b54ebece3bb405d10",
+              "serialized_reply_content_utf8_bytes": 17387,
+              "start_line": 1,
+              "total_lines": 265
+            },
+            {
+              "end_line": 174,
+              "path": "server/payloadParsers.js",
+              "saved_file_sha256": "1feec11cc434e66bbc0d7054fdc08411c54a40336d7e24c575ab049c2af08f6c",
+              "serialized_reply_content_utf8_bytes": 6159,
+              "start_line": 1,
+              "total_lines": 174
+            }
+          ],
+          "reported_output_tokens": 31,
+          "reported_prompt_tokens": 8214,
+          "request": 3,
+          "tool_reply_payload_bytes": 23564
+        },
+        {
+          "cumulative_reported_output_tokens": 156,
+          "cumulative_reported_prompt_tokens": 26325,
+          "effective_prompt_estimate": 12713,
+          "heuristic_message_tokens": 10172,
+          "heuristic_schema_tokens": 2541,
+          "message_count": 8,
+          "message_payload_bytes": 30418,
+          "post_response_stop": "Total token budget cannot fit another model request after these tools.",
+          "reads_in_request": [
+            {
+              "end_line": 265,
+              "path": "AGENTS.md",
+              "saved_file_sha256": "efc573cca6a89993e35535aea0cd077a9d7177596741518b54ebece3bb405d10",
+              "serialized_reply_content_utf8_bytes": 17387,
+              "start_line": 1,
+              "total_lines": 265
+            },
+            {
+              "end_line": 174,
+              "path": "server/payloadParsers.js",
+              "saved_file_sha256": "1feec11cc434e66bbc0d7054fdc08411c54a40336d7e24c575ab049c2af08f6c",
+              "serialized_reply_content_utf8_bytes": 6159,
+              "start_line": 1,
+              "total_lines": 174
+            },
+            {
+              "end_line": 167,
+              "path": "server/payloadParsers.test.js",
+              "saved_file_sha256": "ff9c88ee3e1025219af6a817e9f01efba1a341c101db01cc660eebf7508d6688",
+              "serialized_reply_content_utf8_bytes": 5021,
+              "start_line": 1,
+              "total_lines": 167
+            }
+          ],
+          "reported_output_tokens": 78,
+          "reported_prompt_tokens": 9845,
+          "request": 4,
+          "tool_reply_payload_bytes": 28594
+        }
+      ],
+      "tool_reply_payload_bytes_across_sent_requests": 69554,
+      "unused_reported_total_allowance": 5519
+    },
+    {
+      "cell": "R180-2",
+      "last_reported_prompt_lower_bound": 9845,
+      "message_payload_bytes_across_sent_requests": 76580,
+      "minimum_output_allowance": 256,
+      "next_request_lower_bound_plus_minimum_output": 10101,
+      "observed_budget_stop_replayed": true,
+      "request_timeout_seconds": 180,
+      "requests": [
+        {
+          "cumulative_reported_output_tokens": 22,
+          "cumulative_reported_prompt_tokens": 1963,
+          "effective_prompt_estimate": 3116,
+          "heuristic_message_tokens": 575,
+          "heuristic_schema_tokens": 2541,
+          "message_count": 2,
+          "message_payload_bytes": 1699,
+          "post_response_stop": null,
+          "reads_in_request": [],
+          "reported_output_tokens": 22,
+          "reported_prompt_tokens": 1963,
+          "request": 1,
+          "tool_reply_payload_bytes": 0
+        },
+        {
+          "cumulative_reported_output_tokens": 47,
+          "cumulative_reported_prompt_tokens": 8266,
+          "effective_prompt_estimate": 8932,
+          "heuristic_message_tokens": 6391,
+          "heuristic_schema_tokens": 2541,
+          "message_count": 4,
+          "message_payload_bytes": 19125,
+          "post_response_stop": null,
+          "reads_in_request": [
+            {
+              "end_line": 265,
+              "path": "AGENTS.md",
+              "saved_file_sha256": "efc573cca6a89993e35535aea0cd077a9d7177596741518b54ebece3bb405d10",
+              "serialized_reply_content_utf8_bytes": 17387,
+              "start_line": 1,
+              "total_lines": 265
+            }
+          ],
+          "reported_output_tokens": 25,
+          "reported_prompt_tokens": 6303,
+          "request": 2,
+          "tool_reply_payload_bytes": 17396
+        },
+        {
+          "cumulative_reported_output_tokens": 78,
+          "cumulative_reported_prompt_tokens": 16480,
+          "effective_prompt_estimate": 11011,
+          "heuristic_message_tokens": 8470,
+          "heuristic_schema_tokens": 2541,
+          "message_count": 6,
+          "message_payload_bytes": 25338,
+          "post_response_stop": null,
+          "reads_in_request": [
+            {
+              "end_line": 265,
+              "path": "AGENTS.md",
+              "saved_file_sha256": "efc573cca6a89993e35535aea0cd077a9d7177596741518b54ebece3bb405d10",
+              "serialized_reply_content_utf8_bytes": 17387,
+              "start_line": 1,
+              "total_lines": 265
+            },
+            {
+              "end_line": 174,
+              "path": "server/payloadParsers.js",
+              "saved_file_sha256": "1feec11cc434e66bbc0d7054fdc08411c54a40336d7e24c575ab049c2af08f6c",
+              "serialized_reply_content_utf8_bytes": 6159,
+              "start_line": 1,
+              "total_lines": 174
+            }
+          ],
+          "reported_output_tokens": 31,
+          "reported_prompt_tokens": 8214,
+          "request": 3,
+          "tool_reply_payload_bytes": 23564
+        },
+        {
+          "cumulative_reported_output_tokens": 156,
+          "cumulative_reported_prompt_tokens": 26325,
+          "effective_prompt_estimate": 12713,
+          "heuristic_message_tokens": 10172,
+          "heuristic_schema_tokens": 2541,
+          "message_count": 8,
+          "message_payload_bytes": 30418,
+          "post_response_stop": "Total token budget cannot fit another model request after these tools.",
+          "reads_in_request": [
+            {
+              "end_line": 265,
+              "path": "AGENTS.md",
+              "saved_file_sha256": "efc573cca6a89993e35535aea0cd077a9d7177596741518b54ebece3bb405d10",
+              "serialized_reply_content_utf8_bytes": 17387,
+              "start_line": 1,
+              "total_lines": 265
+            },
+            {
+              "end_line": 174,
+              "path": "server/payloadParsers.js",
+              "saved_file_sha256": "1feec11cc434e66bbc0d7054fdc08411c54a40336d7e24c575ab049c2af08f6c",
+              "serialized_reply_content_utf8_bytes": 6159,
+              "start_line": 1,
+              "total_lines": 174
+            },
+            {
+              "end_line": 167,
+              "path": "server/payloadParsers.test.js",
+              "saved_file_sha256": "ff9c88ee3e1025219af6a817e9f01efba1a341c101db01cc660eebf7508d6688",
+              "serialized_reply_content_utf8_bytes": 5021,
+              "start_line": 1,
+              "total_lines": 167
+            }
+          ],
+          "reported_output_tokens": 78,
+          "reported_prompt_tokens": 9845,
+          "request": 4,
+          "tool_reply_payload_bytes": 28594
+        }
+      ],
+      "tool_reply_payload_bytes_across_sent_requests": 69554,
+      "unused_reported_total_allowance": 5519
+    },
+    {
+      "cell": "R60-2",
+      "last_reported_prompt_lower_bound": 9845,
+      "message_payload_bytes_across_sent_requests": 76580,
+      "minimum_output_allowance": 256,
+      "next_request_lower_bound_plus_minimum_output": 10101,
+      "observed_budget_stop_replayed": true,
+      "request_timeout_seconds": 60,
+      "requests": [
+        {
+          "cumulative_reported_output_tokens": 22,
+          "cumulative_reported_prompt_tokens": 1963,
+          "effective_prompt_estimate": 3116,
+          "heuristic_message_tokens": 575,
+          "heuristic_schema_tokens": 2541,
+          "message_count": 2,
+          "message_payload_bytes": 1699,
+          "post_response_stop": null,
+          "reads_in_request": [],
+          "reported_output_tokens": 22,
+          "reported_prompt_tokens": 1963,
+          "request": 1,
+          "tool_reply_payload_bytes": 0
+        },
+        {
+          "cumulative_reported_output_tokens": 47,
+          "cumulative_reported_prompt_tokens": 8266,
+          "effective_prompt_estimate": 8932,
+          "heuristic_message_tokens": 6391,
+          "heuristic_schema_tokens": 2541,
+          "message_count": 4,
+          "message_payload_bytes": 19125,
+          "post_response_stop": null,
+          "reads_in_request": [
+            {
+              "end_line": 265,
+              "path": "AGENTS.md",
+              "saved_file_sha256": "efc573cca6a89993e35535aea0cd077a9d7177596741518b54ebece3bb405d10",
+              "serialized_reply_content_utf8_bytes": 17387,
+              "start_line": 1,
+              "total_lines": 265
+            }
+          ],
+          "reported_output_tokens": 25,
+          "reported_prompt_tokens": 6303,
+          "request": 2,
+          "tool_reply_payload_bytes": 17396
+        },
+        {
+          "cumulative_reported_output_tokens": 78,
+          "cumulative_reported_prompt_tokens": 16480,
+          "effective_prompt_estimate": 11011,
+          "heuristic_message_tokens": 8470,
+          "heuristic_schema_tokens": 2541,
+          "message_count": 6,
+          "message_payload_bytes": 25338,
+          "post_response_stop": null,
+          "reads_in_request": [
+            {
+              "end_line": 265,
+              "path": "AGENTS.md",
+              "saved_file_sha256": "efc573cca6a89993e35535aea0cd077a9d7177596741518b54ebece3bb405d10",
+              "serialized_reply_content_utf8_bytes": 17387,
+              "start_line": 1,
+              "total_lines": 265
+            },
+            {
+              "end_line": 174,
+              "path": "server/payloadParsers.js",
+              "saved_file_sha256": "1feec11cc434e66bbc0d7054fdc08411c54a40336d7e24c575ab049c2af08f6c",
+              "serialized_reply_content_utf8_bytes": 6159,
+              "start_line": 1,
+              "total_lines": 174
+            }
+          ],
+          "reported_output_tokens": 31,
+          "reported_prompt_tokens": 8214,
+          "request": 3,
+          "tool_reply_payload_bytes": 23564
+        },
+        {
+          "cumulative_reported_output_tokens": 156,
+          "cumulative_reported_prompt_tokens": 26325,
+          "effective_prompt_estimate": 12713,
+          "heuristic_message_tokens": 10172,
+          "heuristic_schema_tokens": 2541,
+          "message_count": 8,
+          "message_payload_bytes": 30418,
+          "post_response_stop": "Total token budget cannot fit another model request after these tools.",
+          "reads_in_request": [
+            {
+              "end_line": 265,
+              "path": "AGENTS.md",
+              "saved_file_sha256": "efc573cca6a89993e35535aea0cd077a9d7177596741518b54ebece3bb405d10",
+              "serialized_reply_content_utf8_bytes": 17387,
+              "start_line": 1,
+              "total_lines": 265
+            },
+            {
+              "end_line": 174,
+              "path": "server/payloadParsers.js",
+              "saved_file_sha256": "1feec11cc434e66bbc0d7054fdc08411c54a40336d7e24c575ab049c2af08f6c",
+              "serialized_reply_content_utf8_bytes": 6159,
+              "start_line": 1,
+              "total_lines": 174
+            },
+            {
+              "end_line": 167,
+              "path": "server/payloadParsers.test.js",
+              "saved_file_sha256": "ff9c88ee3e1025219af6a817e9f01efba1a341c101db01cc660eebf7508d6688",
+              "serialized_reply_content_utf8_bytes": 5021,
+              "start_line": 1,
+              "total_lines": 167
+            }
+          ],
+          "reported_output_tokens": 78,
+          "reported_prompt_tokens": 9845,
+          "request": 4,
+          "tool_reply_payload_bytes": 28594
+        }
+      ],
+      "tool_reply_payload_bytes_across_sent_requests": 69554,
+      "unused_reported_total_allowance": 5519
+    }
+  ],
+  "cohort_public_sha256": "84fdecfae620d4272593a76a775be4519eea8f2e5581cfe48d1e485e680a3e1e",
+  "inference_ran": false,
+  "kind": "offline-source-token-context-diagnosis",
+  "limits": [
+    "Payload bytes and byte heuristics are not provider/wire/billable tokens.",
+    "The post-response stop uses the last reported prompt lower bound, not the byte heuristic.",
+    "No hypothetical fifth request, recovery input, model output or acceptance is observed.",
+    "Reduction of historical inputs does not establish instruction preservation or task success."
+  ],
+  "negative_probes": [
+    {
+      "probe": "input_drift",
+      "refused": true
+    },
+    {
+      "probe": "missing_input",
+      "refused": true
+    },
+    {
+      "probe": "missing_usage",
+      "refused": true
+    },
+    {
+      "probe": "stop_reason_drift",
+      "refused": true
+    },
+    {
+      "probe": "truncated_budget",
+      "refused": true
+    }
+  ],
+  "source_evidence_hashes_verified_unchanged": 3627,
+  "source_runtime_revision": "4d57cc05fdfea5b33027af9b9aa9a074195320e9"
+}

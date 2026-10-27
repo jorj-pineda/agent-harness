@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-27 — Source token gate replayed offline:** the
+[diagnosis](evals/projects/duodoro/TOKEN_CONTEXT_DIAGNOSIS.md) reproduces all four
+source-wait stops: 5,519 reported tokens remain, but the last prompt lower bound
+plus minimum output is 10,101. This post-response gate is independent of the byte
+heuristic. Tool replies account for 69,554 of 76,580 message payload bytes across
+four requests, not provider tokens. All 3,627 original hashes stay unchanged and
+five damaged-evidence probes refuse. This justifies measuring existing explicit
+recovery workflows on fresh sources, not claiming projection helps, changing
+budgets/defaults or reopening completed cohorts. No inference or G2–G5 closure.
+
 **2026-10-27 — Source wait/dispatch cohort complete:** the
 [results](evals/projects/duodoro/SOURCE_WAIT_RESULTS.md) retain all four original
 T02 cells: waits of 60 and 180 seconds each yield 0/2 accepted and completed-and-accepted. All second
