@@ -11,6 +11,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field, field_validator
 
+from harness.recovery_admission import RecoveryApproval
 from harness.recovery_context import RecoveryContextSelection
 from harness.recovery_draft import RecoveryDraftSelection
 from harness.reverts import FileRevertInput
@@ -101,6 +102,12 @@ class RecoveryContextRequest(RecoveryContextSelection):
 
 class RecoveryDraftRequest(RecoveryDraftSelection):
     user_id: str = Field(strict=True, min_length=1)
+    provider: str | None = None
+
+
+class RecoverRunRequest(RecoveryApproval):
+    user_id: str = Field(strict=True, min_length=1)
+    request_id: RequestId
     provider: str | None = None
 
 

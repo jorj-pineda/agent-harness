@@ -140,6 +140,20 @@ def check_recovery_admission(
         fact_store=fact_store,
         user_id=user_id,
     )
+    check_reviewed_recovery_draft(draft, approval, settings=settings, provider=provider)
+    return draft
+
+
+def check_reviewed_recovery_draft(
+    draft: RecoveryDraft,
+    approval: RecoveryApproval,
+    *,
+    settings: Settings,
+    provider: str,
+) -> None:
+    """Initial intent and fresh admission share the same pin/profile/context checks."""
+    if draft.source_archive_sha256 != approval.expected_archive_sha256:
+        raise RecoveryAdmissionBlocked("archive_changed")
     if draft.configuration.status != "matching":
         raise RecoveryAdmissionBlocked("configuration_unusable")
     if draft.context.status != "estimated_fit":
@@ -152,7 +166,6 @@ def check_recovery_admission(
         or draft.context.request_output_allowance != approval.expected_request_output_allowance
     ):
         raise RecoveryAdmissionBlocked("draft_changed")
-    return draft
 
 
 @dataclass

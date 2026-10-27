@@ -61,13 +61,27 @@ from harness.execution_profile import ExecutionProfile
 from harness.grounding import Grounder
 from harness.policy import classify_task, is_out_of_scope_request
 from harness.providers import build_configured_provider, configured_model, configured_provider_names
+from harness.recovery_admission import (
+    RecoveryAdmissionBlocked,
+    RecoveryApproval,
+    RecoveryInputGuard,
+    check_recovery_admission,
+    check_reviewed_recovery_draft,
+)
 from harness.recovery_context import (
     RecoveryContext,
     RecoveryContextUnavailable,
     build_recovery_context,
 )
-from harness.recovery_draft import RecoveryDraft, RecoveryDraftUnavailable, build_recovery_draft
+from harness.recovery_draft import (
+    DRAFT_GUIDANCE,
+    RecoveryDraft,
+    RecoveryDraftUnavailable,
+    build_recovery_draft,
+)
+from harness.recovery_identity import RecoverySource
 from harness.recovery_review import RecoveryReview, build_recovery_review
+from harness.recovery_seed import build_recovery_seed
 from harness.reverts import FileRevertInput, FileRevertOutcome, FileRevertRecord, revert_file
 from harness.router import ProviderNotFoundError, ProviderRouter
 from harness.runs import RequestConflictError, RequestId, RunInput, RunRecord
@@ -102,6 +116,7 @@ from .models import (
     DeleteMemoryResponse,
     ReclassifyMemoryRequest,
     ReclassifyMemoryResponse,
+    RecoverRunRequest,
     RecoveryContextRequest,
     RecoveryDraftRequest,
     RevertFileRequest,
@@ -294,6 +309,10 @@ def _register_routes(app: FastAPI) -> None:
                 )
             return existing
         archive = _lookup_archive(components, session_id, req.user_id)
+        if archive.session.recovery_source is not None:
+            raise HTTPException(
+                status_code=409, detail="Recovery forks are single-turn; inspect and start fresh."
+            )
         if not archive.session.turns or archive.session.turns[-1].turn_id != req.expected_turn_id:
             raise HTTPException(
                 status_code=409, detail="Source turn is not the latest archived turn."
@@ -312,6 +331,121 @@ def _register_routes(app: FastAPI) -> None:
         except BaseException:
             components.sessions.pop(fork_id, None)
             raise
+
+    @app.post("/runs/{run_id}/recover", response_model=RunRecord, status_code=202)
+    async def recover_run(run_id: str, req: RecoverRunRequest, request: Request) -> RunRecord:
+        """Explicit one-turn fork intent; fresh workspace/input gates run inside execution."""
+        components: Components = request.app.state.components
+        settings: Settings = request.app.state.settings
+        store = _session_store(components)
+        approval = RecoveryApproval.model_validate(
+            req.model_dump(exclude={"user_id", "request_id", "provider"})
+        )
+        fork_id = uuid.uuid5(
+            uuid.NAMESPACE_URL,
+            json.dumps(
+                [
+                    "agent-harness-recovery",
+                    req.user_id,
+                    run_id,
+                    req.request_id,
+                ]
+            ),
+        ).hex
+        existing = store.find_run(req.user_id, req.request_id)
+        if existing is not None:
+            origin = existing.request.recovery_source
+            if (
+                origin is None
+                or origin.source_run_id != run_id
+                or origin.approval_json != approval.model_dump_json()
+                or existing.request.provider != req.provider
+                or existing.request.message != req.message
+                or existing.request.session_id != fork_id
+            ):
+                raise HTTPException(
+                    status_code=409, detail="Recovery key belongs to different input."
+                )
+            return existing
+        source = _lookup_run(components, run_id, req.user_id)
+        archive = _lookup_archive(components, source.request.session_id, req.user_id)
+        if source.status == "running" or source.response is None:
+            raise HTTPException(status_code=409, detail="Recovery requires finalized saved work.")
+        if archive.session.recovery_source is not None:
+            raise HTTPException(
+                status_code=409, detail="Nested recovery is unsupported; inspect and start fresh."
+            )
+        if components.closing:
+            raise HTTPException(status_code=503, detail="Server is shutting down.")
+        try:
+            with turn_admission.claim(
+                archive.session.session_id, archive.session.workspace_root
+            ) as busy:
+                if busy is not None:
+                    raise HTTPException(
+                        status_code=409, detail="Recovery preparation is busy; no run created."
+                    )
+                provider = _resolve_provider_or_400(components, req.provider)
+                registry = _build_turn_registry(components, settings, archive.session, req.user_id)
+                draft = build_recovery_draft(
+                    store,
+                    source,
+                    archive,
+                    approval,
+                    settings=settings,
+                    provider=provider.name,
+                    registry=registry,
+                    fact_store=components.fact_store,
+                    user_id=req.user_id,
+                )
+                check_reviewed_recovery_draft(
+                    draft, approval, settings=settings, provider=provider.name
+                )
+                seed = build_recovery_seed(
+                    source, archive, approval, draft, fork_session_id=fork_id
+                )
+                if fork_id in components.sessions:
+                    raise HTTPException(
+                        status_code=409, detail="Recovery fork identity is already active."
+                    )
+                components.sessions[fork_id] = seed
+                try:
+                    record, task = _start_run(
+                        components,
+                        settings,
+                        ChatRequest(
+                            user_id=req.user_id,
+                            session_id=fork_id,
+                            message=req.message,
+                            provider=req.provider,
+                            request_id=req.request_id,
+                        ),
+                        continuation_source=seed.continuation_source,
+                        recovery_source=seed.recovery_source,
+                        fork_archive=archive,
+                    )
+                    if task is None and components.sessions.get(fork_id) is seed:
+                        components.sessions.pop(fork_id, None)
+                    return record
+                except BaseException:
+                    if components.sessions.get(fork_id) is seed:
+                        components.sessions.pop(fork_id, None)
+                    raise
+        except (
+            RecoveryAdmissionBlocked,
+            RecoveryDraftUnavailable,
+            RecoveryContextUnavailable,
+            CheckpointSpanUnavailable,
+        ) as exc:
+            raise HTTPException(status_code=409, detail={"code": exc.code}) from exc
+        except (OSError, RuntimeError, WorkspaceError, sqlite3.Error) as exc:
+            raise HTTPException(
+                status_code=503, detail="Recovery preparation resources unavailable."
+            ) from exc
+        except ValueError as exc:
+            raise HTTPException(
+                status_code=409, detail="Recovery source/approval is inconsistent."
+            ) from exc
 
     @app.get("/file-reverts", response_model=FileRevertRecord | None)
     async def find_revert(
@@ -1146,6 +1280,7 @@ def _start_run(
     *,
     on_event: EventCallback | None = None,
     continuation_source: ContinuationSource | None = None,
+    recovery_source: RecoverySource | None = None,
     fork_archive: SessionArchive | None = None,
 ) -> tuple[RunRecord, asyncio.Task[TurnResponse] | None]:
     """Bind request identity durably before scheduling any execution (no awaits)."""
@@ -1157,6 +1292,7 @@ def _start_run(
         provider=req.provider,
         request_id=req.request_id or uuid.uuid4().hex,
         continuation_source=continuation_source,
+        recovery_source=recovery_source,
     )
     existing = store.find_run(req.user_id, run_input.request_id)
     if existing is not None:
@@ -1168,6 +1304,10 @@ def _start_run(
     if components.closing:
         raise HTTPException(status_code=503, detail="Server is shutting down")
     session = _lookup_session(components, req.session_id, req.user_id)
+    if session.recovery_source != recovery_source:
+        raise HTTPException(
+            status_code=409, detail="Recovery fork requires its explicit seeded run."
+        )
     policy = is_out_of_scope_request(req.message)
     provider = None if policy else _resolve_provider_or_400(components, req.provider)
     model = None
@@ -1232,6 +1372,9 @@ def _start_run(
             except Exception as exc:
                 log.error("api=run_failure_storage exception=%s", type(exc).__name__)
             raise
+        finally:
+            if session.recovery_source is not None:
+                components.sessions.pop(session.session_id, None)
 
     task = asyncio.create_task(execute())
     components.run_tasks[record.run_id] = task
@@ -1369,6 +1512,21 @@ async def _execute_turn(
 ) -> TurnResponse:
     """Refresh injected facts, build the per-request registry, and run the loop."""
     registry = _build_turn_registry(components, settings, session, user_id)
+    recovery = session.recovery_source
+    recovery_approval: RecoveryApproval | None = None
+    if recovery is not None:
+        saved_run = _session_store(components).get_run(run_id or "")
+        if (
+            saved_run is None
+            or saved_run.status != "running"
+            or saved_run.request.recovery_source != recovery
+            or saved_run.request.session_id != session.session_id
+            or saved_run.request.user_id != user_id
+            or saved_run.request.message != message
+        ):
+            raise HTTPException(status_code=409, detail="Recovery run provenance is inconsistent.")
+        recovery_approval = RecoveryApproval.model_validate_json(recovery.approval_json)
+        provider = RecoveryInputGuard(provider, recovery_approval)
     try:
         model = configured_model(provider.name, settings)
     except ValueError:
@@ -1450,7 +1608,37 @@ async def _execute_turn(
                     session.session_id,
                     protected_paths=(store.path, components.fact_store.path, settings.chroma_path),
                 )
-                if phase == "before" and session.continuation_source is not None:
+                if phase == "before" and recovery is not None and recovery_approval is not None:
+                    source_run = _lookup_run(components, recovery.source_run_id, user_id)
+                    source_archive = _lookup_archive(
+                        components, recovery.source_session_id, user_id
+                    )
+                    try:
+                        check_recovery_admission(
+                            store,
+                            source_run,
+                            source_archive,
+                            captured.record,
+                            recovery_approval,
+                            settings=settings,
+                            provider=provider.name,
+                            registry=registry,
+                            fact_store=components.fact_store,
+                            user_id=user_id,
+                            excluding_run_id=run_id,
+                        )
+                    except (
+                        RecoveryAdmissionBlocked,
+                        RecoveryDraftUnavailable,
+                        RecoveryContextUnavailable,
+                        CheckpointSpanUnavailable,
+                    ) as exc:
+                        raise HTTPException(
+                            status_code=409,
+                            detail=f"Recovery admission blocked ({exc.code}); "
+                            "no provider dispatch.",
+                        ) from exc
+                elif phase == "before" and session.continuation_source is not None:
                     archive = _lookup_archive(components, session.session_id, user_id)
                     saved = archive.responses[-1] if archive.responses else None
                     previous_run = (
@@ -1578,6 +1766,7 @@ async def _execute_turn(
             provider=provider,
             fact_store=components.fact_store,
             registry=registry,
+            system_suffix=DRAFT_GUIDANCE if recovery is not None else None,
             grounder=components.grounder,
             on_event=save_tool_progress,
             on_budget_observation=save_budget_observation if run_id is not None else None,
