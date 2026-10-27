@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-27 — Stopped-source backend chronology checked offline:** the
+[diagnosis](evals/projects/duodoro/PROJECTED_RECOVERY_BACKEND_DIAGNOSIS.md)
+finds completed prompt processing and generation progress through `n_gen = 180`
+before the owned second task's HTTP 500/cancellation. Ordinal two-call association
+is explicit; backend counters do not recover terminal usage or generated text.
+All 894 original outcome hashes remain unchanged; five extraction refusal probes
+pass. This narrows the observed timeout boundary, not a demonstrated remedy or
+permission to retry/change defaults. The stopped cohort, unknown usage, no-go,
+8-of-10 and broad G2–G5 remain unchanged.
+
 **2026-10-27 — Projected-recovery comparison stopped at its first source:** the
 [results](evals/projects/duodoro/PROJECTED_RECOVERY_RESULTS.md) retain original
 T02-S1's second-call read timeout at frozen runtime `2e7dce9`. Its unchanged
