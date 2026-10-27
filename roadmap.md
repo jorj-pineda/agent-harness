@@ -4,6 +4,18 @@ Updated: 2026-10-26
 
 ## Current release decision
 
+**2026-10-26 — Shared recovery admission foundation:** explicit review pins and
+strict scope/new-budget acknowledgments feed a fresh checker for source/archive,
+linked checkpoint, scoped current bytes/modes/root, newer unknown work, known
+matching profile and bounded draft fit. A one-run provider wrapper binds exact
+first normalized messages/schemas/output allowance before forwarding and refuses
+reuse after mismatch/error/cancellation. Existing identities stay byte-compatible.
+The [execution foundation](RECOVERY_EXECUTION.md) enables no API or runtime path
+and grants no reusable lease; durable provenance and guarded execution integration
+are the next two slices. Eighty-eight focused regressions and static checks pass;
+full offline validation is required before merge. No inference, Duodoro edit,
+default/quality claim or original no-go/8-of-10/G2–G5 change.
+
 **2026-10-26 — Thin CLI prospective draft review:** explicit selection-file and
 proposed-message inputs make one review POST, reusing bounded input/evidence checks
 without metadata fetches or retry. Both output modes validate supported identities,
@@ -13,8 +25,9 @@ status leads; hypothetical-new-turn budgets and non-execution stay explicit.
 Scripted CLI review after API restart preserves exact draft/run/archive evidence
 and later user work with no new model calls or runs. This closes prospective draft
 construction/API/CLI [review](RECOVERY_DRAFT.md), not automatic compaction, guarded
-execution or measured recovery. Validation: 317 focused/static/help/diff checks pass;
-full offline validation remains required before merge. No inference, Duodoro edit,
+execution or measured recovery. Validation before merge: 317 focused/1,976 offline
+tests (five live deselected), Ruff/format/mypy/help/diff checks, exact-head Luna
+review and both CI checks passed. No inference, Duodoro edit,
 default/quality claim or original cohort/no-go/8-of-10/G2–G5 change.
 
 **2026-10-26 — Owner-checked prospective draft API:** explicit structured review
