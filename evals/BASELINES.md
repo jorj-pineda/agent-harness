@@ -1,5 +1,15 @@
 # Real-task baselines
 
+## 2026-10-27 — Local projected-recovery cohort stopped
+
+The [bounded comparison](projects/duodoro/PROJECTED_RECOVERY_RESULTS.md) stopped
+after original T02-S1's second-call read timeout: one unchanged rejected source,
+three sources and all eight followups unrun. No C/P policy result is observed.
+Final response and aggregate usage remain unknown; the 1,964/22 token prefix is
+not a total. Exact freeze review/CI/merge, fresh launch gates, independent regrades
+and clean owned-resource shutdown are retained. No replacement or scope change;
+original cohorts, no-go/8-of-10 and G2–G5 remain unchanged.
+
 Latest recovery observation: [one bounded live panel workflow](projects/duodoro/PANEL_RECOVERY_RESULTS.md)
 at `cd11e4c` passed its exercised cancel/restart/review/fork/check/source-reversal
 sequence on 2026-10-22 UTC, with independent acceptance/regrade. Source patch was

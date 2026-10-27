@@ -4,6 +4,17 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-27 — Projected-recovery comparison stopped at its first source:** the
+[results](evals/projects/duodoro/PROJECTED_RECOVERY_RESULTS.md) retain original
+T02-S1's second-call read timeout at frozen runtime `2e7dce9`. Its unchanged
+artifact fails all three independent grades; final response and aggregate usage
+remain unknown. Three sources and all eight C/P followups stay unrun under the
+mandatory cohort stop. Owned API/backend settle cleanly and Duodoro is unchanged.
+The reviewed freeze/conditional results slices supply preparation and failure
+evidence, not an observed policy comparison or recovery benefit. No replacement,
+retry, extra inference, default/limit change or original cohort/no-go/8-of-10/G2–G5
+closure follows. Do not manufacture further feature slices from this stopped cohort.
+
 **2026-10-27 — Paired recovery client preflight:** actual CLI commands exercise
 local HTTP, shared runtime/tools/checks, independent closed-store clones and paired
 staging at one owned root/inode with scripted inference. Native full-history context
