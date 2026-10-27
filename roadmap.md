@@ -4,6 +4,18 @@ Updated: 2026-10-26
 
 ## Current release decision
 
+**2026-10-26 — Owner-checked prospective draft API:** explicit structured review
+runs under shared session/workspace admission using lifecycle-owned resources and
+current shared registry/prompt/instruction refresh. Active/busy work, malformed
+proposals, stale archives and source identity mismatches refuse without partial
+output. No run/checkpoint/budget is allocated. Scripted HTTP/SSE restart retains
+identical drafts with unchanged current resources; changed root instructions alter
+message hashes and report drift without rewriting original evidence or later user
+edits. Current-resource failure is separate from historical-only preview access.
+The [API contract](RECOVERY_DRAFT.md) keeps blocked/unbounded estimates and missing
+workspace/semantic-completeness limits explicit. CLI review follows separately;
+no automatic compaction, execution, inference, quality gain or no-go/G2–G5 closure.
+
 **2026-10-26 — Prospective recovery draft construction:** a detached candidate
 retains all saved user-role text whole/in order, refreshes the configured system
 prompt/root instructions/notes/check argv through shared runtime helpers, and
@@ -13,8 +25,8 @@ omitted nonuser history. Shared token math reports draft and refreshed-full-hist
 heuristics, requested allowance and blocked/unbounded states without allocating
 or transferring source budgets. The [draft contract](RECOVERY_DRAFT.md) explicitly
 retains loss of assistant agreements, root-only discovery and unknown current-state
-limits. Seventy focused regressions and static checks pass; full offline validation
-is required before merge. API/CLI review access are the next separate slices;
+limits. Seventy focused regressions, 1,859 offline tests (five live deselected), static
+checks, exact-head Luna review and both CI checks passed before merge. API/CLI review access are the next separate slices;
 automatic compaction, guarded execution and measured recovery remain unfinished.
 No inference, Duodoro edit, default/quality claim or no-go/8-of-10/G2–G5 change.
 

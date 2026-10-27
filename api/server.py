@@ -66,6 +66,7 @@ from harness.recovery_context import (
     RecoveryContextUnavailable,
     build_recovery_context,
 )
+from harness.recovery_draft import RecoveryDraft, RecoveryDraftUnavailable, build_recovery_draft
 from harness.recovery_review import RecoveryReview, build_recovery_review
 from harness.reverts import FileRevertInput, FileRevertOutcome, FileRevertRecord, revert_file
 from harness.router import ProviderNotFoundError, ProviderRouter
@@ -102,6 +103,7 @@ from .models import (
     ReclassifyMemoryRequest,
     ReclassifyMemoryResponse,
     RecoveryContextRequest,
+    RecoveryDraftRequest,
     RevertFileRequest,
     SubmitRunRequest,
 )
@@ -944,6 +946,75 @@ def _register_routes(app: FastAPI) -> None:
         except ValueError as exc:
             raise HTTPException(
                 status_code=409, detail="Saved recovery context evidence is inconsistent."
+            ) from exc
+        response.headers["Cache-Control"] = "no-store"
+        return result
+
+    @app.post(
+        "/runs/{run_id}/recovery-draft",
+        response_model=RecoveryDraft,
+        responses={
+            409: {"description": "Active/busy work, stale source or inconsistent saved evidence."},
+            413: {"description": "Whole user history, source or complete draft exceeds bounds."},
+            415: {"description": "Selected saved source is not exact UTF-8."},
+            503: {"description": "Current review resources or saved storage unavailable."},
+        },
+    )
+    async def inspect_recovery_draft(
+        run_id: str, req: RecoveryDraftRequest, request: Request, response: Response
+    ) -> RecoveryDraft:
+        """Prospective inputs/estimates only; never sends, allocates or saves a new turn."""
+        components: Components = request.app.state.components
+        settings: Settings = request.app.state.settings
+        try:
+            record = _lookup_run(components, run_id, req.user_id)
+            if record.status == "running":
+                raise HTTPException(status_code=409, detail={"code": "run_active"})
+            archive = _lookup_archive(components, record.request.session_id, req.user_id)
+            with turn_admission.claim(
+                archive.session.session_id, archive.session.workspace_root
+            ) as busy:
+                if busy is not None:
+                    raise HTTPException(status_code=409, detail={"code": "review_busy"})
+                if components.closing:
+                    raise HTTPException(status_code=503, detail="Server is shutting down.")
+                provider = _resolve_provider_or_400(components, req.provider)
+                registry = _build_turn_registry(components, settings, archive.session, req.user_id)
+                result = build_recovery_draft(
+                    _session_store(components),
+                    record,
+                    archive,
+                    req,
+                    settings=settings,
+                    provider=provider.name,
+                    registry=registry,
+                    fact_store=components.fact_store,
+                    user_id=req.user_id,
+                )
+        except RecoveryDraftUnavailable as exc:
+            status = 413 if exc.code in {"user_history_too_large", "draft_too_large"} else 409
+            raise HTTPException(status_code=status, detail={"code": exc.code}) from exc
+        except RecoveryContextUnavailable as exc:
+            status = 413 if exc.code in {"context_too_large", "source_budget_exceeded"} else 409
+            raise HTTPException(status_code=status, detail={"code": exc.code}) from exc
+        except CheckpointSpanUnavailable as exc:
+            status = {
+                "file_not_captured": 404,
+                "hash_mismatch": 409,
+                "file_too_large": 413,
+                "span_too_large": 413,
+                "response_too_large": 413,
+                "range_unavailable": 422,
+                "invalid_utf8": 415,
+            }.get(exc.code, 409)
+            raise HTTPException(status_code=status, detail={"code": exc.code}) from exc
+        except (OSError, RuntimeError, WorkspaceError, sqlite3.Error) as exc:
+            raise HTTPException(
+                status_code=503, detail="Recovery draft resources unavailable."
+            ) from exc
+        except ValueError as exc:
+            raise HTTPException(
+                status_code=409, detail="Saved recovery draft evidence is inconsistent."
             ) from exc
         response.headers["Cache-Control"] = "no-store"
         return result
