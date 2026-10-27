@@ -825,6 +825,29 @@ def _show_recovery_review(review: dict[str, Any]) -> None:
     typer.echo(value("scope_note"))
 
 
+def _read_recovery_selection(selection_file: Path) -> dict[str, Any]:
+    fd = os.open(selection_file, os.O_RDONLY | os.O_NONBLOCK | getattr(os, "O_NOFOLLOW", 0))
+    with os.fdopen(fd, "rb") as source:
+        if not stat.S_ISREG(os.fstat(source.fileno()).st_mode):
+            raise ValueError("Selection input must be a regular file")
+        content = source.read(8193)
+    if len(content) > 8192:
+        raise ValueError("Selection input exceeds 8192 bytes")
+
+    def unique_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+        result: dict[str, Any] = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError("Duplicate JSON selection key")
+            result[key] = value
+        return result
+
+    selection = json.loads(content.decode("utf-8"), object_pairs_hook=unique_keys)
+    if not isinstance(selection, dict):
+        raise ValueError("Selection must be a JSON object")
+    return selection
+
+
 @app.command()
 def recovery_context(
     run_id: str = typer.Argument(...),
@@ -837,25 +860,7 @@ def recovery_context(
 ) -> None:
     """Preview selected saved recovery context; never submits continuation."""
     try:
-        fd = os.open(selection_file, os.O_RDONLY | os.O_NONBLOCK | getattr(os, "O_NOFOLLOW", 0))
-        with os.fdopen(fd, "rb") as source:
-            if not stat.S_ISREG(os.fstat(source.fileno()).st_mode):
-                raise ValueError("Selection input must be a regular file")
-            content = source.read(8193)
-        if len(content) > 8192:
-            raise ValueError("Selection input exceeds 8192 bytes")
-
-        def unique_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
-            result: dict[str, Any] = {}
-            for key, value in pairs:
-                if key in result:
-                    raise ValueError("Duplicate JSON selection key")
-                result[key] = value
-            return result
-
-        selection = json.loads(content.decode("utf-8"), object_pairs_hook=unique_keys)
-        if not isinstance(selection, dict):
-            raise ValueError("Selection must be a JSON object")
+        selection = _read_recovery_selection(selection_file)
         preview = AgentClient(base_url).recovery_context(user_id, run_id, selection)
     except Exception as exc:
         typer.echo(
@@ -876,6 +881,70 @@ def recovery_context(
     for span in preview["spans"]:
         typer.echo(f"saved_span={json.dumps(span)}")
     typer.echo(json.dumps(preview["scope_note"]))
+
+
+@app.command()
+def recovery_draft(
+    run_id: str = typer.Argument(...),
+    selection_file: Path = typer.Option(..., "--selection-file"),
+    message: str = typer.Option(..., "--message", help="Proposed next input; review only."),
+    provider: str | None = typer.Option(None, "--provider"),
+    base_url: str = typer.Option("http://localhost:8000", "--base-url"),
+    user_id: str = typer.Option("cli-user", "--user-id"),
+    raw: bool = typer.Option(False, "--json"),
+) -> None:
+    """Review prospective recovery inputs and estimates; never starts work."""
+    try:
+        selection = _read_recovery_selection(selection_file)
+        draft = AgentClient(base_url).recovery_draft(
+            user_id, run_id, selection, message, provider=provider
+        )
+    except Exception as exc:
+        typer.echo(
+            f"Recovery draft unavailable ({type(exc).__name__}). No continuation was submitted. "
+            "Review source/current settings before another explicit request. No automatic retry.",
+            err=True,
+        )
+        raise typer.Exit(code=1) from exc
+    if raw:
+        typer.echo(json.dumps(draft, indent=2))
+        return
+    typer.echo(f"prospective_recovery_draft run_id={json.dumps(draft['run_id'])}")
+    evidence_message = draft["messages"][draft["evidence_message_index"]]["content"]
+    source_review = json.loads(evidence_message.split("\n", 1)[1])["review"]
+    typer.echo(
+        f"source_completion={json.dumps(source_review['completion_status'])} "
+        f"source_checks={json.dumps(source_review['verification_status'])} "
+        f"source_run_status={json.dumps(source_review['run_status'])}"
+    )
+
+    typer.echo(
+        "Review only; execution_supported=false. Estimated fit does not authorize execution."
+    )
+    typer.echo(
+        "Budget scope: hypothetical-new-turn; no source allowance reset, transfer or allocation."
+    )
+    for name in (
+        "provider",
+        "context",
+        "configuration",
+        "repository_instructions",
+        "source_message_count",
+        "retained_user_message_count",
+        "omitted_nonuser_message_count",
+        "evidence_message_index",
+        "refreshed_full_history_estimated_tokens",
+        "source_record_sha256",
+        "source_archive_sha256",
+        "recovery_evidence_sha256",
+        "messages_sha256",
+        "tool_specs_sha256",
+    ):
+        typer.echo(f"{name}={json.dumps(draft[name])}")
+    typer.echo("Current unanchored estimates are not measured provider tokens or savings.")
+    for i, item in enumerate(draft["messages"]):
+        typer.echo(f"message[{i}]={json.dumps(item)}")
+    typer.echo(json.dumps(draft["scope_note"]))
 
 
 @app.command()

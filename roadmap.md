@@ -4,6 +4,19 @@ Updated: 2026-10-26
 
 ## Current release decision
 
+**2026-10-26 — Thin CLI prospective draft review:** explicit selection-file and
+proposed-message inputs make one review POST, reusing bounded input/evidence checks
+without metadata fetches or retry. Both output modes validate supported identities,
+message roles/counts/omissions, hashes, embedded historical evidence and estimate/
+configuration/instruction states before escaped output. Original completion/check
+status leads; hypothetical-new-turn budgets and non-execution stay explicit.
+Scripted CLI review after API restart preserves exact draft/run/archive evidence
+and later user work with no new model calls or runs. This closes prospective draft
+construction/API/CLI [review](RECOVERY_DRAFT.md), not automatic compaction, guarded
+execution or measured recovery. Validation: 317 focused/static/help/diff checks pass;
+full offline validation remains required before merge. No inference, Duodoro edit,
+default/quality claim or original cohort/no-go/8-of-10/G2–G5 change.
+
 **2026-10-26 — Owner-checked prospective draft API:** explicit structured review
 runs under shared session/workspace admission using lifecycle-owned resources and
 current shared registry/prompt/instruction refresh. Active/busy work, malformed
@@ -15,6 +28,8 @@ edits. Current-resource failure is separate from historical-only preview access.
 The [API contract](RECOVERY_DRAFT.md) keeps blocked/unbounded estimates and missing
 workspace/semantic-completeness limits explicit. CLI review follows separately;
 no automatic compaction, execution, inference, quality gain or no-go/G2–G5 closure.
+Validation before merge: 96 focused/1,882 offline tests (five live deselected),
+Ruff/format/mypy, both CI checks and exact-head Luna review passed.
 
 **2026-10-26 — Prospective recovery draft construction:** a detached candidate
 retains all saved user-role text whole/in order, refreshes the configured system
