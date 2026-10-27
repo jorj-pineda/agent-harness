@@ -825,14 +825,14 @@ def _show_recovery_review(review: dict[str, Any]) -> None:
     typer.echo(value("scope_note"))
 
 
-def _read_recovery_selection(selection_file: Path) -> dict[str, Any]:
+def _read_recovery_selection(selection_file: Path, *, max_bytes: int = 8192) -> dict[str, Any]:
     fd = os.open(selection_file, os.O_RDONLY | os.O_NONBLOCK | getattr(os, "O_NOFOLLOW", 0))
     with os.fdopen(fd, "rb") as source:
         if not stat.S_ISREG(os.fstat(source.fileno()).st_mode):
             raise ValueError("Selection input must be a regular file")
-        content = source.read(8193)
-    if len(content) > 8192:
-        raise ValueError("Selection input exceeds 8192 bytes")
+        content = source.read(max_bytes + 1)
+    if len(content) > max_bytes:
+        raise ValueError(f"Selection input exceeds {max_bytes} bytes")
 
     def unique_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
         result: dict[str, Any] = {}
@@ -945,6 +945,80 @@ def recovery_draft(
     for i, item in enumerate(draft["messages"]):
         typer.echo(f"message[{i}]={json.dumps(item)}")
     typer.echo(json.dumps(draft["scope_note"]))
+
+
+@app.command()
+def recover_run(
+    run_id: str = typer.Argument(..., help="Original saved run; a new fork is submitted."),
+    approval_file: Path = typer.Option(
+        ..., "--approval-file", help="Reviewed pins, spans and message JSON; no acknowledgments."
+    ),
+    request_id: str = typer.Option(
+        ..., "--request-id", help="Stable key for exactly this request."
+    ),
+    acknowledge_uncaptured_state: bool = typer.Option(False, "--acknowledge-uncaptured-state"),
+    acknowledge_omitted_context: bool = typer.Option(False, "--acknowledge-omitted-context"),
+    acknowledge_new_turn_budget: bool = typer.Option(False, "--acknowledge-new-turn-budget"),
+    provider: str | None = typer.Option(None, "--provider"),
+    base_url: str = typer.Option("http://localhost:8000", "--base-url"),
+    user_id: str = typer.Option("cli-user", "--user-id"),
+    raw: bool = typer.Option(False, "--json"),
+) -> None:
+    """Submit one approved recovery turn. No automatic retry, polling or draft refresh."""
+    if not all(
+        (acknowledge_uncaptured_state, acknowledge_omitted_context, acknowledge_new_turn_budget)
+    ):
+        typer.echo(
+            "All three --acknowledge-* flags are required: uncaptured workspace/backend state, "
+            "omitted assistant/tool context, and a separate new configured turn budget. "
+            "Captures are scoped; external writers can race checks. Review the full draft first.",
+            err=True,
+        )
+        raise typer.Exit(code=2)
+    try:
+        approval = _read_recovery_selection(approval_file, max_bytes=65536)
+        record = AgentClient(base_url).recover_run(
+            user_id,
+            run_id,
+            approval,
+            request_id,
+            acknowledge_uncaptured_state=acknowledge_uncaptured_state,
+            acknowledge_omitted_context=acknowledge_omitted_context,
+            acknowledge_new_turn_budget=acknowledge_new_turn_budget,
+            provider=provider,
+        )
+    except Exception as exc:
+        typer.echo(
+            f"Recovery submission unavailable ({type(exc).__name__}); "
+            f"request_id={json.dumps(request_id)}. "
+            "If submitted, its outcome may be unknown. Inspect runs with this key before an "
+            "explicit retry using the same approval, provider and key. No automatic retry.",
+            err=True,
+        )
+        raise typer.Exit(code=1) from exc
+    if raw:
+        typer.echo(json.dumps(record, indent=2))
+        return
+    response = record.get("response") or {}
+    completion = response.get("completion_status", "unknown")
+    checks = response.get("verification_status", "unknown")
+    typer.echo(f"completion={json.dumps(completion)} checks={json.dumps(checks)}")
+    for name, value in (
+        ("run_id", record["run_id"]),
+        ("status", record["status"]),
+        ("fork_session_id", record["request"]["session_id"]),
+        ("request_id", request_id),
+        ("source_run_id", run_id),
+    ):
+        typer.echo(f"{name}={json.dumps(value)}")
+    typer.echo(
+        "Recovery intent recorded; inspect the saved run. "
+        "Submission does not prove completion or passed guards."
+    )
+    typer.echo(
+        "Separate configured turn budget; no source allowance transfer. "
+        "Fork remains limited to one turn."
+    )
 
 
 @app.command()

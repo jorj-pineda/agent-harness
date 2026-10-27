@@ -10,6 +10,7 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+import re
 import uuid
 from dataclasses import dataclass, field
 from typing import Any
@@ -114,12 +115,174 @@ class AgentClient:
             or request.get("message") != message
             or request.get("provider") != provider
             or request.get("continuation_source") != expected_source
+            or request["continuation_source"].get("acknowledge_uncaptured_state") is not True
             or not request.get("session_id")
             or request.get("session_id") == session_id
             or not record.get("run_id")
         ):
             raise ValueError("Mismatched continuation response; inspect the keyed run.")
         return record
+
+    @staticmethod
+    def _validate_recovery_approval(approval: dict[str, Any]) -> None:
+        expected = {
+            "expected_record_sha256",
+            "spans",
+            "message",
+            "expected_archive_sha256",
+            "expected_messages_sha256",
+            "expected_tool_specs_sha256",
+            "expected_request_output_allowance",
+        }
+        if not isinstance(approval, dict) or set(approval) != expected:
+            raise ValueError("Approval must contain only the reviewed pins, spans and message")
+        AgentClient._validate_recovery_selection(
+            {name: approval[name] for name in ("expected_record_sha256", "spans")}
+        )
+        for name in (
+            "expected_archive_sha256",
+            "expected_messages_sha256",
+            "expected_tool_specs_sha256",
+        ):
+            if (
+                not isinstance(approval[name], str)
+                or re.fullmatch(r"[0-9a-f]{64}", approval[name]) is None
+            ):
+                raise ValueError("Invalid reviewed recovery digest")
+        message, allowance = approval["message"], approval["expected_request_output_allowance"]
+        if (
+            not isinstance(message, str)
+            or not message.strip()
+            or len(message.encode()) > 4096
+            or type(allowance) is not int
+            or not 1 <= allowance <= 1_000_000
+        ):
+            raise ValueError("Invalid proposed message or reviewed allowance")
+        if len(json.dumps(approval, ensure_ascii=False, separators=(",", ":")).encode()) > 65536:
+            raise ValueError("Approval exceeds supported size")
+
+    def recover_run(
+        self,
+        user_id: str,
+        run_id: str,
+        approval: dict[str, Any],
+        request_id: str,
+        *,
+        acknowledge_uncaptured_state: bool,
+        acknowledge_omitted_context: bool,
+        acknowledge_new_turn_budget: bool,
+        provider: str | None = None,
+    ) -> dict[str, Any]:
+        """One explicit submission; no preview refresh, polling, retry or inferred permission."""
+        self._validate_recovery_approval(approval)
+
+        def identifier(value: object) -> bool:
+            return (
+                isinstance(value, str)
+                and re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:-]{0,127}", value) is not None
+            )
+
+        if (
+            not identifier(run_id)
+            or not identifier(request_id)
+            or not isinstance(user_id, str)
+            or not user_id
+        ):
+            raise ValueError("Invalid recovery submission identity")
+        acks = {
+            "acknowledge_uncaptured_state": acknowledge_uncaptured_state,
+            "acknowledge_omitted_context": acknowledge_omitted_context,
+            "acknowledge_new_turn_budget": acknowledge_new_turn_budget,
+        }
+        if any(value is not True for value in acks.values()):
+            raise ValueError("Three explicit recovery acknowledgments required")
+        approved = {**approval, **acks}
+        resp = httpx.post(
+            f"{self._base}/runs/{run_id}/recover",
+            json={"user_id": user_id, "request_id": request_id, "provider": provider, **approved},
+            timeout=30,
+        )
+        resp.raise_for_status()
+        if len(resp.content) > 4 * 1024 * 1024:
+            raise ValueError("Recovery result exceeds supported wire size; inspect keyed run")
+        record = resp.json()
+        request = record.get("request") if isinstance(record, dict) else None
+        origin = request.get("recovery_source") if isinstance(request, dict) else None
+        if not isinstance(origin, dict):
+            raise ValueError("Recovery response lacks provenance; inspect keyed run")
+        raw = origin.get("approval_json")
+        if not isinstance(raw, str) or len(raw.encode()) > 65536:
+            raise ValueError("Invalid saved recovery approval")
+        saved = json.loads(raw)
+        if isinstance(saved, dict):
+            self._validate_recovery_approval({k: v for k, v in saved.items() if k not in acks})
+        if (
+            not isinstance(saved, dict)
+            or saved != approved
+            or json.dumps(saved, ensure_ascii=False, separators=(",", ":"), allow_nan=False) != raw
+            or origin.get("approval_sha256") != hashlib.sha256(raw.encode()).hexdigest()
+            or type(saved.get("expected_request_output_allowance")) is not int
+            or any(saved.get(name) is not True for name in acks)
+        ):
+            raise ValueError("Recovery response approval differs; inspect keyed run")
+        fork_id = uuid.uuid5(
+            uuid.NAMESPACE_URL,
+            json.dumps(
+                [
+                    "agent-harness-recovery",
+                    user_id,
+                    run_id,
+                    request_id,
+                ]
+            ),
+        ).hex
+        expected_source = {
+            "session_id": origin.get("source_session_id"),
+            "turn_id": origin.get("source_turn_id"),
+            "acknowledge_uncaptured_state": True,
+        }
+        if (
+            type(origin.get("schema_version")) is not int
+            or origin["schema_version"] != 1
+            or origin.get("draft_version") != "recovery-draft-v1"
+            or origin.get("source_run_id") != run_id
+            or not identifier(origin.get("source_session_id"))
+            or origin["source_session_id"] == fork_id
+            or not identifier(origin.get("source_turn_id"))
+            or origin.get("budget_scope") != "separate-configured-turn"
+            or origin.get("source_record_sha256") != approval["expected_record_sha256"]
+            or origin.get("source_archive_sha256") != approval["expected_archive_sha256"]
+            or origin.get("messages_sha256") != approval["expected_messages_sha256"]
+            or origin.get("tool_specs_sha256") != approval["expected_tool_specs_sha256"]
+            or type(origin.get("request_output_allowance")) is not int
+            or origin["request_output_allowance"] != approval["expected_request_output_allowance"]
+            or request.get("user_id") != user_id
+            or request.get("request_id") != request_id
+            or request.get("provider") != provider
+            or request.get("message") != approval["message"]
+            or request.get("session_id") != fork_id
+            or request.get("continuation_source") != expected_source
+            or request["continuation_source"].get("acknowledge_uncaptured_state") is not True
+            or not identifier(record.get("run_id"))
+            or record.get("run_id") == run_id
+            or record.get("status")
+            not in {"running", "finished", "cancelled", "failed", "interrupted"}
+            or (record.get("response") is not None and not isinstance(record["response"], dict))
+        ):
+            raise ValueError("Mismatched recovery response identity; inspect keyed run")
+        final = record.get("response")
+        if (record["status"] in {"finished", "cancelled"} and final is None) or (
+            final is not None
+            and (
+                final.get("run_id") != record["run_id"]
+                or final.get("completion_status")
+                not in {"completed", "incomplete", "blocked", "budget_exhausted", "cancelled"}
+                or final.get("verification_status")
+                not in {"not_run", "passed", "failed", "unavailable", "stale"}
+            )
+        ):
+            raise ValueError("Contradictory recovery result; inspect keyed run")
+        return dict(record)
 
     def cancel(self, user_id: str, session_id: str) -> str:
         resp = httpx.post(

@@ -3,7 +3,7 @@
 The prospective draft remains review-only. The explicit API described below can
 submit one separately budgeted recovery turn after review. Shared admission and
 durable provenance are prerequisites, not reusable execution leases. There is no
-automatic compaction, retry, CLI submission or panel submission.
+automatic compaction, retry or panel submission.
 
 ## Shared admission foundation (first slice)
 
@@ -195,3 +195,54 @@ API integration validation: 155 focused and 2,063 offline tests (five live desel
 Ruff/format/mypy, diff and local documentation link checks pass. Both offline
 scripted matrices passed 90/90 escalation decisions at unique temporary paths;
 contract labels and metric limits were inspected. No model inference ran.
+
+
+## Explicit CLI submission
+
+`agent-harness recover-run <source-run-id> --approval-file /path/approval.json
+--request-id <stable-key> --user-id <owner> --acknowledge-uncaptured-state
+--acknowledge-omitted-context --acknowledge-new-turn-budget` submits one POST.
+Optional `--provider` selects the same configured provider used for draft review;
+omission retains the server default. `--json` returns the validated saved run record.
+Human output leads with observed completion/check status (unknown until available),
+then the run/fork/request IDs. HTTP acceptance does not prove guards or work passed.
+
+Prepare the file only after inspecting `recovery-draft` output. It contains exactly:
+
+| Approval field | Reviewed value |
+|---|---|
+| `expected_record_sha256` | Draft `source_record_sha256` |
+| `spans` | The exact ordered selections submitted for that draft |
+| `message` | The identical proposed last user message |
+| `expected_archive_sha256` | Draft `source_archive_sha256` |
+| `expected_messages_sha256` | Draft `messages_sha256` |
+| `expected_tool_specs_sha256` | Draft `tool_specs_sha256` |
+| `expected_request_output_allowance` | Draft `context.request_output_allowance` |
+
+This is sensitive plaintext owner input. It contains no acknowledgments, owner,
+provider override or request key; supply those explicitly as command options.
+Files must be regular, nonsymlink UTF-8 JSON objects of at most 65,536 bytes, with
+unique keys. The command checks local fields, strict positive allowance, bounded
+proposal and selections, and refuses missing scope flags before any file/network
+access. It does not import runtime policy, refresh previews, fetch current records,
+poll results or silently retry. The server remains authoritative for fresh guards.
+
+The thin client verifies returned run/request/fork/provenance identity, canonical
+saved approval/hash/pins, supported version/scope and final status identity before
+printing either output form. Submitted values are escaped. Responses exceeding
+4 MiB or unsupported/contradictory envelopes refuse output; this is a client review
+bound, not a server execution cap or evidence that submission failed.
+
+If transport/storage/response validation fails, outcome may be unknown. Errors print
+only the exception category and escaped stable key, not server bodies, credentials
+or approval content. Inspect `runs --request-id <same-key>` and `run <run-id>` using
+the same owner before explicitly retrying the identical file, provider and key.
+Matching replay is a POST to the original recovery route; restart does not refresh
+or execute saved state. A changed file/provider/key is not an exact retry. Existing
+run review and explicit cancellation commands remain separate owner actions.
+
+Scripted CLI/API restart tests include real disposable edits and configured pytest,
+source archive/Git-index and later-user-edit preservation, malformed/duplicate/
+oversized/nonregular inputs, all scope flags, response identity corruption and
+ambiguous transport failure. No inference or measured recovery gain follows.
+Panel review/submission and separately frozen live recovery evaluation remain open.

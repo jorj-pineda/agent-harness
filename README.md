@@ -1106,7 +1106,20 @@ Advanced API callers can explicitly submit one reviewed, separately budgeted tur
 with `POST /runs/<run_id>/recover`; see the [guarded execution contract](RECOVERY_EXECUTION.md)
 for required pins, acknowledgments and fresh workspace checks. HTTP 202 records intent,
 not success. Recovery forks cannot be extended through ordinary chat or continuation.
-CLI/panel recovery submission and measured live recovery remain separate work.
+After reviewing a draft, CLI users can submit its explicit approval file:
+
+```sh
+agent-harness recover-run <source-run-id> --user-id dev1 \
+  --approval-file /path/to/approval.json --request-id recovery-001 \
+  --acknowledge-uncaptured-state --acknowledge-omitted-context \
+  --acknowledge-new-turn-budget
+```
+
+The [CLI approval format](RECOVERY_EXECUTION.md#explicit-cli-submission) requires the
+reviewed pins, exact selections and proposal. Keep the file/provider/key for an
+explicit retry after inspecting saved runs; the command makes one POST and never
+polls, refreshes or retries automatically. Panel submission and measured live
+recovery remain separate work.
 
 For a bounded recovery review, use
 `GET /runs/<run_id>/recovery-review?user_id=dev1`. This returns saved objective,
