@@ -5,7 +5,8 @@ prepared and unrun. Four fresh original T02/T04 sources supply paired full-histo
 and projected followups, with equal 150+150-second reserved workflow budgets and
 unchanged external acceptance. The [fixed unrun plan](projected-recovery-plan.json)
 uses authorized local Gemma only; no hosted calls or historical controls. Paired
-staging, actual-client preflight, exact execution freeze/approval and fresh launch
+staging now has [owned preservation primitives](RECOVERY_STAGING.md); actual-client
+preflight, exact execution freeze/approval and fresh launch
 gates remain before generation. This preparation changes no defaults or release
 claims and launches no model.
 
