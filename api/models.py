@@ -12,6 +12,7 @@ from typing import Literal
 from pydantic import BaseModel, Field, field_validator
 
 from harness.recovery_context import RecoveryContextSelection
+from harness.recovery_draft import RecoveryDraftSelection
 from harness.reverts import FileRevertInput
 from harness.runs import RequestId
 from harness.state import TurnResponse
@@ -96,6 +97,11 @@ class CreateCheckpointRequest(BaseModel):
 
 class RecoveryContextRequest(RecoveryContextSelection):
     user_id: str = Field(strict=True, min_length=1)
+
+
+class RecoveryDraftRequest(RecoveryDraftSelection):
+    user_id: str = Field(strict=True, min_length=1)
+    provider: str | None = None
 
 
 class RevertFileRequest(BaseModel):
