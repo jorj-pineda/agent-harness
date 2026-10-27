@@ -15,11 +15,12 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-from providers.base import ProviderFailure
+from providers.base import ChatMessage, ProviderFailure
 
 from .budget_evidence import MAX_SAVED_BUDGET_EVENTS, BudgetEvidence, BudgetObservation
 from .checkpoints import CapturedCheckpoint, CheckpointRecord, CheckpointSummary
 from .execution_profile import ExecutionProfile
+from .recovery_identity import recovery_messages_sha256
 from .reverts import FileRevertInput, FileRevertOutcome, FileRevertRecord
 from .runs import RequestConflictError, RunInput, RunRecord
 from .state import Session, TurnResponse
@@ -284,6 +285,19 @@ class SessionStore:
             item.turn_id for item in source.responses
         ] or any(turn.finished_at is None for turn in session.turns):
             raise ValueError("Source archive turn/response alignment is inconsistent.")
+        recovery = session.recovery_source
+        if recovery is not None and (
+            recovery.source_session_id != source.session.session_id
+            or recovery.source_turn_id != source.session.turns[-1].turn_id
+            or not source.responses
+            or recovery.source_run_id != source.responses[-1].response.run_id
+            or hashlib.sha256(source.model_dump_json().encode()).hexdigest()
+            != recovery.source_archive_sha256
+            or session.turns != source.session.turns
+            or session.workspace_root != source.session.workspace_root
+            or session.inspection_only != source.session.inspection_only
+        ):
+            raise ValueError("Recovery fork source identity mismatch.")
         return SessionArchive(session=session, responses=source.responses).model_dump_json()
 
     def _archive_payload(
@@ -366,16 +380,72 @@ class SessionStore:
         configured_model: str | None,
         fork: tuple[SessionArchive, Session] | None = None,
     ) -> tuple[RunRecord, bool]:
+        recovery = request.recovery_source
+        if recovery is not None:
+            existing = self.find_run(request.user_id, request.request_id)
+            if existing is not None:
+                if existing.request != request:
+                    raise RequestConflictError("Recovery key belongs to different input")
+                return existing, False
+            if fork is None:
+                raise ValueError("Recovery requires a fresh atomic fork seed")
+        elif fork is None:
+            row = self._conn.execute(
+                "SELECT json_type(archive, '$.session.recovery_source') "
+                "FROM sessions WHERE session_id=?",
+                (request.session_id,),
+            ).fetchone()
+            if row and row[0] not in (None, "null"):
+                raise ValueError("A recovery fork accepts only its single seeded run")
         record = RunRecord(request=request, provider=provider, configured_model=configured_model)
         fork_payload = self._fork_payload(*fork) if fork else None
         if fork and (
             fork[1].session_id != request.session_id
             or fork[1].user_id != request.user_id
             or fork[1].continuation_source != request.continuation_source
+            or fork[1].recovery_source != request.recovery_source
         ):
             raise ValueError("Fork/run identity mismatch.")
+        if (
+            recovery is not None
+            and fork is not None
+            and (
+                recovery_messages_sha256(
+                    [*fork[1].messages, ChatMessage(role="user", content=request.message)]
+                )
+                != recovery.messages_sha256
+            )
+        ):
+            raise ValueError("Recovery seed does not match its first input")
         try:
             with self._conn:
+                if recovery is not None:
+                    # Lock before reading source evidence, not after a deferred SELECT.
+                    self._conn.execute("BEGIN IMMEDIATE")
+                    existing = self.find_run(request.user_id, request.request_id)
+                    if existing is not None:
+                        if existing.request != request:
+                            raise RequestConflictError("Recovery key belongs to different input")
+                        return existing, False
+                    current_archive = self.get(recovery.source_session_id)
+                    current_run = self.get_run(recovery.source_run_id)
+                    if (
+                        current_archive is None
+                        or current_run is None
+                        or current_archive.session.user_id != request.user_id
+                        or current_archive.session.session_id != recovery.source_session_id
+                        or current_run.request.user_id != request.user_id
+                        or current_run.request.session_id != recovery.source_session_id
+                        or current_run.status == "running"
+                        or current_run.response is None
+                        or not current_archive.responses
+                        or current_archive.responses[-1].response != current_run.response
+                        or hashlib.sha256(current_archive.model_dump_json().encode()).hexdigest()
+                        != recovery.source_archive_sha256
+                        or hashlib.sha256(current_run.model_dump_json().encode()).hexdigest()
+                        != recovery.source_record_sha256
+                    ):
+                        raise ValueError("Recovery source changed before atomic seeding")
                 self._conn.execute(
                     "INSERT INTO runs VALUES (?, ?, ?, ?, ?, ?, ?)",
                     (

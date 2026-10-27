@@ -21,11 +21,12 @@ import uuid
 from datetime import UTC, datetime
 from typing import Any, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, SerializerFunctionWrapHandler, model_serializer
 
 from providers.base import ChatMessage, TokenUsage
 
 from .outcome_types import CompletionStatus, VerificationStatus
+from .recovery_identity import RecoverySource
 
 
 def _uuid() -> str:
@@ -139,6 +140,14 @@ class Session(BaseModel):
     messages: list[ChatMessage] = Field(default_factory=list)
     turns: list[Turn] = Field(default_factory=list)
     created_at: datetime = Field(default_factory=_utcnow)
+    recovery_source: RecoverySource | None = Field(default=None, frozen=True)
+
+    @model_serializer(mode="wrap")
+    def serialize_session(self, handler: SerializerFunctionWrapHandler) -> dict[str, Any]:
+        data: dict[str, Any] = handler(self)
+        if self.recovery_source is None:
+            data.pop("recovery_source", None)
+        return data
 
 
 class TurnResponse(BaseModel):
