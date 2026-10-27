@@ -66,3 +66,56 @@ atomic fork seeding, fresh execution integration, restart/keyed replay, explicit
 client submission and measured recovery remain separate work. Existing defaults,
 release no-go/8-of-10 targets and broader G2–G5 remain unchanged. No inference or
 Duodoro edits occur in this slice.
+
+## Durable provenance and projected fork intent
+
+`RecoverySource` is a bounded immutable storage record for a source run/session/turn,
+source record/archive hashes, first messages/schema/allowance pins, draft version,
+canonical approval JSON and its byte hash. The JSON is capped at 65,536 UTF-8 bytes;
+metadata pins and literal scope acknowledgments must agree. This module validates
+storage consistency only. Execution must parse it again as `RecoveryApproval` and
+perform fresh admission; persistence is not a lease or confirmation that work ran.
+The intent's budget scope is `separate-configured-turn`, not old allowance transfer.
+Approval text is plaintext owner data already present in submitted review/input.
+
+Optional provenance on `Session` and `RunInput` is frozen and omitted entirely when
+absent, preserving legacy normalized JSON and hashes. Existing records are not
+backfilled or rewritten. No table migration or extra plaintext source snapshot is
+needed. Older/mixed-version programs are not supported as concurrent writers;
+normal process-local/SQLite/filesystem limitations remain.
+
+`build_recovery_seed` verifies source/draft/approval identities and prepares a new
+checkpoint-enabled session with the source's unchanged turn records, owner, root,
+inspection policy and response history. Only the projected provider messages change:
+the proposed last user message is withheld so runtime can append it exactly once.
+The original source archive retains all raw history; provenance points back to it.
+The projected archive is not evidence that omitted assistant/tool context is irrelevant
+or that partial history is semantically complete. The factory starts no execution.
+
+`SessionStore.create_run` binds identical request/session provenance and the exact
+seed-plus-proposed-message hash before inserting a recovery run. Source turn records,
+root and inspection policy cannot be silently changed. An immediate SQLite write
+transaction rereads authoritative owned source run/archive hashes before atomically
+inserting the new run and fork archive. Source changes refuse, and an insertion error
+rolls back both rows. The metadata lock is not a workspace writer lock. Existing
+checkpoint blobs, source rows, user files and Git state remain untouched.
+
+Matching keyed replay returns the existing run before reseeding or refreshing source
+evidence, including after source changes. The key is rechecked under the write lock
+for concurrent commit races; changed input conflicts instead of duplicating intent.
+A new recovery request requires its atomic fresh fork, and an already seeded recovery
+session rejects new ordinary run creation. Persisted seeds remain read-only on API
+restart; this slice exposes no execution endpoint or automatic restoration.
+
+Focused storage tests cover immutable bounded provenance, exact legacy serialization,
+source preservation/restart, projected-message and identity refusals, source advancement,
+run/session rollback, an actual competing SQLite write blocked during source reread,
+a concurrently committed matching key joined under the lock, and one-run seed limits.
+Fresh execution integration, actual checkpoint/provider sequencing, cancellation,
+usage/first-input observation, generic-chat bypass prevention and explicit clients
+remain the next separate work. No inference, model-quality gain, Duodoro edit or
+release-gate closure follows from storage mechanics.
+
+Provenance validation: 114 focused and 2,040 offline tests (five live deselected),
+Ruff/format/mypy and diff checks passed. These are storage/coordination mechanics,
+not model-quality or live recovery evidence. No provider inference was run.

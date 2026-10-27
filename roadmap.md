@@ -4,6 +4,19 @@ Updated: 2026-10-26
 
 ## Current release decision
 
+**2026-10-26 — Durable recovery provenance and fork intent:** bounded immutable
+approval/source/message/schema/allowance metadata is shared by saved session and
+run input, while absent fields retain legacy JSON/hash identities. Projected seeds
+preserve owner/root/inspection and source turn/response history; only provider
+messages are reduced. Immediate SQLite source reread plus atomic run/fork insertion
+refuses stale evidence and rolls back partial writes. Matching replay, concurrent
+key commits and single-run intent limits are explicit. The
+[storage contract](RECOVERY_EXECUTION.md) enables no endpoint or automatic restore;
+fresh guarded execution integration is the third slice. Validation: 114 focused/
+2,040 offline tests (five live deselected), Ruff/format/mypy and diff checks pass.
+No inference, Duodoro edit,
+default/quality claim or original no-go/8-of-10/G2–G5 change.
+
 **2026-10-26 — Shared recovery admission foundation:** explicit review pins and
 strict scope/new-budget acknowledgments feed a fresh checker for source/archive,
 linked checkpoint, scoped current bytes/modes/root, newer unknown work, known
@@ -12,8 +25,9 @@ first normalized messages/schemas/output allowance before forwarding and refuses
 reuse after mismatch/error/cancellation. Existing identities stay byte-compatible.
 The [execution foundation](RECOVERY_EXECUTION.md) enables no API or runtime path
 and grants no reusable lease; durable provenance and guarded execution integration
-are the next two slices. Eighty-eight focused regressions and static checks pass;
-full offline validation is required before merge. No inference, Duodoro edit,
+are the next two slices. Validation before merge: 88 focused/2,015 offline tests
+(five live deselected), static checks, both CI checks and exact-head Luna review
+passed. No inference, Duodoro edit,
 default/quality claim or original no-go/8-of-10/G2–G5 change.
 
 **2026-10-26 — Thin CLI prospective draft review:** explicit selection-file and
