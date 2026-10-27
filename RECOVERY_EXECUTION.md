@@ -272,7 +272,10 @@ admission and workspace limitations remain authoritative.
 
 Returned intent/result records must match owner/key/proposal/provider, deterministic
 fork identity, source/provenance pins and canonical approval/hash, version/scope and
-final response identity/status. Human text leads with observed completion/check/
+final response identity/status and server lifecycle mapping. Running, failed and
+interrupted records must have no durable final response; finished records require a
+non-cancelled final response, and cancelled records require a cancelled final response.
+The CLI applies the same consistency checks. Human text leads with observed completion/check/
 lifecycle states; absent final work stays unknown. Full saved provenance/results
 are collapsed text-only details, with an explicit link to normal saved-run review.
 Unsupported, oversized (over 4 MiB) or inconsistent responses remain unconfirmed.

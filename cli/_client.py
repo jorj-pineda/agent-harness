@@ -271,10 +271,15 @@ class AgentClient:
         ):
             raise ValueError("Mismatched recovery response identity; inspect keyed run")
         final = record.get("response")
-        if (record["status"] in {"finished", "cancelled"} and final is None) or (
+        finalized = record["status"] in {"finished", "cancelled"}
+        if (finalized != (final is not None)) or (
             final is not None
             and (
                 final.get("run_id") != record["run_id"]
+                or (
+                    (record["status"] == "cancelled")
+                    != (final.get("completion_status") == "cancelled")
+                )
                 or final.get("completion_status")
                 not in {"completed", "incomplete", "blocked", "budget_exhausted", "cancelled"}
                 or final.get("verification_status")

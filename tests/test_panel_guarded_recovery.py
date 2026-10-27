@@ -115,6 +115,23 @@ const bypass=async panel=>{
     assert.equal(p.get('recovery-submit-results').textContent,'');
     assert.match(p.get('recovery-submit-status').textContent,/unconfirmed/);await clear(p);
   }
+  // Production maps a final cancelled response to cancelled lifecycle, all other final
+  // responses to finished; running/failed/interrupted records have no durable final.
+  for(const lifecycle of ['running','finished','cancelled','failed','interrupted']){
+    for(const completion of [null,'completed','incomplete','blocked','budget_exhausted','cancelled']){
+      p=boot();flags(p);next=clone(data.completed);next.status=lifecycle;
+      if(completion===null)next.response=null;else next.response.completion_status=completion;
+      const valid=completion===null ? ['running','failed','interrupted'].includes(lifecycle)
+        : lifecycle===(completion==='cancelled'?'cancelled':'finished');
+      await p.get('submit-recovery').fire('click');assert.equal(p.calls.length,1);
+      if(valid)assert.match(p.get('recovery-submit-results').textContent,new RegExp('Completion: '+(completion??'unknown')));
+      else {
+        assert.equal(p.get('recovery-submit-results').textContent,'',lifecycle+'/'+completion);
+        assert.match(p.get('recovery-submit-status').textContent,/unconfirmed/);
+      }
+      await clear(p);
+    }
+  }
   // Readable but mismatched or unreadable storage freezes all new edits and cannot be retried.
   for(const raw of ['{broken',JSON.stringify({...intent,body:{...intent.body,user_id:'other'}}),retained.replace('"schema_version":1','"schema_version":true')]){
     storage.set(key,raw);p=boot();assert.equal(p.calls.length,0);await bypass(p);

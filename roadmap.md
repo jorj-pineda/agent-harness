@@ -14,7 +14,9 @@ Forget actions preserve uncertainty, exact replay and cancellation-settling limi
 reload sends nothing and restores no editing session. The
 [panel execution contract](RECOVERY_EXECUTION.md#explicit-panel-submission-and-retained-intent)
 closes the CLI submission/panel review/panel submission batch, not automatic
-compaction or measured recovery. Validation: 67 focused and 2,105 offline tests
+compaction or measured recovery. A review follow-up binds final-response presence and
+cancelled completion to the server lifecycle in both recovery clients, with exhaustive
+state matrices rejecting contradictory success displays. Validation: 97 focused and 2,135 offline tests
 (five live deselected), Ruff/format/mypy, JS syntax, packaged asset serving and diff
 checks pass. Actual scripts consume real API provenance from disposable fake-model
 edits/checks; browser fixture interactions cover submission/reload/lookup/corrupt

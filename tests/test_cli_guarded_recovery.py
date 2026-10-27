@@ -352,3 +352,36 @@ def test_terminal_controls_are_escaped_and_json_roundtrips_exact_proposal(tmp_pa
         assert "\\u001b" in result.stdout and "\\u009b" in result.stdout
     post.assert_called_once()
     get.assert_not_called()
+
+
+@pytest.mark.parametrize("lifecycle", ["running", "finished", "cancelled", "failed", "interrupted"])
+@pytest.mark.parametrize(
+    "completion", [None, "completed", "incomplete", "blocked", "budget_exhausted", "cancelled"]
+)
+def test_recovery_final_presence_and_completion_must_agree_with_lifecycle(
+    tmp_path, lifecycle, completion
+):
+    data, approval, path = ready(tmp_path)
+    saved = record(data, approval)
+    saved["status"] = lifecycle
+    if completion is not None:
+        saved["response"] = {
+            "run_id": saved["run_id"],
+            "completion_status": completion,
+            "verification_status": "passed",
+        }
+    valid = (
+        lifecycle in {"running", "failed", "interrupted"}
+        if completion is None
+        else lifecycle == ("cancelled" if completion == "cancelled" else "finished")
+    )
+    with patch("httpx.post", return_value=response(saved)) as post, patch("httpx.get") as get:
+        result = runner.invoke(app, [*args(data, path), "--json"])
+    assert result.exit_code == (0 if valid else 1), result.output
+    if valid:
+        assert json.loads(result.output) == saved
+    else:
+        assert "Recovery intent recorded" not in result.output
+        assert "completion_status" not in result.output
+    post.assert_called_once()
+    get.assert_not_called()

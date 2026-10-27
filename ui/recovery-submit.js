@@ -94,8 +94,9 @@
         request.continuation_source?.session_id !== intent.source_session_id || request.continuation_source?.turn_id !== origin.source_turn_id ||
         request.continuation_source?.acknowledge_uncaptured_state !== true) throw new Error("mismatched-record");
     const response = record.response;
-    if ((["finished", "cancelled"].includes(record.status) && !object(response)) ||
+    if ((["finished", "cancelled"].includes(record.status) ? !object(response) : response !== null) ||
         (response !== null && (!object(response) || response.run_id !== record.run_id ||
+          ((record.status === "cancelled") !== (response.completion_status === "cancelled")) ||
           !["completed", "incomplete", "blocked", "budget_exhausted", "cancelled"].includes(response.completion_status) ||
           !["not_run", "passed", "failed", "unavailable", "stale"].includes(response.verification_status)))) throw new Error("invalid-final");
     return record;
