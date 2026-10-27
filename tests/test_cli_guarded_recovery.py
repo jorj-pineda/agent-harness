@@ -330,3 +330,25 @@ def test_cli_real_tools_then_restart_replay_preserves_source_and_later_work(tmp_
     assert len(provider.calls) == 3 and restarted.calls == []
     assert (data["root"] / "a.py").read_text().endswith("# later user edit\n")
     assert (data["root"] / ".git/index").read_bytes() == data["index"]
+
+
+@pytest.mark.parametrize("raw", [False, True])
+def test_terminal_controls_are_escaped_and_json_roundtrips_exact_proposal(tmp_path, raw):
+    data, approval, path = ready(tmp_path)
+    controls = "\x1b[2J\x1b]0;title\x07\x00\r\x7f\u009b31m\u202e"
+    approval["message"] += controls
+    path.write_text(json.dumps(approval))
+    saved = record(data, approval)
+    # Raw JSON includes arbitrary server text too; encoding must protect every string.
+    saved["error"] = "server text " + controls
+    with patch("httpx.post", return_value=response(saved)) as post, patch("httpx.get") as get:
+        result = runner.invoke(app, [*args(data, path), *(["--json"] if raw else [])])
+    assert result.exit_code == 0, result.output
+    for char in ("\x1b", "\x07", "\x00", "\r", "\x7f", "\u009b", "\u202e"):
+        assert char not in result.stdout
+    if raw:
+        assert json.loads(result.stdout) == saved
+        assert json.loads(result.stdout)["request"]["message"] == approval["message"]
+        assert "\\u001b" in result.stdout and "\\u009b" in result.stdout
+    post.assert_called_once()
+    get.assert_not_called()
