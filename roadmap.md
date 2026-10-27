@@ -4,6 +4,21 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-27 — Paired recovery client preflight:** actual CLI commands exercise
+local HTTP, shared runtime/tools/checks, independent closed-store clones and paired
+staging at one owned root/inode with scripted inference. Native full-history context
+refusal and exact reviewed projected inputs remain distinct outcomes; failed checks,
+unknown usage, provider/transport failure, cancellation and read-only restart preserve
+source evidence and later work. An append-only owned-API process/group/listener
+checker prevents stale source settlement from overlooking a newer arm; terminal
+managed-command cancellation is checked separately from its acknowledgment. The
+[preflight](evals/projects/duodoro/PROJECTED_RECOVERY_PREFLIGHT.md) maps existing
+drift/first-input/storage/admission regressions and states lifecycle/ignored-content
+limits. This is preparation slice three only. Reviewed exact execution freeze,
+parent approval and fresh backend/phase gates still precede conditional local results.
+No inference, Duodoro edit, measured gain, default change or original cohort/no-go/
+8-of-10/G2–G5 closure.
+
 **2026-10-27 — Owned paired-recovery staging primitives:** a new evaluation-owned
 root retains its canonical device/inode while hash-pinned eligible artifact bytes,
 file/directory modes and independent grade/regrade outputs gate replacement.
