@@ -1091,6 +1091,16 @@ agent-harness recovery-context <run-id> --user-id dev1 \
 
 The selection file pins the reviewed run hash and explicit final-checkpoint ranges.
 The command sends one read-only preview POST and does not compact or execute history.
+For a prospective message draft with current shared instructions and budget estimates,
+use [draft review](RECOVERY_DRAFT.md):
+
+```sh
+agent-harness recovery-draft <run-id> --user-id dev1 \
+  --selection-file /path/to/selection.json --message "Finish the original bounded task"
+```
+
+This also makes one review request. Estimated fit does not authorize execution or
+reset/transfer the saved run's allowance; omitted assistant context remains explicit.
 
 For a bounded recovery review, use
 `GET /runs/<run_id>/recovery-review?user_id=dev1`. This returns saved objective,

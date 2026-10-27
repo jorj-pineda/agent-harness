@@ -126,3 +126,58 @@ reservation release and missing-current-workspace versus historical-only access.
 Negative record run-ID, saved profile, configured-model and provider cases close the
 additional identity-test coverage suggested by the core PR review. CLI access and
 actual execution/recovery remain separate; original release gates stay unchanged.
+
+## CLI draft review
+
+The existing recovery-context selection file (exactly `expected_record_sha256`
+and `spans`) can be reused with an explicit proposed message:
+
+```sh
+agent-harness recovery-draft <run-id> --user-id dev1 \
+  --selection-file /path/to/selection.json \
+  --message "Finish the original bounded task"
+```
+
+An optional `--provider` selects only a currently configured server provider for
+review; it is not a switch on the saved run or an inference request. Add `--json`
+for the complete response. The same bounded regular UTF-8 selection-file reader
+and duplicate-key rules as recovery-context apply. The proposed message is nonblank
+and at most 4,096 UTF-8 bytes. Client input errors reject before HTTP.
+
+The thin command sends one 30-second POST to `recovery-draft`, with no metadata GET,
+retry, fallback, continuation submission or local project-source read. Generic
+error categories suppress private input/transport/server details and explicitly
+say no continuation was submitted. A missing current workspace may still permit
+separate historical-only review; this command does not automatically request it.
+
+Before either output mode, the client validates supported version, run/selection/
+proposal identity, required hashes, non-execution and hypothetical-budget scope,
+message roles/shape/counts/omissions and message hash. It parses the labeled embedded
+historical packet through the existing recovery/context/span validators without
+extra requests, checks the embedded evidence identity and supported final response
+status, and validates context/configuration/instruction metadata shapes and status
+consistency. Estimates and allowances stay server computations; the client does not
+recompute or apply budgets. Unsupported or contradictory responses refuse without
+printing partial draft contents. Reused validation/input-reader extraction preserves
+the existing recovery-review/context/span commands.
+
+Human output leads with original completion/check state and separates current
+prospective estimates, profile drift and instruction loading. It shows omitted
+message counts, exact candidate messages/hashes and the hypothetical-new-turn scope.
+Estimated fit is explicitly not permission to execute; unbounded/blocked states
+remain visible. Both human and JSON output escape owner text and terminal controls;
+separate display whitespace/escaping can enlarge the output beyond the compact
+server-response bound. These consistency checks cannot authenticate storage, prove
+that user history was complete, validate fresh workspace state, or independently
+verify server estimates/schema bindings. The server remains authoritative.
+
+Validation: 317 focused regressions and Ruff/format/mypy, installed command help
+and diff checks pass. Ninety-four new CLI cases include identity/hash/role/tool-call/
+omission/context/configuration/instruction contradictions, explicit blocked and
+unbounded review, safe rendering, private errors, pre-HTTP refusal and one-review-
+request behavior. A real CLI-to-restarted-API test retains exact draft/run/archive
+evidence and later user edits with zero new runs/provider calls. Full offline
+validation is required before merge. This completes only prospective construction/
+API/CLI review, not automatic compaction, safe execution or measured recovery.
+Defaults, original cohorts, release no-go/8-of-10 and broad G2–G5 remain unchanged;
+no inference, Duodoro edit, paid call or model-quality claim follows.
