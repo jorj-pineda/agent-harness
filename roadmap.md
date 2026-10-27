@@ -1,8 +1,23 @@
 # Roadmap: a coding harness for lower-tier models
 
-Updated: 2026-10-26
+Updated: 2026-10-27
 
 ## Current release decision
+
+**2026-10-27 — Explicit CLI recovery submission:** a bounded regular JSON
+approval file retains the reviewed pins, ordered spans and exact proposal; owner,
+provider, stable key and all three scope/new-budget acknowledgments stay explicit
+command options. One POST performs no preview refresh, metadata fetch, polling or
+retry. Returned request/fork/provenance/approval/status identities are checked before
+escaped human/JSON output, and ambiguous errors retain the key without private
+payloads. Scripted CLI → API real-file edits/configured pytest → restart replay
+preserve source evidence, staged Git state and later user edits with no redispatch.
+The [CLI contract](RECOVERY_EXECUTION.md#explicit-cli-submission) completes only
+client submission for the guarded API. Panel draft review/submission and separately
+frozen live recovery measurement remain open. Validation: 218 focused and 2,101
+offline tests (five live deselected), Ruff/format/mypy, installed help and diff checks
+pass. No inference, Duodoro edits, default/quality claim or original cohort/no-go/
+8-of-10/broad G2–G5 change.
 
 **2026-10-26 — Explicit guarded recovery API:** one owner-scoped POST binds
 reviewed source/archive/message/schema/allowance pins and strict scope/new-budget
