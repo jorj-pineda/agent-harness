@@ -4,6 +4,20 @@ Updated: 2026-10-26
 
 ## Current release decision
 
+**2026-10-26 — Prospective recovery draft construction:** a detached candidate
+retains all saved user-role text whole/in order, refreshes the configured system
+prompt/root instructions/notes/check argv through shared runtime helpers, and
+labels selected recovery evidence as historical data. Source/archive/profile and
+transcript integrity checks refuse ambiguity in saved identities; counts retain
+omitted nonuser history. Shared token math reports draft and refreshed-full-history
+heuristics, requested allowance and blocked/unbounded states without allocating
+or transferring source budgets. The [draft contract](RECOVERY_DRAFT.md) explicitly
+retains loss of assistant agreements, root-only discovery and unknown current-state
+limits. Seventy focused regressions and static checks pass; full offline validation
+is required before merge. API/CLI review access are the next separate slices;
+automatic compaction, guarded execution and measured recovery remain unfinished.
+No inference, Duodoro edit, default/quality claim or no-go/8-of-10/G2–G5 change.
+
 **2026-10-26 — Thin CLI recovery-context preview:** a bounded explicit JSON
 selection file drives one owner-scoped preview POST with no metadata fetch, retry
 or continuation submission. Shared client response validators retain original
@@ -15,8 +29,9 @@ edits without provider calls. This closes the deterministic assembly/API/CLI
 [preview slice](RECOVERY_CONTEXT.md), not prospective prompt/context-fit review,
 instruction retention, automatic compaction, execution or measured recovery.
 Defaults, historical cohorts, no-go/8-of-10 and broad G2–G5 remain unchanged.
-Validation: 210 focused regressions pass; full offline/static gates are required
-before merge. No inference or Duodoro edits ran.
+Validation before merge: 210 focused/1,832 offline tests (five live deselected),
+Ruff/format/mypy, both CI checks and exact-head Luna review passed. No inference or
+Duodoro edits ran.
 
 **2026-10-26 — Owner-checked recovery-context preview API:** structured POST
 computes the bounded historical bundle without creating work or durable state.
