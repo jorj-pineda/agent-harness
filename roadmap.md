@@ -4,6 +4,17 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-27 — Source wait/dispatch cohort complete:** the
+[results](evals/projects/duodoro/SOURCE_WAIT_RESULTS.md) retain all four original
+T02 cells: waits of 60 and 180 seconds each yield 0/2 accepted and completed-and-accepted. All second
+calls returned, no provider timeout or wall stop occurred, and all cells stopped
+at the next-request total-token gate after three reads. Artifacts are unchanged,
+all twelve independent grades reject, and usage is known. Input/profile/restart/
+preservation audits pass; all owned resources settle and Duodoro is unchanged.
+The wait intervention did not bind, so this establishes no longer-wait rescue or
+general equivalence. Close protocol/freeze/results without default adoption,
+extra inference or original cohort/no-go/8-of-10/G2–G5 closure.
+
 **2026-10-27 — Source wait/dispatch interaction protocol prepared:** the
 [new local protocol](evals/projects/duodoro/SOURCE_WAIT_PROTOCOL.md) fixes four
 fresh original T02 cells at provider60/180/180/60 with unchanged150-second source
