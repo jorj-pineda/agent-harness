@@ -4,6 +4,20 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-27 — Local projected-recovery comparison protocol:** a fixed unrun
+plan compares native full-history continuation with explicit projected recovery from
+four fresh T02/T04 source states, using authorized local Gemma and unchanged original
+requests/criteria. Equal half-budgets reserve at most five dispatch minutes per
+policy workflow; source-charged comparison totals stay separate from physical shared
+source costs. Initial successes need no followup; blocked and unrun cases remain
+visible. Fresh full-source initial-fail/reference-pass assertions, contract hashes/
+modes, validated settings and ledger arithmetic pass; Duodoro head/status/index/refs
+are unchanged. The [protocol](evals/projects/duodoro/PROJECTED_RECOVERY_PROTOCOL.md)
+starts only the first of five PRs. Safe paired staging, offline client preflight,
+reviewed exact execution freeze/approval and conditional bounded results remain next.
+No inference, hosted calls, new runtime/helper, model-quality gain, default change or
+original cohort/no-go/8-of-10/G2–G5 closure. Protocol merge alone cannot launch work.
+
 **2026-10-27 — Explicit panel recovery submission:** reviewed matching/bounded
 inputs plus three acknowledgments produce one exactly retained, separately budgeted
 fork request. Startup stays closed until local intent inspection; retained or

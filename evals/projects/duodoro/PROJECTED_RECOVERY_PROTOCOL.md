@@ -202,6 +202,11 @@ observation is not permission to edit an unchecked current workspace.
 
 ## Outcomes and present preparation
 
+Retain supplementary observed instruction-read ranges and unread/unknown coverage,
+including AGENTS.md, alongside source and projected payload sizes. Neither a selected
+range nor a smaller input proves full instruction inspection, compliance or preserved
+meaning. This observation does not alter the original acceptance contract.
+
 Primary outcome is completed-and-independently-accepted workflow **/4 per policy**,
 **/2 per task/policy**, including common initial successes as described above.
 Report source success, number needing recovery, conditional completed rescue with
