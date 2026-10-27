@@ -103,27 +103,33 @@ function scrollToBottom() {
   els.messages.scrollTop = els.messages.scrollHeight;
 }
 
+function recoveryWorkBlocked() {
+  // Stay closed until the submission module has inspected retained intent.
+  return globalThis.recoverySubmitPanel?.blocksWork() !== false;
+}
+
 function setBusy(value) {
   busy = value;
   globalThis.recoveryDraftPanel?.refresh();
-  const canSend = !busy && !pendingReversal && !reversalRecoveryBlocked && sessionId != null && sessionUsable;
+  globalThis.recoverySubmitPanel?.refresh();
+  const canSend = !recoveryWorkBlocked() && !busy && !pendingReversal && !reversalRecoveryBlocked && sessionId != null && sessionUsable;
   els.send.disabled = !canSend;
   els.input.disabled = sessionId == null || !sessionUsable;
   const cancellationTarget = pendingRequest?.kind === "continuation"
     ? pendingRequest.fork_session_id : pendingRequest?.session_id || sessionId;
   els.cancelTurn.disabled = !!pendingReversal || !cancellationTarget || !(busy || uncertain) || cancelRequested;
   els.cancelTurn.textContent = cancelRequested ? "Cancelling…" : "Cancel turn";
-  els.newSession.disabled = busy || pendingRequest != null || pendingReversal != null || reversalRecoveryBlocked;
+  els.newSession.disabled = recoveryWorkBlocked() || busy || pendingRequest != null || pendingReversal != null || reversalRecoveryBlocked;
   els.inspectionOnly.disabled = busy;
   els.refreshRuns.disabled = busy;
   els.previousRuns.disabled = busy || historyOffset === 0;
   els.nextRuns.disabled = busy || !els.nextRuns.dataset.more;
   els.pendingControls.hidden = pendingRequest == null;
   els.checkRun.disabled = busy;
-  els.retryRun.disabled = busy || !!pendingReversal || reversalRecoveryBlocked;
+  els.retryRun.disabled = recoveryWorkBlocked() || busy || !!pendingReversal || reversalRecoveryBlocked;
   els.forgetRun.disabled = busy;
   for (const button of els.history.querySelectorAll("button")) button.disabled = busy;
-  els.submitContinuation.disabled = busy || reviewInFlight || pendingRequest != null || pendingReversal != null || reversalRecoveryBlocked ||
+  els.submitContinuation.disabled = recoveryWorkBlocked() || busy || reviewInFlight || pendingRequest != null || pendingReversal != null || reversalRecoveryBlocked ||
     reviewTarget == null || !continuationTurnId || !els.continuationAck.checked ||
     !els.continuationMessage.value.trim();
   els.prepareContinuation.disabled = busy || reviewInFlight || reviewTarget == null;
@@ -132,11 +138,11 @@ function setBusy(value) {
   }
   els.reversal.hidden = reviewTarget == null && pendingReversal == null && !reversalRecoveryBlocked;
   els.reversalPending.hidden = pendingReversal == null && !reversalRecoveryBlocked;
-  els.submitReversal.disabled = busy || reviewInFlight || !!pendingRequest || !!pendingReversal || reversalRecoveryBlocked ||
+  els.submitReversal.disabled = recoveryWorkBlocked() || busy || reviewInFlight || !!pendingRequest || !!pendingReversal || reversalRecoveryBlocked ||
     !reviewTarget || !reversalPairAvailable || !els.reversalAck.checked ||
     !canonicalReversalPath(els.reversalPath.value);
   els.checkReversal.disabled = busy || reviewInFlight || !pendingReversal;
-  els.retryReversal.disabled = busy || reviewInFlight || !!pendingRequest || !pendingReversal || reversalStatus != null;
+  els.retryReversal.disabled = recoveryWorkBlocked() || busy || reviewInFlight || !!pendingRequest || !pendingReversal || reversalStatus != null;
   els.forgetReversal.disabled = busy || reviewInFlight;
   if (pendingReversal) els.reversalRequest.textContent = `Retained request: ${pendingReversal.request_id}; run: ${pendingReversal.run_id}; file: ${pendingReversal.path}. Reload submits nothing. Inspect first; retry preserves this exact input. Forgetting does not cancel or reconcile file work.`;
 }
@@ -410,7 +416,7 @@ function renderEnvelope(data, includeRunId = true) {
 // ---- API --------------------------------------------------------------
 
 async function createSession() {
-  if (busy || pendingRequest != null || pendingReversal != null || reversalRecoveryBlocked) return;
+  if (recoveryWorkBlocked() || busy || pendingRequest != null || pendingReversal != null || reversalRecoveryBlocked) return;
   const inspectionOnly = els.inspectionOnly.checked;
   const body = { user_id: userId };
   const workspace = els.workspace.value.trim();
@@ -468,7 +474,7 @@ async function createSession() {
 
 // Entry point for a turn. Prefer SSE (live tool cards); fall back to POST.
 function sendMessage(message) {
-  if (pendingReversal || reversalRecoveryBlocked) return false;
+  if (recoveryWorkBlocked() || pendingReversal || reversalRecoveryBlocked) return false;
   let request;
   try {
     request = {
@@ -487,7 +493,7 @@ function sendMessage(message) {
 }
 
 function dispatchRequest(request, reviewOnly = false) {
-  if (pendingReversal || reversalRecoveryBlocked) return;
+  if (recoveryWorkBlocked() || pendingReversal || reversalRecoveryBlocked) return;
   if (request.kind === "continuation") { postContinuation({ ...request }); return; }
   selectReviewTarget(null);
   request = { ...request };
@@ -957,7 +963,7 @@ async function prepareContinuation() {
 }
 
 function submitContinuation() {
-  if (busy || reviewInFlight || pendingRequest || pendingReversal || reversalRecoveryBlocked || !reviewTarget || !continuationTurnId ||
+  if (recoveryWorkBlocked() || busy || reviewInFlight || pendingRequest || pendingReversal || reversalRecoveryBlocked || !reviewTarget || !continuationTurnId ||
       !els.continuationAck.checked || !els.continuationMessage.value.trim()) return;
   let request;
   try {
@@ -977,6 +983,7 @@ function submitContinuation() {
 }
 
 async function postContinuation(request) {
+  if (recoveryWorkBlocked()) return;
   setBusy(true);
   sessionUsable = false;
   uncertain = true;
@@ -1041,7 +1048,7 @@ function showReversal(record, request) {
 }
 
 function submitReversal() {
-  if (busy || reviewInFlight || pendingRequest || pendingReversal || reversalRecoveryBlocked || !reviewTarget ||
+  if (recoveryWorkBlocked() || busy || reviewInFlight || pendingRequest || pendingReversal || reversalRecoveryBlocked || !reviewTarget ||
       !reversalPairAvailable || !els.reversalAck.checked || !canonicalReversalPath(els.reversalPath.value)) return;
   let request;
   try {
@@ -1059,7 +1066,7 @@ function submitReversal() {
 }
 
 async function postReversal(request) {
-  if (busy || reviewInFlight || pendingRequest) return;
+  if (recoveryWorkBlocked() || busy || reviewInFlight || pendingRequest) return;
   setBusy(true);
   sessionUsable = false;
   reversalStatus = null;
