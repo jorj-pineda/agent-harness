@@ -438,7 +438,74 @@ def show_run(record: dict) -> None:
         show_turn(summarize(record["response"]))
     else:
         typer.echo("No saved final response. Workspace edits may exist; inspect before new work.")
+    show_token_refusals(record)
     show_provider_observations(record)
+
+
+def token_refusal_text(event: object) -> str:
+    """Render a supported recorded comparison, never calculate a new budget."""
+    if not isinstance(event, dict):
+        return "unrecorded or unsupported"
+    stages = {"pre_request_stop": "estimate", "post_response_stop": "reported_prompt_lower_bound"}
+    block = event.get("request_block")
+    if block is None:
+        return "unrecorded"
+    if (
+        not isinstance(block, dict)
+        or block.get("format") != "request-budget-block-v1"
+        or event.get("kind") not in ("pre_request_stop", "post_response_stop")
+        or block.get("basis") != stages[event["kind"]]
+        or block.get("budget") not in ("total", "context")
+    ):
+        return "unrecorded or unsupported"
+    fields = ("limit_tokens", "available_tokens", "prompt_tokens", "minimum_output_tokens")
+    if any(type(block.get(key)) is not int or abs(block[key]) > 2**53 - 1 for key in fields):
+        return "unrecorded or unsupported"
+    limit, available, prompt, minimum = (block[key] for key in fields)
+    if (
+        limit <= 0
+        or prompt < 0
+        or minimum < 0
+        or available > limit
+        or (block["budget"] == "context" and available != limit)
+        or prompt + minimum <= available
+    ):
+        return "unrecorded or unsupported"
+    stage = "Before request" if event["kind"] == "pre_request_stop" else "After response"
+    resource = "total tokens" if block["budget"] == "total" else "context window"
+    basis = "estimated prompt" if block["basis"] == "estimate" else "reported prompt lower bound"
+    return (
+        f"{stage}: {resource}; limit={limit}; available before prompt={available}; "
+        f"{basis}={prompt}; minimum output={minimum}."
+    )
+
+
+def show_token_refusals(record: dict) -> None:
+    evidence = record.get("budget_evidence")
+    evidence = evidence if isinstance(evidence, dict) else {}
+    events = evidence.get("events")
+    events = events if isinstance(events, list) else []
+    rows = [
+        event
+        for event in events[:100]
+        if isinstance(event, dict)
+        and event.get("kind") in ("pre_request_stop", "post_response_stop")
+    ]
+    typer.echo("Next-request token refusals (saved review only):")
+    truncated = evidence.get("events_truncated")
+    coverage = "yes" if truncated is True else "no" if truncated is False else "unknown"
+    typer.echo(f"  prefix_truncated={coverage}")
+    for event in rows:
+        typer.echo(f"  {token_refusal_text(event)}")
+    if not rows:
+        typer.echo("  unrecorded (no token-refusal event in the displayed prefix)")
+    if truncated is True or len(events) > 100:
+        typer.echo("  Saved/displayed prefix truncated; later refusals may be absent.")
+    typer.echo(
+        "  Recorded gate values, not next-request usage, output allowances, completion, budget "
+        "compliance or permission to continue. Context availability is window capacity; total "
+        "availability is remaining turn tokens. Missing details stay unknown."
+    )
 
 
 def provider_observation_text(observation: object) -> str:
