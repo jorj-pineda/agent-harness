@@ -1,11 +1,12 @@
 """Bounded normalized request/budget observations, without model payloads."""
 
-from typing import Literal
+from typing import Any, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, SerializerFunctionWrapHandler, model_serializer
 
 from providers.base import ProviderCallObservation, TokenUsage
 
+from .context import RequestBudgetBlock
 from .trace import RequestIdentity
 
 MAX_SAVED_BUDGET_EVENTS = 100
@@ -15,6 +16,8 @@ BudgetObservationKind = Literal[
 
 
 class BudgetObservation(BaseModel):
+    request_block: RequestBudgetBlock | None = None
+
     kind: BudgetObservationKind
     iteration: int = Field(ge=0)
     message_count: int = Field(ge=0)
@@ -27,6 +30,13 @@ class BudgetObservation(BaseModel):
     call_observation: ProviderCallObservation | None = None
     prompt_tokens_used: int | None = Field(default=None, ge=0)
     completion_tokens_used: int | None = Field(default=None, ge=0)
+
+    @model_serializer(mode="wrap")
+    def serialize_observation(self, handler: SerializerFunctionWrapHandler) -> dict[str, Any]:
+        data: dict[str, Any] = handler(self)
+        if self.request_block is None:
+            data.pop("request_block", None)
+        return data
 
 
 class BudgetEvidence(BaseModel):

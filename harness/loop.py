@@ -41,7 +41,7 @@ from tools import ToolError, ToolRegistry
 from .access import INSPECTION_BLOCK_REASON, INSPECTION_TOOL_NAMES, execution_registry
 from .budget_evidence import BudgetObservation, BudgetObservationKind
 from .cancellation import TurnCancellation, TurnCancelled
-from .context import BudgetStop, TokenBudget
+from .context import BudgetStop, RequestBudgetBlock, TokenBudget
 from .grounding import Grounder
 from .memory import harvest_memory_writes
 from .outcome import (
@@ -180,6 +180,7 @@ async def run_turn(
         usage: TokenUsage | None = None,
         max_tokens: int | None = None,
         call_observation: ProviderCallObservation | None = None,
+        request_block: RequestBudgetBlock | None = None,
     ) -> None:
         if on_budget_observation is None:
             return
@@ -188,6 +189,7 @@ async def run_turn(
         on_budget_observation(
             BudgetObservation(
                 kind=kind,
+                request_block=request_block.model_copy(deep=True) if request_block else None,
                 iteration=iteration,
                 message_count=len(session.messages),
                 estimated_prompt_tokens=footprint.estimated_prompt_tokens if footprint else None,
@@ -216,7 +218,7 @@ async def run_turn(
             break
         allowance = budget.request_allowance(session.messages, tool_specs)
         if isinstance(allowance, BudgetStop):
-            observe_budget("pre_request_stop")
+            observe_budget("pre_request_stop", request_block=allowance.request_block)
             if trace is not None:
                 trace.append(
                     BudgetStopTrace(
@@ -382,7 +384,7 @@ async def run_turn(
 
         budget_stop = budget.after_response(wants_tools=bool(usable_calls))
         if budget_stop is not None:
-            observe_budget("post_response_stop")
+            observe_budget("post_response_stop", request_block=budget_stop.request_block)
         if budget_stop is not None and trace is not None:
             trace.append(
                 BudgetStopTrace(

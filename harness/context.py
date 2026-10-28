@@ -21,6 +21,9 @@ import json
 import math
 from collections.abc import Sequence
 from dataclasses import dataclass
+from typing import Literal
+
+from pydantic import BaseModel, Field
 
 from providers.base import ChatMessage, TokenUsage, ToolSpec
 
@@ -63,10 +66,23 @@ def estimate_tool_tokens(
     )
 
 
+class RequestBudgetBlock(BaseModel):
+    """Numeric evidence captured at a next-request gate, not a new allowance or lease."""
+
+    format: Literal["request-budget-block-v1"] = "request-budget-block-v1"
+    budget: Literal["total", "context"]
+    basis: Literal["estimate", "reported_prompt_lower_bound"]
+    limit_tokens: int = Field(gt=0, strict=True)
+    available_tokens: int = Field(strict=True)
+    prompt_tokens: int = Field(ge=0, strict=True)
+    minimum_output_tokens: int = Field(ge=0, strict=True)
+
+
 @dataclass(frozen=True)
 class BudgetStop:
     status: CompletionStatus
     reason: str
+    request_block: RequestBudgetBlock | None = None
 
 
 @dataclass
@@ -122,6 +138,14 @@ class TokenBudget:
                     f"Estimated prompt of ~{estimate} tokens leaves fewer than "
                     f"{self.min_request_output} output tokens in the {self.max_context}-token "
                     "context limit.",
+                    RequestBudgetBlock(
+                        budget="context",
+                        basis="estimate",
+                        limit_tokens=self.max_context,
+                        available_tokens=self.max_context,
+                        prompt_tokens=estimate,
+                        minimum_output_tokens=self.min_request_output,
+                    ),
                 )
             allowances.append(room)
         if self.max_total > 0 and self.prompt_used is not None and self.completion_used is not None:
@@ -131,6 +155,14 @@ class TokenBudget:
                     "budget_exhausted",
                     f"Estimated next request of ~{estimate} prompt tokens does not fit the "
                     f"remaining total token budget ({self.max_total} per turn).",
+                    RequestBudgetBlock(
+                        budget="total",
+                        basis="estimate",
+                        limit_tokens=self.max_total,
+                        available_tokens=self.max_total - self.prompt_used - self.completion_used,
+                        prompt_tokens=estimate,
+                        minimum_output_tokens=self.min_request_output,
+                    ),
                 )
             allowances.append(room)
         return min(allowances) if allowances else None
@@ -197,14 +229,32 @@ class TokenBudget:
                     "budget_exhausted", "Reported model tokens exceeded the total token budget."
                 )
             if wants_tools and self._next_request_cannot_fit(self.max_total - used):
+                assert self._anchor_tokens is not None
                 return BudgetStop(
                     "budget_exhausted",
                     "Total token budget cannot fit another model request after these tools.",
+                    RequestBudgetBlock(
+                        budget="total",
+                        basis="reported_prompt_lower_bound",
+                        limit_tokens=self.max_total,
+                        available_tokens=self.max_total - used,
+                        prompt_tokens=self._anchor_tokens,
+                        minimum_output_tokens=self.min_request_output,
+                    ),
                 )
         if self.max_context > 0 and wants_tools and self._next_request_cannot_fit(self.max_context):
+            assert self._anchor_tokens is not None
             return BudgetStop(
                 "budget_exhausted",
                 "Context limit cannot fit another model request after these tools.",
+                RequestBudgetBlock(
+                    budget="context",
+                    basis="reported_prompt_lower_bound",
+                    limit_tokens=self.max_context,
+                    available_tokens=self.max_context,
+                    prompt_tokens=self._anchor_tokens,
+                    minimum_output_tokens=self.min_request_output,
+                ),
             )
         return None
 
