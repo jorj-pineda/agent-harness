@@ -121,12 +121,15 @@ Fresh disposable roots need no restoration of an old workspace. Unknown changes,
 unsupported entries, damaged protection or incomplete artifact preservation refuse.
 Revalidate prior protected artifacts and exact environment before each row.
 
-All owned API/backend/tool work must settle before grading or later allocation:
-normal exit zero, closed resources and tasks, absent registered groups, free
-listeners and preserved user service/configuration/identity metadata. These gates
-and path allowlists are ownership checks, not OS isolation from arbitrary detached
-workers or unfamiliar code. Fresh launch gates must inspect actual processes;
-never assume a prior service is stopped.
+Owned API/backend lifecycles must exit normally with code zero before grading or
+later allocation. Managed tool tasks/processes must be terminal and settled,
+retaining their actual success, failure or cancellation outcomes; a failed check
+or a tool terminated at an allowed native wall stop need not exit zero. Require
+closed resources/tasks, absent registered groups, free listeners and preserved
+user service/configuration/identity metadata. These gates and path allowlists
+are ownership checks, not OS isolation from arbitrary detached workers or
+unfamiliar code. Fresh launch gates must inspect actual processes; never assume
+a prior service is stopped.
 
 Native policy/refusal/token/context/tool/iteration results and a finalized native
 `budget_exhausted` with the exact configured wall-budget reason are outcomes;
