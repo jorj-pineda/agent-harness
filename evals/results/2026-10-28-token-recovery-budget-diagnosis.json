@@ -1,0 +1,400 @@
+{
+  "evidence_kind": "offline-retained-input-budget-replay",
+  "inference_run": false,
+  "original_cohort_closed": true,
+  "original_manifest_entries_verified_before_and_after": 8083,
+  "original_public_result_sha256": "a64adfb4064669e2226e41e7c5421933f8002a7767dcf31066e919ea2a129eda",
+  "runtime_code_sha256": {
+    "harness/context.py": "dc78a6467df739af507cc9cfba20953de9b290dac8f8f973edf3feeedff05a3d",
+    "providers/base.py": "9fd224b5a5f60aa8319dfc249cd9b1140a6110e4c7b340a095560a3480333dc1",
+    "harness/trace.py": "291e6dffb6045ffd82976c284ffc0316d9899c3c468a933b25e9e370133f89fb"
+  },
+  "analysis_script": "/Users/jorge/.local/share/agent-harness/trials/token-recovery-budget-diagnosis-20261028/analyze.py",
+  "source_root": "/Users/jorge/.local/share/agent-harness/trials/token-recovery-live-6_09n6up",
+  "analysis_script_sha256": "d870c9448f6f74184e8892f70622fe71b0eb305a25439cffefaaeb706df05f06",
+  "rows": [
+    {
+      "arm": "C1",
+      "ratio": 3,
+      "requests": [
+        {
+          "sequence": 1,
+          "estimate": 9009,
+          "reported_prompt": 6353,
+          "reported_output": 13,
+          "message_payload_bytes": 19342,
+          "tool_reply_payload_bytes": 17396,
+          "schema_estimate": 2541
+        },
+        {
+          "sequence": 2,
+          "estimate": 10407,
+          "reported_prompt": 7808,
+          "reported_output": 25,
+          "message_payload_bytes": 23513,
+          "tool_reply_payload_bytes": 21545,
+          "schema_estimate": 2541
+        },
+        {
+          "sequence": 3,
+          "estimate": 12486,
+          "reported_prompt": 9719,
+          "reported_output": 77,
+          "message_payload_bytes": 29726,
+          "tool_reply_payload_bytes": 27713,
+          "schema_estimate": 2541
+        }
+      ],
+      "stop_stage": "post_response_stop",
+      "reported_prompt_sum": 23880,
+      "reported_output_sum": 115,
+      "remaining_total": 8005,
+      "last_reported_prompt": 9719,
+      "post_response_lower_bound_with_min_output": 9975,
+      "final_estimate": 12585,
+      "heuristic": 12585,
+      "minimum_output": 256,
+      "estimated_room": -4580,
+      "same_saved_boundary_refuses": true,
+      "boundary_reason": "Total token budget cannot fit another model request after these tools.",
+      "counterfactual_only": false
+    },
+    {
+      "arm": "P1",
+      "ratio": 3,
+      "requests": [
+        {
+          "sequence": 1,
+          "estimate": 5683,
+          "reported_prompt": 4364,
+          "reported_output": 11,
+          "message_payload_bytes": 9378,
+          "tool_reply_payload_bytes": 0,
+          "schema_estimate": 2541
+        },
+        {
+          "sequence": 2,
+          "estimate": 8074,
+          "reported_prompt": 6888,
+          "reported_output": 25,
+          "message_payload_bytes": 16526,
+          "tool_reply_payload_bytes": 7132,
+          "schema_estimate": 2541
+        },
+        {
+          "sequence": 3,
+          "estimate": 10153,
+          "reported_prompt": 8799,
+          "reported_output": 31,
+          "message_payload_bytes": 22739,
+          "tool_reply_payload_bytes": 13300,
+          "schema_estimate": 2541
+        }
+      ],
+      "stop_stage": "pre_request_stop",
+      "reported_prompt_sum": 20051,
+      "reported_output_sum": 67,
+      "remaining_total": 11882,
+      "last_reported_prompt": 8799,
+      "post_response_lower_bound_with_min_output": 9055,
+      "final_estimate": 11854,
+      "heuristic": 11854,
+      "minimum_output": 256,
+      "estimated_room": 28,
+      "same_saved_boundary_refuses": true,
+      "boundary_reason": "Estimated next request of ~11854 prompt tokens does not fit the remaining total token budget (32000 per turn).",
+      "counterfactual_only": false
+    },
+    {
+      "arm": "P2",
+      "ratio": 3,
+      "requests": [
+        {
+          "sequence": 1,
+          "estimate": 5683,
+          "reported_prompt": 4371,
+          "reported_output": 11,
+          "message_payload_bytes": 9378,
+          "tool_reply_payload_bytes": 0,
+          "schema_estimate": 2541
+        },
+        {
+          "sequence": 2,
+          "estimate": 8074,
+          "reported_prompt": 6895,
+          "reported_output": 25,
+          "message_payload_bytes": 16526,
+          "tool_reply_payload_bytes": 7132,
+          "schema_estimate": 2541
+        },
+        {
+          "sequence": 3,
+          "estimate": 10153,
+          "reported_prompt": 8806,
+          "reported_output": 31,
+          "message_payload_bytes": 22739,
+          "tool_reply_payload_bytes": 13300,
+          "schema_estimate": 2541
+        }
+      ],
+      "stop_stage": "pre_request_stop",
+      "reported_prompt_sum": 20072,
+      "reported_output_sum": 67,
+      "remaining_total": 11861,
+      "last_reported_prompt": 8806,
+      "post_response_lower_bound_with_min_output": 9062,
+      "final_estimate": 11854,
+      "heuristic": 11854,
+      "minimum_output": 256,
+      "estimated_room": 7,
+      "same_saved_boundary_refuses": true,
+      "boundary_reason": "Estimated next request of ~11854 prompt tokens does not fit the remaining total token budget (32000 per turn).",
+      "counterfactual_only": false
+    },
+    {
+      "arm": "C2",
+      "ratio": 3,
+      "requests": [
+        {
+          "sequence": 1,
+          "estimate": 9009,
+          "reported_prompt": 6353,
+          "reported_output": 13,
+          "message_payload_bytes": 19342,
+          "tool_reply_payload_bytes": 17396,
+          "schema_estimate": 2541
+        },
+        {
+          "sequence": 2,
+          "estimate": 10407,
+          "reported_prompt": 7808,
+          "reported_output": 25,
+          "message_payload_bytes": 23513,
+          "tool_reply_payload_bytes": 21545,
+          "schema_estimate": 2541
+        },
+        {
+          "sequence": 3,
+          "estimate": 12486,
+          "reported_prompt": 9719,
+          "reported_output": 77,
+          "message_payload_bytes": 29726,
+          "tool_reply_payload_bytes": 27713,
+          "schema_estimate": 2541
+        }
+      ],
+      "stop_stage": "post_response_stop",
+      "reported_prompt_sum": 23880,
+      "reported_output_sum": 115,
+      "remaining_total": 8005,
+      "last_reported_prompt": 9719,
+      "post_response_lower_bound_with_min_output": 9975,
+      "final_estimate": 12585,
+      "heuristic": 12585,
+      "minimum_output": 256,
+      "estimated_room": -4580,
+      "same_saved_boundary_refuses": true,
+      "boundary_reason": "Total token budget cannot fit another model request after these tools.",
+      "counterfactual_only": false
+    }
+  ],
+  "ratio4_sensitivity": [
+    {
+      "arm": "C1",
+      "ratio": 4,
+      "requests": [
+        {
+          "sequence": 1,
+          "estimate": 6762,
+          "reported_prompt": 6353,
+          "reported_output": 13,
+          "message_payload_bytes": 19342,
+          "tool_reply_payload_bytes": 17396,
+          "schema_estimate": 1906
+        },
+        {
+          "sequence": 2,
+          "estimate": 7813,
+          "reported_prompt": 7808,
+          "reported_output": 25,
+          "message_payload_bytes": 23513,
+          "tool_reply_payload_bytes": 21545,
+          "schema_estimate": 1906
+        },
+        {
+          "sequence": 3,
+          "estimate": 9374,
+          "reported_prompt": 9719,
+          "reported_output": 77,
+          "message_payload_bytes": 29726,
+          "tool_reply_payload_bytes": 27713,
+          "schema_estimate": 1906
+        }
+      ],
+      "stop_stage": "post_response_stop",
+      "reported_prompt_sum": 23880,
+      "reported_output_sum": 115,
+      "remaining_total": 8005,
+      "last_reported_prompt": 9719,
+      "post_response_lower_bound_with_min_output": 9975,
+      "final_estimate": 9795,
+      "heuristic": 9449,
+      "minimum_output": 256,
+      "estimated_room": -1790,
+      "same_saved_boundary_refuses": true,
+      "boundary_reason": "Total token budget cannot fit another model request after these tools.",
+      "counterfactual_only": true
+    },
+    {
+      "arm": "P1",
+      "ratio": 4,
+      "requests": [
+        {
+          "sequence": 1,
+          "estimate": 4267,
+          "reported_prompt": 4364,
+          "reported_output": 11,
+          "message_payload_bytes": 9378,
+          "tool_reply_payload_bytes": 0,
+          "schema_estimate": 1906
+        },
+        {
+          "sequence": 2,
+          "estimate": 6159,
+          "reported_prompt": 6888,
+          "reported_output": 25,
+          "message_payload_bytes": 16526,
+          "tool_reply_payload_bytes": 7132,
+          "schema_estimate": 1906
+        },
+        {
+          "sequence": 3,
+          "estimate": 8450,
+          "reported_prompt": 8799,
+          "reported_output": 31,
+          "message_payload_bytes": 22739,
+          "tool_reply_payload_bytes": 13300,
+          "schema_estimate": 1906
+        }
+      ],
+      "stop_stage": "pre_request_stop",
+      "reported_prompt_sum": 20051,
+      "reported_output_sum": 67,
+      "remaining_total": 11882,
+      "last_reported_prompt": 8799,
+      "post_response_lower_bound_with_min_output": 9055,
+      "final_estimate": 10077,
+      "heuristic": 8901,
+      "minimum_output": 256,
+      "estimated_room": 1805,
+      "same_saved_boundary_refuses": false,
+      "boundary_reason": null,
+      "counterfactual_only": true
+    },
+    {
+      "arm": "P2",
+      "ratio": 4,
+      "requests": [
+        {
+          "sequence": 1,
+          "estimate": 4267,
+          "reported_prompt": 4371,
+          "reported_output": 11,
+          "message_payload_bytes": 9378,
+          "tool_reply_payload_bytes": 0,
+          "schema_estimate": 1906
+        },
+        {
+          "sequence": 2,
+          "estimate": 6166,
+          "reported_prompt": 6895,
+          "reported_output": 25,
+          "message_payload_bytes": 16526,
+          "tool_reply_payload_bytes": 7132,
+          "schema_estimate": 1906
+        },
+        {
+          "sequence": 3,
+          "estimate": 8457,
+          "reported_prompt": 8806,
+          "reported_output": 31,
+          "message_payload_bytes": 22739,
+          "tool_reply_payload_bytes": 13300,
+          "schema_estimate": 1906
+        }
+      ],
+      "stop_stage": "pre_request_stop",
+      "reported_prompt_sum": 20072,
+      "reported_output_sum": 67,
+      "remaining_total": 11861,
+      "last_reported_prompt": 8806,
+      "post_response_lower_bound_with_min_output": 9062,
+      "final_estimate": 10084,
+      "heuristic": 8901,
+      "minimum_output": 256,
+      "estimated_room": 1777,
+      "same_saved_boundary_refuses": false,
+      "boundary_reason": null,
+      "counterfactual_only": true
+    },
+    {
+      "arm": "C2",
+      "ratio": 4,
+      "requests": [
+        {
+          "sequence": 1,
+          "estimate": 6762,
+          "reported_prompt": 6353,
+          "reported_output": 13,
+          "message_payload_bytes": 19342,
+          "tool_reply_payload_bytes": 17396,
+          "schema_estimate": 1906
+        },
+        {
+          "sequence": 2,
+          "estimate": 7813,
+          "reported_prompt": 7808,
+          "reported_output": 25,
+          "message_payload_bytes": 23513,
+          "tool_reply_payload_bytes": 21545,
+          "schema_estimate": 1906
+        },
+        {
+          "sequence": 3,
+          "estimate": 9374,
+          "reported_prompt": 9719,
+          "reported_output": 77,
+          "message_payload_bytes": 29726,
+          "tool_reply_payload_bytes": 27713,
+          "schema_estimate": 1906
+        }
+      ],
+      "stop_stage": "post_response_stop",
+      "reported_prompt_sum": 23880,
+      "reported_output_sum": 115,
+      "remaining_total": 8005,
+      "last_reported_prompt": 9719,
+      "post_response_lower_bound_with_min_output": 9975,
+      "final_estimate": 9795,
+      "heuristic": 9449,
+      "minimum_output": 256,
+      "estimated_room": -1790,
+      "same_saved_boundary_refuses": true,
+      "boundary_reason": "Total token budget cannot fit another model request after these tools.",
+      "counterfactual_only": true
+    }
+  ],
+  "negative_probes": {
+    "truncated": "refused",
+    "missing_event": "refused",
+    "changed_identity": "refused",
+    "missing_usage": "refused",
+    "changed_estimate": "refused"
+  },
+  "limits": [
+    "Ratio 4 uses recorded messages and usage; changed admission could alter live trajectories.",
+    "No fourth-request usage, acceptance, instruction preservation or budget compliance is inferred.",
+    "Source cancelled usage remains unknown; arm reported totals do not establish workflow totals.",
+    "No defaults, budgets, runtime, stores or original evidence were changed."
+  ]
+}

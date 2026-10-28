@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-28 — Recovery-arm token boundaries replayed offline:** the
+[diagnosis](evals/projects/duodoro/TOKEN_RECOVERY_BUDGET_DIAGNOSIS.md) reproduces
+all twelve recorded requests and four final stops. Native C cannot fit its last
+reported prompt lower bound; P reaches a heuristic gate with only 28/7 output
+tokens available against a 256 minimum. Ratio-4 sensitivity admits the saved P
+boundary but underestimates recorded prompts: it is not safe calibration or a
+coding-quality gain. All 8,083 original hashes match before/after; five damaged
+evidence probes refuse. No inference, default/budget change, cohort retry or
+no-go/8-of-10/G2–G5 closure.
+
 **2026-10-27 — Development formatter containment:** an opt-in
 [external audit formatter](evals/RUNTIME_TOOLING.md) refuses retained-runtime cwd
 and script targets before spawning Ruff, disables its cache and child bytecode
