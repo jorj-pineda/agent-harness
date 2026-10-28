@@ -4,6 +4,19 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-28 — Narrow Python utility trial protocol prepared:** Jorge selected
+this separate [five-task public Python trial](evals/projects/python_utility_trial/PROTOCOL.md),
+not a revised Duodoro result or release target. Ten fresh original-request attempts
+use unchanged150-second/32K single-phase limits, one local Gemma and no forks.
+All five fresh initial visible/external checks fail and references pass; original
+catalog bytes/modes stay pinned. A known floor-division mutant passes original
+checks but violates real division, so fixed independent source review is an
+explicit additional acceptance condition; unknown review is not pass. Settings,
+order and budget arithmetic validate offline. Exact executable freeze/rehearsal/
+G0/review/CI/merge/parent approval and fresh gates precede conditional results.
+No inference, defaults/limits change, old-cohort retry, supported-envelope claim
+or original no-go/8-of-10/G2–G5 closure.
+
 **2026-10-28 — Saved token-refusal client review:** CLI run inspection and a
 collapsed panel section now display the actual recorded context/total gate's
 estimate or reported-prompt lower bound, cap, availability and minimum output.
