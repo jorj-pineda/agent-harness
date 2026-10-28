@@ -4,6 +4,14 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-28 — Replacement schema example candidate:** `replace_text` now shows
+small multiline old/new examples in its shared parameter schema and explicitly
+requests one JSON-encoding layer. This addresses a candidate identified by the
+recorded refusal replay; exact matching, stale hashes, literal escapes and command
+validation are unchanged. A schema-serialization-to-execution regression exercises
+the example. This changes model-visible input, not edit semantics; no new model
+measurement, demonstrated completion gain, old-cohort retry or release closure.
+
 **2026-10-28 — Python tool refusals reproduced offline:** the
 [replay](evals/projects/python_utility_trial/TOOL_REFUSAL_REPLAY.md) reproduces
 17 original registry refusals exactly on fresh fixture copies: nine newline-edit
