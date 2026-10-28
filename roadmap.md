@@ -4,6 +4,18 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-27 — Token-recovery cohort stopped by development-tooling drift:** the
+[results](evals/projects/duodoro/TOKEN_RECOVERY_RESULTS.md) retain two fresh sources
+and four C/P followups: source wall stops have unknown tails; all four arms stop
+at token gates with unchanged rejected artifacts and no completed workflow. Ruff
+run by the development assistant created cache paths in the frozen runtime; the
+exact-tree gate stopped S3 before inference. S4 and four arms remain unrun. Cache/
+stop evidence is preserved, not cleaned to resume. Seven artifact regrades match,
+source clones and 22 owned lifecycles verify, and Duodoro is unchanged; exact
+runtime equality remains failed with original entries intact. This closes the
+conditional comparison/results slice with incomplete evidence, no policy ranking,
+extra attempt, default change, quality gain or no-go/8-of-10/G2–G5 closure.
+
 **2026-10-27 — Fresh paired token-recovery execution prepared:** the
 [execution freeze](evals/projects/duodoro/TOKEN_RECOVERY_EXECUTION_FREEZE.md) binds
 runtime `65f6072`, four matching source inputs, exact native arm previews, separate

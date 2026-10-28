@@ -1,5 +1,18 @@
 # Real-task baselines
 
+## 2026-10-27 — Fresh token-recovery cohort stopped by operator tooling
+
+The [partial results](projects/duodoro/TOKEN_RECOVERY_RESULTS.md) preserve two
+actual T02 sources and four followups at `65f6072`: both sources hit native wall
+limits with unknown usage tails; C and P each yield 0/2 observed accepted artifacts
+and completed workflows before a runtime-cache gate stop. The development assistant
+caused the cache additions while formatting the audit script. S3 was staged but
+never dispatched; S4 and four arms stay unrun. This is not a complete 0/4 policy
+comparison or a model/product failure attribution. All seven artifacts reproduce
+external rejection, 22 owned lifecycles settle and Duodoro stays unchanged. Original
+runtime entries remain pinned, but exact tree equality still fails; no cleanup or
+resume, default adoption, recovery-benefit claim or no-go/8-of-10/G2–G5 closure.
+
 ## 2026-10-27 — Source wait/dispatch comparison
 
 The [four-cell local T02 cohort](projects/duodoro/SOURCE_WAIT_RESULTS.md) completes
