@@ -4,6 +4,17 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-28 — Numeric token-refusal evidence:** shared context/total next-request
+gates now attach their actual estimate or reported-prompt lower bound, configured
+cap, available tokens and minimum output to optional bounded saved evidence.
+[The contract](BUDGET_REVIEW.md) keeps existing admission comparisons, reasons,
+defaults and legacy JSON unchanged when the field is absent. HTTP/SSE and restart
+regressions preserve refused tools/workspaces and unknown usage. Client display
+is the next slice; no inference, estimator tuning, cohort retry or quality/gate
+closure follows from this capture change. Validation: 71 focused/2,187 offline
+pass (five live deselected), static gates and both 90/90 scripted matrices pass;
+2,160 finite differential decisions match the pinned old implementation.
+
 **2026-10-28 — Recovery-arm token boundaries replayed offline:** the
 [diagnosis](evals/projects/duodoro/TOKEN_RECOVERY_BUDGET_DIAGNOSIS.md) reproduces
 all twelve recorded requests and four final stops. Native C cannot fit its last

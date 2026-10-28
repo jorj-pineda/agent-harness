@@ -82,3 +82,58 @@ def test_after_response_fails_closed_and_blocks_tools_that_cannot_be_followed_up
     context.record(TokenUsage(prompt_tokens=100, completion_tokens=10), 1)
     stop = context.after_response(wants_tools=True)
     assert stop is not None and "Context limit" in stop.reason
+
+
+def test_request_refusal_records_estimate_and_reported_lower_bound_separately() -> None:
+    # The two observed recovery boundaries: C fails its reported lower bound;
+    # P fits that bound, executes a read, then fails the whole-prompt estimate.
+    c = TokenBudget(max_total=32000, min_request_output=256)
+    c.record(TokenUsage(prompt_tokens=23880 - 9719, completion_tokens=38), 1)
+    c.record(TokenUsage(prompt_tokens=9719, completion_tokens=77), 3)
+    stop = c.after_response(wants_tools=True)
+    assert stop is not None
+    assert stop.request_block.model_dump() == {
+        "format": "request-budget-block-v1",
+        "budget": "total",
+        "basis": "reported_prompt_lower_bound",
+        "limit_tokens": 32000,
+        "available_tokens": 8005,
+        "prompt_tokens": 9719,
+        "minimum_output_tokens": 256,
+    }
+    p = TokenBudget(max_total=32000, min_request_output=256)
+    p.record(TokenUsage(prompt_tokens=11252, completion_tokens=36), 1)
+    p.record(TokenUsage(prompt_tokens=8799, completion_tokens=31), 1)
+    assert p.after_response(wants_tools=True) is None
+    messages = [ChatMessage(role="user", content="a" * (11854 - 4) * 3)]
+    stop = p.request_allowance(messages, [])
+    assert isinstance(stop, BudgetStop)
+    assert stop.request_block.model_dump() == {
+        "format": "request-budget-block-v1",
+        "budget": "total",
+        "basis": "estimate",
+        "limit_tokens": 32000,
+        "available_tokens": 11882,
+        "prompt_tokens": 11854,
+        "minimum_output_tokens": 256,
+    }
+
+
+def test_context_refusal_details_and_unrelated_stops_remain_distinct() -> None:
+    budget = TokenBudget(max_context=100, min_request_output=10)
+    messages = [ChatMessage(role="user", content="x" * 300)]
+    stop = budget.request_allowance(messages, [])
+    assert isinstance(stop, BudgetStop)
+    assert stop.request_block.budget == "context"
+    assert stop.request_block.basis == "estimate"
+    assert stop.request_block.available_tokens == 100
+    budget.record(TokenUsage(prompt_tokens=95, completion_tokens=1), 1)
+    stop = budget.after_response(wants_tools=True)
+    assert stop.request_block.basis == "reported_prompt_lower_bound"
+    assert stop.request_block.prompt_tokens == 95
+    missing = TokenBudget(max_total=100)
+    missing.record(TokenUsage(prompt_tokens=None, completion_tokens=1), 1)
+    assert missing.after_response(wants_tools=True).request_block is None
+    overrun = TokenBudget(max_total=100)
+    overrun.record(TokenUsage(prompt_tokens=101, completion_tokens=1), 1)
+    assert overrun.after_response(wants_tools=True).request_block is None

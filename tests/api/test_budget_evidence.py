@@ -58,6 +58,16 @@ def test_budget_stop_keeps_reported_usage_and_request_identity_after_restart(tmp
         assert stop["estimated_prompt_tokens"] == (
             stop["heuristic_prompt_tokens"] + stop["anchor_adjustment_tokens"]
         )
+        assert stop["request_block"] == {
+            "format": "request-budget-block-v1",
+            "budget": "total",
+            "basis": "estimate",
+            "limit_tokens": 7000,
+            "available_tokens": 6895,
+            "prompt_tokens": stop["estimated_prompt_tokens"],
+            "minimum_output_tokens": 256,
+        }
+        assert "request_block" not in request and "request_block" not in response
         assert evidence["observed_events"] == 3 and not evidence["events_truncated"]
         for private in ("private-source", "private-call", str(repo), '"arguments"', '"content"'):
             assert private not in json.dumps(evidence)
@@ -172,6 +182,8 @@ def test_budget_prevention_does_not_invent_a_request(tmp_path):
         ]
         assert [e["kind"] for e in evidence["events"]] == ["pre_request_stop"]
         assert evidence["events"][0]["prompt_tokens_used"] == 0
+        assert evidence["events"][0]["request_block"]["budget"] == "context"
+        assert evidence["events"][0]["request_block"]["available_tokens"] == 1
         assert provider.calls == []
 
 
@@ -212,7 +224,9 @@ def test_storage_bound_and_legacy_unknown(tmp_path):
         assert RunRecord.model_validate(payload).budget_evidence is None
         legacy_event = event.model_dump()
         del legacy_event["call_observation"]
-        assert BudgetObservation.model_validate(legacy_event).call_observation is None
+        parsed = BudgetObservation.model_validate(legacy_event)
+        assert parsed.call_observation is None and parsed.request_block is None
+        assert "request_block" not in parsed.model_dump()
 
 
 def test_missing_usage_remains_unknown_at_post_response_stop(tmp_path):
@@ -240,4 +254,49 @@ def test_missing_usage_remains_unknown_at_post_response_stop(tmp_path):
         assert evidence["events"][1]["usage"] == {"prompt_tokens": None, "completion_tokens": 7}
         assert evidence["events"][-1]["prompt_tokens_used"] is None
         assert evidence["events"][-1]["completion_tokens_used"] == 7
+        assert "request_block" not in evidence["events"][-1]
         assert all(call["result"] is None for call in result["tool_calls"])
+
+
+def test_reported_lower_bound_is_saved_before_tools_and_survives_restart(tmp_path):
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    source = repo / "a.py"
+    source.write_text("user = 1\n")
+    provider = ScriptedProvider()
+    provider.script(
+        make_response(
+            tool_calls=[
+                ToolCall(id="edit", name="write_file", arguments={"path": "a.py", "content": "bad"})
+            ],
+            prompt_tokens=10000,
+            completion_tokens=5,
+        )
+    )
+    with TestClient(make_app(tmp_path, provider, max_total_tokens_per_turn=15000)) as client:
+        sid = client.post("/sessions", json={"user_id": "dev", "workspace_root": str(repo)}).json()[
+            "session_id"
+        ]
+        result = client.post(
+            "/chat", json={"user_id": "dev", "session_id": sid, "message": "Fix"}
+        ).json()
+        endpoint = f"/runs/{result['run_id']}"
+        saved = client.get(endpoint, params={"user_id": "dev"}).json()
+        stop = saved["budget_evidence"]["events"][-1]
+        assert stop["kind"] == "post_response_stop"
+        assert stop["request_block"] == {
+            "format": "request-budget-block-v1",
+            "budget": "total",
+            "basis": "reported_prompt_lower_bound",
+            "limit_tokens": 15000,
+            "available_tokens": 4995,
+            "prompt_tokens": 10000,
+            "minimum_output_tokens": 256,
+        }
+        assert result["completion_status"] == "budget_exhausted"
+        assert len(provider.calls) == 1 and source.read_text() == "user = 1\n"
+    restarted = ScriptedProvider()
+    with TestClient(make_app(tmp_path, restarted)) as client:
+        assert client.get(endpoint, params={"user_id": "dev"}).json() == saved
+        assert restarted.calls == []
+        assert source.read_text() == "user = 1\n"
