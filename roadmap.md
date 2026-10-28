@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-27 — Development formatter containment:** an opt-in
+[external audit formatter](evals/RUNTIME_TOOLING.md) refuses retained-runtime cwd
+and script targets before spawning Ruff, disables its cache and child bytecode
+writes, and preserves existing evidence. Real Ruff regression reproduces the
+previous cache mistake on a disposable tree; guarded API/CLI checks keep that tree
+unchanged. This is development-tooling prevention only: exact freeze gates and the
+closed cohort remain unchanged. Validation: six focused and 2,184 offline tests
+pass (five live deselected), Ruff/format/mypy and both 90/90 scripted matrices pass;
+labels/limits inspected. No inference, recovery benefit or release claim.
+
 **2026-10-27 — Token-recovery cohort stopped by development-tooling drift:** the
 [results](evals/projects/duodoro/TOKEN_RECOVERY_RESULTS.md) retain two fresh sources
 and four C/P followups: source wall stops have unknown tails; all four arms stop
