@@ -320,6 +320,42 @@ function providerObservationSection(record) {
   return section;
 }
 
+function tokenRefusalText(event) {
+  if (!event || typeof event !== "object" || Array.isArray(event)) return "unrecorded or unsupported";
+  const stages = {pre_request_stop: "estimate", post_response_stop: "reported_prompt_lower_bound"};
+  const block = event.request_block;
+  if (block == null) return "unrecorded";
+  if (typeof block !== "object" || Array.isArray(block) || block.format !== "request-budget-block-v1" ||
+      !Object.hasOwn(stages, event.kind) || block.basis !== stages[event.kind] ||
+      !["total", "context"].includes(block.budget)) return "unrecorded or unsupported";
+  const fields = ["limit_tokens", "available_tokens", "prompt_tokens", "minimum_output_tokens"];
+  if (!fields.every(key => Number.isSafeInteger(block[key]))) return "unrecorded or unsupported";
+  const [limit, available, prompt, minimum] = fields.map(key => block[key]);
+  if (limit <= 0 || prompt < 0 || minimum < 0 || available > limit ||
+      (block.budget === "context" && available !== limit) ||
+      prompt + minimum <= available) return "unrecorded or unsupported";
+  const stage = event.kind === "pre_request_stop" ? "Before request" : "After response";
+  const resource = block.budget === "total" ? "total tokens" : "context window";
+  const basis = block.basis === "estimate" ? "estimated prompt" : "reported prompt lower bound";
+  return `${stage}: ${resource}; limit=${limit}; available before prompt=${available}; ${basis}=${prompt}; minimum output=${minimum}.`;
+}
+
+function tokenRefusalSection(record) {
+  const section = el("details", "env-section");
+  section.appendChild(el("summary", null, "Next-request token refusals (saved review only)"));
+  const evidence = record.budget_evidence || {};
+  const events = Array.isArray(evidence.events) ? evidence.events : [];
+  const rows = events.slice(0, 100).filter(event => event && ["pre_request_stop", "post_response_stop"].includes(event.kind));
+  const truncated = evidence.events_truncated;
+  section.appendChild(el("p", "review-note", `prefix_truncated=${truncated === true ? "yes" : truncated === false ? "no" : "unknown"}`));
+  section.appendChild(listSection("Recorded comparisons", rows.length ? rows.map(tokenRefusalText) : ["unrecorded (no token-refusal event in the displayed prefix)"]));
+  if (truncated === true || events.length > 100) {
+    section.appendChild(el("p", "review-note", "Saved/displayed prefix truncated; later refusals may be absent."));
+  }
+  section.appendChild(el("p", "review-note", "Recorded gate values, not next-request usage, output allowances, completion, budget compliance or permission to continue. Context availability is window capacity; total availability is remaining turn tokens. Missing details stay unknown."));
+  return section;
+}
+
 function workspaceChangeItems(changes) {
   if (!changes || changes.status === "not_tracked") return [];
   if (changes.status === "unavailable") return [`unavailable: ${changes.reason || "unknown"}`];
@@ -1171,6 +1207,7 @@ function showRun(record) {
   } else {
     addErrorMessage(record.error || "No saved final response yet; workspace edits may exist.");
   }
+  els.envelope.appendChild(tokenRefusalSection(record));
   els.envelope.appendChild(providerObservationSection(record));
   els.envelope.prepend(listSection("run identity", [
     record.run_id, `lifecycle: ${record.status}`, `request: ${record.request.request_id}`,

@@ -4,6 +4,19 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-28 — Saved token-refusal client review:** CLI run inspection and a
+collapsed panel section now display the actual recorded context/total gate's
+estimate or reported-prompt lower bound, cap, availability and minimum output.
+[The contract](BUDGET_REVIEW.md) keeps missing legacy/unsupported details unknown,
+validates recorded comparisons, bounds prefix display and adds no budget
+recalculation or execution. Actual localhost CLI/API scripted proof preserves
+saved records/workspace and settles its owned process; restart and actual panel
+DOM function checks preserve read-only behavior. Browser layout is unverified.
+Validation: 55 focused, static/JS gates and a fresh 2,218-test offline run pass
+(five live deselected). Initial forced-death fixture readiness failure is retained;
+isolated and full unchanged reruns pass, with cause unestablished. No inference,
+defaults/limits change, stopped-cohort retry or quality/gate closure.
+
 **2026-10-28 — Numeric token-refusal evidence:** shared context/total next-request
 gates now attach their actual estimate or reported-prompt lower bound, configured
 cap, available tokens and minimum output to optional bounded saved evidence.
