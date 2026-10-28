@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-28 — Python tool refusals reproduced offline:** the
+[replay](evals/projects/python_utility_trial/TOOL_REFUSAL_REPLAY.md) reproduces
+17 original registry refusals exactly on fresh fixture copies: nine newline-edit
+and eight command-argument failures, with unchanged files and zero process dispatch.
+Existing corrective messages are already specific; this supports investigating
+preventative schema examples rather than assuming more feedback helps. No argument
+repair, tool/default change, model call or quality/release claim. The closed trial
+and original no-go/8-of-10/G2–G5 remain unchanged.
+
 **2026-10-28 — Narrow Python trial complete:** the
 [results](evals/projects/python_utility_trial/RESULTS.md) retain all ten fixed rows:
 2/10 accepted parser artifacts, 0/10 completed-and-accepted. Both parser checks pass

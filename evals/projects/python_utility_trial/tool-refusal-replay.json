@@ -1,0 +1,185 @@
+{
+  "kind": "offline-recorded-tool-refusal-replay",
+  "inference_ran": false,
+  "source_summary_sha256": "fe9000435bb4818146d5503d5de73a5a5403d95f5e4b1444e47c0aee8342294d",
+  "source_evidence_count": 639,
+  "script_sha256": "5dce325fff63ae0cc10761890326cb6f08972cf92805819e4f6438a1094eba4a",
+  "rows": [
+    {
+      "id": "PY01",
+      "ordinal": 5,
+      "tool": "replace_text",
+      "arguments_sha256": "dfbb419f057db8c82bb7bf66aea3ed3710e02bb5141029d7e2222c1a8af3ca8e",
+      "same_error_as_recorded": true,
+      "error": "Expected exactly one old_text match; found 0. old_text contains the two characters backslash and n where the file has line breaks. Copy old_text exactly from read_file content, using real line breaks at those positions. Check new_text for the same extra layer of JSON escaping. No edit was applied; arguments were not rewritten.",
+      "workspace_unchanged": true,
+      "process_dispatches": 0
+    },
+    {
+      "id": "PY01",
+      "ordinal": 6,
+      "tool": "replace_text",
+      "arguments_sha256": "dfbb419f057db8c82bb7bf66aea3ed3710e02bb5141029d7e2222c1a8af3ca8e",
+      "same_error_as_recorded": true,
+      "error": "Expected exactly one old_text match; found 0. old_text contains the two characters backslash and n where the file has line breaks. Copy old_text exactly from read_file content, using real line breaks at those positions. Check new_text for the same extra layer of JSON escaping. No edit was applied; arguments were not rewritten.",
+      "workspace_unchanged": true,
+      "process_dispatches": 0
+    },
+    {
+      "id": "PY02",
+      "ordinal": 4,
+      "tool": "run_command",
+      "arguments_sha256": "521e5299558977a20eaf514c5b6652dd11e4399991c42ca6c5c2db89774ae1f1",
+      "same_error_as_recorded": true,
+      "error": "Invalid arguments for tool 'run_command': 1 validation error for RunCommandInput\nargv\n  Value error, Resend argv as a JSON array of separate strings, not a quoted array or shell command. Example: {\"argv\": [\"python\", \"-m\", \"pytest\"]}. Use the configured project check's exact tokens when provided. [type=value_error, input_value='[\"python\", \"-m\", \"pytest...-q\", \"test_visible.py\"]', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/value_error",
+      "workspace_unchanged": true,
+      "process_dispatches": 0
+    },
+    {
+      "id": "PY02",
+      "ordinal": 5,
+      "tool": "run_command",
+      "arguments_sha256": "e451b8626ca1f28a8b84191a619c70fa57f2473c758f3fa0a03fabbd438422db",
+      "same_error_as_recorded": true,
+      "error": "Command not allowlisted: 'python**,**-m**,**pytest**,**-q**,**test_visible.py**'. Allowed: pytest, ruff, mypy, git diff/status/show, python -m pytest, python3 -m pytest, npm [--prefix DIR] run test:run [-- ARGS].",
+      "workspace_unchanged": true,
+      "process_dispatches": 0
+    },
+    {
+      "id": "PY03",
+      "ordinal": 5,
+      "tool": "replace_text",
+      "arguments_sha256": "0cb8f221d5b2947584c83f4d79be66346faa695e0cebfaa57e6b1f49b36d1a81",
+      "same_error_as_recorded": true,
+      "error": "Expected exactly one old_text match; found 0. old_text contains the two characters backslash and n where the file has line breaks. Copy old_text exactly from read_file content, using real line breaks at those positions. Check new_text for the same extra layer of JSON escaping. No edit was applied; arguments were not rewritten.",
+      "workspace_unchanged": true,
+      "process_dispatches": 0
+    },
+    {
+      "id": "PY03",
+      "ordinal": 6,
+      "tool": "replace_text",
+      "arguments_sha256": "824b19ff85c34aef949fd4a603f1bb33cf9941f5910ffe8e5390110516a18625",
+      "same_error_as_recorded": true,
+      "error": "Expected exactly one old_text match; found 0. old_text contains the two characters backslash and n where the file has line breaks. Copy old_text exactly from read_file content, using real line breaks at those positions. Check new_text for the same extra layer of JSON escaping. No edit was applied; arguments were not rewritten.",
+      "workspace_unchanged": true,
+      "process_dispatches": 0
+    },
+    {
+      "id": "PY04",
+      "ordinal": 4,
+      "tool": "run_command",
+      "arguments_sha256": "521e5299558977a20eaf514c5b6652dd11e4399991c42ca6c5c2db89774ae1f1",
+      "same_error_as_recorded": true,
+      "error": "Invalid arguments for tool 'run_command': 1 validation error for RunCommandInput\nargv\n  Value error, Resend argv as a JSON array of separate strings, not a quoted array or shell command. Example: {\"argv\": [\"python\", \"-m\", \"pytest\"]}. Use the configured project check's exact tokens when provided. [type=value_error, input_value='[\"python\", \"-m\", \"pytest...-q\", \"test_visible.py\"]', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/value_error",
+      "workspace_unchanged": true,
+      "process_dispatches": 0
+    },
+    {
+      "id": "PY06",
+      "ordinal": 4,
+      "tool": "replace_text",
+      "arguments_sha256": "330e24c422837491a7ced4bcb550b97177382c346788dc653669cc8fc705c5a0",
+      "same_error_as_recorded": true,
+      "error": "Expected exactly one old_text match; found 0. old_text contains the two characters backslash and n where the file has line breaks. Copy old_text exactly from read_file content, using real line breaks at those positions. Check new_text for the same extra layer of JSON escaping. No edit was applied; arguments were not rewritten.",
+      "workspace_unchanged": true,
+      "process_dispatches": 0
+    },
+    {
+      "id": "PY07",
+      "ordinal": 4,
+      "tool": "run_command",
+      "arguments_sha256": "521e5299558977a20eaf514c5b6652dd11e4399991c42ca6c5c2db89774ae1f1",
+      "same_error_as_recorded": true,
+      "error": "Invalid arguments for tool 'run_command': 1 validation error for RunCommandInput\nargv\n  Value error, Resend argv as a JSON array of separate strings, not a quoted array or shell command. Example: {\"argv\": [\"python\", \"-m\", \"pytest\"]}. Use the configured project check's exact tokens when provided. [type=value_error, input_value='[\"python\", \"-m\", \"pytest...-q\", \"test_visible.py\"]', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/value_error",
+      "workspace_unchanged": true,
+      "process_dispatches": 0
+    },
+    {
+      "id": "PY08",
+      "ordinal": 5,
+      "tool": "replace_text",
+      "arguments_sha256": "0cb8f221d5b2947584c83f4d79be66346faa695e0cebfaa57e6b1f49b36d1a81",
+      "same_error_as_recorded": true,
+      "error": "Expected exactly one old_text match; found 0. old_text contains the two characters backslash and n where the file has line breaks. Copy old_text exactly from read_file content, using real line breaks at those positions. Check new_text for the same extra layer of JSON escaping. No edit was applied; arguments were not rewritten.",
+      "workspace_unchanged": true,
+      "process_dispatches": 0
+    },
+    {
+      "id": "PY08",
+      "ordinal": 6,
+      "tool": "replace_text",
+      "arguments_sha256": "824b19ff85c34aef949fd4a603f1bb33cf9941f5910ffe8e5390110516a18625",
+      "same_error_as_recorded": true,
+      "error": "Expected exactly one old_text match; found 0. old_text contains the two characters backslash and n where the file has line breaks. Copy old_text exactly from read_file content, using real line breaks at those positions. Check new_text for the same extra layer of JSON escaping. No edit was applied; arguments were not rewritten.",
+      "workspace_unchanged": true,
+      "process_dispatches": 0
+    },
+    {
+      "id": "PY09",
+      "ordinal": 4,
+      "tool": "run_command",
+      "arguments_sha256": "521e5299558977a20eaf514c5b6652dd11e4399991c42ca6c5c2db89774ae1f1",
+      "same_error_as_recorded": true,
+      "error": "Invalid arguments for tool 'run_command': 1 validation error for RunCommandInput\nargv\n  Value error, Resend argv as a JSON array of separate strings, not a quoted array or shell command. Example: {\"argv\": [\"python\", \"-m\", \"pytest\"]}. Use the configured project check's exact tokens when provided. [type=value_error, input_value='[\"python\", \"-m\", \"pytest...-q\", \"test_visible.py\"]', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/value_error",
+      "workspace_unchanged": true,
+      "process_dispatches": 0
+    },
+    {
+      "id": "PY09",
+      "ordinal": 5,
+      "tool": "run_command",
+      "arguments_sha256": "e451b8626ca1f28a8b84191a619c70fa57f2473c758f3fa0a03fabbd438422db",
+      "same_error_as_recorded": true,
+      "error": "Command not allowlisted: 'python**,**-m**,**pytest**,**-q**,**test_visible.py**'. Allowed: pytest, ruff, mypy, git diff/status/show, python -m pytest, python3 -m pytest, npm [--prefix DIR] run test:run [-- ARGS].",
+      "workspace_unchanged": true,
+      "process_dispatches": 0
+    },
+    {
+      "id": "PY09",
+      "ordinal": 6,
+      "tool": "run_command",
+      "arguments_sha256": "0abe1ccf52b13beffd77eef156d90227ff7c6e7e7927aaa0c3749dc2a0714484",
+      "same_error_as_recorded": true,
+      "error": "Command not allowlisted: 'python**,**-m**,**pytest**,**test_visible.py**'. Allowed: pytest, ruff, mypy, git diff/status/show, python -m pytest, python3 -m pytest, npm [--prefix DIR] run test:run [-- ARGS].",
+      "workspace_unchanged": true,
+      "process_dispatches": 0
+    },
+    {
+      "id": "PY09",
+      "ordinal": 7,
+      "tool": "run_command",
+      "arguments_sha256": "0abe1ccf52b13beffd77eef156d90227ff7c6e7e7927aaa0c3749dc2a0714484",
+      "same_error_as_recorded": true,
+      "error": "Command not allowlisted: 'python**,**-m**,**pytest**,**test_visible.py**'. Allowed: pytest, ruff, mypy, git diff/status/show, python -m pytest, python3 -m pytest, npm [--prefix DIR] run test:run [-- ARGS].",
+      "workspace_unchanged": true,
+      "process_dispatches": 0
+    },
+    {
+      "id": "PY10",
+      "ordinal": 5,
+      "tool": "replace_text",
+      "arguments_sha256": "dfbb419f057db8c82bb7bf66aea3ed3710e02bb5141029d7e2222c1a8af3ca8e",
+      "same_error_as_recorded": true,
+      "error": "Expected exactly one old_text match; found 0. old_text contains the two characters backslash and n where the file has line breaks. Copy old_text exactly from read_file content, using real line breaks at those positions. Check new_text for the same extra layer of JSON escaping. No edit was applied; arguments were not rewritten.",
+      "workspace_unchanged": true,
+      "process_dispatches": 0
+    },
+    {
+      "id": "PY10",
+      "ordinal": 6,
+      "tool": "replace_text",
+      "arguments_sha256": "dfbb419f057db8c82bb7bf66aea3ed3710e02bb5141029d7e2222c1a8af3ca8e",
+      "same_error_as_recorded": true,
+      "error": "Expected exactly one old_text match; found 0. old_text contains the two characters backslash and n where the file has line breaks. Copy old_text exactly from read_file content, using real line breaks at those positions. Check new_text for the same extra layer of JSON escaping. No edit was applied; arguments were not rewritten.",
+      "workspace_unchanged": true,
+      "process_dispatches": 0
+    }
+  ],
+  "runtime_revision": "a48e68ada6098095f9706c8181d7448e43727648",
+  "retained_root": "/Users/jorge/.local/share/agent-harness/trials/python-tool-replay-20261028",
+  "evidence_sha256": {
+    "replay.py": "5dce325fff63ae0cc10761890326cb6f08972cf92805819e4f6438a1094eba4a",
+    "result.json": "06dd063fc254e47f5c46add6e3716a2a35783851be5381716037d5bf7652cfd1"
+  }
+}
