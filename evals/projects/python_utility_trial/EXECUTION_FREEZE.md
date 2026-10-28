@@ -88,7 +88,11 @@ normalized to make hashes equal. First-request hashes are checked before
 forwarding. Every native request must use the owned local POST route, exact model,
 temperature zero, thinking off, context 16,384 and all four 180-second HTTP waits,
 with a bounded output allowance. Live responses must name the pinned model and
-report valid usage. There is no transport retry.
+report original raw nonnegative integer usage counts; booleans, numeric strings
+and integral floats are refused before the loop receives the response. Original
+count values/types and the paired request's actual output allowance are retained.
+Output exceeding that actual allowance stops the cohort even when below 2,048
+and the phase totals. There is no transport retry.
 
 CLI pre-POST receipts retain the original request key. An uncertain submission
 permits GET-only lookup of that key, never resubmission or fallback. Finalized
@@ -123,14 +127,22 @@ independent executable grades, per-row metadata backends and closed-store restar
 Its raw executable passes and native completions are mechanics evidence only;
 source review is pending and real inference is false.
 
-Seven scripted scenarios cover native wall stop with unknown usage, failed check,
+Eleven final scripted scenarios cover native wall stop with unknown usage, failed
+check,
 uncertain POST, provider error, missing usage, original-key GET failure with
-partial-artifact preservation, and a reported per-request output overrun. The
-wall control uses 1.5 simulated seconds, not actual 150-second model behavior.
+partial-artifact preservation, configured and reduced-allowance output overruns,
+and boolean/string/integral-float usage refusals. Nine focused production-adapter
+MockTransport probes reproduce and close both first-review findings, including
+malformed counts in either usage field. The wall control uses 1.5 simulated seconds, not actual 150-second model behavior.
 Four real-child receipt/registration failures settle children/groups/listeners;
 22 input probes, four workspace-preservation probes and 22 final launch/model/
 approval/process-registry probes cover their named cases. They are finite tests,
 not proof of arbitrary generation cleanup or coding quality.
+
+The first review withheld approval for checking only the configured output cap
+and validating usage after adapter coercion. Its exact recipes/index and failed
+regressions are preserved; the new freeze binds corrected guards and fresh runs.
+No inference occurred under that superseded preparation.
 
 Retained preparation failures include literal repeat equality across different
 root paths, raw archive/cache comparison, an initial workspace-descriptor probe,
