@@ -138,7 +138,7 @@ unknown in-flight tail at such a wall stop remains unknown. `CancelledError`
 alone is not a finalized wall outcome or authorization to continue.
 
 **Stop remaining rows** on any provider/transport failure, missing/malformed
-returned usage, reported phase overrun, unexplained cancellation, submission/
+returned usage, reported request/phase overrun, unexplained cancellation, submission/
 recording/runtime/model/environment/criterion drift, inconsistent grade or
 incomplete preservation/cleanup. An uncertain POST permits original-key GET only:
 no resubmission, new key, generic-session fallback or delayed retry. Retain the
@@ -157,8 +157,11 @@ through `Settings`. These receipts prove fixture/
 criterion mechanics, not model capability or the complete operator.
 
 The second PR must supply the full executable recipe and refusal rehearsal,
-protected archives/artifacts and independent stores, matching within-task actual
-first-input captures through the production adapter, all-request capture guards,
+protected archives/artifacts and independent stores, row-exact actual first-input
+captures through the production adapter, all-request capture guards, and a
+within-task comparison allowing only each declared fresh workspace-root line to
+differ. Forwarded inputs and launch hashes retain the full
+paths; no input normalization is used to force identity equality. Require
 actual CLI/API scripted preflight, restart GET-only review on closed clones, owned
 backend/resource probes and exact-runtime focused/full/static G0 plus both labeled
 scripted matrices. Simulation overrides must be explicit and forbidden in live

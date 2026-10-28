@@ -4,6 +4,17 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-28 — Narrow Python execution preparation:** the
+[exact freeze](evals/projects/python_utility_trial/EXECUTION_FREEZE.md) binds the
+protocol-merge runtime, row-exact full-path first inputs, fresh owned roots/stores,
+mandatory image/environment checks and conditional CLI operator. Final G0 passes
+242 focused/2,218 offline tests (five live deselected), static gates and both
+90-result scripted matrices with labels inspected. Scripted ten-row rehearsals,
+bounded outcome/refusal, ownership, preservation and GET-only restart controls
+exercise mechanics; failed preparation evidence is retained. Independent exact-head
+review/CI/merge, parent approval and fresh gates still precede generation. No
+model-quality result, default change or original no-go/8-of-10/G2–G5 closure.
+
 **2026-10-28 — Narrow Python utility trial protocol prepared:** Jorge selected
 this separate [five-task public Python trial](evals/projects/python_utility_trial/PROTOCOL.md),
 not a revised Duodoro result or release target. Ten fresh original-request attempts
