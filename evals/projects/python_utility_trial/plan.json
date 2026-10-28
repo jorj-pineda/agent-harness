@@ -1,0 +1,468 @@
+{
+  "schema_version": 1,
+  "kind": "unrun-narrow-python-utility-trial-plan",
+  "inference_ran": false,
+  "runtime_candidate": "6be17d2ee142c0a36c4b69e73a95e558e8af43e1",
+  "source_revision": "6be17d2ee142c0a36c4b69e73a95e558e8af43e1",
+  "source_catalog": "evals/real_tasks/tasks.yaml",
+  "model": {
+    "provider": "ollama",
+    "name": "gemma4:12b",
+    "digest": "4eb23ef187e2c5462566d6a1d3bbbc2f1346d0b4327cbb66d58fffbcc9b2b05c",
+    "expected_version": "0.33.2",
+    "hosted_models": [],
+    "additional_paid_budget_usd": 0
+  },
+  "phase_limits": {
+    "max_turn_wall_seconds": 150,
+    "max_total_tokens_per_turn": 32000,
+    "max_completion_tokens_per_turn": 4096,
+    "max_tool_calls_per_turn": 12,
+    "max_tool_iterations": 6,
+    "max_request_output_tokens": 2048,
+    "min_request_output_tokens": 256
+  },
+  "settings": {
+    "coding_prompt_profile": "compact",
+    "coding_toolset": "full",
+    "read_file_default_lines": 0,
+    "load_root_agents": false,
+    "enable_support_tools": false,
+    "max_completion_retries": 1,
+    "max_context_tokens": 16384,
+    "max_files_touched_per_turn": 2,
+    "max_identical_tool_calls": 2,
+    "ollama_num_ctx": 16384,
+    "ollama_think": false,
+    "project_check_argv": [
+      "python",
+      "-m",
+      "pytest",
+      "-q",
+      "test_visible.py"
+    ],
+    "prompt_estimate_bytes_per_token": 3,
+    "request_timeout_seconds": 180,
+    "require_plan_before_edit": false,
+    "require_verification_before_finish": true
+  },
+  "temperature": 0,
+  "cli_response_inactivity_seconds": 600,
+  "maximum_model_turns": 10,
+  "maximum_physical_reserved_limits": {
+    "dispatch_seconds": 1500,
+    "reported_total_tokens": 320000,
+    "completion_tokens": 40960,
+    "tool_calls": 120,
+    "model_iterations": 60
+  },
+  "backend_policy": "fresh owned lifecycle per row; user service on11434 untouched; frozen private CoW model image; no warmup generation",
+  "tasks": [
+    {
+      "id": "divide_zero",
+      "category": "bugfix",
+      "request": "Fix divide so it performs real division and preserves Python's zero-division error.",
+      "request_sha256": "d25396cd010de036c9de8b27cf7f7bd882316e5fc46dfb97493cb6db3b36d8ab",
+      "fixture": "evals/real_tasks/fixtures/divide_zero",
+      "acceptance": "evals/real_tasks/acceptance/divide_zero",
+      "reference": "evals/real_tasks/reference/divide_zero"
+    },
+    {
+      "id": "slugify",
+      "category": "bugfix",
+      "request": "Fix slugify so punctuation and repeated whitespace produce clean lowercase ASCII slugs.",
+      "request_sha256": "fde387911f3ebadf064f6bcd11c76a2ae6f0e30222f0ad40ef9f8d59dfd8f92d",
+      "fixture": "evals/real_tasks/fixtures/slugify",
+      "acceptance": "evals/real_tasks/acceptance/slugify",
+      "reference": "evals/real_tasks/reference/slugify"
+    },
+    {
+      "id": "stable_dedupe",
+      "category": "bugfix",
+      "request": "Fix dedupe so it removes repeated values without changing the order of first appearances.",
+      "request_sha256": "d8b4d673db019411842de4d45d66c22236007b08697184cbec67be886fc3b8f9",
+      "fixture": "evals/real_tasks/fixtures/stable_dedupe",
+      "acceptance": "evals/real_tasks/acceptance/stable_dedupe",
+      "reference": "evals/real_tasks/reference/stable_dedupe"
+    },
+    {
+      "id": "decimal_total",
+      "category": "bugfix",
+      "request": "Fix total_cents for decimal price strings, including half-up cent rounding.",
+      "request_sha256": "cdbfd3bac399a1bd3dbb511a6e25bf0ce3e5bab70faf82abec962f959565b7a6",
+      "fixture": "evals/real_tasks/fixtures/decimal_total",
+      "acceptance": "evals/real_tasks/acceptance/decimal_total",
+      "reference": "evals/real_tasks/reference/decimal_total"
+    },
+    {
+      "id": "parse_flags",
+      "category": "bugfix",
+      "request": "Fix parse_flags to skip blank/comment lines, strip surrounding whitespace, and keep equals signs inside values.",
+      "request_sha256": "c7f47370d82b86750d5fb2bd6f479cf48385a04cc0e76d8008319856df6d9181",
+      "fixture": "evals/real_tasks/fixtures/parse_flags",
+      "acceptance": "evals/real_tasks/acceptance/parse_flags",
+      "reference": "evals/real_tasks/reference/parse_flags"
+    }
+  ],
+  "original_catalog_contract_pins": {
+    "README.md": {
+      "sha256": "e06e3933201661b64b981efd855464b4ffb09fed245ec8c422058818b05877cc",
+      "mode": 420
+    },
+    "acceptance/decimal_total/test_acceptance.py": {
+      "sha256": "bc923e1999f95d3bf73aa310103bd684db29bf5908084377136717db71636a60",
+      "mode": 420
+    },
+    "acceptance/divide_zero/test_acceptance.py": {
+      "sha256": "4c3554f41bc27ded5a96fa4e3645c1fc2712b8ce4f47cb40ab73f3dd1035e208",
+      "mode": 420
+    },
+    "acceptance/extract_label_normalizer/test_acceptance.py": {
+      "sha256": "7615ff2aa555f43a4770ec23b4080f467dc67768c1095e06c47c02261cfd85d5",
+      "mode": 420
+    },
+    "acceptance/paginate_items/test_acceptance.py": {
+      "sha256": "7ba05a7bf98f0fb3ba0c547b0dc39e7be4bd077466ba3aa68ffece2033622fa6",
+      "mode": 420
+    },
+    "acceptance/parse_flags/test_acceptance.py": {
+      "sha256": "3711bbeb5d157708f18bff119c18e4bc54f6a63cd486eda7d789ad670a788571",
+      "mode": 420
+    },
+    "acceptance/positive_total_existing_failure/test_acceptance.py": {
+      "sha256": "f54df5271ceb425fa577103a59523d8585ad4337599fbae8dbfd8435f5d940c7",
+      "mode": 420
+    },
+    "acceptance/retry_after_seconds/test_acceptance.py": {
+      "sha256": "90fcc573d2e8be619cf32f48a4be8cbdd2c767341390b66ed034723ddfaef323",
+      "mode": 420
+    },
+    "acceptance/slugify/test_acceptance.py": {
+      "sha256": "90b34a4c0fe1b57f7d9d80cfaa25c9999a598fcc322089077fa244a9df6880a8",
+      "mode": 420
+    },
+    "acceptance/stable_dedupe/test_acceptance.py": {
+      "sha256": "111dcea9f39630f6f44a3d7840c407c4d329778d6317e889ccfc09f0f0803921",
+      "mode": 420
+    },
+    "fixtures/decimal_total/money.py": {
+      "sha256": "825fecae7122c0fdfc867f800b9485c67a627a74fe916891973b16ae15e31e71",
+      "mode": 420
+    },
+    "fixtures/decimal_total/test_visible.py": {
+      "sha256": "d14837b09f337601011fc3fcc0acfdf48e5d472f9640b166bb37d05f95eb90ed",
+      "mode": 420
+    },
+    "fixtures/divide_zero/calc.py": {
+      "sha256": "9774ba124aa4ceb5315976edbb277ecbe52badf962a8ab989470ecd951c2c016",
+      "mode": 420
+    },
+    "fixtures/divide_zero/test_visible.py": {
+      "sha256": "f1ab1a810123347a0a7ee2225f9384d953f29e95390d391ed91d08bc4cef9668",
+      "mode": 420
+    },
+    "fixtures/extract_label_normalizer/labels.py": {
+      "sha256": "566902ce831964ce20ae77297ff833b7f347aa7cb55bb4678a1e9c703da9a604",
+      "mode": 420
+    },
+    "fixtures/extract_label_normalizer/test_visible.py": {
+      "sha256": "3e1c3e2912340e90c2a932903d023f74422f3ca4540abd03f8860860df943185",
+      "mode": 420
+    },
+    "fixtures/paginate_items/pagination.py": {
+      "sha256": "a2248d4adeb8aa7199f7f788e4c5573e4e434f898a8dcde733463eed999d09c9",
+      "mode": 420
+    },
+    "fixtures/paginate_items/test_visible.py": {
+      "sha256": "ff0d24e178c69d5019eeb620dae4ddacca0462101a62fbd904dd7558b8045ca3",
+      "mode": 420
+    },
+    "fixtures/parse_flags/flags.py": {
+      "sha256": "7c872d6b8c05dc11004b441f58cd1ce3d78d86e02287dacdeba640eaf08c476b",
+      "mode": 420
+    },
+    "fixtures/parse_flags/test_visible.py": {
+      "sha256": "dc7e2cc099e6fd69d9fc47201ed2da9b1bf4e43ed7b3b76a4e1a7a0a96fe2084",
+      "mode": 420
+    },
+    "fixtures/positive_total_existing_failure/legacy_settings.py": {
+      "sha256": "81bfab3e7478d13181866d5a7b1b22c671023702fb58312d187aa6bbe4f6ef4e",
+      "mode": 420
+    },
+    "fixtures/positive_total_existing_failure/test_legacy_contract.py": {
+      "sha256": "959461515e2a43044bb0cac0b50bcbc66e435855085839f57b03cd40ed32e0fc",
+      "mode": 420
+    },
+    "fixtures/positive_total_existing_failure/test_visible.py": {
+      "sha256": "8d25653e4e9363e91d1e9f9f1bed453913c5bedfaa960b3e36d68b83719a80b0",
+      "mode": 420
+    },
+    "fixtures/positive_total_existing_failure/totals.py": {
+      "sha256": "d63e8ceab3e6d96ce78e490e7b44b7b7bd5db2c77b6901c33b70ed3dd2eccdb6",
+      "mode": 420
+    },
+    "fixtures/retry_after_seconds/retry_after.py": {
+      "sha256": "84843c968403a19abf770a2d9ee0784f17c1b72e4daeb30abea21141a775ca34",
+      "mode": 420
+    },
+    "fixtures/retry_after_seconds/retry_client.py": {
+      "sha256": "44359723adf8aec06109e8cc3636af41f073b351c43771897da1bbd223c9c392",
+      "mode": 420
+    },
+    "fixtures/retry_after_seconds/test_visible.py": {
+      "sha256": "d97b3c3f441b5374e660f89e97936a38dc7cba350f73b460be93773cf1103a73",
+      "mode": 420
+    },
+    "fixtures/slugify/slug.py": {
+      "sha256": "89e729296407fe3e3ef1011bb627b3cfc86cb8754fab917977dbdf3c5554b370",
+      "mode": 420
+    },
+    "fixtures/slugify/test_visible.py": {
+      "sha256": "1a60ac22b5c6e2b5d4a5827b3fbd46b5f6184d3c3e0076495df49031355dc03d",
+      "mode": 420
+    },
+    "fixtures/stable_dedupe/dedupe.py": {
+      "sha256": "5e84be13fb161aa143b46c8541b7c3f55fb78099028452ff0ac3ca1174134795",
+      "mode": 420
+    },
+    "fixtures/stable_dedupe/test_visible.py": {
+      "sha256": "fb130e9b392db79135515f796f429a21ec6198efc87fe42bfaf9049d36951d99",
+      "mode": 420
+    },
+    "reference/decimal_total/money.py": {
+      "sha256": "5465d49ebd3f39718f542950d8d0cc555035fc0955de7e9590c802b02c1969b9",
+      "mode": 420
+    },
+    "reference/divide_zero/calc.py": {
+      "sha256": "aa84dfce98386a30dece40cb95427f769b2c3e1aacd6dfad87fc20ec2c1d9083",
+      "mode": 420
+    },
+    "reference/extract_label_normalizer/labels.py": {
+      "sha256": "b95bcdc8cb1665dd02c0e6ddea4b687ab94245d2b6e9c9f78bed8797db4bf7cb",
+      "mode": 420
+    },
+    "reference/paginate_items/pagination.py": {
+      "sha256": "c47cbd179b2fa30744e62d8a5b102802b63b248b0207a48c947309e0a4bcddb8",
+      "mode": 420
+    },
+    "reference/parse_flags/flags.py": {
+      "sha256": "e791b32b8d156a5d4365b9d1aba2326e92dd405aff95585bd4e4f8c2df083415",
+      "mode": 420
+    },
+    "reference/positive_total_existing_failure/totals.py": {
+      "sha256": "108970df4d2c44842b614ef5f1021cc32c3f8f8edab81906f07a7f3f65bbd978",
+      "mode": 420
+    },
+    "reference/retry_after_seconds/retry_after.py": {
+      "sha256": "6a5d3129a4ccb6766f74313f8637120971653b9dabf89fbbb50940700f3f0c5f",
+      "mode": 420
+    },
+    "reference/retry_after_seconds/retry_client.py": {
+      "sha256": "5d2842b01e6605beb7540d8bc7adb5c2b715a4f7deaa23e167d4054fdc91bdc6",
+      "mode": 420
+    },
+    "reference/slugify/slug.py": {
+      "sha256": "0e37f731d2b4ce80246920d8401b107082f0c73a76bbecbc841fc8eeb26b4a9a",
+      "mode": 420
+    },
+    "reference/stable_dedupe/dedupe.py": {
+      "sha256": "27f1ae146f07692aacb1a63591d56994f808ca822eed4091e6a48003beedcaf7",
+      "mode": 420
+    },
+    "tasks.yaml": {
+      "sha256": "06ffb16b6f7cbdeed5db04192e69e78d7765daed3437decdb894b44d9f738e15",
+      "mode": 420
+    }
+  },
+  "attempts": [
+    {
+      "id": "PY01",
+      "task_id": "divide_zero",
+      "repeat": 1,
+      "execution_status": "unrun",
+      "external_tests_passed": null,
+      "source_review": null,
+      "artifact_accepted": null,
+      "completed_and_accepted": null,
+      "run_id": null
+    },
+    {
+      "id": "PY02",
+      "task_id": "slugify",
+      "repeat": 1,
+      "execution_status": "unrun",
+      "external_tests_passed": null,
+      "source_review": null,
+      "artifact_accepted": null,
+      "completed_and_accepted": null,
+      "run_id": null
+    },
+    {
+      "id": "PY03",
+      "task_id": "stable_dedupe",
+      "repeat": 1,
+      "execution_status": "unrun",
+      "external_tests_passed": null,
+      "source_review": null,
+      "artifact_accepted": null,
+      "completed_and_accepted": null,
+      "run_id": null
+    },
+    {
+      "id": "PY04",
+      "task_id": "decimal_total",
+      "repeat": 1,
+      "execution_status": "unrun",
+      "external_tests_passed": null,
+      "source_review": null,
+      "artifact_accepted": null,
+      "completed_and_accepted": null,
+      "run_id": null
+    },
+    {
+      "id": "PY05",
+      "task_id": "parse_flags",
+      "repeat": 1,
+      "execution_status": "unrun",
+      "external_tests_passed": null,
+      "source_review": null,
+      "artifact_accepted": null,
+      "completed_and_accepted": null,
+      "run_id": null
+    },
+    {
+      "id": "PY06",
+      "task_id": "parse_flags",
+      "repeat": 2,
+      "execution_status": "unrun",
+      "external_tests_passed": null,
+      "source_review": null,
+      "artifact_accepted": null,
+      "completed_and_accepted": null,
+      "run_id": null
+    },
+    {
+      "id": "PY07",
+      "task_id": "decimal_total",
+      "repeat": 2,
+      "execution_status": "unrun",
+      "external_tests_passed": null,
+      "source_review": null,
+      "artifact_accepted": null,
+      "completed_and_accepted": null,
+      "run_id": null
+    },
+    {
+      "id": "PY08",
+      "task_id": "stable_dedupe",
+      "repeat": 2,
+      "execution_status": "unrun",
+      "external_tests_passed": null,
+      "source_review": null,
+      "artifact_accepted": null,
+      "completed_and_accepted": null,
+      "run_id": null
+    },
+    {
+      "id": "PY09",
+      "task_id": "slugify",
+      "repeat": 2,
+      "execution_status": "unrun",
+      "external_tests_passed": null,
+      "source_review": null,
+      "artifact_accepted": null,
+      "completed_and_accepted": null,
+      "run_id": null
+    },
+    {
+      "id": "PY10",
+      "task_id": "divide_zero",
+      "repeat": 2,
+      "execution_status": "unrun",
+      "external_tests_passed": null,
+      "source_review": null,
+      "artifact_accepted": null,
+      "completed_and_accepted": null,
+      "run_id": null
+    }
+  ],
+  "source_review_rules": {
+    "divide_zero": [
+      "D1",
+      "C1"
+    ],
+    "slugify": [
+      "S1",
+      "C1"
+    ],
+    "stable_dedupe": [
+      "U1",
+      "C1"
+    ],
+    "decimal_total": [
+      "M1",
+      "C1"
+    ],
+    "parse_flags": [
+      "F1",
+      "C1"
+    ]
+  },
+  "acceptance_policy": "unchanged original external tests AND fixed independent source-review pass; unknown review is not pass",
+  "primary_metric": "native completed AND artifact_accepted /10; per task /2, with all failed/blocked/unrun rows retained",
+  "source_review_contract": "PROTOCOL.md#independent-acceptance-and-fixed-source-review",
+  "original_duodoro_target_unchanged": true,
+  "release_gate_closure_claim": false,
+  "held_out": false,
+  "causal_harness_comparison": false,
+  "actual_inputs": null,
+  "execution_freeze": null,
+  "g0_result": null,
+  "parent_approval_receipt": null,
+  "preparation": {
+    "path": "/Users/jorge/.local/share/agent-harness/trials/python-envelope-candidate-20261028",
+    "sha256": {
+      "build_plan.py": "c3ad0512ad579f5c9d7f6525c9f3f092c2c3968e3505a88b75b542d234b215c7",
+      "decimal_total-initial-external.log": "2e76dad4fab4ea57182eb0f1ef3f36c91b90b1b8cbc711cad0c3da83fc41efcd",
+      "decimal_total-initial-visible.log": "c74d3974d5ab16a62eb61951fb5050bf1096683d18d519c063a83b1c4f72cc73",
+      "decimal_total-reference-external.log": "4bcefcc9f6c645923b9993ccf73ad92e6b400ca25458ea14e095857fc2131342",
+      "decimal_total-reference-visible.log": "bea5a77cc68582c0c66ca0fc860c9b8f449e679bec8d6a9178605ee7b7dc69a3",
+      "divide_zero-initial-external.log": "d8602feb101b5ef658e54235ca775f4537c45610e40310c76a20a83e86885d86",
+      "divide_zero-initial-visible.log": "e7e2edd3524d54767c40fece9128db73fd9d2cf1eff44b27484fb16ef7e7575a",
+      "divide_zero-reference-external.log": "fcd476841e8af121ff907e81a92a59579b64c007b70cb79f9d096806f703fc7e",
+      "divide_zero-reference-visible.log": "bea5a77cc68582c0c66ca0fc860c9b8f449e679bec8d6a9178605ee7b7dc69a3",
+      "floor-mutant-original-external.log": "fcd476841e8af121ff907e81a92a59579b64c007b70cb79f9d096806f703fc7e",
+      "floor-mutant-original-request-witness.log": "45d358ca34f13b153ece89ea7fc6aa7da4eb8babf016c3fba9be2c067202ba82",
+      "floor-mutant-visible.log": "bea5a77cc68582c0c66ca0fc860c9b8f449e679bec8d6a9178605ee7b7dc69a3",
+      "grading-probe.json": "58cd5769c9c6d47bf2e0b12b887cd971f8c59fdbc6f1ac206ca1b5c3041e746e",
+      "grading_probe.py": "367d6a49f5ce49e1523d77b7e419589b1872b11554d4a899ac3d6ba64e461e1e",
+      "initial-reference.json": "bfefd0d91aba0aaab9c34cd673282b5246cac8cb12345c502e97d9365f50cef0",
+      "parse_flags-initial-external.log": "a4841e32425c693cdf9d32cbf32f05c0ae8165a3d683151fda0ffac839649075",
+      "parse_flags-initial-visible.log": "12f488919226729a08ee12c4ac12d0bb1a6f88e57f182007682a65cb443d5649",
+      "parse_flags-reference-external.log": "4bcefcc9f6c645923b9993ccf73ad92e6b400ca25458ea14e095857fc2131342",
+      "parse_flags-reference-visible.log": "bea5a77cc68582c0c66ca0fc860c9b8f449e679bec8d6a9178605ee7b7dc69a3",
+      "scope-choice.json": "6f6dd05b3b462b04a80870e93fbea94176c6d7d658f2cc83b20866ef240bdaf1",
+      "slugify-initial-external.log": "9d411090ee9ca5e693720060d5f121804fcfed78e9729a71e8bd361cdd58e422",
+      "slugify-initial-visible.log": "d77c40ec4d9d6c60eec2664beae539650fcc0c994d46eb9b895f025cbc66472a",
+      "slugify-reference-external.log": "4bcefcc9f6c645923b9993ccf73ad92e6b400ca25458ea14e095857fc2131342",
+      "slugify-reference-visible.log": "bea5a77cc68582c0c66ca0fc860c9b8f449e679bec8d6a9178605ee7b7dc69a3",
+      "stable_dedupe-initial-external.log": "5d18510cd7f72a7897801db8d198cc48cf2e1d046d695a04072038d0a8edd46d",
+      "stable_dedupe-initial-visible.log": "b7c00ad974eb48307a123eea0b0a421a1548ada7a693e04743a8e48844adba03",
+      "stable_dedupe-reference-external.log": "4bcefcc9f6c645923b9993ccf73ad92e6b400ca25458ea14e095857fc2131342",
+      "stable_dedupe-reference-visible.log": "bea5a77cc68582c0c66ca0fc860c9b8f449e679bec8d6a9178605ee7b7dc69a3",
+      "validate.py": "e4c68726693b42545598a2e3982662ffbb49b2e9afc02e9ed10b0df275c56577"
+    }
+  },
+  "stop_rules": [
+    "any provider/transport failure or missing/malformed returned usage",
+    "reported phase overrun or unexplained cancellation",
+    "uncertain delivery without original-key GET resolution; never resubmit",
+    "input/runtime/model/environment/criteria drift",
+    "unknown changes, inconsistent grades, incomplete preservation or owned cleanup"
+  ],
+  "expected_native_outcomes": [
+    "completed or finalized native policy/token/context/tool/iteration refusal",
+    "finalized native budget_exhausted with exact configured150s wall-budget reason; unknown usage remains unknown"
+  ],
+  "no_retry_replacement_repair_or_budget_transfer": true
+}
