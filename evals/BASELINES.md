@@ -1,5 +1,17 @@
 # Real-task baselines
 
+## 2026-10-28 — Narrow public Python utility trial
+
+The [ten-row results](projects/python_utility_trial/RESULTS.md) retain 2/10 accepted
+artifacts and 0/10 completed-and-accepted runs at `1f64dcc`, using one local Gemma
+and unchanged single-phase limits. Both accepted parser patches pass original
+external tests and fixed source review, with successful visible checks, but hit
+the iteration cap. Eight artifacts remain unchanged; three wall-stop usage totals
+are unknown. All ten reconstructions/regrades, 58 input pairs and 30 owned cleanup
+receipts verify. This completes the separately agreed narrow cohort, not a held-out
+quality gain or supported unattended envelope. No retry, default/budget change or
+original Duodoro/no-go/8-of-10/G2–G5 closure.
+
 ## 2026-10-27 — Fresh token-recovery cohort stopped by operator tooling
 
 The [partial results](projects/duodoro/TOKEN_RECOVERY_RESULTS.md) preserve two

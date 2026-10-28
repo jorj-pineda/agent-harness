@@ -4,6 +4,17 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-28 — Narrow Python trial complete:** the
+[results](evals/projects/python_utility_trial/RESULTS.md) retain all ten fixed rows:
+2/10 accepted parser artifacts, 0/10 completed-and-accepted. Both parser checks pass
+but their runs exhaust iterations; eight other artifacts stay unchanged and three
+wall-stop totals remain unknown. Independent source review/regrades, all 58 input
+pairs, closed-store restarts and 30 owned lifecycles verify; no manual repair,
+replacement or extra attempt. This closes the agreed three-PR cohort, not a useful
+unattended envelope, held-out quality gain, default change or original Duodoro/
+no-go/8-of-10/G2–G5 closure. Results still require exact-head review and CI before
+merge; no further inference is authorized.
+
 **2026-10-28 — Narrow Python execution preparation:** the
 [exact freeze](evals/projects/python_utility_trial/EXECUTION_FREEZE.md) binds the
 protocol-merge runtime, row-exact full-path first inputs, fresh owned roots/stores,
