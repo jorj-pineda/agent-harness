@@ -4,6 +4,17 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-27 — Fresh paired token-recovery execution prepared:** the
+[execution freeze](evals/projects/duodoro/TOKEN_RECOVERY_EXECUTION_FREEZE.md) binds
+runtime `65f6072`, four matching source inputs, exact native arm previews, separate
+parent/store clones and fresh per-phase owned backends. Full four-source/eight-arm
+scripted rehearsal, partial/context/refusal/wall/usage/failure probes and closed-store
+GET-only restart pass; exact G0 passes 196 focused/2,178 offline tests, static gates
+and both 90/90 scripted matrices. Interrupted/failed preparation evidence is retained.
+No Gemma inference or quality result; Sol/CI/merge, parent approval and fresh gates
+still precede the conditional results slice. Original cohorts/no-go/8-of-10 and
+G2–G5 remain unchanged.
+
 **2026-10-27 — Fresh token-gated recovery protocol prepared:** the
 [new paired protocol](evals/projects/duodoro/TOKEN_RECOVERY_PROTOCOL.md) fixes four
 new original T02 sources and balanced C/P arms, with 180-second provider waits
