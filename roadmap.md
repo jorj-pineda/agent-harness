@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-29 — Clock-injection refactor coverage:** an eleventh public task
+adds deterministic acceptance for optional clock injection in two deadline helpers.
+Checks distinguish current default lookup, single reads, callback failures and
+inclusive expiry; initial/reference controls and four incorrect variants exercise
+the contract. Scripted real-tool edits retain visible-check success separately
+from independent acceptance. Existing tasks/runtime/closed cohorts remain unchanged.
+This expands offline refactor coverage, not inference, timing reliability, held-out
+evidence, quality gain or no-go/8-of-10/G2–G5 closure. Broader corpus targets stay open.
+
 **2026-10-29 — Configuration-overlay development coverage:** Jorge selected
 offline acceptance expansion. A tenth public task adds a bounded shallow settings
 overlay with explicit false-value precedence, value identity, input preservation

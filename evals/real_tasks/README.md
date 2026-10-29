@@ -48,10 +48,10 @@ tool trace, final diff, independent check
 output, termination, usage, and latency. A single run is a baseline observation,
 not evidence of a repeatable model improvement.
 
-The manifest contains ten tasks: the five original bugfixes, `paginate_items`
+The manifest contains eleven tasks: the five original bugfixes, `paginate_items`
 (feature), `extract_label_normalizer` (refactor) and `positive_total_existing_failure`
 (bugfix with an unrelated failing check), plus `retry_after_seconds` and
-`overlay_settings` (features).
+`overlay_settings` (features), and `inject_clock` (refactor).
 Pagination specifies one-based
 pages, validation (including bool),
 empty/past-end behavior, input/element preservation and the existing helper contract.
@@ -68,6 +68,15 @@ helper. Four incorrect implementations are rejected, and a scripted shared-runti
 real-file run demonstrates that a passing visible check can still fail external
 acceptance. This grows public offline coverage; it is not a model observation,
 held-out task, change to historical criteria or release-gate closure.
+
+`inject_clock` refactors deadline helpers to accept keyword-only clocks. External
+checks use deterministic readings rather than sleeps: each call reads its selected
+clock once, default clocks remain patchable at call time, equal deadlines expire,
+and callback exceptions propagate. Four incorrect variants are rejected; a scripted
+real-file run can pass the visible check while failing the equality boundary.
+This is a public development refactor, not a real-time scheduling guarantee or
+model-performance observation. Existing task criteria and historical trials remain
+unchanged.
 
 ### Division acceptance correction (2026-10-29)
 

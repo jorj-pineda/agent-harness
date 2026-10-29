@@ -77,3 +77,16 @@
     Leave both inputs unchanged, including when they are the same dictionary.
     Preserve lookup_setting's existing behavior for present, missing and None-valued
     keys. Run the visible checks and report the observed outcome.
+- id: inject_clock
+  fixture: inject_clock
+  category: refactor
+  request: >-
+    Refactor deadlines.py so deadline_after(seconds) and is_expired(deadline)
+    each accept an optional keyword-only clock argument. If supplied and not None,
+    call that zero-argument clock exactly once per function call, without reading
+    time.time. Omitted or None clocks must call the current time.time exactly once
+    at call time, so later monkeypatches take effect. Preserve deadline_after's
+    addition (including fractional and negative seconds) and is_expired's inclusive
+    boundary: a deadline equal to now is expired. Propagate clock exceptions without
+    retrying or replacing them. Keep existing positional calls working; do not sleep.
+    Run the visible checks and report the observed outcome.
