@@ -87,6 +87,40 @@ model difference. Partition labels and seal observations do not establish absenc
 of contamination. Historical reports are not rewritten and no model improvement
 follows from scripted aggregation controls.
 
+### Cohort plan and stopped runs
+
+For non-validation CLI runs, the report now includes a `real-task-cohort-v1`
+ledger. The full task/mode/repeat order is bounded to 10,000 cells before controls
+or provider allocation. After initial/reference controls pass, the prepared ledger
+must be written before settings/provider construction and before each attempt.
+A report-write failure stops further work. Existing alternating mode order,
+budgets and runtime behavior remain unchanged; this is not a launch authorization.
+
+Each cell records its one-based ordinal, task ID, mode, repeat and declared catalog
+identity. `planned` has not entered `run_task`; `started` has entered orchestration
+but may not have dispatched a request. `recorded` links to a zero-based `results`
+index and does not imply acceptance or completion. On a propagated exception,
+explicit cancellation, or held-out preservation stop, remaining planned cells
+become `unrun`; a started cell with no returned row becomes `no_result`. Its actual
+submission, partial changes and usage remain unknown, not zero or rejected.
+Recorded failed rows remain recorded and contribute normally to the existing
+summary. No synthetic result, retry or automatic continuation is introduced.
+
+The final ledger retains the stop exception class (without its message) and any
+provider-close exception class, preserving a primary failure through cleanup.
+`finished` means every planned cell returned a row and cleanup succeeded; it does
+not mean tasks passed. Returned provider/runtime error rows keep the existing
+cohort policy; only propagated failures and the explicit held-out stop halt it.
+Preflight refusals before a prepared ledger is written still produce no cohort.
+Direct `write_report` calls without a plan record null; legacy absence is unknown.
+
+Persistence is best effort, without an atomic/crash-safe guarantee. A hard kill,
+host failure, persistent write failure or repeated cancellation during cleanup may
+leave the last saved state (`planned` or `started`) and unresolved resources. Do not
+infer non-submission, automatic resumption or zero cost from that state. Inspect
+retained evidence and processes before any further execution; these ledgers do not
+replace frozen comparison recipes, independent approval or provider settlement.
+
 Run one configured model against the task manifest, then repeat with the same model
 in minimal-prompt mode. Use separate report paths:
 

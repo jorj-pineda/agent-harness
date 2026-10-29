@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-29 — Bounded real-evaluation cohort ledger:** non-validation CLI runs
+persist the full alternating task/mode/repeat plan after controls and before
+provider construction. Recorded cells link actual rows; stopped runs retain unrun
+cells and started cells with no result without inventing acceptance or usage.
+Report failures prevent further work, and provider cleanup/stop classes remain
+explicit. The 10,000-cell cap prevents unbounded plan allocation. This is best-effort
+bookkeeping, not crash-safe persistence, process isolation, resumption or launch
+authorization. Existing returned-error policy, raw-result counts, budgets and
+historical reports remain unchanged. No inference, model-quality or release claim.
+
 **2026-10-29 — Model-specific evaluation summaries:** new real-task summaries
 retain exact provider/model groups inside each mode, including category, declared
 partition, task, acceptance-subject, termination, usage and efficiency evidence.
