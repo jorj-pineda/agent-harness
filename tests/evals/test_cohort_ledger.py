@@ -200,3 +200,34 @@ def test_plan_preserves_multi_task_alternation_and_catalog_identity():
     ]
     assert len(ledger.cells) == 8
     assert ledger.cells[-1].task_set == tasks[1].task_set
+
+
+def test_criterion_drift_retains_invalidated_row_and_stops_remaining_cells(monkeypatch, tmp_path):
+    import shutil
+    from dataclasses import replace
+
+    provider, report, args = setup_cli(monkeypatch, tmp_path)
+    original_task = real_run.load_tasks()[0]
+    criteria = tmp_path / "criteria"
+    shutil.copytree(original_task.acceptance, criteria)
+    task = replace(original_task, acceptance=criteria)
+    monkeypatch.setattr(real_run, "load_tasks", lambda *args: [task])
+    grader = real_run.acceptance_check
+
+    async def drifting_grade(*args, **kwargs):
+        result = await grader(*args, **kwargs)
+        (criteria / "extra.py").write_text("# changed after grading\n")
+        return result
+
+    monkeypatch.setattr(real_run, "acceptance_check", drifting_grade)
+    # Authoring controls already have separate coverage; inject drift only at execution.
+    monkeypatch.setattr(real_run, "validate_task", AsyncMock())
+    with pytest.raises(real_run.AcceptanceDriftError):
+        real_run.main(args)
+    data = json.loads(report.read_text())
+    assert len(data["results"]) == 1 and not data["results"][0]["passed"]
+    assert data["results"][0]["termination"] == "acceptance_invalidated"
+    assert data["cohort"]["stop_reason"] == "AcceptanceDriftError"
+    assert [c["status"] for c in data["cohort"]["cells"]] == ["recorded", "unrun", "unrun", "unrun"]
+    assert len(provider.calls) == 1
+    provider.aclose.assert_awaited_once()
