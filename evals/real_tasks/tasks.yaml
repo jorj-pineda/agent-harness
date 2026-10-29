@@ -65,3 +65,15 @@
     zero, otherwise return the supplied default unchanged. Preserve headers without
     mutation and existing no-header behavior. Run the visible checks and report the
     observed outcome. This is numeric-only support, not full HTTP-date parsing.
+- id: overlay_settings
+  fixture: overlay_settings
+  category: feature
+  request: >-
+    Add overlay_settings(defaults, overrides) in settings.py for two dictionaries
+    with string keys and arbitrary object values. Return a new dictionary with
+    the union of their keys, where an override wins whenever its key is present,
+    including None, False, zero and empty values. This is a shallow overlay:
+    preserve the exact value objects and do not recursively merge nested dictionaries.
+    Leave both inputs unchanged, including when they are the same dictionary.
+    Preserve lookup_setting's existing behavior for present, missing and None-valued
+    keys. Run the visible checks and report the observed outcome.
