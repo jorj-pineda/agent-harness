@@ -2,7 +2,7 @@ import hashlib
 import json
 import shutil
 from contextlib import contextmanager
-from dataclasses import replace
+from dataclasses import asdict, replace
 
 import pytest
 
@@ -245,6 +245,9 @@ async def test_drift_after_grading_invalidates_even_a_passing_artifact(registere
     result = await real_run.run_task(
         task, provider=provider, settings=Settings(_env_file=None), mode="harness"
     )
+    assert result.heldout_preservation["status"] == "failed"
+    assert result.heldout_preservation["failed_checkpoint"] == "grading"
+    assert "after_grading" not in result.heldout_preservation["checkpoints"]
     assert graded == [0]
     assert result.completion_status == "completed" and not result.passed
     assert result.termination == "error:HeldoutDriftError"
@@ -266,6 +269,14 @@ async def test_midrun_drift_prevents_next_request_and_acceptance(registered):
     )
     assert len(provider.calls) == 1
     assert result.termination == "error:HeldoutDriftError" and not result.passed
+    assert result.heldout_preservation["status"] == "failed"
+    assert result.heldout_preservation["seal_sha256"] == registered.seal_sha256
+    assert result.heldout_preservation["failed_checkpoint"] == "before_request"
+    assert result.heldout_preservation["checkpoints"] == [
+        "initial",
+        "fixture_copy",
+        "before_request",
+    ]
     assert "not certified" in result.acceptance_output
     assert result.prompt_tokens == 10 and result.completion_tokens == 5
 
@@ -319,3 +330,79 @@ async def test_post_response_drift_never_certifies_a_grade(registered, monkeypat
     assert result.completion_status == "completed" and not result.passed
     assert result.termination == "error:HeldoutDriftError"
     assert result.acceptance_identity["status"] == "unavailable"
+
+
+@pytest.mark.parametrize("mode", ["harness", "minimal"])
+@pytest.mark.parametrize("correct", [False, True])
+async def test_preservation_evidence_is_separate_from_acceptance_and_roundtrips(
+    registered, tmp_path, mode, correct
+):
+    task = real_run.load_tasks(registered.root / "tasks.yaml")[0]
+    provider = ScriptedProvider()
+    responses = []
+    if correct:
+        responses.append(
+            make_response(
+                tool_calls=[
+                    ToolCall(
+                        id="edit",
+                        name="write_file",
+                        arguments={
+                            "path": "week_key.py",
+                            "content": (task.reference / "week_key.py").read_text(),
+                        },
+                    )
+                ]
+            )
+        )
+    responses.append(make_response(content="Native completion"))
+    provider.script(*responses)
+    result = await real_run.run_task(
+        task, provider=provider, settings=Settings(_env_file=None), mode=mode
+    )
+    evidence = result.heldout_preservation
+    assert result.passed is correct
+    assert evidence == {
+        "format": "heldout-preservation-v1",
+        "catalog_id": "lower-tier-heldout-v1",
+        "seal_sha256": registered.seal_sha256,
+        "status": "checks_passed",
+        "checkpoints": ["initial", "fixture_copy"]
+        + ["before_request"] * len(provider.calls)
+        + ["before_grading", "after_grading"],
+        "failed_checkpoint": None,
+    }
+    report = tmp_path / "report.json"
+    real_run.write_report(report, "scripted preservation evidence", [result])
+    saved = json.loads(report.read_text())["results"][0]
+    assert saved["heldout_preservation"] == evidence
+    assert str(registered.root) not in json.dumps(evidence)
+    legacy = asdict(result)
+    legacy.pop("heldout_preservation")
+    assert real_run.RealTaskResult(**legacy).heldout_preservation is None
+
+
+async def test_development_rows_do_not_claim_heldout_preservation():
+    provider = ScriptedProvider()
+    provider.script(make_response(content="No patch"))
+    result = await real_run.run_task(
+        real_run.load_tasks()[0],
+        provider=provider,
+        settings=Settings(_env_file=None),
+        mode="harness",
+    )
+    assert result.heldout_preservation is None
+
+
+def test_observed_preservation_failure_is_latched_even_if_source_is_restored(registered):
+    task = real_run.load_tasks(registered.root / "tasks.yaml")[0]
+    guard = real_run._heldout_guard(task, execution=True)
+    path = registered.root / "reference/ho_iso_week/week_key.py"
+    original = path.read_bytes()
+    path.write_bytes(original + b"# transient drift\n")
+    with pytest.raises(HeldoutDriftError):
+        guard()
+    path.write_bytes(original)
+    with pytest.raises(HeldoutDriftError, match="earlier"):
+        guard.check_at("before_grading")
+    assert guard.evidence.failed_checkpoint == "before_request"

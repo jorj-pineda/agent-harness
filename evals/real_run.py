@@ -90,6 +90,39 @@ class TaskCatalog(BaseModel):
     tasks: list[CatalogTask] = Field(min_length=1, max_length=100)
 
 
+class HeldoutPreservation(BaseModel):
+    """Observed checks only; no atomicity or contamination attestation."""
+
+    model_config = ConfigDict(extra="forbid", validate_assignment=True)
+
+    format: Literal["heldout-preservation-v1"] = "heldout-preservation-v1"
+    seal_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    catalog_id: str
+    status: Literal["checks_passed", "failed"] = "checks_passed"
+    checkpoints: list[str] = Field(default_factory=list)
+    failed_checkpoint: str | None = None
+
+
+@dataclass
+class _HeldoutGuard:
+    check: Callable[[], None]
+    evidence: HeldoutPreservation
+
+    def check_at(self, checkpoint: str) -> None:
+        if self.evidence.status == "failed":
+            raise HeldoutDriftError("An earlier held-out preservation check failed")
+        try:
+            self.check()
+        except HeldoutDriftError:
+            self.evidence.status = "failed"
+            self.evidence.failed_checkpoint = checkpoint
+            raise
+        self.evidence.checkpoints.append(checkpoint)
+
+    def __call__(self) -> None:
+        self.check_at("before_request")
+
+
 @dataclass(frozen=True)
 class Task:
     id: str
@@ -134,6 +167,7 @@ class RealTaskResult:
     acceptance_output_truncated: bool | None = None
     acceptance_identity: dict[str, Any] | None = None
     task_set: dict[str, str] | None = None
+    heldout_preservation: dict[str, Any] | None = None
 
 
 class ObservedProvider:
@@ -244,7 +278,7 @@ def load_tasks(path: Path = TASKS_ROOT / "tasks.yaml") -> list[Task]:
     return tasks
 
 
-def _heldout_guard(task: Task, *, execution: bool = False) -> Callable[[], None] | None:
+def _heldout_guard(task: Task, *, execution: bool = False) -> _HeldoutGuard | None:
     registration = None
     for path in (task.fixture, task.acceptance, task.reference):
         registration = registration_for(path)
@@ -274,8 +308,15 @@ def _heldout_guard(task: Task, *, execution: bool = False) -> Callable[[], None]
         except (OSError, ValueError, RuntimeError, yaml.YAMLError) as error:
             raise HeldoutDriftError("Held-out task preservation failed") from error
 
-    check()
-    return check
+    guard = _HeldoutGuard(
+        check,
+        HeldoutPreservation(
+            seal_sha256=registration.seal_sha256,
+            catalog_id=task.task_set.id if task.task_set is not None else "unknown",
+        ),
+    )
+    guard.check_at("initial")
+    return guard
 
 
 def _source_revision(copy: DisposableWorkspace) -> str:
@@ -419,6 +460,7 @@ async def run_task(
     with disposable_workspace(task.fixture) as copy:
         if guard is not None:
             verify_fixture(task.fixture, copy.workspace.root)
+            guard.evidence.checkpoints.append("fixture_copy")
         with tempfile.TemporaryDirectory(prefix="agent_harness_eval_memory_") as memory_dir:  # noqa: SIM117 — workspace must outlive memory for grading
             with FactStore(Path(memory_dir) / "memory.db") as store:
                 question = task.category == "repository_question"
@@ -466,7 +508,7 @@ async def run_task(
                 trace: list[ToolCallRecord] = session.turns[-1].tool_calls if session.turns else []
         try:
             if guard is not None:
-                guard()
+                guard.check_at("before_grading")
             criteria_before = (
                 _acceptance_digest(task.acceptance, question=True)
                 if question
@@ -483,8 +525,11 @@ async def run_task(
                 else _acceptance_digest(task.acceptance)
             )
             if guard is not None:
-                guard()
+                guard.check_at("after_grading")
         except HeldoutDriftError:
+            if guard is not None and guard.evidence.status != "failed":
+                guard.evidence.status = "failed"
+                guard.evidence.failed_checkpoint = "grading"
             failure = "HeldoutDriftError"
             criteria_before = criteria_after = None
             acceptance = ProcessResult(
@@ -526,6 +571,7 @@ async def run_task(
             },
             category=task.category,
             task_set=task.task_set.model_dump() if task.task_set is not None else None,
+            heldout_preservation=guard.evidence.model_dump() if guard is not None else None,
             mode=mode,
             attempt=attempt,
             provider=provider.name,
