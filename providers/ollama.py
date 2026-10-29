@@ -178,11 +178,12 @@ def _response_from_ollama(
     ]
 
     finish: FinishReason
-    if tool_calls:
+    if payload.get("done_reason") == "length":
+        finish = "length"
+    elif tool_calls:
         finish = "tool_use"
     else:
-        done_reason = payload.get("done_reason", "stop")
-        finish = "length" if done_reason == "length" else "stop"
+        finish = "stop"
 
     return ProviderResponse(
         content=message.get("content", "") or "",
