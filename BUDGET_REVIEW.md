@@ -25,6 +25,8 @@ allowance smaller than the configured cap. An overrun returns `budget_exhausted`
 before proposed tools or completed status; unknown output under a finite cap
 returns `incomplete`. Integer zero and exactly-at-cap usage remain valid, subject
 to the existing cumulative/followup gates. Fully uncapped requests stay uncapped.
+A context-only limit now requires reported output when it produces a finite
+allowance; previously an omitted count could pass through that configuration.
 
 The original request allowance is already recorded as `request.max_tokens` in
 trace/saved budget evidence. The paired response retains the reported overrun or

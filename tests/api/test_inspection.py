@@ -32,9 +32,11 @@ def test_inspection_policy_persists_and_fork_cannot_gain_edit_permission(tmp_pat
     provider = known_provider()
     provider.script(
         make_response(
-            tool_calls=[ToolCall(id="read", name="read_file", arguments={"path": "user.py"})]
+            prompt_tokens=10,
+            completion_tokens=2,
+            tool_calls=[ToolCall(id="read", name="read_file", arguments={"path": "user.py"})],
         ),
-        make_response(content="user is 1"),
+        make_response(content="user is 1", prompt_tokens=10, completion_tokens=2),
     )
     with TestClient(make_app(tmp_path, provider, **SETTINGS)) as api:
         created = api.post(

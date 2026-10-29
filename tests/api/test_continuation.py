@@ -22,15 +22,17 @@ def source(tmp_path, *, known=True, settings=None):
     provider = known_provider() if known else ScriptedProvider()
     provider.script(
         make_response(
+            prompt_tokens=10,
+            completion_tokens=2,
             tool_calls=[
                 ToolCall(
                     id="old-edit",
                     name="write_file",
                     arguments={"path": "a.py", "content": "user = 1\nagent = 2\n"},
                 )
-            ]
+            ],
         ),
-        make_response(content="Done"),
+        make_response(content="Done", prompt_tokens=10, completion_tokens=2),
     )
     with TestClient(make_app(tmp_path, provider, **(settings or SETTINGS))) as client:
         sid = client.post(
@@ -62,15 +64,17 @@ def test_continuation_forks_after_restart_without_unchecking_source_or_replaying
     provider = known_provider()
     provider.script(
         make_response(
+            prompt_tokens=10,
+            completion_tokens=2,
             tool_calls=[
                 ToolCall(
                     id="new-edit",
                     name="write_file",
                     arguments={"path": "a.py", "content": "user = 1\nagent = 2\ncontinued = 3\n"},
                 )
-            ]
+            ],
         ),
-        make_response(content="Continued"),
+        make_response(content="Continued", prompt_tokens=10, completion_tokens=2),
     )
     with TestClient(make_app(tmp_path, provider, **SETTINGS)) as client:
         request = body(archived)
@@ -189,7 +193,10 @@ def submit_and_finish(client, sid, request):
 def test_live_fork_rechecks_each_turn_and_retires_after_changed_workspace(tmp_path):
     root, sid, archived = source(tmp_path)
     provider = known_provider()
-    provider.script(make_response(content="Reviewed"), make_response(content="Reviewed again"))
+    provider.script(
+        make_response(content="Reviewed", prompt_tokens=10, completion_tokens=2),
+        make_response(content="Reviewed again", prompt_tokens=10, completion_tokens=2),
+    )
     with TestClient(make_app(tmp_path, provider, **SETTINGS)) as client:
         run = submit_and_finish(client, sid, body(archived))
         fork = run["request"]["session_id"]
@@ -346,7 +353,7 @@ def test_failed_related_fork_blocks_another_fork_from_original_source(tmp_path):
 
     _root, sid, archived = source(tmp_path)
     provider = known_provider()
-    provider.script(make_response(content="Reviewed"))
+    provider.script(make_response(content="Reviewed", prompt_tokens=10, completion_tokens=2))
     with TestClient(make_app(tmp_path, provider, **SETTINGS)) as client:
         first = submit_and_finish(client, sid, body(archived))
         fork = first["request"]["session_id"]
@@ -372,7 +379,7 @@ def test_continuation_uses_bounded_explicit_ollama_context(tmp_path, harness_cap
     settings = {**SETTINGS, "max_context_tokens": harness_cap}
     root, sid, archived = source(tmp_path, settings=settings)
     provider = known_provider()
-    provider.script(make_response(content="Reviewed"))
+    provider.script(make_response(content="Reviewed", prompt_tokens=10, completion_tokens=2))
     before = (root / "a.py").read_bytes()
     with TestClient(make_app(tmp_path, provider, **settings)) as client:
         run = submit_and_finish(client, sid, body(archived))

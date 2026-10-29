@@ -36,6 +36,14 @@ def test_uncapped_and_omitted_allowances_preserve_existing_behavior():
     assert configured.after_response(wants_tools=False).status == "budget_exhausted"
 
 
+def test_context_only_finite_allowance_requires_reported_output():
+    budget = TokenBudget(max_context=100)
+    budget.record(TokenUsage(prompt_tokens=1), 1)
+    stop = budget.after_response(wants_tools=False, request_output=5)
+    assert stop.status == "incomplete"
+    assert budget.completion_used is None
+
+
 @pytest.mark.parametrize("constraint", ["context", "total"])
 @pytest.mark.parametrize("configured_cap", [0, 20])
 @pytest.mark.parametrize("wants_tools", [False, True])
