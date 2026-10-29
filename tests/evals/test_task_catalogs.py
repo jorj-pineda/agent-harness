@@ -101,7 +101,7 @@ def test_validate_only_selects_one_explicit_catalog_without_provider(tmp_path, m
 
 
 async def test_catalog_identity_survives_real_task_report_and_partition_summary(tmp_path):
-    path, _ = catalog(tmp_path)
+    path, _ = catalog(tmp_path, partition="development")
     task = load_tasks(path)[0]
     provider = ScriptedProvider()
     provider.script(make_response(content="Not fixed"))
@@ -110,10 +110,12 @@ async def test_catalog_identity_survives_real_task_report_and_partition_summary(
     )
     assert result.task_set == task.task_set.model_dump()
     legacy = replace(result, task_id="unknown-project", task_set=None)
-    development = replace(
-        result, task_id="development-task", task_set=load_tasks()[0].task_set.model_dump()
+    heldout = replace(
+        result,
+        task_id="summary-only-heldout",
+        task_set={**result.task_set, "partition": "held_out"},
     )
-    summary = summarize([result, legacy, development])
+    summary = summarize([result, legacy, heldout])
     assert set(summary["harness"]["per_partition"]) == {"development", "held_out", "unclassified"}
     assert "| held_out | 0/1 |" in summary_markdown(summary)
     report = tmp_path / "report.json"
