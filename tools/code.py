@@ -100,8 +100,23 @@ class WriteFileInput(BaseModel):
 
 class ReplaceTextInput(BaseModel):
     path: str = Field(..., min_length=1, description="Repo-relative existing file path.")
-    old_text: str = Field(..., min_length=1, description="Exact text to replace once.")
-    new_text: str = Field(..., description="Replacement text; empty string deletes the match.")
+    old_text: str = Field(
+        ...,
+        min_length=1,
+        description=(
+            "Exact text copied from read_file, including line breaks and indentation. "
+            "Encode as a JSON string once; do not add an extra layer of escaping."
+        ),
+        examples=["value = 1\nprint(value)\n"],
+    )
+    new_text: str = Field(
+        ...,
+        description=(
+            "Replacement text; empty string deletes the match. Encode as a JSON string "
+            "once, preserving intended line breaks and literal source escapes."
+        ),
+        examples=["value = 2\nprint(value)\n"],
+    )
     expected_sha256: str = Field(
         ...,
         pattern=r"^[0-9a-f]{64}$",

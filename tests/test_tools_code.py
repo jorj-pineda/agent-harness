@@ -158,6 +158,34 @@ async def test_replace_text_mismatch_errors_say_how_to_fix_the_call(tmp_path: Pa
     assert target.read_text(encoding="utf-8") == source
 
 
+async def test_replace_schema_examples_survive_wire_json_and_execute_exactly(
+    tmp_path: Path,
+) -> None:
+    import json
+
+    reg = ToolRegistry()
+    register_code_tools(reg, workspace=Workspace(root=tmp_path))
+    spec = next(s for s in reg.as_tool_specs() if s.name == "replace_text")
+    properties = json.loads(spec.model_dump_json())["parameters_schema"]["properties"]
+    old = properties["old_text"]["examples"][0]
+    new = properties["new_text"]["examples"][0]
+    target = tmp_path / "example.py"
+    target.write_bytes(b"value = 1\nprint(value)\n")
+    read = await reg.invoke("read_file", {"path": "example.py"})
+    arguments = json.loads(
+        json.dumps(
+            {
+                "path": "example.py",
+                "old_text": old,
+                "new_text": new,
+                "expected_sha256": read["sha256"],
+            }
+        )
+    )
+    await reg.invoke("replace_text", arguments)
+    assert target.read_bytes() == b"value = 2\nprint(value)\n"
+
+
 @pytest.mark.parametrize(
     "bad_hash",
     ["a" * 63, "a" * 65, "A" * 64, "g" * 64, "a" * 64 + "\n", " " + "a" * 64, ""],
