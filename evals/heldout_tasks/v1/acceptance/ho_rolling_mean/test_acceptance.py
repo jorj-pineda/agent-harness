@@ -24,6 +24,11 @@ def test_small_finite_windows_against_direct_formula():
                 assert rolling_mean(iter(values), window) == pytest.approx(expected)
 
 
+def test_finite_magnitudes_do_not_poison_later_windows():
+    assert rolling_mean([10**16, 1.0, 1.0], 2) == [5e15, 1.0]
+    assert rolling_mean([1e308, 1e308], 2) == [1e308]
+
+
 @pytest.mark.parametrize("bad", [0, -1, True, False, 1.5, "2", None])
 def test_invalid_window_precedes_any_input_read(bad):
     def unread():
