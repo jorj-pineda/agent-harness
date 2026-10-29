@@ -312,7 +312,16 @@ def test_cli_retains_drift_row_closes_provider_and_stops_cohort(registered, monk
                 str(report),
             ]
         )
-    rows = json.loads(report.read_text())["results"]
+    saved = json.loads(report.read_text())
+    rows = saved["results"]
+    assert saved["cohort"]["status"] == "stopped"
+    assert saved["cohort"]["stop_reason"] == "HeldoutDriftError"
+    assert [cell["status"] for cell in saved["cohort"]["cells"]] == [
+        "recorded",
+        "unrun",
+        "unrun",
+        "unrun",
+    ]
     assert len(rows) == 1 and rows[0]["termination"] == "error:HeldoutDriftError"
     assert len(provider.calls) == 1 and closed == [True]
 

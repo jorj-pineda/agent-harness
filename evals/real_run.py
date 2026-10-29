@@ -61,6 +61,7 @@ Mode = Literal["harness", "minimal"]
 TaskCategory = Literal["unclassified", "bugfix", "feature", "refactor", "repository_question"]
 MODES: tuple[Mode, ...] = ("harness", "minimal")
 ACCEPTANCE_POLICY: Literal["owned-pytest-v1"] = "owned-pytest-v1"
+MAX_COHORT_CELLS = 10_000
 
 
 class TaskSetIdentity(BaseModel):
@@ -132,6 +133,63 @@ class Task:
     reference: Path
     category: TaskCategory = "unclassified"
     task_set: TaskSetIdentity | None = None
+
+
+class CohortCell(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True, validate_assignment=True)
+
+    ordinal: int = Field(ge=1, le=MAX_COHORT_CELLS)
+    task_id: str
+    mode: Mode
+    attempt: int = Field(ge=1)
+    task_set: TaskSetIdentity | None
+    status: Literal["planned", "started", "recorded", "no_result", "unrun"] = "planned"
+    result_index: int | None = Field(default=None, ge=0)
+    stop_reason: str | None = None
+
+
+class CohortLedger(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True, validate_assignment=True)
+
+    format: Literal["real-task-cohort-v1"] = "real-task-cohort-v1"
+    status: Literal["prepared", "running", "finished", "stopped"] = "prepared"
+    cells: list[CohortCell] = Field(min_length=1, max_length=MAX_COHORT_CELLS)
+    stop_reason: str | None = None
+    cleanup_error: str | None = None
+
+    def stop(self, reason: str) -> None:
+        self.status = "stopped"
+        self.stop_reason = reason
+        for cell in self.cells:
+            if cell.status in ("planned", "started"):
+                cell.status = "unrun" if cell.status == "planned" else "no_result"
+                cell.stop_reason = reason
+
+
+def _plan_cohort(
+    tasks: list[Task], modes: tuple[Mode, ...], repeats: int
+) -> tuple[CohortLedger, list[tuple[Task, Mode, int]]]:
+    count = len(tasks) * len(modes) * repeats
+    if repeats < 1 or not 1 <= count <= MAX_COHORT_CELLS:
+        raise ValueError(f"Cohort must contain 1-{MAX_COHORT_CELLS} cells")
+    schedule: list[tuple[Task, Mode, int]] = []
+    for attempt in range(1, repeats + 1):
+        for index, task in enumerate(tasks):
+            # Preserve the existing alternating mode order.
+            ordered = modes if (attempt + index) % 2 else modes[::-1]
+            schedule.extend((task, mode, attempt) for mode in ordered)
+    return CohortLedger(
+        cells=[
+            CohortCell(
+                ordinal=index + 1,
+                task_id=task.id,
+                mode=mode,
+                attempt=attempt,
+                task_set=task.task_set,
+            )
+            for index, (task, mode, attempt) in enumerate(schedule)
+        ]
+    ), schedule
 
 
 @dataclass
@@ -890,7 +948,9 @@ def _harness_revision() -> dict[str, Any]:
     return {"commit": commit, "dirty": dirty}
 
 
-def write_report(path: Path, started: str, results: list[RealTaskResult]) -> None:
+def write_report(
+    path: Path, started: str, results: list[RealTaskResult], *, cohort: CohortLedger | None = None
+) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
         json.dumps(
@@ -902,6 +962,7 @@ def write_report(path: Path, started: str, results: list[RealTaskResult]) -> Non
                 "sampling": {"temperature": 0.0},
                 "summary": summarize(results),
                 "results": [asdict(r) for r in results],
+                "cohort": cohort.model_dump(mode="json") if cohort is not None else None,
             },
             indent=2,
         ),
@@ -920,42 +981,59 @@ async def _run_cli(args: argparse.Namespace, started: str = "") -> list[RealTask
     selected = [task for task in tasks if args.task is None or task.id == args.task]
     if not selected:
         raise ValueError(f"Unknown task: {args.task}")
+    modes: tuple[Mode, ...] = MODES if args.mode == "both" else (args.mode,)
+    cohort, schedule = _plan_cohort(selected, modes, args.repeats)
     for task in selected:
         if not args.validate_only:
             _heldout_guard(task, execution=True)
         await validate_task(task)
     if args.validate_only:
         return []
-    settings = get_settings()
-    if registration is not None:
-        verify_catalog(registration)
-    provider = build_configured_provider(args.provider, settings)
-    modes: tuple[Mode, ...] = MODES if args.mode == "both" else (args.mode,)
     results: list[RealTaskResult] = []
+    provider: ChatProvider | None = None
+    failure: BaseException | None = None
     try:
-        for attempt in range(1, args.repeats + 1):
-            for task in selected:
-                # Alternate mode order so neither mode always runs on a freshly loaded model.
-                ordered = modes if (attempt + selected.index(task)) % 2 else modes[::-1]
-                for mode in ordered:
-                    result = await run_task(
-                        task, provider=provider, settings=settings, mode=mode, attempt=attempt
-                    )
-                    results.append(result)
-                    write_report(args.report, started, results)
-                    if result.termination == "error:HeldoutDriftError":
-                        raise HeldoutDriftError(
-                            "Held-out cohort stopped; observed rows retained in report"
-                        )
-                    print(
-                        f"{task.id} {mode} #{attempt}: {result.termination} "
-                        f"({result.latency_ms / 1000:.0f}s, {len(result.tool_trace)} tools)",
-                        flush=True,
-                    )
+        write_report(args.report, started, results, cohort=cohort)
+        settings = get_settings()
+        if registration is not None:
+            verify_catalog(registration)
+        provider = build_configured_provider(args.provider, settings)
+        cohort.status = "running"
+        for index, (task, mode, attempt) in enumerate(schedule):
+            cell = cohort.cells[index]
+            cell.status = "started"
+            write_report(args.report, started, results, cohort=cohort)
+            result = await run_task(
+                task, provider=provider, settings=settings, mode=mode, attempt=attempt
+            )
+            cell.result_index = len(results)
+            results.append(result)
+            cell.status = "recorded"
+            write_report(args.report, started, results, cohort=cohort)
+            if result.termination == "error:HeldoutDriftError":
+                raise HeldoutDriftError("Held-out cohort stopped; observed rows retained in report")
+            print(
+                f"{task.id} {mode} #{attempt}: {result.termination} "
+                f"({result.latency_ms / 1000:.0f}s, {len(result.tool_trace)} tools)",
+                flush=True,
+            )
+        cohort.status = "finished"
+    except BaseException as exc:
+        failure = exc
+        cohort.stop(type(exc).__name__)
+        raise
     finally:
-        close = getattr(provider, "aclose", None)
-        if close is not None:
-            await close()
+        try:
+            close = getattr(provider, "aclose", None)
+            if close is not None:
+                await close()
+        except BaseException as exc:
+            cohort.cleanup_error = type(exc).__name__
+            if failure is None:
+                cohort.stop(type(exc).__name__)
+                raise
+        finally:
+            write_report(args.report, started, results, cohort=cohort)
     return results
 
 
@@ -982,7 +1060,6 @@ def main(argv: list[str] | None = None) -> int:
     if args.validate_only:
         print("Selected tasks reject their initial controls and accept their references.")
         return 0
-    write_report(args.report, started, results)
     summary = summarize(results)
     print(summary_markdown(summary))
     print(f"Wrote {args.report} ({sum(r.passed for r in results)}/{len(results)} tasks accepted)")
