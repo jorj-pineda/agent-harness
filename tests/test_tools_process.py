@@ -95,3 +95,52 @@ async def test_subprocess_receives_only_selected_environment(
         env={"PROJECT_FLAG": "yes"},
     )
     assert result.stdout.strip() == "None yes"
+
+
+async def test_repeated_cancellation_waits_for_owned_process_cleanup(tmp_path, monkeypatch):
+    import tools.process as processes
+
+    entered = asyncio.Event()
+    release = asyncio.Event()
+    settled = asyncio.Event()
+    original = processes._stop_tree
+    owned = []
+
+    async def held_cleanup(process):
+        owned.append(process)
+        entered.set()
+        await release.wait()
+        await original(process)
+        settled.set()
+
+    monkeypatch.setattr(processes, "_stop_tree", held_cleanup)
+    marker = tmp_path / "started"
+    task = asyncio.create_task(
+        run_process(
+            [
+                sys.executable,
+                "-c",
+                "import pathlib,time; pathlib.Path('started').touch(); time.sleep(30)",
+            ],
+            cwd=tmp_path,
+            timeout_seconds=60,
+            output_limit=100,
+        )
+    )
+    try:
+        await asyncio.to_thread(_wait_for_file, marker)
+        task.cancel()
+        await asyncio.wait_for(entered.wait(), timeout=2)
+        task.cancel()
+        await asyncio.sleep(0)
+        assert not task.done()
+    finally:
+        release.set()
+        with pytest.raises(asyncio.CancelledError):
+            await task
+        # Ensure the test itself never leaves its child alive on the old behavior.
+        if not settled.is_set():
+            for process in owned:
+                await original(process)
+    assert settled.is_set()
+    assert all(process.returncode is not None for process in owned)
