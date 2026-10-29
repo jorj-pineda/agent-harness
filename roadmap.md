@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-29 — Held-out v1 preservation checks:** a registered seal binds the
+manifest, fixtures, references and criteria by bytes, size and mode. Drift refuses
+before allocation/provider construction; execution checks pinned task metadata,
+initial disposable copies, each request and grading boundaries. Midrun drift
+invalidates acceptance, retains the failed row and stops the cohort. Unregistered
+held-out catalogs allow authoring validation only. Observations remain bounded and
+non-atomic, with host permissions unchanged. No inference, prompt tuning, model
+quality claim, comparison launch authorization or no-go/G2–G5 closure.
+
 **2026-10-29 — Separate held-out v1 data prepared:** four new tasks cover an
 ISO-week bugfix, rolling feature, immutable-record refactor and cache-policy
 question outside default development runs. Initial/reference controls, selected

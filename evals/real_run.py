@@ -17,6 +17,7 @@ import sys
 import tempfile
 import time
 from collections import Counter
+from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
@@ -25,6 +26,7 @@ from typing import Any, Literal
 import yaml
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter
 
+from evals.heldout_guard import HeldoutDriftError, registration_for, verify_catalog, verify_fixture
 from evals.question_grading import grade_question
 from harness.config import Settings, get_settings
 from harness.execution_profile import ExecutionProfile
@@ -135,7 +137,9 @@ class RealTaskResult:
 
 
 class ObservedProvider:
-    def __init__(self, provider: ChatProvider) -> None:
+    def __init__(
+        self, provider: ChatProvider, before_chat: Callable[[], None] | None = None
+    ) -> None:
         self.provider = provider
         self._unbound_provider = provider
         self.name = provider.name
@@ -143,6 +147,7 @@ class ObservedProvider:
         self.prompt_tokens: int | None = 0
         self.completion_tokens: int | None = 0
         self.finish_reason = "unknown"
+        self.before_chat = before_chat
 
     def for_conversation(self, conversation_id: str) -> ChatProvider:
         if isinstance(self._unbound_provider, ConversationProvider):
@@ -157,6 +162,8 @@ class ObservedProvider:
         temperature: float = 0.0,
         max_tokens: int | None = None,
     ) -> ProviderResponse:
+        if self.before_chat is not None:
+            self.before_chat()
         try:
             response = await self.provider.chat(
                 messages, tools=tools, temperature=temperature, max_tokens=max_tokens
@@ -237,6 +244,40 @@ def load_tasks(path: Path = TASKS_ROOT / "tasks.yaml") -> list[Task]:
     return tasks
 
 
+def _heldout_guard(task: Task, *, execution: bool = False) -> Callable[[], None] | None:
+    registration = None
+    for path in (task.fixture, task.acceptance, task.reference):
+        registration = registration_for(path)
+        if registration is not None:
+            break
+    if registration is None:
+        if execution and task.task_set is not None and task.task_set.partition == "held_out":
+            raise HeldoutDriftError(
+                "Unregistered held-out catalogs support authoring validation only"
+            )
+        return None
+
+    def check() -> None:
+        try:
+            seal = verify_catalog(registration)
+            expected = next(
+                (row for row in load_tasks(registration.root / "tasks.yaml") if row.id == task.id),
+                None,
+            )
+            if (
+                expected != task
+                or task.task_set is None
+                or task.task_set.id != seal.catalog_id
+                or task.task_set.manifest_sha256 != seal.files["tasks.yaml"].sha256
+            ):
+                raise HeldoutDriftError("Held-out task differs from its pinned manifest")
+        except (OSError, ValueError, RuntimeError, yaml.YAMLError) as error:
+            raise HeldoutDriftError("Held-out task preservation failed") from error
+
+    check()
+    return check
+
+
 def _source_revision(copy: DisposableWorkspace) -> str:
     content = json.dumps(copy.baseline, sort_keys=True).encode("utf-8")
     return hashlib.sha256(content).hexdigest()
@@ -251,24 +292,27 @@ def _reference_files(task: Task, root: Path) -> None:
 
 
 async def acceptance_check(task: Task, root: Path, *, answer: str = "") -> ProcessResult:
+    guard = _heldout_guard(task)
     if task.category == "repository_question":
-        return grade_question(task.fixture, root, task.acceptance, answer)
-    return await run_process(
-        [
-            sys.executable,
-            "-I",
-            "-B",
-            str(Path(__file__).with_name("acceptance_runner.py")),
-            str(root),
-            str(task.acceptance),
-        ],
-        cwd=root,
-        timeout_seconds=30,
-        output_limit=12_000,
-        env={
-            "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
-        },
-    )
+        result = grade_question(task.fixture, root, task.acceptance, answer)
+    else:
+        result = await run_process(
+            [
+                sys.executable,
+                "-I",
+                "-B",
+                str(Path(__file__).with_name("acceptance_runner.py")),
+                str(root),
+                str(task.acceptance),
+            ],
+            cwd=root,
+            timeout_seconds=30,
+            output_limit=12_000,
+            env={"PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1"},
+        )
+    if guard is not None:
+        guard()
+    return result
 
 
 def _acceptance_digest(directory: Path, *, question: bool = False) -> str | None:
@@ -311,6 +355,7 @@ async def _visible_check(root: Path) -> ProcessResult:
 
 
 async def validate_task(task: Task) -> None:
+    guard = _heldout_guard(task)
     if task.category == "repository_question":
         with disposable_workspace(task.fixture) as copy:
             initial = await acceptance_check(task, copy.workspace.root)
@@ -337,6 +382,8 @@ async def validate_task(task: Task) -> None:
         visible = await _visible_check(reference.workspace.root)
         if visible.exit_code != 0:
             raise ValueError(f"Task {task.id} visible check fails for reference solution")
+    if guard is not None:
+        guard()
 
 
 def _diff(task: Task, copy: DisposableWorkspace, paths: tuple[str, ...]) -> str:
@@ -367,8 +414,11 @@ async def run_task(
 ) -> RealTaskResult:
     turn_trace: list[TurnTraceRecord] = []
     profiles: list[ExecutionProfile] = []
-    observed = ObservedProvider(provider)
+    guard = _heldout_guard(task, execution=True)
+    observed = ObservedProvider(provider, before_chat=guard)
     with disposable_workspace(task.fixture) as copy:
+        if guard is not None:
+            verify_fixture(task.fixture, copy.workspace.root)
         with tempfile.TemporaryDirectory(prefix="agent_harness_eval_memory_") as memory_dir:  # noqa: SIM117 — workspace must outlive memory for grading
             with FactStore(Path(memory_dir) / "memory.db") as store:
                 question = task.category == "repository_question"
@@ -414,21 +464,37 @@ async def run_task(
                     failure = type(exc).__name__
                 latency_ms = (time.perf_counter() - start) * 1000
                 trace: list[ToolCallRecord] = session.turns[-1].tool_calls if session.turns else []
-        criteria_before = (
-            _acceptance_digest(task.acceptance, question=True)
-            if question
-            else _acceptance_digest(task.acceptance)
-        )
-        acceptance = (
-            await acceptance_check(task, copy.workspace.root, answer=answer)
-            if question
-            else await acceptance_check(task, copy.workspace.root)
-        )
-        criteria_after = (
-            _acceptance_digest(task.acceptance, question=True)
-            if question
-            else _acceptance_digest(task.acceptance)
-        )
+        try:
+            if guard is not None:
+                guard()
+            criteria_before = (
+                _acceptance_digest(task.acceptance, question=True)
+                if question
+                else _acceptance_digest(task.acceptance)
+            )
+            acceptance = (
+                await acceptance_check(task, copy.workspace.root, answer=answer)
+                if question
+                else await acceptance_check(task, copy.workspace.root)
+            )
+            criteria_after = (
+                _acceptance_digest(task.acceptance, question=True)
+                if question
+                else _acceptance_digest(task.acceptance)
+            )
+            if guard is not None:
+                guard()
+        except HeldoutDriftError:
+            failure = "HeldoutDriftError"
+            criteria_before = criteria_after = None
+            acceptance = ProcessResult(
+                argv=[],
+                exit_code=1,
+                stdout="Independent acceptance not certified: held-out preservation failed.\n",
+                stderr="",
+                stdout_truncated=False,
+                stderr_truncated=False,
+            )
         acceptance_output = acceptance.stdout + acceptance.stderr
         changes = copy.changes()
         paths = tuple(sorted((*changes.added, *changes.modified, *changes.deleted)))
@@ -757,15 +823,25 @@ def write_report(path: Path, started: str, results: list[RealTaskResult]) -> Non
 
 
 async def _run_cli(args: argparse.Namespace, started: str = "") -> list[RealTaskResult]:
-    tasks = load_tasks(args.task_manifest) if args.task_manifest is not None else load_tasks()
+    manifest = args.task_manifest if args.task_manifest is not None else TASKS_ROOT / "tasks.yaml"
+    registration = registration_for(manifest)
+    if registration is not None:
+        verify_catalog(registration)
+        if manifest.resolve() != (registration.root / "tasks.yaml").resolve():
+            raise HeldoutDriftError("Select the registered held-out manifest")
+    tasks = load_tasks(manifest)
     selected = [task for task in tasks if args.task is None or task.id == args.task]
     if not selected:
         raise ValueError(f"Unknown task: {args.task}")
     for task in selected:
+        if not args.validate_only:
+            _heldout_guard(task, execution=True)
         await validate_task(task)
     if args.validate_only:
         return []
     settings = get_settings()
+    if registration is not None:
+        verify_catalog(registration)
     provider = build_configured_provider(args.provider, settings)
     modes: tuple[Mode, ...] = MODES if args.mode == "both" else (args.mode,)
     results: list[RealTaskResult] = []
@@ -780,6 +856,10 @@ async def _run_cli(args: argparse.Namespace, started: str = "") -> list[RealTask
                     )
                     results.append(result)
                     write_report(args.report, started, results)
+                    if result.termination == "error:HeldoutDriftError":
+                        raise HeldoutDriftError(
+                            "Held-out cohort stopped; observed rows retained in report"
+                        )
                     print(
                         f"{task.id} {mode} #{attempt}: {result.termination} "
                         f"({result.latency_ms / 1000:.0f}s, {len(result.tool_trace)} tools)",

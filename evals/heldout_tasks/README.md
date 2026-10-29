@@ -10,7 +10,7 @@ uv run python -m evals.real_run --task-manifest evals/heldout_tasks/v1/tasks.yam
 ```
 
 This is preparation, not a launch recipe. No product-model inference has used these
-tasks. Preservation enforcement is the next PR; a later fixed comparison still
+tasks. Preservation checks now bind the reviewed v1 tree; a later fixed comparison still
 needs exact runtime/model/input/budget pins, independent review, CI, merge and fresh
 approval/launch gates. This document authorizes no inference or additional spend.
 
@@ -40,8 +40,20 @@ disposable copies and the shared application runtime; no patch matching or model
 judge is used. Host permissions, scoped/non-atomic workspace checks and legacy
 evidence limitations remain as documented in the development corpus.
 
-The catalog label and manifest hash identify declared inputs, not preservation or
-absence of contamination. The next preservation slice must refuse missing/changed
-bytes or modes before evaluation allocation, bind the pin index itself and avoid a
-header edit bypass. No live result or preservation gate is claimed here. Existing
-development tasks, closed trial criteria/results and release no-go/G2–G5 remain.
+`seal.json` pins all eighteen manifest, fixture, reference and criterion files by
+SHA-256, size and permission mode. A separately registered digest binds the index
+itself. Registered paths trigger checks independently of the editable partition
+header. Missing, extra, changed, linked, special or oversized entries refuse;
+unknown entries are inventoried without reading their contents.
+
+The CLI checks before validation/workspace allocation and provider construction.
+Execution verifies task metadata against the pinned manifest and the initial
+copy against its fixture pins, then rechecks the source tree before every model
+request and around independent grading. Observed midrun drift invalidates
+acceptance, retains the failed row and stops the remaining cohort. Unregistered
+held-out catalogs permit authoring validation only, not model execution.
+
+These bounded observations are non-atomic. They do not isolate host code, prevent
+external writers after a check, attest to contamination absence, or authorize a
+comparison. No live result is claimed. Existing development tasks, closed trial
+criteria/results and release no-go/G2–G5 remain.

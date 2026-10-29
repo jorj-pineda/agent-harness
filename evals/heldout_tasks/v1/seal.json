@@ -1,0 +1,96 @@
+{
+  "catalog_id": "lower-tier-heldout-v1",
+  "files": {
+    "acceptance/ho_cache_policy/facts.json": {
+      "mode": 420,
+      "sha256": "5f21884b2f43594a2d8b2ce0ddad814dae2ace30775787e49ce220e12e2a2741",
+      "size": 191
+    },
+    "acceptance/ho_endpoint_record/test_acceptance.py": {
+      "mode": 420,
+      "sha256": "c8d19ee64360b9091b43b5f192a79cca7ab1e4f20d2a3206e50746bf331e77da",
+      "size": 1232
+    },
+    "acceptance/ho_iso_week/test_acceptance.py": {
+      "mode": 420,
+      "sha256": "3f1667f251dd1f686681c139f73f0e1d7862a27b2d72d5f9a36bca89532f0d66",
+      "size": 612
+    },
+    "acceptance/ho_rolling_mean/test_acceptance.py": {
+      "mode": 420,
+      "sha256": "27dbf0226b991f9c70e5d85df1987855ae600592b5be463425c7980c6e45304f",
+      "size": 1344
+    },
+    "fixtures/ho_cache_policy/cache.py": {
+      "mode": 420,
+      "sha256": "5b6406395a2e8f1c3a167865201fb74be2386cd5100e07d35be4168f023d4644",
+      "size": 468
+    },
+    "fixtures/ho_cache_policy/client.py": {
+      "mode": 420,
+      "sha256": "31a62f123ff6f84d68f3c77a6220ca6a1886c3251ddc04883f21cca471ca18ae",
+      "size": 268
+    },
+    "fixtures/ho_cache_policy/settings.py": {
+      "mode": 420,
+      "sha256": "abaa8cfc0317a706f991395db9dea24590394b9555cf162450031ce9fe0d74aa",
+      "size": 16
+    },
+    "fixtures/ho_endpoint_record/endpoint.py": {
+      "mode": 420,
+      "sha256": "8cd0de215707a00a6971433e51a8974cd601458a4ee155872147c665885d730c",
+      "size": 90
+    },
+    "fixtures/ho_endpoint_record/test_visible.py": {
+      "mode": 420,
+      "sha256": "f05984f6b25f5f14cb06aa35d250b60d9a4d2619351e751e27efddb4b968daf6",
+      "size": 205
+    },
+    "fixtures/ho_iso_week/test_visible.py": {
+      "mode": 420,
+      "sha256": "16a57578562a8c50d300dc85e06c8eb961a911724bcb2993efe1d9ce8d1b8ef2",
+      "size": 141
+    },
+    "fixtures/ho_iso_week/week_key.py": {
+      "mode": 420,
+      "sha256": "b4c43f2cfdf590968a5d6750564be629f6456a5d92ce254db05767d0473bdca8",
+      "size": 90
+    },
+    "fixtures/ho_rolling_mean/rolling.py": {
+      "mode": 420,
+      "sha256": "f2b87acf24b323559f31277fc5dbd77c74ca43c8b7bc07f258ce668107b1ba5a",
+      "size": 34
+    },
+    "fixtures/ho_rolling_mean/test_visible.py": {
+      "mode": 420,
+      "sha256": "8b8314d01ce178585d79e00a3dfd53f3fc6633cc96c3adb70401ada335e2804f",
+      "size": 105
+    },
+    "reference/ho_cache_policy/answer.json": {
+      "mode": 420,
+      "sha256": "5f21884b2f43594a2d8b2ce0ddad814dae2ace30775787e49ce220e12e2a2741",
+      "size": 191
+    },
+    "reference/ho_endpoint_record/endpoint.py": {
+      "mode": 420,
+      "sha256": "de1b2b1b8ae31f82e78a1ac3e4d37de5f1d5544a3db46bf226c78dcbccd5b33b",
+      "size": 190
+    },
+    "reference/ho_iso_week/week_key.py": {
+      "mode": 420,
+      "sha256": "5f3062ebf9b92005f1d476fd8e8835ec39af7c8befc53ff2d7a98a587e8f3baa",
+      "size": 94
+    },
+    "reference/ho_rolling_mean/rolling.py": {
+      "mode": 420,
+      "sha256": "08737cf9f36ef906a77e6b03db35c32ce8a2cfb8e79ada8216c100b08af8385f",
+      "size": 480
+    },
+    "tasks.yaml": {
+      "mode": 420,
+      "sha256": "4895f17b775ed8ad54364c07828b056b73f865abf5e54733c77b6cc5d81a7ec6",
+      "size": 3011
+    }
+  },
+  "format": "heldout-tree-v1"
+}
