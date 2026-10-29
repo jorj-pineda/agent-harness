@@ -50,7 +50,7 @@ tool trace, final diff, independent check
 output, termination, usage, and latency. A single run is a baseline observation,
 not evidence of a repeatable model improvement.
 
-The manifest contains thirteen tasks: twelve coding tasks and one repository question.
+The manifest contains fifteen tasks: twelve coding tasks and three repository questions.
 The coding tasks are the five original bugfixes, `paginate_items`
 (feature), `extract_label_normalizer` (refactor) and `positive_total_existing_failure`
 (bugfix with an unrelated failing check), plus `retry_after_seconds` and
@@ -91,6 +91,17 @@ development coverage changes no existing task or closed-trial criterion and
 establishes no model-quality or release claim.
 
 ### Repository-question acceptance
+
+The three public questions cover retry policy, configuration precedence and
+exception routing. `repository_config_precedence` follows defaults → environment
+→ explicit flags → service conversion, including zero/None overrides and the
+truthiness of a string flag. `repository_error_routing` distinguishes transient/
+permanent handling, valid false payloads, None and an uncaught missing-key error.
+Separate-interpreter oracles check all reference facts against the disposable
+fixture implementations. Six targeted wrong conclusions reject, while scripted
+shared-runtime reads accept correct answers and reject incorrect answers without
+requiring a check or editing files. These are code-reading cases, not general
+configuration/network/error-handling guarantees or model observations.
 
 `repository_retry_policy` asks for exact structured facts from three Python modules,
 with a deliberately stale README as a misleading-context control. The task requests
