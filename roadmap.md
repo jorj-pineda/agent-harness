@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-29 — Division grading blind spot corrected:** the development
+criterion now rejects floor/truncated quotients with fractional signed cases and
+preserves zero-division checks. Disposable regressions reproduce three incorrect
+implementations passing the old criterion and reject them after the change; the
+reference remains valid. Original requests/fixtures/visible tests/references and
+closed trial criteria/results remain unchanged. This is future evaluation
+correctness, not new inference, model benefit, an old-cohort regrade or closure
+of no-go/8-of-10/G2–G5. Remaining batch slices will follow observed acceptance gaps.
+
 **2026-10-29 — Replacement schema comparison complete:** the
 [results](evals/projects/python_utility_trial/SCHEMA_COMPARISON_RESULTS.md) retain
 C 0/4 and E 0/4 accepted artifacts/completions. All eight stop at six iterations
