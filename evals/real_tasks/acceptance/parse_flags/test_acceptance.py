@@ -7,3 +7,8 @@ def test_comments_and_values() -> None:
         "B": "three",
     }
     assert parse_flags("\n # only a comment\n") == {}
+    assert parse_flags("\t A \t=\t one=two \t\n\t\nB=\tthree\t\n") == {
+        "A": "one=two",
+        "B": "three",
+    }
+    assert parse_flags("#comment\n\t#comment\n") == {}

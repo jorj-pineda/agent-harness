@@ -75,6 +75,21 @@ remain pinned to their original versions; they are not regraded or relabeled.
 Compare exact criterion revisions before comparing scores. This fixes a measured
 grading blind spot, not model behavior or the release no-go.
 
+### Remaining original-task criterion audit (2026-10-29)
+
+Seven disposable reference mutations exercise the other four original tasks.
+Four incorrect variants passed the previous checks: dropping slug digits,
+retaining non-ASCII slug letters, trimming only literal spaces in flag lines, and
+recognizing comments only when `#` is followed by a space. Additional authoritative
+cases now reject these violations of the existing requests. The ASCII check does
+not prescribe transliteration. Existing decimal truncation and sorted/unordered
+dedupe controls already fail; those criteria are unchanged.
+
+This is a finite check of selected defects, not exhaustive acceptance coverage or
+a model experiment. Only the slug/flag development criteria change; original task
+requests, fixtures, visible tests, references and all closed-cohort criteria/results
+remain unchanged. Future comparisons must distinguish these criterion revisions.
+
 The refactor task extracts a shared `strip().lower()` helper from two callers.
 Acceptance checks Unicode/error/duplicate/iteration behavior and replaces the
 module helper to verify that both callers use the requested seam at call time.
