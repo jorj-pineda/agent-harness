@@ -48,9 +48,10 @@ tool trace, final diff, independent check
 output, termination, usage, and latency. A single run is a baseline observation,
 not evidence of a repeatable model improvement.
 
-The manifest contains nine tasks: the five original bugfixes, `paginate_items`
+The manifest contains ten tasks: the five original bugfixes, `paginate_items`
 (feature), `extract_label_normalizer` (refactor) and `positive_total_existing_failure`
-(bugfix with an unrelated failing check), plus `retry_after_seconds` (feature).
+(bugfix with an unrelated failing check), plus `retry_after_seconds` and
+`overlay_settings` (features).
 Pagination specifies one-based
 pages, validation (including bool),
 empty/past-end behavior, input/element preservation and the existing helper contract.
@@ -58,6 +59,15 @@ The acceptance suite is outside the editable fixture. A weakened visible test ca
 replace those checks. Reference validation establishes a solvable fixture, not that
 any model can solve it. New tasks are public development tasks and must not be used
 as held-out evidence after tuning on them.
+
+`overlay_settings` adds a small configuration feature with explicit key-presence
+semantics. False/zero/None/empty overrides win; nested values are replaced whole
+and retain object identity. Independent checks cover union, precedence, shallow
+values, input preservation, aliased/empty dictionaries and the existing lookup
+helper. Four incorrect implementations are rejected, and a scripted shared-runtime
+real-file run demonstrates that a passing visible check can still fail external
+acceptance. This grows public offline coverage; it is not a model observation,
+held-out task, change to historical criteria or release-gate closure.
 
 ### Division acceptance correction (2026-10-29)
 

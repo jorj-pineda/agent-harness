@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-29 — Configuration-overlay development coverage:** Jorge selected
+offline acceptance expansion. A tenth public task adds a bounded shallow settings
+overlay with explicit false-value precedence, value identity, input preservation
+and existing lookup behavior. Initial/reference validation and four deliberately
+incorrect implementations exercise the external criterion; scripted real-tool
+runs distinguish visible-check success from artifact acceptance. Existing nine
+tasks, archived cohorts and runtime defaults are unchanged. This supplies missing
+development coverage, not inference, held-out evidence, measured coding gain or
+no-go/8-of-10/G2–G5 closure. The 20–30-task/category target remains open.
+
 **2026-10-29 — Repeated process cancellation settles cleanup:** direct managed
 process callers now shield and await owned process/pipe cleanup through repeated
 cancellation. A held-cleanup real-child regression reproduces a second cancel
