@@ -1,0 +1,1 @@
+{"default_max_attempts": 3, "default_delays": [2, 4, 8, 10], "retry_after_attempts": [true, true, false], "zero_max_attempts": 1, "zero_base_delays": [0, 0]}

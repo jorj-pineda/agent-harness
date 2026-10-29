@@ -1,10 +1,12 @@
 # Trusted coding task development corpus
 
-These small Python coding tasks form a development corpus, not a held-out set. Each task
+These small Python tasks form a development corpus, not a held-out set. Each coding task
 has a starting fixture with a failing visible test, a reference solution, and
 authoritative acceptance tests outside the agent's editable copy. The runner
 checks that the original fails and the reference passes before every model run.
-It grades the final files, regardless of the agent's answer or the visible tests.
+Coding tasks grade final files, regardless of the answer or visible tests. Repository
+questions instead grade explicitly requested structured answer facts and scoped
+workspace preservation, as described below.
 
 Authoritative pytest uses an owned bootstrap launched with Python `-I -B`. It
 imports installed pytest before adding workspace imports, pins an external empty
@@ -48,7 +50,8 @@ tool trace, final diff, independent check
 output, termination, usage, and latency. A single run is a baseline observation,
 not evidence of a repeatable model improvement.
 
-The manifest contains twelve tasks: the five original bugfixes, `paginate_items`
+The manifest contains thirteen tasks: twelve coding tasks and one repository question.
+The coding tasks are the five original bugfixes, `paginate_items`
 (feature), `extract_label_normalizer` (refactor) and `positive_total_existing_failure`
 (bugfix with an unrelated failing check), plus `retry_after_seconds` and
 `overlay_settings` (features), `inject_clock` (refactor), and `csv_records` (bugfix).
@@ -86,6 +89,43 @@ quoted-comma example can still lose embedded newlines and fail acceptance.
 Malformed-input recovery and custom dialects are outside the task. This public
 development coverage changes no existing task or closed-trial criterion and
 establishes no model-quality or release claim.
+
+### Repository-question acceptance
+
+`repository_retry_policy` asks for exact structured facts from three Python modules,
+with a deliberately stale README as a misleading-context control. The task requests
+one JSON object with a fixed set of integer/list/boolean facts, not free-form prose.
+The reference facts are independently checked against executable fixture behavior.
+Validation rejects a blank answer and accepts the external reference answer;
+there is no visible pytest check or reference source patch for this read-only task.
+
+The evaluator selects the existing shared inspection-only policy before constructing
+the registry/session. It exposes reads/search/recall, rejects write/command/memory-write
+requests before dispatch, and does not require a project check. A final answer can
+therefore complete with checks `not_run`. The external `facts.json` is never copied
+into the model workspace. `structured-facts-v1` parses at most 16,384 UTF-8 answer
+bytes, requires a nonempty JSON object, rejects duplicate keys/non-finite values,
+and compares canonical JSON. Key order/whitespace do not matter; types, values,
+list order and exact keys do. Fences, extra prose and unknown keys fail this task's
+explicit response contract. This is factual rubric checking, not token/prose
+similarity, citation overlap, comprehension or general explanation-quality scoring.
+
+Question acceptance also requires eligible file bytes and regular-file modes to
+match the source fixture. Two strict snapshots cap each tree at 2,000 files and
+16 MB, with the existing disposable-workspace exclusions. Ignored/environment
+contents, directory topology/modes, transient external writes and other host state
+remain outside comparison. Reads are non-atomic; inspection policy and these checks
+are not process isolation. Unavailable reads/setup fail rather than certify a pass.
+
+New rows identify the question category, `structured-facts-v1` policy and inspection
+setting; criterion identity covers the fact tree plus the question grader bytes.
+Coding identity/policy and scoring remain unchanged. Summaries separate artifact
+and answer counts, and mixed reports label the overall total as task acceptance.
+Legacy summaries lacking subject metadata remain unknown when shown beside new
+question results. Completed-and-accepted still requires native completion as well
+as acceptance; a factual answer does not imply a patch or observed passing check.
+Historical reports/criteria are unchanged. This public task and scripted checks
+establish no live-model, held-out, quality-improvement or release-readiness result.
 
 ### Division acceptance correction (2026-10-29)
 
@@ -176,7 +216,7 @@ modes. This task does not override configured verification policy.
 New result rows record the manifest's `category`; summaries include raw accepted/
 attempt counts per category and mode, alongside unchanged per-task and aggregate
 counts. These labels describe task intent, not a model-derived score. Supported
-labels are `bugfix`, `feature`, `refactor` and `unclassified`. The original five
+labels are `bugfix`, `feature`, `refactor`, `repository_question` and `unclassified`. The original five
 manifest entries are explicitly bugfixes. Missing custom/project metadata stays
 unclassified; it is never guessed from a task name or answer. Old reports remain
 unchanged, and old summaries without categories remain renderable. Compare equivalent
