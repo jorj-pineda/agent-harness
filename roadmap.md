@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-29 — CSV bugfix development coverage:** a twelfth public task repairs
+a naive split-based parser with independent checks for well-formed CSV quoting,
+embedded newlines, empty fields/records and literal values. Initial/reference
+controls and four lossy parser variants exercise the criterion; scripted real-tool
+edits distinguish a passing visible example from final artifact acceptance.
+Existing tasks/runtime and archived criteria/results remain unchanged. This grows
+offline bugfix coverage, not malformed-input policy, inference, held-out evidence,
+model-quality gain or no-go/8-of-10/G2–G5 closure. The broader corpus target stays open.
+
 **2026-10-29 — Clock-injection refactor coverage:** an eleventh public task
 adds deterministic acceptance for optional clock injection in two deadline helpers.
 Checks distinguish current default lookup, single reads, callback failures and
