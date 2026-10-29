@@ -170,7 +170,7 @@ async def test_replace_schema_examples_survive_wire_json_and_execute_exactly(
     old = properties["old_text"]["examples"][0]
     new = properties["new_text"]["examples"][0]
     target = tmp_path / "example.py"
-    target.write_text(old, encoding="utf-8")
+    target.write_bytes(b"value = 1\nprint(value)\n")
     read = await reg.invoke("read_file", {"path": "example.py"})
     arguments = json.loads(
         json.dumps(
