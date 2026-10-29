@@ -4,6 +4,14 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-29 — Pytest collection alias is not verification:** `--co` now receives
+the same non-verification treatment as `--collect-only`. Three argv-form controls
+and a real disposable failing-test collection reproduce exit-zero enumeration
+without a test execution; such calls no longer produce passed check evidence.
+Command execution/allowlists remain unchanged and ordinary pytest checks still
+qualify. This fixes an observed offline false-status case, not independent patch
+acceptance, inference, quality gain or no-go/8-of-10/G2–G5 closure.
+
 **2026-10-29 — Unsupported SDK finish reasons refuse completion:** Anthropic
 and OpenAI-compatible normalization no longer invent successful stop for null or
 unrecognized native finish reasons. These responses use the existing error/

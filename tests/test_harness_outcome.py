@@ -61,6 +61,45 @@ def test_is_verification_command_rejects_git_and_shell() -> None:
     assert not is_verification_command(["python3", "-c", "print(1)"])
 
 
+@pytest.mark.parametrize(
+    "prefix", [["pytest"], ["python", "-m", "pytest"], ["python3", "-m", "pytest"]]
+)
+def test_collection_alias_cannot_certify_checks(prefix):
+    argv = [*prefix, "--co", "-q"]
+    assert not is_verification_command(argv)
+    call = ToolCallRecord(
+        name="run_command",
+        arguments={"argv": argv},
+        result={"success": True, "exit_code": 0},
+        latency_ms=1,
+    )
+    assert verification_status([call]) == "not_run"
+    assert not harvest_verification_ran([call])
+
+
+async def test_real_collection_success_does_not_mean_failing_test_passed(tmp_path):
+    import sys
+
+    from tools.process import run_process
+
+    (tmp_path / "test_failing.py").write_text("def test_fails():\n    assert False\n")
+    result = await run_process(
+        [sys.executable, "-m", "pytest", "--co", "-q"],
+        cwd=tmp_path,
+        timeout_seconds=30,
+        output_limit=12000,
+        env={"PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1"},
+    )
+    assert result.exit_code == 0
+    assert "test_fails" in result.stdout
+    call = ToolCallRecord(
+        name="run_command",
+        arguments={"argv": ["python", "-m", "pytest", "--co", "-q"]},
+        result={"exit_code": result.exit_code, "success": True},
+    )
+    assert verification_status([call]) == "not_run"
+
+
 def test_harvest_files_touched_collects_successful_writes_in_order() -> None:
     calls = [
         ToolCallRecord(
