@@ -25,6 +25,7 @@ from typing import Any, Literal
 import yaml
 from pydantic import TypeAdapter
 
+from evals.question_grading import grade_question
 from harness.config import Settings, get_settings
 from harness.execution_profile import ExecutionProfile
 from harness.loop import MAX_ITERATIONS_STUB
@@ -55,7 +56,7 @@ MINIMAL_PROMPT = (
     "You are a coding assistant. Complete the user's request using the available tools."
 )
 Mode = Literal["harness", "minimal"]
-TaskCategory = Literal["unclassified", "bugfix", "feature", "refactor"]
+TaskCategory = Literal["unclassified", "bugfix", "feature", "refactor", "repository_question"]
 MODES: tuple[Mode, ...] = ("harness", "minimal")
 ACCEPTANCE_POLICY: Literal["owned-pytest-v1"] = "owned-pytest-v1"
 
@@ -99,7 +100,7 @@ class RealTaskResult:
     runtime_config: dict[str, Any]
     turn_trace: list[dict[str, Any]] = field(default_factory=list)
     category: TaskCategory = "unclassified"
-    acceptance_policy: Literal["owned-pytest-v1"] | None = None
+    acceptance_policy: Literal["owned-pytest-v1", "structured-facts-v1"] | None = None
     acceptance_output_truncated: bool | None = None
     acceptance_identity: dict[str, Any] | None = None
 
@@ -186,7 +187,9 @@ def _reference_files(task: Task, root: Path) -> None:
             target.write_bytes(reference.read_bytes())
 
 
-async def acceptance_check(task: Task, root: Path) -> ProcessResult:
+async def acceptance_check(task: Task, root: Path, *, answer: str = "") -> ProcessResult:
+    if task.category == "repository_question":
+        return grade_question(task.fixture, root, task.acceptance, answer)
     return await run_process(
         [
             sys.executable,
@@ -205,7 +208,7 @@ async def acceptance_check(task: Task, root: Path) -> ProcessResult:
     )
 
 
-def _acceptance_digest(directory: Path) -> str | None:
+def _acceptance_digest(directory: Path, *, question: bool = False) -> str | None:
     """Observe scoped criterion bytes; never treat unavailable reads as an empty tree."""
     try:
         criteria = snapshot(
@@ -222,7 +225,11 @@ def _acceptance_digest(directory: Path) -> str | None:
             "criteria": criteria,
             "grader": {
                 name: hashlib.sha256(Path(__file__).with_name(name).read_bytes()).hexdigest()
-                for name in ("acceptance_runner.py", "acceptance_pytest.ini")
+                for name in (
+                    ("question_grading.py",)
+                    if question
+                    else ("acceptance_runner.py", "acceptance_pytest.ini")
+                )
             },
         }
     except (OSError, SnapshotLimitError):
@@ -241,6 +248,17 @@ async def _visible_check(root: Path) -> ProcessResult:
 
 
 async def validate_task(task: Task) -> None:
+    if task.category == "repository_question":
+        with disposable_workspace(task.fixture) as copy:
+            initial = await acceptance_check(task, copy.workspace.root)
+            reference = await acceptance_check(
+                task,
+                copy.workspace.root,
+                answer=(task.reference / "answer.json").read_text(encoding="utf-8"),
+            )
+            if initial.exit_code == 0 or reference.exit_code != 0:
+                raise ValueError(f"Question {task.id} blank/reference answer validation failed")
+        return
     with disposable_workspace(task.fixture) as baseline:
         initial = await acceptance_check(task, baseline.workspace.root)
         if initial.exit_code == 0:
@@ -290,7 +308,12 @@ async def run_task(
     with disposable_workspace(task.fixture) as copy:
         with tempfile.TemporaryDirectory(prefix="agent_harness_eval_memory_") as memory_dir:  # noqa: SIM117 — workspace must outlive memory for grading
             with FactStore(Path(memory_dir) / "memory.db") as store:
-                session = Session(user_id="eval", workspace_root=str(copy.workspace.root))
+                question = task.category == "repository_question"
+                session = Session(
+                    user_id="eval",
+                    workspace_root=str(copy.workspace.root),
+                    inspection_only=question,
+                )
                 registry = build_registry(
                     fact_store=store,
                     user_id="eval",
@@ -299,6 +322,7 @@ async def run_task(
                     read_file_default_lines=settings.read_file_default_lines,
                     command_env={"PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1"},
                     memory_session=session,
+                    inspection_only=question,
                 )
                 answer = ""
                 failure = ""
@@ -327,9 +351,21 @@ async def run_task(
                     failure = type(exc).__name__
                 latency_ms = (time.perf_counter() - start) * 1000
                 trace: list[ToolCallRecord] = session.turns[-1].tool_calls if session.turns else []
-        criteria_before = _acceptance_digest(task.acceptance)
-        acceptance = await acceptance_check(task, copy.workspace.root)
-        criteria_after = _acceptance_digest(task.acceptance)
+        criteria_before = (
+            _acceptance_digest(task.acceptance, question=True)
+            if question
+            else _acceptance_digest(task.acceptance)
+        )
+        acceptance = (
+            await acceptance_check(task, copy.workspace.root, answer=answer)
+            if question
+            else await acceptance_check(task, copy.workspace.root)
+        )
+        criteria_after = (
+            _acceptance_digest(task.acceptance, question=True)
+            if question
+            else _acceptance_digest(task.acceptance)
+        )
         acceptance_output = acceptance.stdout + acceptance.stderr
         changes = copy.changes()
         paths = tuple(sorted((*changes.added, *changes.modified, *changes.deleted)))
@@ -348,7 +384,7 @@ async def run_task(
         )
         return RealTaskResult(
             task_id=task.id,
-            acceptance_policy=ACCEPTANCE_POLICY,
+            acceptance_policy="structured-facts-v1" if question else ACCEPTANCE_POLICY,
             acceptance_identity={
                 "format": "acceptance-tree-v1",
                 "before_sha256": criteria_before,
@@ -399,6 +435,7 @@ async def run_task(
             tool_trace=[call.model_dump(mode="json") for call in trace],
             turn_trace=[record.model_dump(mode="json") for record in turn_trace],
             runtime_config={
+                "inspection_only": question,
                 "coding_toolset": settings.coding_toolset,
                 "read_file_default_lines": settings.read_file_default_lines,
                 "model_profile": identity.model_dump()
@@ -476,6 +513,16 @@ def summarize(results: list[RealTaskResult]) -> dict[str, Any]:
                 category: _acceptance_counts([r for r in rows if r.category == category])
                 for category in sorted({r.category for r in rows})
             },
+            "per_acceptance_subject": {
+                subject: _acceptance_counts(
+                    [
+                        r
+                        for r in rows
+                        if (r.category == "repository_question") == (subject == "answer")
+                    ]
+                )
+                for subject in ("artifact", "answer")
+            },
             "terminations": dict(sorted(Counter(r.termination for r in rows).items())),
             "false_completion": sum(
                 r.completion_status == "completed" and not r.passed for r in rows
@@ -490,9 +537,15 @@ def summarize(results: list[RealTaskResult]) -> dict[str, Any]:
 
 def summary_markdown(summary: dict[str, Any]) -> str:
     modes = list(summary)
+    questions = any(
+        summary[mode].get("per_acceptance_subject", {}).get("answer", {}).get("attempts", 0)
+        for mode in modes
+    )
     task_ids = sorted({task for mode in modes for task in summary[mode]["per_task"]})
     lines = [
-        "Artifact acceptance (independent final-state checks):",
+        "Task acceptance (artifact checks and structured answer facts separated below):"
+        if questions
+        else "Artifact acceptance (independent final-state checks):",
         "",
         "| Task | " + " | ".join(modes) + " |",
         "|---|" + "---|" * len(modes),
@@ -513,6 +566,22 @@ def summary_markdown(summary: dict[str, Any]) -> str:
     categories = sorted(
         {category for mode in modes for category in summary[mode].get("per_category", {})}
     )
+    if questions:
+        lines.extend(
+            [
+                "",
+                "| Acceptance subject | " + " | ".join(modes) + " |",
+                "|---|" + "---|" * len(modes),
+            ]
+        )
+        for subject in ("artifact", "answer"):
+            cells = [
+                "{accepted}/{attempts}".format(**summary[mode]["per_acceptance_subject"][subject])
+                if "per_acceptance_subject" in summary[mode]
+                else "unknown"
+                for mode in modes
+            ]
+            lines.append(f"| {subject} | " + " | ".join(cells) + " |")
     if categories:
         lines.extend(
             ["", "| Category | " + " | ".join(modes) + " |", "|---|" + "---|" * len(modes)]
@@ -530,7 +599,10 @@ def summary_markdown(summary: dict[str, Any]) -> str:
     lines.extend(
         [
             "",
-            "Completed and accepted requires both completion_status=completed and artifact "
+            "Completed and accepted requires both completion_status=completed and task "
+            "acceptance; answer rubrics check only declared structured facts."
+            if questions
+            else "Completed and accepted requires both completion_status=completed and artifact "
             "acceptance; it does not require an observed passing check or grade answer claims.",
             "",
             "| Workflow | " + " | ".join(modes) + " |",
@@ -641,14 +713,12 @@ def main(argv: list[str] | None = None) -> int:
     started = datetime.now(UTC).isoformat(timespec="seconds")
     results = asyncio.run(_run_cli(args, started))
     if args.validate_only:
-        print("Selected task fixtures fail initially and their reference solutions pass.")
+        print("Selected tasks reject their initial controls and accept their references.")
         return 0
     write_report(args.report, started, results)
     summary = summarize(results)
     print(summary_markdown(summary))
-    print(
-        f"Wrote {args.report} ({sum(r.passed for r in results)}/{len(results)} artifacts accepted)"
-    )
+    print(f"Wrote {args.report} ({sum(r.passed for r in results)}/{len(results)} tasks accepted)")
     return 0
 
 

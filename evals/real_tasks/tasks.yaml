@@ -104,3 +104,16 @@
     adds no extra row.
     Do not add malformed-input recovery or a custom dialect. Run the visible checks
     and report the observed outcome.
+- id: repository_retry_policy
+  fixture: repository_retry_policy
+  category: repository_question
+  request: >-
+    Inspect retry_config.py, retry_policy.py and worker.py; the README describes an
+    older implementation, so use the Python code for this answer. Do not edit files
+    or execute commands. Return only one JSON object with exactly these keys:
+    default_max_attempts (integer), default_delays (list of integer delays after
+    failures 1, 2, 3, 4), retry_after_attempts (list of booleans from should_retry
+    for failed attempts 1, 2, 3 with default settings), zero_max_attempts (integer
+    effective max_attempts for {"max_attempts": 0}), and zero_base_delays (list of
+    integer delays after failures 1 and 2 for {"base_delay": 0}). Use empty
+    dictionaries for default settings. No prose, Markdown fences or extra keys.

@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-29 — Structured repository-question acceptance:** a thirteenth public
+task uses shared inspection-only execution and an external deterministic JSON-fact
+rubric for a three-module retry-policy question with stale documentation. Checks
+cover exact facts/types, bounded malformed-answer refusal and scoped file/mode
+preservation; an executable fixture oracle validates the reference facts. Reports
+separate answer acceptance from artifact acceptance. Coding criteria/runtime and
+closed trials are unchanged. This supplies initial offline repository-question
+coverage, not general prose grading, a model judge, inference, held-out evidence,
+quality gain or no-go/8-of-10/G2–G5 closure. Larger corpus and model targets stay open.
+
 **2026-10-29 — CSV bugfix development coverage:** a twelfth public task repairs
 a naive split-based parser with independent checks for well-formed CSV quoting,
 embedded newlines, empty fields/records and literal values. Initial/reference
