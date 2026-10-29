@@ -1,0 +1,1 @@
+{"resolved_values": [false, false, false], "fetch_keys": ["key", "key"], "boundary_reads": [["expired", null], ["miss", null]], "zero_ttl_read": ["expired", null], "none_hit": ["hit", null]}
