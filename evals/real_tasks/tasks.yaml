@@ -117,3 +117,29 @@
     effective max_attempts for {"max_attempts": 0}), and zero_base_delays (list of
     integer delays after failures 1 and 2 for {"base_delay": 0}). Use empty
     dictionaries for default settings. No prose, Markdown fences or extra keys.
+- id: repository_config_precedence
+  fixture: repository_config_precedence
+  category: repository_question
+  request: >-
+    Inspect defaults.py, config.py and service.py. Do not change code or execute
+    commands. Return only a JSON object with exactly five keys, each holding the
+    dictionary returned by startup_settings(env, flags): defaults for ({}, {}),
+    environment for ({"PORT": "9001", "DEBUG": " YES "}, {}), zero_flag for
+    ({"PORT": "9001", "DEBUG": "yes"}, {"port": 0, "debug": false}), none_flag
+    for ({"PORT": "9001", "DEBUG": "yes"}, {"port": null}), and string_flag for
+    ({}, {"debug": "false"}). Treat JSON null/false as Python None/False when
+    reasoning about these inputs. Report actual behavior, including surprising
+    conversions, rather than suggested corrections. No prose or extra keys.
+- id: repository_error_routing
+  fixture: repository_error_routing
+  category: repository_question
+  request: >-
+    Inspect errors.py, client.py and pipeline.py. Do not change code or execute
+    commands. Return only a JSON object with exactly six keys: transient, permanent,
+    empty_string, zero, none, and missing_payload_exception. The first five values
+    are the dictionaries returned by handle(record) for these respective inputs:
+    {"kind": "transient"}, {"kind": "permanent"}, {"kind": "ok", "payload": ""},
+    {"kind": "ok", "payload": 0}, and {"kind": "ok", "payload": null}.
+    Treat JSON null as Python None. The last value is the exception class name
+    escaping handle({"kind": "ok"}). Report actual source behavior without repairs.
+    No prose, Markdown fences or extra keys.

@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-29 — Repository-question topic coverage:** two additional public
+three-module questions cover configuration precedence and exception routing using
+the reviewed structured-fact/inspection path. Executable fixture oracles validate
+the references; six wrong conclusions reject and scripted shared-runtime reads
+separate answer acceptance from native completion/check status. The corpus now has
+fifteen tasks: twelve coding and three questions. Grading/runtime and existing tasks
+are unchanged. No inference, general prose scoring, held-out or model-quality claim,
+historical rewrite or no-go/8-of-10/G2–G5 closure; broader targets remain open.
+
 **2026-10-29 — Structured repository-question acceptance:** a thirteenth public
 task uses shared inspection-only execution and an external deterministic JSON-fact
 rubric for a three-module retry-policy question with stale documentation. Checks

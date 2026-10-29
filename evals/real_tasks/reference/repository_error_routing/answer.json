@@ -1,0 +1,1 @@
+{"transient": {"state": "retry", "value": null}, "permanent": {"state": "failed", "value": null}, "empty_string": {"state": "ok", "value": ""}, "zero": {"state": "ok", "value": 0}, "none": {"state": "empty", "value": null}, "missing_payload_exception": "KeyError"}
