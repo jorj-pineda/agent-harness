@@ -4,6 +4,14 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-29 — Repeated process cancellation settles cleanup:** direct managed
+process callers now shield and await owned process/pipe cleanup through repeated
+cancellation. A held-cleanup real-child regression reproduces a second cancel
+abandoning termination before the fix; cleanup now settles before cancellation
+returns. Existing process-group scope and deadline-overrun limits remain. This
+does not discover detached workers, provide OS isolation or stop remote inference.
+No model calls, historical rewrite, quality gain or release-gate closure follows.
+
 **2026-10-29 — Forced-zero linting is not verification:** `ruff check --exit-zero`
 can report lint failures while returning zero. It no longer qualifies for check
 harvesting or configured required verification; the command remains executable

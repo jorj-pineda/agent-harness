@@ -92,10 +92,20 @@ async def run_process(
                 process.wait(), stdout_task, stderr_task
             )
     except (TimeoutError, asyncio.CancelledError) as exc:
-        await _stop_tree(process)
-        for task in (stdout_task, stderr_task):
-            task.cancel()
-        await asyncio.gather(stdout_task, stderr_task, return_exceptions=True)
+
+        async def cleanup() -> None:
+            await _stop_tree(process)
+            for task in (stdout_task, stderr_task):
+                task.cancel()
+            await asyncio.gather(stdout_task, stderr_task, return_exceptions=True)
+
+        cleanup_task = asyncio.create_task(cleanup())
+        while not cleanup_task.done():
+            try:
+                await asyncio.shield(cleanup_task)
+            except asyncio.CancelledError:
+                continue
+        cleanup_task.result()
         if isinstance(exc, TimeoutError):
             raise ProcessTimeoutError(f"Command timed out after {timeout_seconds:g}s") from exc
         raise
