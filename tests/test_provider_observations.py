@@ -62,7 +62,8 @@ def test_tool_finish_stays_distinct_from_native_terminal_reason():
         fallback_model="local",
         latency_ms=1.0,
     )
-    assert response.finish_reason == "tool_use"  # Existing normalization remains unchanged.
+    assert response.finish_reason == "length"
+    assert len(response.tool_calls) == 1  # Retained evidence, not dispatch permission.
     observation = response.call_observation
     assert observation.terminal_reason == "length"
     assert observation.content_empty is False and observation.tool_call_count == 1

@@ -628,3 +628,60 @@ async def test_invalid_backend_usage_cannot_dispatch_a_file_edit(tmp_path, count
     assert session.turns[0].tool_calls == []
     assert isinstance(trace[-1], RequestFailureTrace)
     assert trace[-1].exception_type == "ValidationError"
+
+
+async def test_length_terminated_tool_call_cannot_mutate_user_files(tmp_path):
+    from harness.loop import run_turn
+    from harness.state import Session
+    from harness.trace import ResponseTrace
+    from tools import ToolRegistry
+    from tools.code import build_code_tools
+    from workspace import Workspace
+
+    path = tmp_path / "user.txt"
+    path.write_text("preserved")
+    payload = {
+        "done_reason": "length",
+        "prompt_eval_count": 10,
+        "eval_count": 2,
+        "message": {
+            "content": "partial",
+            "tool_calls": [
+                {
+                    "function": {
+                        "name": "write_file",
+                        "arguments": {"path": "user.txt", "content": "overwrite"},
+                    }
+                }
+            ],
+        },
+    }
+    provider = OllamaProvider(
+        host="http://fake",
+        model="fixture",
+        embed_model="fixture",
+        transport=_chat_response(payload),
+    )
+    registry = ToolRegistry()
+    for tool in build_code_tools(Workspace(root=tmp_path)):
+        registry.register(tool)
+    trace = []
+    try:
+        result = await run_turn(
+            session=Session(),
+            user_input="Edit",
+            provider=provider,
+            registry=registry,
+            max_iterations=1,
+            trace=trace,
+        )
+    finally:
+        await provider.aclose()
+    assert path.read_text() == "preserved"
+    assert result.completion_status == "incomplete"
+    assert result.completion_reason == "The model response was truncated."
+    assert result.tool_calls == []
+    observation = next(item for item in trace if isinstance(item, ResponseTrace))
+    assert observation.finish_reason == "length"
+    assert len(observation.tool_calls) == 1
+    assert observation.usage.completion_tokens == 2

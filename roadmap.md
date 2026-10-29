@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-29 — Ollama truncation precedes tool dispatch:** native `length`
+termination now takes precedence when a response also contains tool calls. A
+production-adapter MockTransport regression reproduces an overwrite before the
+fix; the shared loop now returns incomplete without dispatch, retaining proposed
+calls and reported usage in trace evidence. Ordinary tool-use normalization stays
+unchanged. This is a deterministic correctness fix for the roadmap's finish-reason
+requirement, not an observed live incident, inference, quality gain or release-gate
+closure. Closed cohorts, budgets and user-service state remain unchanged.
+
 **2026-10-29 — Effective response allowance enforced:** shared response checks
 now receive the actual allowance sent for that request, including reductions from
 context/total/remaining-output budgets. Ten pre-fix runtime/HTTP/SSE cases reproduce
