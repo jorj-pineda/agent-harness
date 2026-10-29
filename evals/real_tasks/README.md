@@ -30,6 +30,46 @@ Validate the corpus without making a model request:
 uv run python -m evals.real_run --validate-only
 ```
 
+### Explicit catalog selection and declared partitions
+
+The default remains this public development manifest; other catalogs are never
+discovered or mixed into a default run. `--task-manifest /path/to/catalog/tasks.yaml`
+selects one explicit catalog, and `--task` filters only within that catalog.
+Use `--validate-only` to exercise its initial/reference controls without constructing
+a provider. This selection feature adds no inference authorization or completed
+held-out task set; preparation and preservation are separate work.
+
+A self-contained catalog has this form:
+
+```yaml
+format: task-catalog-v1
+id: example-evaluation-set
+partition: held_out
+tasks:
+  - id: example_task
+    fixture: example_task
+    category: bugfix
+    request: The exact bounded request goes here.
+```
+
+Its own directory supplies `fixtures/<fixture>`, `acceptance/<id>` and
+`reference/<id>`. Structured rows require bounded strings, a single-component
+fixture name, a supported category and no extra fields; catalogs allow at most
+100 rows. Duplicate IDs, missing directories and directory resolution outside
+the selected catalog refuse before provider construction. Manifest reads cap at
+1 MB. These checks scope trusted task inputs; they do not isolate test code.
+Legacy list manifests retain bundled-root resolution. The bundled list is labeled
+`public-development`/`development`; other legacy lists are `legacy-custom`/
+`unclassified`. Direct/custom Task objects without identity remain unknown.
+
+New result rows retain the catalog ID, declared partition and SHA-256 of exact
+manifest bytes, without its absolute path. Summaries show separate partition counts;
+old summaries lacking this metadata remain unknown. This hash covers the manifest
+only, not fixture/reference/criterion contents or their preservation. The existing
+source revision and criterion identity remain separate. A `held_out` declaration
+does not prove absence of prompt tuning, prior exposure or model contamination.
+Historical reports are unchanged; no held-out quality result follows from labels.
+
 Run one configured model against the task manifest, then repeat with the same model
 in minimal-prompt mode. Use separate report paths:
 
