@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-29 — Model-specific evaluation summaries:** new real-task summaries
+retain exact provider/model groups inside each mode, including category, declared
+partition, task, acceptance-subject, termination, usage and efficiency evidence.
+Human output shows separate model/category counts; legacy breakdowns stay unknown.
+Existing mode totals/raw rows are preserved. Shared model names do not establish
+matched endpoints, runtime settings, criteria or budgets; these are descriptive
+counts, not a two-model comparison or quality claim. No inference or release-gate
+closure. The cohort-ledger slice remains next.
+
 **2026-10-29 — Held-out preservation report evidence:** new registered result rows
 retain the reviewed seal identity and successful/failed checkpoints separately from
 artifact acceptance. An observed failure is latched for the attempt, even if bytes

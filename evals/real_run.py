@@ -667,60 +667,73 @@ def _acceptance_counts(rows: list[RealTaskResult]) -> dict[str, int]:
     }
 
 
+def _summarize_rows(rows: list[RealTaskResult]) -> dict[str, Any]:
+    tokens = [
+        r.prompt_tokens + r.completion_tokens
+        for r in rows
+        if r.prompt_tokens is not None and r.completion_tokens is not None
+    ]
+    return {
+        **_acceptance_counts(rows),
+        "per_task": {
+            task_id: _acceptance_counts([r for r in rows if r.task_id == task_id])
+            for task_id in sorted({r.task_id for r in rows})
+        },
+        "per_category": {
+            category: _acceptance_counts([r for r in rows if r.category == category])
+            for category in sorted({r.category for r in rows})
+        },
+        "per_acceptance_subject": {
+            subject: _acceptance_counts(
+                [r for r in rows if (r.category == "repository_question") == (subject == "answer")]
+            )
+            for subject in ("artifact", "answer")
+        },
+        "per_partition": {
+            partition: _acceptance_counts(
+                [
+                    r
+                    for r in rows
+                    if (r.task_set or {}).get("partition", "unclassified") == partition
+                ]
+            )
+            for partition in sorted(
+                {(r.task_set or {}).get("partition", "unclassified") for r in rows}
+            )
+        },
+        "terminations": dict(sorted(Counter(r.termination for r in rows).items())),
+        "false_completion": sum(r.completion_status == "completed" and not r.passed for r in rows),
+        "median_latency_s": round(statistics.median(r.latency_ms for r in rows) / 1000, 1),
+        "median_tool_calls": statistics.median(len(r.tool_trace) for r in rows),
+        "median_total_tokens": statistics.median(tokens) if tokens else None,
+        "unreported_token_attempts": len(rows) - len(tokens),
+    }
+
+
 def summarize(results: list[RealTaskResult]) -> dict[str, Any]:
-    """Aggregate raw counts per mode; percentages are left to the reader."""
+    """Descriptive counts; shared labels do not establish comparable experiments."""
     summary: dict[str, Any] = {}
     for mode in MODES:
         rows = [r for r in results if r.mode == mode]
         if not rows:
             continue
-        tokens = [
-            r.prompt_tokens + r.completion_tokens
-            for r in rows
-            if r.prompt_tokens is not None and r.completion_tokens is not None
-        ]
         summary[mode] = {
-            **_acceptance_counts(rows),
-            "per_task": {
-                task_id: _acceptance_counts([r for r in rows if r.task_id == task_id])
-                for task_id in sorted({r.task_id for r in rows})
+            **_summarize_rows(rows),
+            "per_model": {
+                provider: {
+                    model: _summarize_rows(
+                        [r for r in rows if r.provider == provider and r.model == model]
+                    )
+                    for model in sorted({r.model for r in rows if r.provider == provider})
+                }
+                for provider in sorted({r.provider for r in rows})
             },
-            "per_category": {
-                category: _acceptance_counts([r for r in rows if r.category == category])
-                for category in sorted({r.category for r in rows})
-            },
-            "per_acceptance_subject": {
-                subject: _acceptance_counts(
-                    [
-                        r
-                        for r in rows
-                        if (r.category == "repository_question") == (subject == "answer")
-                    ]
-                )
-                for subject in ("artifact", "answer")
-            },
-            "per_partition": {
-                partition: _acceptance_counts(
-                    [
-                        r
-                        for r in rows
-                        if (r.task_set or {}).get("partition", "unclassified") == partition
-                    ]
-                )
-                for partition in sorted(
-                    {(r.task_set or {}).get("partition", "unclassified") for r in rows}
-                )
-            },
-            "terminations": dict(sorted(Counter(r.termination for r in rows).items())),
-            "false_completion": sum(
-                r.completion_status == "completed" and not r.passed for r in rows
-            ),
-            "median_latency_s": round(statistics.median(r.latency_ms for r in rows) / 1000, 1),
-            "median_tool_calls": statistics.median(len(r.tool_trace) for r in rows),
-            "median_total_tokens": statistics.median(tokens) if tokens else None,
-            "unreported_token_attempts": len(rows) - len(tokens),
         }
     return summary
+
+
+def _table_label(value: str) -> str:
+    return value.replace("\\", "\\\\").replace("|", "\\|").replace("\n", " ").replace("\r", " ")
 
 
 def summary_markdown(summary: dict[str, Any]) -> str:
@@ -805,6 +818,34 @@ def summary_markdown(summary: dict[str, Any]) -> str:
                 for mode in modes
             ]
             lines.append(f"| {partition} | " + " | ".join(cells) + " |")
+    if any("per_model" in summary[mode] for mode in modes):
+        lines.extend(
+            [
+                "",
+                "Provider/model/category counts are descriptive; compare raw task identities, "
+                "partitions, endpoints, runtime settings and budgets before comparing models.",
+                "Missing legacy model breakdowns remain unknown.",
+                "",
+                "| Provider | Model | Mode | Category | Accepted | Completed and accepted |",
+                "|---|---|---|---|---|---|",
+            ]
+        )
+        for mode in modes:
+            if "per_model" not in summary[mode]:
+                lines.append(f"| unknown | unknown | {mode} | unknown | unknown | unknown |")
+                continue
+            for provider, models in summary[mode]["per_model"].items():
+                for model, counts in models.items():
+                    for category, outcomes in counts["per_category"].items():
+                        labels = " | ".join(
+                            _table_label(label) for label in (provider, model, mode, category)
+                        )
+                        lines.append(
+                            f"| {labels} | {outcomes['accepted']}/{outcomes['attempts']} | "
+                            f"{outcomes['completed_and_accepted']}/{outcomes['attempts']} |"
+                        )
+    else:
+        lines.extend(["", "Provider/model breakdown: unknown (legacy summary)."])
     lines.extend(
         [
             "",
