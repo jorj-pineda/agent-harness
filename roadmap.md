@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-29 — Effective response allowance enforced:** shared response checks
+now receive the actual allowance sent for that request, including reductions from
+context/total/remaining-output budgets. Ten pre-fix runtime/HTTP/SSE cases reproduce
+overruns below the configured cap; returned edits/completion now refuse, with
+reported usage and keyed restart evidence preserved. Zero/exact-cap/unknown and
+uncapped controls retain their stated behavior. Pre-request arithmetic/defaults
+and old cohorts are unchanged. This prevents onward work, not already-consumed
+backend tokens, and establishes no inference, quality gain or no-go/8-of-10/G2–G5
+closure. This implements the second scoped budget-correctness slice.
+
 **2026-10-29 — Strict normalized token counts:** the shared provider boundary
 rejects booleans, numeric strings and whole-valued floats instead of coercing them
 to budget counts. Reproduced Python/JSON and production Ollama MockTransport cases

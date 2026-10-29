@@ -16,6 +16,29 @@ is not rewritten or repaired. Failed normalization retains the existing failed
 request/unknown-usage behavior, not a fabricated zero total or a successful run.
 No retry, allowance/default change, inference or model-quality claim follows.
 
+## Effective per-request output allowance
+
+After a response, the shared loop checks reported output against the actual
+`max_tokens` allowance sent on that request, as well as the configured request
+cap. Context room, remaining total tokens or remaining turn output can make that
+allowance smaller than the configured cap. An overrun returns `budget_exhausted`
+before proposed tools or completed status; unknown output under a finite cap
+returns `incomplete`. Integer zero and exactly-at-cap usage remain valid, subject
+to the existing cumulative/followup gates. Fully uncapped requests stay uncapped.
+
+The original request allowance is already recorded as `request.max_tokens` in
+trace/saved budget evidence. The paired response retains the reported overrun or
+unknown count; a stop does not replace it with the allowance or zero. Configured
+`max_request_output_tokens` fields remain configuration, not the effective sent
+value. These stops use the existing per-request cap reasons and do not fabricate
+a `request_block` for a next-request context/total comparison. HTTP/SSE and restart
+review retain the same saved outcome, with keyed replay doing no new work.
+
+This is a post-response refusal of onward work. It cannot prevent backend
+overshoot, undo consumed tokens, attest billing, repair missing usage or establish
+independent artifact acceptance. Defaults, pre-request allowance calculations and
+closed-cohort evidence stay unchanged; no inference or quality claim follows.
+
 ## Saved request refusal evidence
 
 New saved budget observations may include `request_block` on a
