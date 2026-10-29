@@ -24,7 +24,9 @@ def is_verification_command(argv: list[str]) -> bool:
     """True when argv is an allowlisted verification invocation."""
     if not argv:
         return False
-    if any(arg in {"--version", "-V", "--help", "-h", "--collect-only"} for arg in argv[1:]):
+    if any(
+        arg in {"--version", "-V", "--help", "-h", "--collect-only", "--co"} for arg in argv[1:]
+    ):
         return False
     root = argv[0]
     if root == "npm":
