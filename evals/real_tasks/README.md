@@ -71,6 +71,22 @@ source revision and criterion identity remain separate. A `held_out` declaration
 does not prove absence of prompt tuning, prior exposure or model contamination.
 Historical reports are unchanged; no held-out quality result follows from labels.
 
+New summaries also contain `per_model`, nested by exact recorded provider and
+model strings within each mode. Each group retains acceptance, completed-and-
+accepted, category, declared partition, acceptance-subject, task and termination
+counts plus latency/tool/token summaries. Unknown model labels stay unknown;
+missing old breakdowns render unknown instead of being inferred. Human summaries
+show model/category counts separately. Existing mode totals and raw rows retain
+their meanings, including the legacy `false_completion` status/acceptance proxy;
+that proxy does not grade answer claims.
+
+These are descriptive groups, not matched comparisons: the same model string may
+refer to different endpoints, runtime settings, task/criterion revisions or
+budgets. Compare those raw identities and configurations before interpreting a
+model difference. Partition labels and seal observations do not establish absence
+of contamination. Historical reports are not rewritten and no model improvement
+follows from scripted aggregation controls.
+
 Run one configured model against the task manifest, then repeat with the same model
 in minimal-prompt mode. Use separate report paths:
 
