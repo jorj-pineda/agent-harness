@@ -4,6 +4,14 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-29 — Detected grading drift invalidates acceptance:** a disposable
+reference artifact reproduced exit-zero acceptance despite different criterion
+hashes around grading. New rows retain raw grader evidence but reject detected
+drift; the CLI preserves the invalidated row and stops remaining cells. Unknown
+identity retains its prior meaning; bounded equal hashes do not establish atomicity.
+No historical regrade, inference or quality/release claim. Report replacement and
+report/input overlap prevention are the next two integrity slices.
+
 **2026-10-29 — Bounded real-evaluation cohort ledger:** non-validation CLI runs
 persist the full alternating task/mode/repeat plan after controls and before
 provider construction. Recorded cells link actual rows; stopped runs retain unrun

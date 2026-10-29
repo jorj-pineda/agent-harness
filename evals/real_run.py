@@ -64,6 +64,10 @@ ACCEPTANCE_POLICY: Literal["owned-pytest-v1"] = "owned-pytest-v1"
 MAX_COHORT_CELLS = 10_000
 
 
+class AcceptanceDriftError(ValueError):
+    """Observed grading inputs changed; the cohort cannot continue comparably."""
+
+
 class TaskSetIdentity(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True, strict=True)
 
@@ -598,12 +602,19 @@ async def run_task(
                 stdout_truncated=False,
                 stderr_truncated=False,
             )
+        criteria_changed = (
+            criteria_before is not None
+            and criteria_after is not None
+            and criteria_before != criteria_after
+        )
         acceptance_output = acceptance.stdout + acceptance.stderr
         changes = copy.changes()
         paths = tuple(sorted((*changes.added, *changes.modified, *changes.deleted)))
         termination = (
             f"error:{failure}"
             if failure
+            else "acceptance_invalidated"
+            if criteria_changed
             else "iteration_limit"
             if answer == MAX_ITERATIONS_STUB
             else "truncated"
@@ -646,7 +657,7 @@ async def run_task(
                 else coding_prompt_version(settings.coding_toolset, settings.coding_prompt_profile)
             ),
             source_revision=_source_revision(copy),
-            passed=acceptance.exit_code == 0,
+            passed=acceptance.exit_code == 0 and not criteria_changed,
             termination=termination,
             completion_status=completion_status,
             completion_reason=completion_reason,
@@ -1010,6 +1021,8 @@ async def _run_cli(args: argparse.Namespace, started: str = "") -> list[RealTask
             results.append(result)
             cell.status = "recorded"
             write_report(args.report, started, results, cohort=cohort)
+            if (result.acceptance_identity or {}).get("status") == "changed":
+                raise AcceptanceDriftError("Grading inputs changed; observed rows retained")
             if result.termination == "error:HeldoutDriftError":
                 raise HeldoutDriftError("Held-out cohort stopped; observed rows retained in report")
             print(

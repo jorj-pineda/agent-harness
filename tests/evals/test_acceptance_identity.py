@@ -41,7 +41,8 @@ async def test_report_distinguishes_criteria_with_the_same_starting_fixture(tmp_
     assert RealTaskResult(**legacy).acceptance_identity is None
 
 
-async def test_criteria_drift_during_grading_remains_explicit(monkeypatch, tmp_path):
+@pytest.mark.parametrize("passing", [False, True])
+async def test_criteria_drift_during_grading_remains_explicit(monkeypatch, tmp_path, passing):
     original = load_tasks()[0]
     criteria = tmp_path / "acceptance"
     shutil.copytree(original.acceptance, criteria)
@@ -53,10 +54,16 @@ async def test_criteria_drift_during_grading_remains_explicit(monkeypatch, tmp_p
         return result
 
     monkeypatch.setattr(real_run, "acceptance_check", changed_after_grade)
-    result = await observed_run(replace(original, acceptance=criteria))
+    fixture = tmp_path / "fixture"
+    shutil.copytree(original.fixture, fixture)
+    if passing:
+        shutil.copyfile(original.reference / "calc.py", fixture / "calc.py")
+    result = await observed_run(replace(original, fixture=fixture, acceptance=criteria))
     assert result.acceptance_identity["status"] == "changed"
     assert result.acceptance_identity["before_sha256"] != result.acceptance_identity["after_sha256"]
-    assert result.passed is False and result.acceptance_exit_code == 1
+    assert result.passed is False
+    assert result.acceptance_exit_code == (0 if passing else 1)
+    assert result.termination == "acceptance_invalidated"
 
 
 @pytest.mark.parametrize("passing", [False, True])

@@ -567,3 +567,12 @@ Offline regressions apply both archived feature diffs unchanged to fresh copies,
 retain their four failures/24 passes and check that all four failure IDs fit in
 unclipped output. This is artifact replay, not new inference or improved acceptance.
 Other noisy failures can still exceed the cap; inspect output coverage metadata.
+
+Detected criterion/grader drift invalidates new real-task acceptance even if the
+observed grader exit code is zero. Rows retain the raw exit/output and both hashes,
+set `passed=false` and terminate as `acceptance_invalidated` unless an existing
+runtime error takes precedence. The CLI retains that row and stops remaining cells
+with `AcceptanceDriftError`. Missing identity remains unknown under the existing
+policy; equal hashes are bounded observations, not an atomic snapshot. Historical
+rows are unchanged. This prevents a reproduced offline false acceptance, without
+inference or a model-quality claim.
