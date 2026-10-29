@@ -59,6 +59,22 @@ replace those checks. Reference validation establishes a solvable fixture, not t
 any model can solve it. New tasks are public development tasks and must not be used
 as held-out evidence after tuning on them.
 
+### Division acceptance correction (2026-10-29)
+
+The division criterion now includes non-integral positive/negative quotients,
+fractional operands, zero numerators and signed numeric zero divisors. The old
+integer-only nonzero cases admitted floor division and integer truncation, which
+violate the unchanged request for real division. Disposable mutant regressions
+reproduce that false acceptance and require rejection under the corrected checks;
+the original reference still passes. Requests, fixtures, visible tests and
+references are unchanged.
+
+This changes the development criterion bytes for future evaluations. Closed trials,
+their archived runtimes/criteria, source-review conditions and published results
+remain pinned to their original versions; they are not regraded or relabeled.
+Compare exact criterion revisions before comparing scores. This fixes a measured
+grading blind spot, not model behavior or the release no-go.
+
 The refactor task extracts a shared `strip().lower()` helper from two callers.
 Acceptance checks Unicode/error/duplicate/iteration behavior and replaces the
 module helper to verify that both callers use the requested seam at call time.
