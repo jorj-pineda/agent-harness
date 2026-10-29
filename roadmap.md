@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-29 — CLI report/input overlap refusal:** disposable controls reproduced
+missing output-path preconditions. Non-validation CLI runs now reject manifest,
+fixture, reference and criterion overlap across all loaded tasks, and protect the
+whole registered held-out root. Named/parent-resolved/final paths are checked
+before controls and every report write. Parent retargeting refuses before dispatch
+while closing the provider; the last safe ledger may remain incomplete. Direct
+writer callers still own output selection. No external-writer lock, process
+isolation, inference, criterion change or model-quality/release claim.
+
 **2026-10-29 — Report replacement preserves prior evidence:** real-task reports
 are serialized then written to a private sibling file, flushed/file-fsynced and
 replaced in the same directory. Injected partial-write, flush, fsync and replacement

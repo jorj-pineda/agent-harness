@@ -120,7 +120,7 @@ intact and remove the temporary file on ordinary exception paths. New report
 files use mode 0600; replacement replaces a destination symlink rather than
 following it. This does not synchronize concurrent writers, fsync the directory,
 or guarantee power-loss durability. A hard kill can leave a private temporary
-file; report/input overlap checks remain separate work. A hard kill,
+file; CLI report/input overlap checks are described below. A hard kill,
 host failure, persistent write failure or repeated cancellation during cleanup may
 leave the last saved state (`planned` or `started`) and unresolved resources. Do not
 infer non-submission, automatic resumption or zero cost from that state. Inspect
@@ -582,3 +582,18 @@ with `AcceptanceDriftError`. Missing identity remains unknown under the existing
 policy; equal hashes are bounded observations, not an atomic snapshot. Historical
 rows are unchanged. This prevents a reproduced offline false acceptance, without
 inference or a model-quality claim.
+
+CLI report destinations must remain outside every loaded task's fixture, reference
+and acceptance trees and cannot replace the selected manifest. Registered held-out
+catalogs additionally protect the entire sealed root, including its pin index and
+inventory. Checks run before controls/provider allocation and before every CLI
+report write, including cleanup. Named, parent-resolved and final-target paths are
+checked so directory aliases or a final link cannot bypass the boundary. A report
+beside a custom manifest is allowed. Validation-only does not write a report.
+
+Refusal leaves inputs untouched and stops further execution. If a report parent
+link changes into protected inputs after preparation, cleanup still closes the
+provider but cannot publish a final ledger there: the last safe report may remain
+prepared/started. These path observations do not lock external writers or guarantee
+race-free containment. Direct `write_report` callers do not supply task context
+and remain responsible for selecting a safe output path.

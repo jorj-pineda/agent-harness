@@ -997,6 +997,27 @@ def write_report(
             temporary.unlink(missing_ok=True)
 
 
+def _validate_report_path(report: Path, manifest: Path, tasks: list[Task]) -> None:
+    # Check the named destination, its parent-resolved name, and its final target.
+    # Replacement does not follow a final link, but parent links affect temp writes.
+    candidates = (
+        Path(os.path.abspath(report)),
+        report.parent.resolve() / report.name,
+        report.resolve(),
+    )
+    trees = [
+        path.resolve() for task in tasks for path in (task.fixture, task.acceptance, task.reference)
+    ]
+    registration = registration_for(manifest)
+    if registration is not None:
+        trees.append(registration.root.resolve())
+    for candidate in candidates:
+        if candidate == manifest.resolve() or any(
+            candidate.is_relative_to(root) or root.is_relative_to(candidate) for root in trees
+        ):
+            raise ValueError("Report path overlaps evaluation inputs")
+
+
 async def _run_cli(args: argparse.Namespace, started: str = "") -> list[RealTaskResult]:
     manifest = args.task_manifest if args.task_manifest is not None else TASKS_ROOT / "tasks.yaml"
     registration = registration_for(manifest)
@@ -1010,6 +1031,8 @@ async def _run_cli(args: argparse.Namespace, started: str = "") -> list[RealTask
         raise ValueError(f"Unknown task: {args.task}")
     modes: tuple[Mode, ...] = MODES if args.mode == "both" else (args.mode,)
     cohort, schedule = _plan_cohort(selected, modes, args.repeats)
+    if not args.validate_only:
+        _validate_report_path(args.report, manifest, tasks)
     for task in selected:
         if not args.validate_only:
             _heldout_guard(task, execution=True)
@@ -1019,8 +1042,13 @@ async def _run_cli(args: argparse.Namespace, started: str = "") -> list[RealTask
     results: list[RealTaskResult] = []
     provider: ChatProvider | None = None
     failure: BaseException | None = None
-    try:
+
+    def persist() -> None:
+        _validate_report_path(args.report, manifest, tasks)
         write_report(args.report, started, results, cohort=cohort)
+
+    try:
+        persist()
         settings = get_settings()
         if registration is not None:
             verify_catalog(registration)
@@ -1029,14 +1057,14 @@ async def _run_cli(args: argparse.Namespace, started: str = "") -> list[RealTask
         for index, (task, mode, attempt) in enumerate(schedule):
             cell = cohort.cells[index]
             cell.status = "started"
-            write_report(args.report, started, results, cohort=cohort)
+            persist()
             result = await run_task(
                 task, provider=provider, settings=settings, mode=mode, attempt=attempt
             )
             cell.result_index = len(results)
             results.append(result)
             cell.status = "recorded"
-            write_report(args.report, started, results, cohort=cohort)
+            persist()
             if (result.acceptance_identity or {}).get("status") == "changed":
                 raise AcceptanceDriftError("Grading inputs changed; observed rows retained")
             if result.termination == "error:HeldoutDriftError":
@@ -1062,7 +1090,7 @@ async def _run_cli(args: argparse.Namespace, started: str = "") -> list[RealTask
                 cohort.stop(type(exc).__name__)
                 raise
         finally:
-            write_report(args.report, started, results, cohort=cohort)
+            persist()
     return results
 
 
