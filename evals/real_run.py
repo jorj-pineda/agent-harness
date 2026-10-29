@@ -23,7 +23,7 @@ from pathlib import Path
 from typing import Any, Literal
 
 import yaml
-from pydantic import TypeAdapter
+from pydantic import BaseModel, ConfigDict, Field, TypeAdapter
 
 from evals.question_grading import grade_question
 from harness.config import Settings, get_settings
@@ -61,6 +61,33 @@ MODES: tuple[Mode, ...] = ("harness", "minimal")
 ACCEPTANCE_POLICY: Literal["owned-pytest-v1"] = "owned-pytest-v1"
 
 
+class TaskSetIdentity(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True, strict=True)
+
+    format: Literal["task-catalog-identity-v1"] = "task-catalog-identity-v1"
+    id: str = Field(min_length=1, max_length=64, pattern=r"^[a-zA-Z0-9_-]+$")
+    partition: Literal["development", "held_out", "unclassified"]
+    manifest_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+
+
+class CatalogTask(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+
+    id: str = Field(min_length=1, max_length=64, pattern=r"^[a-zA-Z0-9_]+$")
+    fixture: str = Field(min_length=1, max_length=128, pattern=r"^[a-zA-Z0-9_-]+$")
+    request: str = Field(min_length=1, max_length=16_384)
+    category: TaskCategory = "unclassified"
+
+
+class TaskCatalog(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+
+    format: Literal["task-catalog-v1"]
+    id: str = Field(min_length=1, max_length=64, pattern=r"^[a-zA-Z0-9_-]+$")
+    partition: Literal["development", "held_out"]
+    tasks: list[CatalogTask] = Field(min_length=1, max_length=100)
+
+
 @dataclass(frozen=True)
 class Task:
     id: str
@@ -69,6 +96,7 @@ class Task:
     acceptance: Path
     reference: Path
     category: TaskCategory = "unclassified"
+    task_set: TaskSetIdentity | None = None
 
 
 @dataclass
@@ -103,6 +131,7 @@ class RealTaskResult:
     acceptance_policy: Literal["owned-pytest-v1", "structured-facts-v1"] | None = None
     acceptance_output_truncated: bool | None = None
     acceptance_identity: dict[str, Any] | None = None
+    task_set: dict[str, str] | None = None
 
 
 class ObservedProvider:
@@ -154,21 +183,55 @@ class ObservedProvider:
 
 
 def load_tasks(path: Path = TASKS_ROOT / "tasks.yaml") -> list[Task]:
-    rows = yaml.safe_load(path.read_text(encoding="utf-8"))
-    if not isinstance(rows, list):
-        raise ValueError("Task manifest must be a list")
+    with path.open("rb") as stream:
+        content = stream.read(1_000_001)
+    if len(content) > 1_000_000:
+        raise ValueError("Task manifest exceeds 1 MB")
+    rows = yaml.safe_load(content.decode("utf-8"))
+    root = TASKS_ROOT.resolve()
+    identity = TaskSetIdentity(
+        id="public-development"
+        if path.resolve() == (TASKS_ROOT / "tasks.yaml").resolve()
+        else "legacy-custom",
+        partition="development"
+        if path.resolve() == (TASKS_ROOT / "tasks.yaml").resolve()
+        else "unclassified",
+        manifest_sha256=hashlib.sha256(content).hexdigest(),
+    )
+    if isinstance(rows, dict):
+        catalog = TaskCatalog.model_validate(rows)
+        root = path.resolve().parent
+        identity = TaskSetIdentity(
+            id=catalog.id,
+            partition=catalog.partition,
+            manifest_sha256=identity.manifest_sha256,
+        )
+        rows = [task.model_dump() for task in catalog.tasks]
+    elif not isinstance(rows, list):
+        raise ValueError("Task manifest must be a list or task-catalog-v1 object")
     tasks: list[Task] = []
     for row in rows:
         task_id = str(row["id"])
         if not task_id.replace("_", "").isalnum():
             raise ValueError(f"Invalid task ID: {task_id}")
-        fixture = TASKS_ROOT / "fixtures" / str(row["fixture"])
-        acceptance = TASKS_ROOT / "acceptance" / task_id
-        reference = TASKS_ROOT / "reference" / task_id
+        fixture = root / "fixtures" / str(row["fixture"])
+        acceptance = root / "acceptance" / task_id
+        reference = root / "reference" / task_id
+        for directory, kind in (
+            (fixture, "fixtures"),
+            (acceptance, "acceptance"),
+            (reference, "reference"),
+        ):
+            if not directory.resolve().is_relative_to(
+                (root / kind).resolve()
+            ) or not directory.resolve().is_relative_to(root):
+                raise ValueError("Task directory escapes its catalog root")
         if not fixture.is_dir() or not acceptance.is_dir() or not reference.is_dir():
             raise ValueError(f"Incomplete task: {task_id}")
         category = TypeAdapter(TaskCategory).validate_python(row.get("category", "unclassified"))
-        tasks.append(Task(task_id, str(row["request"]), fixture, acceptance, reference, category))
+        tasks.append(
+            Task(task_id, str(row["request"]), fixture, acceptance, reference, category, identity)
+        )
     if len({task.id for task in tasks}) != len(tasks):
         raise ValueError("Duplicate task IDs")
     return tasks
@@ -396,6 +459,7 @@ async def run_task(
                 else "changed",
             },
             category=task.category,
+            task_set=task.task_set.model_dump() if task.task_set is not None else None,
             mode=mode,
             attempt=attempt,
             provider=provider.name,
@@ -523,6 +587,18 @@ def summarize(results: list[RealTaskResult]) -> dict[str, Any]:
                 )
                 for subject in ("artifact", "answer")
             },
+            "per_partition": {
+                partition: _acceptance_counts(
+                    [
+                        r
+                        for r in rows
+                        if (r.task_set or {}).get("partition", "unclassified") == partition
+                    ]
+                )
+                for partition in sorted(
+                    {(r.task_set or {}).get("partition", "unclassified") for r in rows}
+                )
+            },
             "terminations": dict(sorted(Counter(r.termination for r in rows).items())),
             "false_completion": sum(
                 r.completion_status == "completed" and not r.passed for r in rows
@@ -596,6 +672,27 @@ def summary_markdown(summary: dict[str, Any]) -> str:
                 for mode in modes
             ]
             lines.append(f"| {category} | " + " | ".join(cells) + " |")
+    partitions = sorted({part for mode in modes for part in summary[mode].get("per_partition", {})})
+    if partitions:
+        lines.extend(
+            [
+                "",
+                "Declared catalog partitions (labels are not holdout attestation):",
+                "",
+                "| Partition | " + " | ".join(modes) + " |",
+                "|---|" + "---|" * len(modes),
+            ]
+        )
+        for partition in partitions:
+            cells = [
+                "{accepted}/{attempts}".format(
+                    **summary[mode]["per_partition"].get(partition, {"accepted": 0, "attempts": 0})
+                )
+                if "per_partition" in summary[mode]
+                else "unknown"
+                for mode in modes
+            ]
+            lines.append(f"| {partition} | " + " | ".join(cells) + " |")
     lines.extend(
         [
             "",
@@ -660,7 +757,7 @@ def write_report(path: Path, started: str, results: list[RealTaskResult]) -> Non
 
 
 async def _run_cli(args: argparse.Namespace, started: str = "") -> list[RealTaskResult]:
-    tasks = load_tasks()
+    tasks = load_tasks(args.task_manifest) if args.task_manifest is not None else load_tasks()
     selected = [task for task in tasks if args.task is None or task.id == args.task]
     if not selected:
         raise ValueError(f"Unknown task: {args.task}")
@@ -703,6 +800,9 @@ def main(argv: list[str] | None = None) -> int:
         default="ollama",
     )
     parser.add_argument("--task", help="Run one task ID; default runs the whole task manifest")
+    parser.add_argument(
+        "--task-manifest", type=Path, help="Explicit catalog; default is public development only"
+    )
     parser.add_argument("--mode", choices=("harness", "minimal", "both"), default="harness")
     parser.add_argument("--repeats", type=int, default=1, help="Attempts per task and mode")
     parser.add_argument("--validate-only", action="store_true")

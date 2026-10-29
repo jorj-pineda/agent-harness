@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-29 — Explicit evaluation catalog selection:** the real-task CLI can
+select one self-contained typed catalog while keeping the twenty-task development
+default separate. New rows retain declared partition/ID and exact manifest hash;
+partition summaries preserve unknown legacy/custom evidence. Root/schema/size/
+duplicate refusals precede provider construction and validate-only allocates no
+provider. This is catalog mechanics, not held-out data or preservation attestation.
+The next two slices add the separately versioned set, then byte/mode drift refusal.
+No inference, prompt tuning, old-result rewrite, quality gain or release-gate closure.
+
 **2026-10-29 — Twenty-task public corpus coverage:** five bounded coding tasks
 add boolean settings, lazy batching, POSIX suffix splitting, weighted averages and
 a cross-module pricing refactor. Independent criteria cover input/identity/laziness,
