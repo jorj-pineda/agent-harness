@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-29 — Explicit criterion identity:** future real-task rows observe
+bounded criterion-tree/bootstrap/configuration hashes immediately around grading.
+Matching, changed and unavailable evidence stay distinct; old rows remain null.
+This makes the corrected development criteria distinguishable even when the
+starting fixture is unchanged. Grading decisions, summaries, model inputs and
+budgets are unchanged; snapshots do not replace trial freeze/refusal gates or
+attest dependencies, external data or transient changes. No inference, historical
+regrade, quality claim or no-go/8-of-10/G2–G5 closure.
+
 **2026-10-29 — Original Python criterion audit:** seven disposable mutations
 expose four false acceptances in slug/flag checks. New cases reject dropped slug
 digits, retained non-ASCII letters, space-only trimming and space-dependent comment

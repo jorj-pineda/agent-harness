@@ -48,6 +48,7 @@ from providers.base import (
 )
 from tools.process import ProcessResult, run_process
 from workspace import DisposableWorkspace, disposable_workspace
+from workspace.changes import SnapshotLimitError, snapshot
 
 TASKS_ROOT = Path(__file__).parent / "real_tasks"
 MINIMAL_PROMPT = (
@@ -100,6 +101,7 @@ class RealTaskResult:
     category: TaskCategory = "unclassified"
     acceptance_policy: Literal["owned-pytest-v1"] | None = None
     acceptance_output_truncated: bool | None = None
+    acceptance_identity: dict[str, Any] | None = None
 
 
 class ObservedProvider:
@@ -203,6 +205,31 @@ async def acceptance_check(task: Task, root: Path) -> ProcessResult:
     )
 
 
+def _acceptance_digest(directory: Path) -> str | None:
+    """Observe scoped criterion bytes; never treat unavailable reads as an empty tree."""
+    try:
+        criteria = snapshot(
+            directory,
+            ignore=(".env", ".env.*", "__pycache__", ".pytest_cache"),
+            max_files=100,
+            max_bytes=1_000_000,
+            strict=True,
+        )
+        if any(value.startswith("symlink:") for value in criteria.values()):
+            return None
+        payload = {
+            "format": "acceptance-tree-v1",
+            "criteria": criteria,
+            "grader": {
+                name: hashlib.sha256(Path(__file__).with_name(name).read_bytes()).hexdigest()
+                for name in ("acceptance_runner.py", "acceptance_pytest.ini")
+            },
+        }
+    except (OSError, SnapshotLimitError):
+        return None
+    return hashlib.sha256(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()
+
+
 async def _visible_check(root: Path) -> ProcessResult:
     return await run_process(
         [sys.executable, "-m", "pytest", "-q", "test_visible.py"],
@@ -300,7 +327,9 @@ async def run_task(
                     failure = type(exc).__name__
                 latency_ms = (time.perf_counter() - start) * 1000
                 trace: list[ToolCallRecord] = session.turns[-1].tool_calls if session.turns else []
+        criteria_before = _acceptance_digest(task.acceptance)
         acceptance = await acceptance_check(task, copy.workspace.root)
+        criteria_after = _acceptance_digest(task.acceptance)
         acceptance_output = acceptance.stdout + acceptance.stderr
         changes = copy.changes()
         paths = tuple(sorted((*changes.added, *changes.modified, *changes.deleted)))
@@ -320,6 +349,16 @@ async def run_task(
         return RealTaskResult(
             task_id=task.id,
             acceptance_policy=ACCEPTANCE_POLICY,
+            acceptance_identity={
+                "format": "acceptance-tree-v1",
+                "before_sha256": criteria_before,
+                "after_sha256": criteria_after,
+                "status": "unavailable"
+                if criteria_before is None or criteria_after is None
+                else "matching"
+                if criteria_before == criteria_after
+                else "changed",
+            },
             category=task.category,
             mode=mode,
             attempt=attempt,
