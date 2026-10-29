@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-28 — Replacement schema comparison protocol prepared:** the
+[fixed protocol](evals/projects/python_utility_trial/SCHEMA_COMPARISON_PROTOCOL.md)
+specifies eight fresh C/E attempts on original division/dedupe tasks, balanced
+arm order and unchanged model/phase limits. Control uses the pre-example schema;
+treatment uses the new description/example bundle. Fresh original baseline and
+reference assertions plus all catalog pins verify offline. Actual paired inputs,
+two-runtime G0, complete operator/refusal rehearsal, reviewed freeze/CI/merge,
+parent approval and fresh gates still precede inference. No claimed remedy,
+old-cohort retry, default change or no-go/8-of-10/G2–G5 closure.
+
 **2026-10-28 — Replacement schema example candidate:** `replace_text` now shows
 small multiline old/new examples in its shared parameter schema and explicitly
 requests one JSON-encoding layer. This addresses a candidate identified by the
