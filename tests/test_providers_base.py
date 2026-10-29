@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+
 import pytest
 from pydantic import ValidationError
 
@@ -88,6 +90,15 @@ def test_stubs_satisfy_protocols() -> None:
 def test_usage_rejects_negative_counts_at_validated_boundary(field, value):
     with pytest.raises(ValidationError):
         TokenUsage.model_validate({field: value})
+
+
+@pytest.mark.parametrize("field", ["prompt_tokens", "completion_tokens"])
+@pytest.mark.parametrize("value", [True, False, "0", "20", 0.0, 20.0])
+def test_usage_rejects_coercible_noninteger_counts(field, value):
+    with pytest.raises(ValidationError):
+        TokenUsage.model_validate({field: value})
+    with pytest.raises(ValidationError):
+        TokenUsage.model_validate_json(json.dumps({field: value}))
 
 
 @pytest.mark.parametrize("value", [None, 0, 1, 100000])

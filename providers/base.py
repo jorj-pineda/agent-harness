@@ -84,8 +84,8 @@ class ToolSpec(BaseModel):
 
 
 class TokenUsage(BaseModel):
-    prompt_tokens: int | None = Field(default=None, ge=0)
-    completion_tokens: int | None = Field(default=None, ge=0)
+    prompt_tokens: int | None = Field(default=None, ge=0, strict=True)
+    completion_tokens: int | None = Field(default=None, ge=0, strict=True)
 
 
 UsageFieldState = Literal["absent", "null", "present"]

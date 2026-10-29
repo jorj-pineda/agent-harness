@@ -569,7 +569,8 @@ async def test_live_ollama_embed() -> None:
 
 
 @pytest.mark.parametrize("count_field", ["prompt_eval_count", "eval_count"])
-async def test_negative_backend_usage_cannot_dispatch_a_file_edit(tmp_path, count_field):
+@pytest.mark.parametrize("count", [-1, True, "2", 2.0])
+async def test_invalid_backend_usage_cannot_dispatch_a_file_edit(tmp_path, count_field, count):
     from pydantic import ValidationError
 
     from harness.loop import run_turn
@@ -599,7 +600,7 @@ async def test_negative_backend_usage_cannot_dispatch_a_file_edit(tmp_path, coun
             ],
         },
     }
-    payload[count_field] = -1
+    payload[count_field] = count
     provider = OllamaProvider(
         host="http://fake",
         model="fixture",
