@@ -4,6 +4,14 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-29 — Report replacement preserves prior evidence:** real-task reports
+are serialized then written to a private sibling file, flushed/file-fsynced and
+replaced in the same directory. Injected partial-write, flush, fsync and replacement
+failures preserve old bytes or an absent destination and clean temporary files.
+New reports use mode 0600; destination links are replaced without following them.
+No concurrent-writer coordination, directory-fsync/power-loss guarantee or inference.
+Report/input overlap prevention remains the third slice; no quality/release claim.
+
 **2026-10-29 — Detected grading drift invalidates acceptance:** a disposable
 reference artifact reproduced exit-zero acceptance despite different criterion
 hashes around grading. New rows retain raw grader evidence but reject detected

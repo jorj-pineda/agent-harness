@@ -11,6 +11,7 @@ import asyncio
 import difflib
 import hashlib
 import json
+import os
 import statistics
 import subprocess
 import sys
@@ -963,22 +964,37 @@ def write_report(
     path: Path, started: str, results: list[RealTaskResult], *, cohort: CohortLedger | None = None
 ) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(
-        json.dumps(
-            {
-                "mode": "real-tools-trusted-fixtures",
-                "trace_format": "normalized-turn-v2",
-                "started_at": started,
-                "harness_revision": _harness_revision(),
-                "sampling": {"temperature": 0.0},
-                "summary": summarize(results),
-                "results": [asdict(r) for r in results],
-                "cohort": cohort.model_dump(mode="json") if cohort is not None else None,
-            },
-            indent=2,
-        ),
-        encoding="utf-8",
+    content = json.dumps(
+        {
+            "mode": "real-tools-trusted-fixtures",
+            "trace_format": "normalized-turn-v2",
+            "started_at": started,
+            "harness_revision": _harness_revision(),
+            "sampling": {"temperature": 0.0},
+            "summary": summarize(results),
+            "results": [asdict(r) for r in results],
+            "cohort": cohort.model_dump(mode="json") if cohort is not None else None,
+        },
+        indent=2,
     )
+    temporary: Path | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            dir=path.parent,
+            prefix=f".{path.name}.",
+            suffix=".tmp",
+            delete=False,
+        ) as stream:
+            temporary = Path(stream.name)
+            stream.write(content)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temporary, path)
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
 
 
 async def _run_cli(args: argparse.Namespace, started: str = "") -> list[RealTaskResult]:

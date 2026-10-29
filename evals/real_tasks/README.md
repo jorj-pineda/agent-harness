@@ -114,7 +114,13 @@ cohort policy; only propagated failures and the explicit held-out stop halt it.
 Preflight refusals before a prepared ledger is written still produce no cohort.
 Direct `write_report` calls without a plan record null; legacy absence is unknown.
 
-Persistence is best effort, without an atomic/crash-safe guarantee. A hard kill,
+Persistence uses a private sibling file, flush/file-fsync and same-directory
+replacement. Failed writes/flush/fsync/replacement leave the previous report
+intact and remove the temporary file on ordinary exception paths. New report
+files use mode 0600; replacement replaces a destination symlink rather than
+following it. This does not synchronize concurrent writers, fsync the directory,
+or guarantee power-loss durability. A hard kill can leave a private temporary
+file; report/input overlap checks remain separate work. A hard kill,
 host failure, persistent write failure or repeated cancellation during cleanup may
 leave the last saved state (`planned` or `started`) and unresolved resources. Do not
 infer non-submission, automatic resumption or zero cost from that state. Inspect
