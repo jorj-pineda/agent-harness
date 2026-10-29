@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-29 — Paused Anthropic turns remain incomplete:** `pause_turn` now
+maps to the existing normalized error finish reason instead of successful stop.
+The adapter does not implement server-tool continuation. A production SDK over
+MockTransport reproduction previously marked partial text completed; the shared
+loop now retains the partial answer/usage and stops incomplete without replay.
+See [provider semantics](https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons).
+No new server-tool support, automatic resume, hosted inference, quality claim,
+budget/default change or no-go/8-of-10/G2–G5 closure follows.
+
 **2026-10-29 — Ollama truncation precedes tool dispatch:** native `length`
 termination now takes precedence when a response also contains tool calls. A
 production-adapter MockTransport regression reproduces an overwrite before the
