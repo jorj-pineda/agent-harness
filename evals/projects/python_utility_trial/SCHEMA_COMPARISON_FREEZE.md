@@ -162,6 +162,11 @@ failed before API lifespan settlement and required stopping its exact recorded
 owned metadata backend. That failed run and intervention are preserved separately,
 not certified as normal cleanup. Corrected fresh runs settle all owned children,
 preserve partial artifacts and leave the other seven rows unrun. No inference ran.
+The second review found the non-finite representation fallback could bypass its
+capture bound for large compound values. Six before/after cases cover scalar
+`NaN` and oversized nested lists/dictionaries in both count fields; oversized
+representations now use explicit omission with type, size and hash. Refusal
+semantics remain unchanged, and the superseded recipe/index is preserved.
 
 The separately reviewed results slice must reconstruct/regrade actual artifacts,
 independently review D1/U1/C1, audit all inputs/stores/cleanup and retain all eight
