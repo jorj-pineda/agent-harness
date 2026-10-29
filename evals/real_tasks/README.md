@@ -90,6 +90,33 @@ a model experiment. Only the slug/flag development criteria change; original tas
 requests, fixtures, visible tests, references and all closed-cohort criteria/results
 remain unchanged. Future comparisons must distinguish these criterion revisions.
 
+### Criterion identity in new reports
+
+New rows add `acceptance_identity` with format `acceptance-tree-v1`,
+`before_sha256` and `after_sha256` observed immediately around external grading,
+and status `matching`, `changed` or `unavailable`. The digest covers relative file
+names/content hashes in the criterion directory plus the owned pytest bootstrap
+and configuration bytes. Canonical JSON uses Python's sorted-key JSON encoding
+(default separators and ASCII escaping), then UTF-8 SHA-256; absolute paths are
+excluded. Old/custom rows without this evidence retain null, never an invented
+identity. Equal starting-fixture hashes do not imply equal acceptance criteria.
+
+The observation reuses strict bounded snapshots: at most 100 files and 1,000,000
+file bytes, excluding `.env`/`.env.*`, `__pycache__` and `.pytest_cache` entries.
+Missing/unreadable/oversized trees or symlink entries yield unavailable identity;
+no credential contents are read. This field exposes digests/status, without
+criterion text or filenames.
+The scope excludes permissions, empty directories, dependencies, interpreter,
+environment, external imports/data and criterion changes outside the two reads.
+Matching snapshots are not an atomic freeze or attestation of all executed code.
+
+This metadata does not change the grader's verdict, acceptance summaries, model
+inputs or budget decisions. Missing or changed identity cannot establish a
+comparable frozen criterion. Controlled trials still need separate pre-execution
+pins, preservation and refusal gates. Snapshot work adds grading overhead outside
+the saved configured-turn latency. Historical reports and cohorts are unchanged;
+no inference, quality benefit or release readiness follows.
+
 The refactor task extracts a shared `strip().lower()` helper from two callers.
 Acceptance checks Unicode/error/duplicate/iteration behavior and replaces the
 module helper to verify that both callers use the requested seam at call time.
