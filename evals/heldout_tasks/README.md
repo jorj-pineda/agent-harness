@@ -57,3 +57,13 @@ These bounded observations are non-atomic. They do not isolate host code, preven
 external writers after a check, attest to contamination absence, or authorize a
 comparison. No live result is claimed. Existing development tasks, closed trial
 criteria/results and release no-go/G2–G5 remain.
+
+New real-task rows record `heldout_preservation` independently of acceptance.
+Registered rows include the catalog ID, registered seal digest, successful
+checkpoints and any failed checkpoint. `checks_passed` means only those bounded
+observations passed, even if the artifact failed acceptance. A failed observation
+is latched for the attempt, so restoring data cannot erase it. Failed requests
+preserve prefix evidence; failed pre-allocation checks still raise without a result
+row. Development/custom and old rows have null/absent evidence, which remains
+unknown rather than inferred from a partition label or manifest hash. Evidence
+contains no absolute catalog path and does not attest to contamination absence.

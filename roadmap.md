@@ -4,6 +4,14 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-29 — Held-out preservation report evidence:** new registered result rows
+retain the reviewed seal identity and successful/failed checkpoints separately from
+artifact acceptance. An observed failure is latched for the attempt, even if bytes
+are later restored; old/development/custom evidence stays unknown. This exposes
+which bounded preservation checks ran without claiming atomicity or absence of
+contamination. No inference, prompt tuning, model-quality or release claim. The
+next offline slices separate model/category summaries and retain unrun cohort cells.
+
 **2026-10-29 — Held-out v1 preservation checks:** a registered seal binds the
 manifest, fixtures, references and criteria by bytes, size and mode. Drift refuses
 before allocation/provider construction; execution checks pinned task metadata,
