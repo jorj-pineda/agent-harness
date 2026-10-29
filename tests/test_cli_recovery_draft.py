@@ -283,7 +283,7 @@ def test_cli_to_restarted_api_retains_draft_source_identity_and_later_user_work(
     with TestClient(
         make_app(tmp_path, provider, max_tool_iterations=1, max_context_tokens=16384)
     ) as api:
-        sid, rid, body = seed(api, root, provider)
+        sid, rid, body = seed(api, root, provider, known_usage=True)
         message = "Finish the original task"
         expected = api.post(f"/runs/{rid}/recovery-draft", json={**body, "message": message}).json()
         run = api.get(f"/runs/{rid}", params={"user_id": "dev"}).json()

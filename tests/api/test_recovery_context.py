@@ -16,13 +16,17 @@ from .test_session_persistence import make_app
 from .test_stream import _parse_sse
 
 
-def seed(client, root, provider, raw="saved\r\nsecond\nlast", transport="http"):
+def seed(
+    client, root, provider, raw="saved\r\nsecond\nlast", transport="http", *, known_usage=False
+):
     (root / "a.txt").write_text("pre-existing user work\n")
     provider.script(
         make_response(
+            prompt_tokens=10 if known_usage else None,
+            completion_tokens=2 if known_usage else None,
             tool_calls=[
                 ToolCall(id="write", name="write_file", arguments={"path": "a.txt", "content": raw})
-            ]
+            ],
         )
     )
     sid = client.post(

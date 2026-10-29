@@ -382,7 +382,9 @@ async def run_turn(
             completion_reason = incomplete_reasons[response.finish_reason]
             break
 
-        budget_stop = budget.after_response(wants_tools=bool(usable_calls))
+        budget_stop = budget.after_response(
+            wants_tools=bool(usable_calls), request_output=request_output
+        )
         if budget_stop is not None:
             observe_budget("post_response_stop", request_block=budget_stop.request_block)
         if budget_stop is not None and trace is not None:

@@ -22,15 +22,17 @@ def test_profile_is_durable_before_inference_and_survives_finalization_and_resta
     provider = HeldProvider()
     provider.script(
         make_response(
+            prompt_tokens=10,
+            completion_tokens=2,
             tool_calls=[
                 ToolCall(
                     id="write",
                     name="write_file",
                     arguments={"path": "a.py", "content": "user = 1\nagent = 2\n"},
                 )
-            ]
+            ],
         ),
-        make_response(content="Done"),
+        make_response(content="Done", prompt_tokens=10, completion_tokens=2),
     )
     settings = {
         "max_context_tokens": 16000,

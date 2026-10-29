@@ -164,7 +164,7 @@ def test_restart_capture_and_continuation_guards(tmp_path, change):
     path.write_text("Repository convention")
     settings = {**SETTINGS, "load_root_agents": True}
     provider = known_provider()
-    provider.script(make_response(content="Reviewed"))
+    provider.script(make_response(content="Reviewed", prompt_tokens=10, completion_tokens=2))
     with TestClient(make_app(tmp_path, provider, **settings)) as api:
         sid = api.post(
             "/sessions",
@@ -180,7 +180,7 @@ def test_restart_capture_and_continuation_guards(tmp_path, change):
         evidence = saved["responses"][0]["execution_profile"]["repository_instructions"]
         assert evidence["content_sha256"] == hashlib.sha256(path.read_bytes()).hexdigest()
     later = known_provider()
-    later.script(make_response(content="Reviewed again"))
+    later.script(make_response(content="Reviewed again", prompt_tokens=10, completion_tokens=2))
     if change == "text":
         path.write_text("Later user convention")
     elif change == "enabled":

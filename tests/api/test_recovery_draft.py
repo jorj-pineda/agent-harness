@@ -36,7 +36,7 @@ def test_draft_restart_preserves_identity_user_text_and_edits_with_current_instr
             load_root_agents=True,
         )
     ) as client:
-        sid, rid, body = seed(client, root, provider, transport=transport)
+        sid, rid, body = seed(client, root, provider, transport=transport, known_usage=True)
         body = proposal(body)
         endpoint = f"/runs/{rid}/recovery-draft"
         run = client.get(f"/runs/{rid}", params={"user_id": "dev"}).json()

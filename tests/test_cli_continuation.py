@@ -34,7 +34,7 @@ def test_cli_explicit_continuation_then_restart_replay_is_one_post(tmp_path):
     _root, sid, archived = source(tmp_path)
     tid = archived["session"]["turns"][-1]["turn_id"]
     provider = known_provider()
-    provider.script(make_response(content="Explained"))
+    provider.script(make_response(content="Explained", prompt_tokens=10, completion_tokens=2))
     with TestClient(make_app(tmp_path, provider, **SETTINGS)) as api:
 
         def post(url, **kwargs):

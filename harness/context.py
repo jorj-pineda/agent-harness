@@ -193,15 +193,20 @@ class TokenBudget:
         self._anchor_tokens = None
         self._last_completion_tokens = None
 
-    def after_response(self, *, wants_tools: bool) -> BudgetStop | None:
+    def after_response(
+        self, *, wants_tools: bool, request_output: int | None = None
+    ) -> BudgetStop | None:
         """Decide whether reported usage stops the turn before tools or a final answer."""
-        if self.max_request_output > 0:
+        request_cap = self.max_request_output
+        if request_output is not None and (request_cap <= 0 or request_output < request_cap):
+            request_cap = request_output
+        if request_cap > 0:
             if self._last_completion_tokens is None:
                 return BudgetStop(
                     "incomplete",
                     "Provider did not report output-token usage; request cap cannot be checked.",
                 )
-            if self._last_completion_tokens > self.max_request_output:
+            if self._last_completion_tokens > request_cap:
                 return BudgetStop(
                     "budget_exhausted", "Provider exceeded the per-request output-token cap."
                 )

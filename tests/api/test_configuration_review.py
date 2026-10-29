@@ -20,15 +20,17 @@ def create_saved(root: Path, *, known: bool = True):
         provider.name = "ollama"  # Configured identity exercised with a scripted adapter.
     provider.script(
         make_response(
+            prompt_tokens=10,
+            completion_tokens=2,
             tool_calls=[
                 ToolCall(
                     id="edit",
                     name="write_file",
                     arguments={"path": "a.py", "content": "user = 1\nagent = 2\n"},
                 )
-            ]
+            ],
         ),
-        make_response(content="Done"),
+        make_response(content="Done", prompt_tokens=10, completion_tokens=2),
     )
     with TestClient(make_app(root, provider, max_context_tokens=16000)) as client:
         sid = client.post("/sessions", json={"user_id": "dev", "workspace_root": str(repo)}).json()[
