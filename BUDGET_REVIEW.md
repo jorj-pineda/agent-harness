@@ -1,5 +1,23 @@
 # Saved next-request token refusals
 
+## Validated token counts
+
+The shared `TokenUsage` boundary accepts only nonnegative integers or null.
+Booleans, numeric strings and whole-valued floats are rejected instead of coerced;
+missing/null usage stays unknown, while integer zero remains valid. Ollama passes
+its original JSON count values to this boundary, so malformed counts stop response
+normalization before returned tool calls can execute. Other adapters validate the
+values supplied by their SDKs; this cannot recover raw types already coerced by an
+upstream SDK or attest backend tokenization/billing.
+
+This intentionally tightens malformed-input handling, including validation of
+saved data. Valid integer/null serialization stays unchanged; historical evidence
+is not rewritten or repaired. Failed normalization retains the existing failed
+request/unknown-usage behavior, not a fabricated zero total or a successful run.
+No retry, allowance/default change, inference or model-quality claim follows.
+
+## Saved request refusal evidence
+
 New saved budget observations may include `request_block` on a
 `pre_request_stop` or `post_response_stop`. It records the actual shared gate's
 numbers when another request cannot fit. This addresses the distinct native C

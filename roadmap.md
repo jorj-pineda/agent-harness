@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-29 — Strict normalized token counts:** the shared provider boundary
+rejects booleans, numeric strings and whole-valued floats instead of coercing them
+to budget counts. Reproduced Python/JSON and production Ollama MockTransport cases
+preserve user files and prevent returned edits on malformed counts; valid
+integer/null evidence remains compatible. This closes a validation gap previously
+guarded by evaluation wrappers, not an observed live-provider incident. No raw
+SDK-type attestation, inference, budget/default change, historical rewrite, quality
+claim or no-go/8-of-10/G2–G5 closure. Actual reduced-allowance checking is separate.
+
 **2026-10-29 — Explicit criterion identity:** future real-task rows observe
 bounded criterion-tree/bootstrap/configuration hashes immediately around grading.
 Matching, changed and unavailable evidence stay distinct; old rows remain null.
