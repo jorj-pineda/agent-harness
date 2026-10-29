@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-29 — Unsupported SDK finish reasons refuse completion:** Anthropic
+and OpenAI-compatible normalization no longer invent successful stop for null or
+unrecognized native finish reasons. These responses use the existing error/
+incomplete gate with partial text/raw evidence retained and no automatic retry.
+Four SDK-object/shared-loop regressions reproduce the false completion; ordinary
+recognized reasons remain unchanged. This is conservative unsupported-response
+handling, not new protocol support, live inference, a quality improvement or
+no-go/8-of-10/G2–G5 closure. Historical saved records are not rewritten.
+
 **2026-10-29 — Paused Anthropic turns remain incomplete:** `pause_turn` now
 maps to the existing normalized error finish reason instead of successful stop.
 The adapter does not implement server-tool continuation. A production SDK over

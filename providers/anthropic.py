@@ -158,8 +158,7 @@ def _response_from_anthropic(
             arguments = dict(block.input) if isinstance(block.input, dict) else {}
             tool_calls.append(ToolCall(id=block.id, name=block.name, arguments=arguments))
 
-    stop_reason = message.stop_reason or "end_turn"
-    finish: FinishReason = _STOP_REASON_MAP.get(stop_reason, "stop")
+    finish: FinishReason = _STOP_REASON_MAP.get(message.stop_reason or "", "error")
 
     return ProviderResponse(
         content="".join(text_parts),

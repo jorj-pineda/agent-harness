@@ -249,7 +249,7 @@ def _response_from_openai(
             arguments = {"_raw": raw_args}
         tool_calls.append(ToolCall(id=tc.id, name=tc.function.name, arguments=arguments))
 
-    finish: FinishReason = _FINISH_REASON_MAP.get(choice.finish_reason or "stop", "stop")
+    finish: FinishReason = _FINISH_REASON_MAP.get(choice.finish_reason or "", "error")
 
     usage = completion.usage
     return ProviderResponse(
