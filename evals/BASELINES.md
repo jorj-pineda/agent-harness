@@ -1,5 +1,16 @@
 # Real-task baselines
 
+## 2026-10-29 — Replacement schema comparison
+
+The [eight-row comparison](projects/python_utility_trial/SCHEMA_COMPARISON_RESULTS.md)
+finishes C 0/4 and E 0/4 accepted artifacts/completions on original public division
+and dedupe tasks. All eight stop at the iteration cap with unchanged incorrect
+implementations and known usage. Newline edit refusals persist; E's smaller error
+count includes a row with no edit attempt, not an encoding rescue. Regrades/source
+review, 48 input pairs, 24 component lifecycles and eight workers verify. This is
+no observed completion benefit under the fixed bundle, not general equivalence,
+held-out gain or no-go/8-of-10/G2–G5 closure. The cohort is closed without retries.
+
 ## 2026-10-28 — Narrow public Python utility trial
 
 The [ten-row results](projects/python_utility_trial/RESULTS.md) retain 2/10 accepted

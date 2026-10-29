@@ -4,6 +4,17 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-29 — Replacement schema comparison complete:** the
+[results](evals/projects/python_utility_trial/SCHEMA_COMPARISON_RESULTS.md) retain
+C 0/4 and E 0/4 accepted artifacts/completions. All eight stop at six iterations
+with unchanged incorrect artifacts; usage is known. Six treatment newline refusals
+versus eight control refusals do not show rescue: one treatment row never attempts
+an edit and instead runs a failed check after correcting command arguments.
+Independent artifact/source audits, 48 input pairs, 24 component lifecycles and
+eight workers verify. No demonstrated schema benefit, retry, budget/default change,
+general equivalence or original no-go/8-of-10/G2–G5 closure. Results still require
+exact-head review and CI before merge; no further inference is authorized.
+
 **2026-10-28 — Two-runtime schema comparison preparation:** the
 [execution freeze](evals/projects/python_utility_trial/SCHEMA_COMPARISON_FREEZE.md)
 binds actual pre-example/example archives and row-exact inputs for eight fresh
