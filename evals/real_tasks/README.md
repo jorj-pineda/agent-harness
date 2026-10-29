@@ -50,11 +50,29 @@ tool trace, final diff, independent check
 output, termination, usage, and latency. A single run is a baseline observation,
 not evidence of a repeatable model improvement.
 
-The manifest contains fifteen tasks: twelve coding tasks and three repository questions.
+The manifest contains twenty tasks: seventeen coding tasks and three repository questions
+(nine bugfixes, five features, three refactors and three questions).
 The coding tasks are the five original bugfixes, `paginate_items`
 (feature), `extract_label_normalizer` (refactor) and `positive_total_existing_failure`
 (bugfix with an unrelated failing check), plus `retry_after_seconds` and
 `overlay_settings` (features), `inject_clock` (refactor), and `csv_records` (bugfix).
+Five further coding tasks cover the following contracts:
+
+| Task | Category | Independent acceptance focus |
+|---|---|---|
+| `parse_bool_setting` | feature | Explicit tokens, whitespace/case, invalid inputs, unchanged None fallback |
+| `iter_batches` | feature | Single-pass lazy reads, no prefetch, tail/identity, invalid sizes even when empty |
+| `split_extension` | bugfix | Final POSIX component, dotfiles, trailing/multiple dots, exact path spelling |
+| `weighted_average` | bugfix | Weight denominator, zero/negative weights, empty/generator input, preservation |
+| `extract_line_total` | refactor | Current shared helper across two modules, integer precision, errors/order |
+
+For each of these five, a scripted shared-runtime edit/check/answer run accepts the
+reference artifact and rejects a selected incorrect artifact despite a passing
+visible check. Source fixtures remain unchanged. Together with per-task initial/
+reference validation, this establishes finite evaluator mechanics and the public
+20-task category breadth, not model completion or exhaustive criterion coverage.
+The corpus is still public development material, not a held-out set.
+
 Pagination specifies one-based
 pages, validation (including bool),
 empty/past-end behavior, input/element preservation and the existing helper contract.
