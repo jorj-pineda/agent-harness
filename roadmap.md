@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-29 — Original Python criterion audit:** seven disposable mutations
+expose four false acceptances in slug/flag checks. New cases reject dropped slug
+digits, retained non-ASCII letters, space-only trimming and space-dependent comment
+recognition under the unchanged requests. Decimal truncation and dedupe sorting/
+unordered controls already reject, so their criteria stay unchanged. This finite
+coverage correction changes only future slug/flag development criteria; archived
+cohorts, requests, fixtures, visible tests and references remain intact. No
+inference, exhaustive coverage, quality gain or no-go/8-of-10/G2–G5 closure.
+
 **2026-10-29 — Division grading blind spot corrected:** the development
 criterion now rejects floor/truncated quotients with fractional signed cases and
 preserves zero-division checks. Disposable regressions reproduce three incorrect
