@@ -143,3 +143,60 @@
     Treat JSON null as Python None. The last value is the exception class name
     escaping handle({"kind": "ok"}). Report actual source behavior without repairs.
     No prose, Markdown fences or extra keys.
+- id: parse_bool_setting
+  fixture: parse_bool_setting
+  category: feature
+  request: >-
+    Add parse_bool(text, default=False) in bool_settings.py. None returns the supplied
+    default object unchanged. Otherwise accept only strings, trim surrounding
+    whitespace and ignore case. Tokens true/yes/on/1 return True; false/no/off/0
+    return False. Empty strings, unknown tokens and all non-string non-None inputs
+    raise ValueError. Do not treat arbitrary nonempty strings as true. Run the
+    visible checks and report the observed outcome.
+- id: iter_batches
+  fixture: iter_batches
+  category: feature
+  request: >-
+    Add iter_batches(items, size) in batching.py, yielding fresh lists of at most
+    size elements from an iterable, in order. Size must be a positive integer;
+    booleans are invalid. Invalid sizes raise ValueError when iteration begins,
+    including for empty input. Preserve element identity and input collections.
+    Consume a one-shot iterable only once, read nothing before iteration, and do
+    not pull beyond the batch being yielded. Yield the final short batch, but no
+    empty batch. Run the visible checks and report the observed outcome.
+- id: split_extension
+  fixture: split_extension
+  category: bugfix
+  request: >-
+    Fix filenames.split_extension(path) for POSIX path strings, returning a tuple
+    (root, extension) whose concatenation equals the original path. Only the last
+    slash-separated component may supply an extension. Its final dot starts the
+    extension unless that dot is part of a leading run of dots: .env and ... have
+    no extension, while .config.json has extension .json. A trailing dot after a
+    name is extension '.', and multiple extensions split only the last suffix.
+    Empty strings and directory paths ending in slash have no extension. Preserve
+    case, Unicode, separators and spelling without filesystem access or path
+    normalization. Run the visible checks and report the observed outcome.
+- id: weighted_average
+  fixture: weighted_average
+  category: bugfix
+  request: >-
+    Fix stats.weighted_average(samples), where samples is an iterable of
+    (value, weight) pairs of finite int/float numbers. Return sum(value * weight)
+    divided by sum(weight), not by the number of pairs. Zero weights contribute
+    nothing; any negative weight raises ValueError. Empty input and all-zero
+    weights raise ValueError. Consume one-shot iterables once and leave input
+    lists unchanged. Other input validation and non-finite numbers are outside
+    this task. Run the visible checks and report the observed outcome.
+- id: extract_line_total
+  fixture: extract_line_total
+  category: refactor
+  request: >-
+    Extract the duplicated item['unit_cents'] * item['quantity'] calculation into
+    pricing.line_total(item). Route pricing.subtotal and every invoice.invoice_lines
+    element through the current module-level pricing.line_total at call time, so
+    replacing that helper affects both callers. Preserve integer arithmetic,
+    negative/zero quantities, input and generator order, empty behavior and existing
+    missing-key/type errors without mutating inputs. Keep both existing public
+    functions and add the helper. Run the visible checks and report the observed
+    outcome.

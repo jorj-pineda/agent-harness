@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-29 — Twenty-task public corpus coverage:** five bounded coding tasks
+add boolean settings, lazy batching, POSIX suffix splitting, weighted averages and
+a cross-module pricing refactor. Independent criteria cover input/identity/laziness,
+boundary/error and current-helper contracts; each selected incorrect artifact can
+pass visible checks yet fails external acceptance. Initial/reference validation
+covers all twenty tasks (nine bugfixes, five features, three refactors and three
+structured-fact questions). This completes only the public task-count/category
+item. Existing tasks/runtime and closed cohorts are unchanged. No inference, held-out
+set, model-quality gain, supported envelope or no-go/8-of-10/G2–G5 closure follows.
+
 **2026-10-29 — Repository-question topic coverage:** two additional public
 three-module questions cover configuration precedence and exception routing using
 the reviewed structured-fact/inspection path. Executable fixture oracles validate
@@ -3675,7 +3685,7 @@ Validation: 37 focused tests, six-task offline reference validation and 1,187
 offline tests (five live deselected) passed, with Ruff/format/mypy. Both scripted
 matrices passed 90/90 escalation decisions; contract labels/limits inspected.
 
-- [ ] Expand to 20–30 tasks spanning bugfixes, small features, focused refactors, and repository questions.
+- [x] Expand to 20–30 tasks spanning bugfixes, small features, focused refactors, and repository questions. Twenty public development tasks cover the categories; question acceptance is limited to explicit structured facts, not general prose.
 - [ ] Include failure cases: ambiguous requirements, malformed tool calls, misleading search results, pre-existing failing tests, context pressure, and interruption.
 - [ ] Include a held-out task set that is not used to tune prompts.
 - [ ] Run repeated comparisons on at least two intended lower-tier models with recorded sampling settings and budgets.
