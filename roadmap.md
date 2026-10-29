@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-29 — Separate held-out v1 data prepared:** four new tasks cover an
+ISO-week bugfix, rolling feature, immutable-record refactor and cache-policy
+question outside default development runs. Initial/reference controls, selected
+incorrect artifacts and an executable question oracle validate mechanics without
+prompt/tool tuning or product-model inference. The holdout claim is relative to
+the documented tuning boundary, not secrecy/pretraining or independent sampling.
+Version-retirement rules retain old bytes/results. Preservation enforcement is the
+third slice and remains unfinished; comparison freeze/approval and actual held-out
+model evidence are separate. No quality claim or no-go/8-of-10/G2–G5 closure.
+
 **2026-10-29 — Explicit evaluation catalog selection:** the real-task CLI can
 select one self-contained typed catalog while keeping the twenty-task development
 default separate. New rows retain declared partition/ID and exact manifest hash;

@@ -36,8 +36,9 @@ The default remains this public development manifest; other catalogs are never
 discovered or mixed into a default run. `--task-manifest /path/to/catalog/tasks.yaml`
 selects one explicit catalog, and `--task` filters only within that catalog.
 Use `--validate-only` to exercise its initial/reference controls without constructing
-a provider. This selection feature adds no inference authorization or completed
-held-out task set; preparation and preservation are separate work.
+a provider. Selection alone grants no inference authorization or preservation
+attestation. The separately versioned set is described in
+[held-out preparation](../heldout_tasks/README.md).
 
 A self-contained catalog has this form:
 

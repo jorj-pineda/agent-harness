@@ -1,0 +1,53 @@
+format: task-catalog-v1
+id: lower-tier-heldout-v1
+partition: held_out
+tasks:
+  - id: ho_iso_week
+    fixture: ho_iso_week
+    category: bugfix
+    request: >-
+      Fix week_key.week_key(day) for datetime.date inputs. Return YYYY-Www using
+      the ISO week-year and ISO week number, with four year digits and two week
+      digits. Preserve the input date. Calendar-year boundaries in both December
+      and January must use the ISO year, not necessarily day.year. Other input
+      types are outside this task. Run the visible checks and report the outcome.
+  - id: ho_rolling_mean
+    fixture: ho_rolling_mean
+    category: feature
+    request: >-
+      Add rolling_mean(values, window) in rolling.py. Return a list of arithmetic
+      means for every full consecutive window, in input order; no partial prefix
+      means. Empty or shorter-than-window input returns []. Values are finite
+      int/float numbers from a possibly one-shot iterable; consume it once and
+      leave input lists unchanged. Window must be a positive integer, excluding
+      bool; invalid windows raise ValueError before reading any values, including
+      for empty input. Other validation and non-finite values are outside scope.
+      Run the visible checks and report the observed outcome.
+  - id: ho_endpoint_record
+    fixture: ho_endpoint_record
+    category: refactor
+    request: >-
+      Refactor endpoint.py to add an immutable tuple-subclass Endpoint(host, port)
+      exposing host and port attributes. parse_endpoint(text) must return an
+      Endpoint instance while preserving its existing last-colon split and int
+      conversion behavior, including spaces, signed ports, empty hosts and
+      existing missing-colon/invalid-port/type errors. Preserve tuple equality,
+      indexing, length, unpacking and hash behavior, and reject attribute
+      assignment. Do not add host/port validation or normalization. Run the visible
+      checks and report the observed outcome.
+  - id: ho_cache_policy
+    fixture: ho_cache_policy
+    category: repository_question
+    request: >-
+      Inspect cache.py, settings.py and client.py without editing or commands.
+      Return only a JSON object with exactly resolved_values, fetch_keys,
+      boundary_reads, zero_ttl_read and none_hit. Trace this sequence: create a
+      Cache and a fetch(key) function that records each key then returns False.
+      Call read_value(cache, 'key', fetch, now=10), again at now=14 and at now=15,
+      omitting ttl each time; resolved_values is the list of those three results
+      and fetch_keys is the recorded key list. boundary_reads is the list of
+      cache.get('key', now=20) twice in succession. Then put('zero', None, now=30,
+      ttl=0) and record get('zero', now=30) as zero_ttl_read. Finally put('none',
+      None, now=40, ttl=5) and record get('none', now=41) as none_hit. Convert tuples
+      to JSON arrays and Python None to null. Report actual behavior, without
+      fixes, prose, Markdown fences or extra keys.
