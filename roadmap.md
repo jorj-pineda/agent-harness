@@ -4,6 +4,14 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-28 — Two-runtime schema comparison preparation:** the
+[execution freeze](evals/projects/python_utility_trial/SCHEMA_COMPARISON_FREEZE.md)
+binds actual pre-example/example archives and row-exact inputs for eight fresh
+attempts. Offline equivalence permits only the declared replacement metadata;
+both G0 runs and scripted client/worker/preservation refusals exercise mechanics.
+Independent freeze review/CI/merge, parent approval and fresh launch gates remain
+required. No inference, coding gain, old-cohort retry or release-gate closure.
+
 **2026-10-28 — Replacement schema comparison protocol prepared:** the
 [fixed protocol](evals/projects/python_utility_trial/SCHEMA_COMPARISON_PROTOCOL.md)
 specifies eight fresh C/E attempts on original division/dedupe tasks, balanced
