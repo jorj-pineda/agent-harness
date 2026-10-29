@@ -48,10 +48,10 @@ tool trace, final diff, independent check
 output, termination, usage, and latency. A single run is a baseline observation,
 not evidence of a repeatable model improvement.
 
-The manifest contains eleven tasks: the five original bugfixes, `paginate_items`
+The manifest contains twelve tasks: the five original bugfixes, `paginate_items`
 (feature), `extract_label_normalizer` (refactor) and `positive_total_existing_failure`
 (bugfix with an unrelated failing check), plus `retry_after_seconds` and
-`overlay_settings` (features), and `inject_clock` (refactor).
+`overlay_settings` (features), `inject_clock` (refactor), and `csv_records` (bugfix).
 Pagination specifies one-based
 pages, validation (including bool),
 empty/past-end behavior, input/element preservation and the existing helper contract.
@@ -77,6 +77,15 @@ real-file run can pass the visible check while failing the equality boundary.
 This is a public development refactor, not a real-time scheduling guarantee or
 model-performance observation. Existing task criteria and historical trials remain
 unchanged.
+
+`csv_records` fixes a naive split-based parser on well-formed CSV. Independent
+checks cover quoted commas/doubled quotes, embedded LF/CRLF, empty fields/records,
+record terminators and literal space/numeric-string preservation. Four lossy
+parsers are rejected; a scripted real-file run shows that fixing only the visible
+quoted-comma example can still lose embedded newlines and fail acceptance.
+Malformed-input recovery and custom dialects are outside the task. This public
+development coverage changes no existing task or closed-trial criterion and
+establishes no model-quality or release claim.
 
 ### Division acceptance correction (2026-10-29)
 

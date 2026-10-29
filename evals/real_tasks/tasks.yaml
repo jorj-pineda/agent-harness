@@ -90,3 +90,17 @@
     boundary: a deadline equal to now is expired. Propagate clock exceptions without
     retrying or replacing them. Keep existing positional calls working; do not sleep.
     Run the visible checks and report the observed outcome.
+- id: csv_records
+  fixture: csv_records
+  category: bugfix
+  request: >-
+    Fix records.parse_records(text) for well-formed comma-separated text using
+    standard double-quote CSV quoting: quoted commas, doubled quotes inside quoted
+    fields, and embedded LF or CRLF within quoted fields. Return a list of rows of
+    strings without interpreting a header or converting numbers. Preserve spaces,
+    empty fields and the exact embedded newline characters in field values.
+    LF and CRLF delimit records outside quoted fields. Empty text produces [],
+    a blank record is retained as an empty row [], and a final record terminator
+    adds no extra row.
+    Do not add malformed-input recovery or a custom dialect. Run the visible checks
+    and report the observed outcome.
