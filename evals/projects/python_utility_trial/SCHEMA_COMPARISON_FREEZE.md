@@ -55,6 +55,10 @@ cohort. Each `phase_worker.py` process imports its arm's actual archive using
 swapped in one process. Parent-owned worker registration must finish before a
 worker allocates any component; live workers additionally bind their cell, arm
 and actual parent PID to the parent intent. Worker exits are reaped and checked.
+Parent SIGTERM enters controlled exception unwinding, stops/reaps the active
+worker and retains its terminal ledger/STOP state. Repeated termination signals
+cannot interrupt that cleanup. The owned API uses a five-second graceful-request
+shutdown timeout before cancellation and normal application lifespan settlement.
 
 Live launch is the indexed managed Python running `cohort_operator.py` without
 options, cwd `runtime-C`, using `common.env()` with arm C. Workers select their
@@ -105,6 +109,10 @@ context 16,384, all four 180-second HTTP waits and actual output allowance.
 Raw returned counts must be exact nonnegative integers, with original values and
 field presence retained; malformed or over-allowance responses stop before loop
 delivery. Unknown usage is not zero or budget success. There is no transport retry.
+Bounded raw usage fields are recorded at the wire boundary before adapter parsing,
+including negative, fractional or invalid values that fail adapter validation.
+Oversized values are explicitly omitted with type, size and hash; non-finite
+numbers retain a tagged representation. No response content is copied into that log.
 
 Each row retains the protocol's 150-second dispatch, 32K total, 4,096 output,
 12-tool/six-iteration limits, per-request 2,048 maximum/256 minimum and configured
@@ -147,6 +155,13 @@ An initial read-only archive verifier reused a `0700` directory assumption from
 earlier preparation and refused these `0755` extracted directories. Its source
 and superseded pre-review index are retained; the corrected verifier checks the
 actual extraction policy without changing either runtime tree.
+The first freeze review also found unhandled parent SIGTERM and missing raw
+evidence when adapter parsing fails. Sixteen pre-adapter raw-count probes and
+parent-only SIGTERM tests in both arms cover the fixes. The first shutdown probe
+failed before API lifespan settlement and required stopping its exact recorded
+owned metadata backend. That failed run and intervention are preserved separately,
+not certified as normal cleanup. Corrected fresh runs settle all owned children,
+preserve partial artifacts and leave the other seven rows unrun. No inference ran.
 
 The separately reviewed results slice must reconstruct/regrade actual artifacts,
 independently review D1/U1/C1, audit all inputs/stores/cleanup and retain all eight
