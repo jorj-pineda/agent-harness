@@ -35,6 +35,47 @@ def _messages_response(payload: dict[str, Any]) -> tuple[httpx.AsyncClient, dict
 # ---------------------------------------------------------------------------
 
 
+async def test_paused_response_cannot_claim_completion_or_automatically_resume():
+    from harness.loop import run_turn
+    from harness.state import Session
+    from harness.trace import ResponseTrace
+    from tools import ToolRegistry
+
+    http_client, captured = _messages_response(
+        {
+            "id": "msg_paused",
+            "type": "message",
+            "role": "assistant",
+            "content": [{"type": "text", "text": "Still working"}],
+            "model": "fixture",
+            "stop_reason": "pause_turn",
+            "stop_sequence": None,
+            "usage": {"input_tokens": 5, "output_tokens": 2},
+        }
+    )
+    provider = AnthropicProvider(api_key="test", model="fixture", http_client=http_client)
+    trace = []
+    try:
+        result = await run_turn(
+            session=Session(),
+            user_input="Inspect",
+            provider=provider,
+            registry=ToolRegistry(),
+            trace=trace,
+            max_completion_retries=1,
+        )
+    finally:
+        await provider.aclose()
+    assert result.completion_status == "incomplete"
+    assert result.completion_reason == "The provider reported an error finish reason."
+    assert result.answer == "Still working"
+    responses = [item for item in trace if isinstance(item, ResponseTrace)]
+    assert len(responses) == 1
+    assert responses[0].finish_reason == "error"
+    assert responses[0].usage.completion_tokens == 2
+    assert captured["body"]["messages"] == [{"role": "user", "content": "Inspect"}]
+
+
 async def test_cassette_chat_plain_text(
     cassette: Callable[..., CassetteTransport],
 ) -> None:

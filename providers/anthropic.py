@@ -33,7 +33,8 @@ _STOP_REASON_MAP: dict[str, FinishReason] = {
     "stop_sequence": "stop",
     "max_tokens": "length",
     "tool_use": "tool_use",
-    "pause_turn": "stop",
+    # Server-tool continuation is unsupported; a paused turn is not completion.
+    "pause_turn": "error",
     "refusal": "content_filter",
 }
 
