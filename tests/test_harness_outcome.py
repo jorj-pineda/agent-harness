@@ -100,6 +100,42 @@ async def test_real_collection_success_does_not_mean_failing_test_passed(tmp_pat
     assert verification_status([call]) == "not_run"
 
 
+def test_ruff_forced_success_cannot_certify_or_be_configured_as_verification():
+    from pydantic import ValidationError
+
+    from harness.config import Settings
+
+    argv = ["ruff", "check", "--exit-zero", "."]
+    assert not is_verification_command(argv)
+    with pytest.raises(ValidationError):
+        Settings(_env_file=None, project_check_argv=argv)
+    call = ToolCallRecord(
+        name="run_command",
+        arguments={"argv": argv},
+        result={"exit_code": 0, "success": True},
+    )
+    assert verification_status([call]) == "not_run"
+
+
+async def test_real_ruff_forced_zero_with_diagnostics_is_not_verification(tmp_path):
+    import shutil
+
+    from tools.process import run_process
+
+    (tmp_path / "broken.py").write_text("import unused_name\n")
+    executable = shutil.which("ruff")
+    assert executable is not None
+    result = await run_process(
+        [executable, "check", "--isolated", "--no-cache", "--exit-zero", "."],
+        cwd=tmp_path,
+        timeout_seconds=30,
+        output_limit=12000,
+    )
+    assert result.exit_code == 0
+    assert "F401" in result.stdout
+    assert not is_verification_command(["ruff", "check", "--exit-zero", "."])
+
+
 def test_harvest_files_touched_collects_successful_writes_in_order() -> None:
     calls = [
         ToolCallRecord(

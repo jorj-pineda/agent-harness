@@ -4,6 +4,14 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-29 — Forced-zero linting is not verification:** `ruff check --exit-zero`
+can report lint failures while returning zero. It no longer qualifies for check
+harvesting or configured required verification; the command remains executable
+for explicit diagnostics. A real disposable F401 reproduction and configuration/
+harvesting regression cover this false-status boundary. Ordinary Ruff checks stay
+eligible. No historical rewrite, inference, independent acceptance or quality/
+release-gate claim follows; no-go/8-of-10/G2–G5 remain intact.
+
 **2026-10-29 — Pytest collection alias is not verification:** `--co` now receives
 the same non-verification treatment as `--collect-only`. Three argv-form controls
 and a real disposable failing-test collection reproduce exit-zero enumeration

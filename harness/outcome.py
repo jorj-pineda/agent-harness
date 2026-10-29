@@ -32,7 +32,7 @@ def is_verification_command(argv: list[str]) -> bool:
     if root == "npm":
         return npm_test_prefix(argv) is not None
     if root == "ruff":
-        return len(argv) >= 2 and argv[1] == "check"
+        return len(argv) >= 2 and argv[1] == "check" and "--exit-zero" not in argv[2:]
     if root in VERIFICATION_ROOT_COMMANDS:
         return True
     return root in {"python", "python3"} and len(argv) >= 3 and argv[1:3] == ["-m", "pytest"]
