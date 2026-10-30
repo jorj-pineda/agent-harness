@@ -4,6 +4,14 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-30 — Unrun held-out comparison protocol:** a typed bounded offline
+validator binds the original four held-out tasks, request/category order, reviewed
+seal and sixteen fixed local Gemma cells (two repeats per mode). Budgets, stop
+rules and limitations are documented without a launch path. Current model/service
+identity, scripted shared-runtime enforcement and an exact reviewed execution
+freeze/parent approval remain required before inference. This is preparation only,
+not held-out quality evidence, prompt tuning or release-gate closure.
+
 **2026-10-29 — CLI report/input overlap refusal:** disposable controls reproduced
 missing output-path preconditions. Non-validation CLI runs now reject manifest,
 fixture, reference and criterion overlap across all loaded tasks, and protect the
