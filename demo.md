@@ -92,7 +92,7 @@ continuation forks require fresh scoped workspace/configuration/transcript/conte
 checks and acknowledgment of uncaptured state; older/changed/unknown profiles may
 require a fresh session. Explicit reversal is single-file, hash/mode guarded and
 preserves other paths. Checkpoint/reversal controls and CLI commands are documented
-in [README.md](README.md). Never reset a dirty repository to recover a run.
+in [the technical reference](old_README.md). Never reset a dirty repository to recover a run.
 
 ## Keep evaluation evidence separate
 
@@ -129,7 +129,7 @@ Cross-process coordination, untrusted-code isolation, full reconciliation, conte
 compaction, runtime model switching and broader held-out/project acceptance remain
 roadmap work. Named
 profiles can already be configured and selected at server startup; see the
-[README profile configuration](README.md#named-startup-model-profiles).
+[profile configuration](old_README.md#named-startup-model-profiles).
 
 This walkthrough assumes a source checkout with development dependencies. Wheels
 now include the panel; [fresh installation observations](WHEEL_INSTALLATION.md)
