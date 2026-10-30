@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-30 — Read-only protocol model-image verification:** the pinned local
+manifest can be verified with every declared config/layer digest and exact size,
+streamed reads and before/after identity checks. Reports retain hashes/modes but
+no raw content; links/special files/missing or changed bytes refuse. Existing
+client/manifest pins remain installed despite no running service. This does not
+resume a stopped cohort, establish resource ownership or start a service. New
+owned backend lifecycle, current metadata, full operator/freeze/approval gates
+remain outstanding. No inference, model-quality or release claim.
+
 **2026-10-30 — Exact held-out first-input guard:** verified capture pins now gate
 both normalized first requests before adapter calls and actual Ollama body bytes
 before transport delegation. Mismatches/failed or uncertain submissions latch
