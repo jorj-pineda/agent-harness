@@ -14,6 +14,13 @@ import httpx
 
 from evals.heldout_comparison import PLAN_PATH, validate_plan
 from evals.heldout_guard import REGISTRATIONS
+from evals.heldout_settings import (
+    SettingsPinnedProvider,
+    check_settings,
+    load_settings_pin,
+    protocol_settings,
+    settings_bytes,
+)
 from evals.real_run import (
     MODES,
     _harness_revision,
@@ -22,7 +29,6 @@ from evals.real_run import (
     load_tasks,
     run_task,
 )
-from harness.config import Settings
 from harness.trace import request_identity
 from providers.base import ChatMessage, ProviderResponse, ToolSpec
 from providers.ollama import OllamaProvider
@@ -110,15 +116,13 @@ async def capture_inputs(
     # A fresh exclusive directory makes interrupted/failed captures non-retryable artifacts.
     _prepare_directory(directory)
     ledger, schedule = _plan_cohort(tasks, MODES, plan.repeats)
-    settings = Settings(
-        _env_file=None,
-        _env_prefix="HELDOUT_INPUT_CAPTURE_UNUSED_",
-        ollama_model=plan.model,
-        **plan.runtime.model_dump(),
-    )
+    settings = protocol_settings(plan)
+    expected_settings = settings_bytes(settings)
+    settings_digest = _save(directory / "settings.json", expected_settings)
     rows = []
     prior: dict[tuple[str, str], tuple[str, str]] = {}
     for index, (task, mode, attempt) in enumerate(schedule):
+        check_settings(settings, expected_settings)
         prepared_directory = None
         if prepared:
             from evals.heldout_workspaces import prepare_fixture
@@ -146,7 +150,9 @@ async def capture_inputs(
         try:
             result = await run_task(
                 task,
-                provider=CaptureProvider(adapter, normalized),
+                provider=SettingsPinnedProvider(
+                    CaptureProvider(adapter, normalized), settings, expected_settings
+                ),
                 settings=settings,
                 mode=mode,
                 attempt=attempt,
@@ -154,6 +160,7 @@ async def capture_inputs(
             )
         finally:
             await adapter.aclose()
+        check_settings(settings, expected_settings)
         if len(normalized) != 1 or len(wire) != 1 or result.termination != "error:CaptureComplete":
             raise ValueError("First-input capture did not reach the unique mock boundary")
         _validate_report_path(directory / "index.json", manifest, tasks)
@@ -178,6 +185,8 @@ async def capture_inputs(
         )
     if _plan_digest(plan_path) != before_plan:
         raise ValueError("Plan changed during capture")
+    check_settings(settings, expected_settings)
+    load_settings_pin(directory / "settings.json", expected_sha256=settings_digest)
     result_index = {
         "format": "heldout-first-inputs-v1",
         "evidence_kind": "mock-production-adapter",
@@ -186,6 +195,7 @@ async def capture_inputs(
         "runtime": _harness_revision(),
         "plan_sha256": _plan_digest(plan_path),
         "seal_sha256": plan.seal_sha256,
+        "settings_sha256": settings_digest,
         "cells": rows,
         "planned_cells": len(ledger.cells),
     }

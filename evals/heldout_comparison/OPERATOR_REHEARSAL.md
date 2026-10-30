@@ -12,8 +12,8 @@ uv run python -m evals.heldout_operator_rehearsal \
   --directory /absolute/path/outside/git/new-operator-evidence
 ```
 
-The capture must record the same actual clean Git revision as this runtime. Do
-not change source files between capture and rehearsal. The selected hash binds
+The capture must record the same actual clean Git revision and validated Settings
+pin as this runtime. Do not change source files between capture and rehearsal. The selected hash binds
 bytes, not approver authority. Preflight verifies the archived bundle, staged
 receipt/root inventory and all sixteen fresh fixture copies before allocation.
 Output must be absent, outside Git workspaces and disjoint from the selected
@@ -32,10 +32,14 @@ remain shared with the application runtime.
 
 The first normalized and wire inputs must exactly match the archived pins before
 reaching the mock oracle. Exact initial paths are preserved; nothing is masked.
-After each cell, observed runtime_config must equal its capture record. This is
-an additional result check, not a preventive full-settings freeze. Runtime Git
-identity is checked before each cell and after the last. Native request/response
-files are private, bounded and exclusive; output/input overlap is checked before
+The complete classified Settings pin is compared before allocation, before each
+cell admission and before every delegate request. A detected mismatch latches
+closed; restoring values does not permit a retry. After each cell, observed
+runtime_config must also equal its capture record. Settings equality does not
+freeze command environment, executable/dependency bytes, resources or host state.
+Runtime Git identity is checked before each cell and after the last; the archive
+is reverified before finishing. Native request/response files are private, bounded
+and exclusive; output/input overlap is checked before
 evidence writes. Later native tool-call IDs may vary, so only the first request
 is bound by the original capture. No history equality claim follows.
 
@@ -65,7 +69,13 @@ application HTTP/CLI transport, model generation or remote backend settlement.
 The separate native metadata-only backend rehearsal does not close those gaps.
 Neither rehearsal provides isolation from host code/external writers or authority
 to execute a comparison. The full live operator/refusal/settlement recipe,
-resolved-settings/runtime/resource pins, independently reviewed exact execution
+complete runtime/environment/resource pins, independently reviewed exact execution
 freeze, parent approval and fresh launch gates remain incomplete. Original no-go,
 held-out model quality and release gates remain open. Do not tune on v1 outcomes
 and retain a held-out claim.
+
+New captures retain settings.json with a hash in index.json. Historical indexes
+without that optional hash remain readable for preservation; this operator
+refuses them before provider allocation/admission. Do not edit old indexes or
+insert a newly generated pin to make historical evidence admissible. Generate a
+new capture at a new path. See SETTINGS.md for the bounded Settings policy.

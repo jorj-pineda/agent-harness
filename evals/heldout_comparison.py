@@ -10,8 +10,8 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 from evals.heldout_guard import REGISTRATIONS, verify_catalog
+from evals.heldout_settings import protocol_settings
 from evals.real_run import MODES, TaskCategory, _plan_cohort, load_tasks
-from harness.config import Settings
 
 PLAN_PATH = Path(__file__).parent / "heldout_comparison/plan.json"
 
@@ -93,7 +93,7 @@ def validate_plan(path: Path = PLAN_PATH) -> ComparisonPlan:
     if plan.runtime.project_check_argv != ["python", "-m", "pytest", "-q", "test_visible.py"]:
         raise ValueError("Comparison check differs from fixed visible check")
     # Isolated settings validate cross-field constraints; ambient .env is never loaded.
-    Settings(_env_file=None, ollama_model=plan.model, **plan.runtime.model_dump())
+    protocol_settings(plan)
     ledger, _ = _plan_cohort(tasks, MODES, plan.repeats)
     if len(ledger.cells) != 16:
         raise ValueError("Comparison must retain all sixteen cells")

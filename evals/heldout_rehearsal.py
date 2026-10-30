@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Literal
 
 from evals.heldout_comparison import PLAN_PATH, ComparisonPlan, validate_plan
+from evals.heldout_settings import protocol_settings
 from evals.real_run import (
     MODES,
     CohortLedger,
@@ -20,7 +21,6 @@ from evals.real_run import (
     validate_task,
     write_report,
 )
-from harness.config import Settings
 from providers.base import (
     ChatMessage,
     ChatProvider,
@@ -183,12 +183,7 @@ async def rehearse(
     for task in tasks:
         await validate_task(task)
     ledger, schedule = _plan_cohort(tasks, MODES, plan.repeats)
-    settings = Settings(
-        _env_file=None,
-        _env_prefix="HELDOUT_REHEARSAL_UNUSED_",
-        ollama_model=plan.model,
-        **plan.runtime.model_dump(),
-    )
+    settings = protocol_settings(plan)
     results: list[RealTaskResult] = []
 
     def persist() -> None:
