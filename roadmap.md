@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-30 — Single-use prepared-workspace evaluation admission:** registered
+held-out runs can explicitly verify and admit named copies through the shared
+runtime. Exclusive admission markers and all work remain retained on every exit;
+changed, unknown, unregistered or already-admitted state refuses before provider
+work. Mock production-input capture can retain per-cell named roots through this
+same seam with zero forwarding. Distinct cell paths remain byte-unequal; capture
+consumes admission and grants no live reuse. Default application/eval workspace
+behavior is unchanged. Operator staging/resource/freeze/approval gates remain
+incomplete; no inference, resumption, isolation or quality/release claim.
+
 **2026-10-30 — Named held-out workspace preparation:** an offline utility creates
 fresh exclusive evaluation-owned fixture containers outside Git workspaces and
 verifies them against registered source byte/mode pins. Task/seal receipts cannot

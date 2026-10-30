@@ -515,12 +515,21 @@ async def run_task(
     settings: Settings,
     mode: Mode,
     attempt: int = 1,
+    prepared_directory: Path | None = None,
 ) -> RealTaskResult:
     turn_trace: list[TurnTraceRecord] = []
     profiles: list[ExecutionProfile] = []
     guard = _heldout_guard(task, execution=True)
     observed = ObservedProvider(provider, before_chat=guard)
-    with disposable_workspace(task.fixture) as copy:
+    if prepared_directory is not None:
+        if guard is None:
+            raise HeldoutDriftError("Prepared execution requires a registered held-out task")
+        from evals.heldout_workspaces import admit_prepared
+
+        workspace_context = admit_prepared(prepared_directory, task_id=task.id)
+    else:
+        workspace_context = disposable_workspace(task.fixture)
+    with workspace_context as copy:
         if guard is not None:
             verify_fixture(task.fixture, copy.workspace.root)
             guard.evidence.checkpoints.append("fixture_copy")
@@ -681,6 +690,12 @@ async def run_task(
             tool_trace=[call.model_dump(mode="json") for call in trace],
             turn_trace=[record.model_dump(mode="json") for record in turn_trace],
             runtime_config={
+                "workspace_policy": "prepared-heldout-single-use-v1"
+                if prepared_directory is not None
+                else "disposable-v1",
+                "prepared_workspace_root": str(copy.workspace.root)
+                if prepared_directory is not None
+                else None,
                 "inspection_only": question,
                 "coding_toolset": settings.coding_toolset,
                 "read_file_default_lines": settings.read_file_default_lines,
