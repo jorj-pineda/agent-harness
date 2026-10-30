@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-30 — Offline held-out production-input capture:** a mandatory mock
+transport records sixteen normalized/actual Ollama request pairs through the
+shared runtime without forwarding. Private exclusive artifacts retain hashes,
+plan/seal/runtime identities and raw repeat equality. Capture exposed varying
+workspace-root paths in repeated system prompts; no masking or exact-input
+approval is claimed. This replaces the estimated third freeze slice with its
+missing prerequisite. Actual workspace/input policy, retained runtime/resource
+pins, operator/refusal/settlement recipe and reviewed freeze/approval/launch gates
+remain incomplete. No inference, model-quality or release claim.
+
 **2026-10-30 — Scripted held-out shared-runtime rehearsal:** the offline-only CLI
 runs sixteen canned-provider cells with real disposable workspaces, edits/checks,
 original grading and explicit rehearsal labels. An evaluation wrapper latches
