@@ -38,8 +38,11 @@ checked again after observation. There is no generation, pull, warmup, unload or
 live-provider path in this utility.
 
 Cleanup runs after every post-spawn failure or interruption, including recording
-and registration failure. Only the retained live child's original process group
-is signaled. Graceful group termination gets twenty seconds; a necessary force
+and registration failure. Only a freshly verified original process group is signaled, including before
+a force kill. Poll, group-observation, signaling and wait errors are retained;
+they cannot skip an independent read-only settlement-gate attempt. Unknown group
+identity refuses signals. Cleanup evidence separates observed settlement from a
+passing cleanup; even a settled child cannot erase an earlier cleanup error. Graceful group termination gets twenty seconds; a necessary force
 kill gets five more and cannot yield a passing rehearsal. The shared ownership
 gate requires exit zero, no surviving group members and an available port.
 Unknown or failed settlement is recorded as non-passing and must stop preparation;

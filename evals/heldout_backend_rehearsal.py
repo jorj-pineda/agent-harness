@@ -105,22 +105,69 @@ async def _metadata() -> dict:
     return {"observation": observation, "loaded_models": []}
 
 
+class BackendCleanupError(ValueError):
+    def __init__(self, evidence: dict):
+        self.evidence = evidence
+        super().__init__(
+            "Forced backend cleanup; rehearsal cannot pass"
+            if evidence["forced"]
+            else "Backend cleanup observations failed; rehearsal cannot pass"
+        )
+
+
 def _stop(process: subprocess.Popen, gate: OwnedAPIGate) -> dict:
+    errors = {}
     forced = False
-    if process.poll() is None:
-        if os.getpgid(process.pid) != process.pid:
-            raise ValueError("Owned child process group changed; refusing signal")
-        os.killpg(process.pid, signal.SIGTERM)
+
+    def signal_owned(sig: signal.Signals, stage: str) -> bool:
+        try:
+            if os.getpgid(process.pid) != process.pid:
+                raise ValueError("Owned child process group changed; refusing signal")
+            os.killpg(process.pid, sig)
+        except BaseException as error:
+            errors[stage] = type(error).__name__
+            return False
+        return True
+
+    try:
+        active = process.poll() is None
+    except BaseException as error:
+        errors["poll"] = type(error).__name__
+        # A failed poll is not proof of exit. A separate fresh group check must
+        # succeed before signaling; otherwise leave the unknown group untouched.
+        active = True
+    if active:
+        signal_owned(signal.SIGTERM, "terminate")
     try:
         process.wait(timeout=20)
     except subprocess.TimeoutExpired:
         forced = True
-        os.killpg(process.pid, signal.SIGKILL)
-        process.wait(timeout=5)
-    gate()
-    if forced:
-        raise ValueError("Forced backend cleanup; rehearsal cannot pass")
-    return {"settled": True, "forced": False, "returncode": process.returncode}
+        # Recheck ownership even if it was known before graceful termination.
+        if signal_owned(signal.SIGKILL, "kill"):
+            try:
+                process.wait(timeout=5)
+            except BaseException as error:
+                errors["forced_wait"] = type(error).__name__
+    except BaseException as error:
+        errors["wait"] = type(error).__name__
+    # Independently observe settlement even when poll, ownership, signals or wait
+    # failed. The gate is read-only: it never supplies authority to signal.
+    settled = False
+    try:
+        gate()
+        settled = True
+    except BaseException as error:
+        errors["settlement_gate"] = type(error).__name__
+    evidence = {
+        "settled": settled,
+        "passed": settled and not errors and not forced,
+        "forced": forced,
+        "returncode": process.returncode,
+        "errors": errors,
+    }
+    if not evidence["passed"]:
+        raise BackendCleanupError(evidence)
+    return evidence
 
 
 def rehearse(image_directory: Path, directory: Path, binary: Path) -> dict:
@@ -214,7 +261,11 @@ def rehearse(image_directory: Path, directory: Path, binary: Path) -> dict:
             except BaseException as error:
                 _save(
                     destination / "cleanup.json",
-                    json.dumps({"settled": False, "error_type": type(error).__name__}).encode(),
+                    json.dumps(
+                        error.evidence
+                        if isinstance(error, BackendCleanupError)
+                        else {"settled": False, "passed": False, "error_type": type(error).__name__}
+                    ).encode(),
                 )
                 raise
             else:

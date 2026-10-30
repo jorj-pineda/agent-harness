@@ -274,3 +274,96 @@ def test_unknown_lsof_evidence_refuses(monkeypatch, output, code):
     )
     with pytest.raises(ValueError):
         backend._listener_pids()
+
+
+@pytest.mark.parametrize("fault", ["poll", "group", "wait", "signal"])
+def test_cleanup_observation_failures_still_check_and_record_settlement(monkeypatch, fault):
+    calls = []
+    process = SimpleNamespace(pid=12345, returncode=0)
+
+    def fail():
+        raise OSError("scripted cleanup observation failure")
+
+    process.poll = fail if fault == "poll" else lambda: None
+    process.wait = (
+        (lambda timeout: fail()) if fault == "wait" else lambda timeout: calls.append("wait")
+    )
+    monkeypatch.setattr(
+        backend.os, "getpgid", (lambda pid: fail()) if fault == "group" else lambda pid: pid
+    )
+    monkeypatch.setattr(
+        backend.os,
+        "killpg",
+        (lambda *args: fail()) if fault == "signal" else lambda pid, sig: calls.append(sig),
+    )
+    with pytest.raises(backend.BackendCleanupError) as caught:
+        backend._stop(process, lambda: calls.append("gate"))
+    assert calls[-1] == "gate"
+    assert caught.value.evidence["settled"] is True
+    assert caught.value.evidence["passed"] is False
+    stage = {"poll": "poll", "group": "terminate", "wait": "wait", "signal": "terminate"}[fault]
+    assert caught.value.evidence["errors"][stage] == "OSError"
+    if fault == "group":
+        assert signal.SIGTERM not in calls
+
+
+def test_unverified_group_and_failed_gate_remain_unknown_without_signal(monkeypatch):
+    signals = []
+    checked = []
+    process = SimpleNamespace(
+        pid=12345, returncode=None, poll=lambda: None, wait=lambda timeout: None
+    )
+    monkeypatch.setattr(backend.os, "getpgid", lambda pid: 99999)
+    monkeypatch.setattr(backend.os, "killpg", lambda *args: signals.append(args))
+
+    def gate():
+        checked.append(True)
+        raise ValueError("unknown settlement")
+
+    with pytest.raises(backend.BackendCleanupError) as caught:
+        backend._stop(process, gate)
+    assert checked == [True] and signals == []
+    assert caught.value.evidence["settled"] is False
+    assert caught.value.evidence["errors"] == {
+        "terminate": "ValueError",
+        "settlement_gate": "ValueError",
+    }
+
+
+def test_force_kill_rechecks_group_identity(monkeypatch):
+    signals = []
+    groups = iter([12345, 99999])
+    process = SimpleNamespace(pid=12345, returncode=None, poll=lambda: None)
+
+    def wait(timeout):
+        raise subprocess.TimeoutExpired("fake", timeout)
+
+    process.wait = wait
+    monkeypatch.setattr(backend.os, "getpgid", lambda pid: next(groups))
+    monkeypatch.setattr(backend.os, "killpg", lambda pid, sig: signals.append(sig))
+    with pytest.raises(backend.BackendCleanupError) as caught:
+        backend._stop(process, lambda: None)
+    assert signals == [signal.SIGTERM]
+    assert caught.value.evidence["forced"] is True
+    assert caught.value.evidence["errors"]["kill"] == "ValueError"
+
+
+def test_cleanup_error_receipt_keeps_settlement_separate_from_pass(owned, monkeypatch):
+    image, directory, binary = owned
+    executable(binary)
+    stop = backend._stop
+
+    def observed_error(process, gate):
+        evidence = stop(process, gate)
+        evidence["passed"] = False
+        evidence["errors"] = {"poll": "OSError"}
+        raise backend.BackendCleanupError(evidence)
+
+    monkeypatch.setattr(backend, "_stop", observed_error)
+    with pytest.raises(backend.BackendCleanupError):
+        backend.rehearse(image, directory, binary)
+    cleanup = json.loads((directory / "cleanup.json").read_bytes())
+    assert cleanup["settled"] is True and cleanup["passed"] is False
+    assert cleanup["errors"] == {"poll": "OSError"}
+    assert not (directory / "result.json").exists()
+    assert_settled(directory)
