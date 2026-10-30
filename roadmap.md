@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-30 — Scripted held-out shared-runtime rehearsal:** the offline-only CLI
+runs sixteen canned-provider cells with real disposable workspaces, edits/checks,
+original grading and explicit rehearsal labels. An evaluation wrapper latches
+transport, model and missing-usage refusals before tools/another request; result
+checks stop unknown preservation/criteria/usage while retaining planned cells.
+Canned reference/usage overrides prove mechanics only. This is in-process, not
+CLI-over-HTTP, native-wire or backend-settlement evidence. Exact execution freeze,
+current resource/input pins, approval and fresh launch gates remain outstanding.
+No inference, tuning, model-quality or release claim.
+
 **2026-10-30 — Unrun held-out comparison protocol:** a typed bounded offline
 validator binds the original four held-out tasks, request/category order, reviewed
 seal and sixteen fixed local Gemma cells (two repeats per mode). Budgets, stop

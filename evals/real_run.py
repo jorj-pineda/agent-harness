@@ -961,12 +961,17 @@ def _harness_revision() -> dict[str, Any]:
 
 
 def write_report(
-    path: Path, started: str, results: list[RealTaskResult], *, cohort: CohortLedger | None = None
+    path: Path,
+    started: str,
+    results: list[RealTaskResult],
+    *,
+    cohort: CohortLedger | None = None,
+    scripted: bool = False,
 ) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     content = json.dumps(
         {
-            "mode": "real-tools-trusted-fixtures",
+            "mode": "scripted-real-tools-rehearsal" if scripted else "real-tools-trusted-fixtures",
             "trace_format": "normalized-turn-v2",
             "started_at": started,
             "harness_revision": _harness_revision(),
