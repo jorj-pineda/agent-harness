@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-30 — Read-only local model metadata gate:** a loopback-only bounded
+probe observes Ollama version and selected model digest using metadata GETs only.
+Redirects/proxy inheritance and credentialed/nonliteral origins refuse; unknown,
+invalid or unavailable responses cannot become matching evidence. The real probe
+recorded unavailable/ConnectError with no service mutation or generation. This is
+an environment gate, not model failure or verified resource ownership. Current
+owned runtime/image, settlement, exact freeze/approval and fresh launch gates stay
+incomplete. No inference, quality/release claim or historical rewrite.
+
 **2026-10-30 — Preserved capture-to-workspace staging:** an explicit index-hash
 precondition binds complete no-forward named captures before exclusive archival.
 Source/copy/input identities are verified before and after the move; fresh original
