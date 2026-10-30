@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-30 — Fresh model-image preparation:** a separate evaluation utility
+creates only the pinned manifest and declared blobs at an exclusive directory
+outside Git workspaces, using macOS clonefile without hardlink/copy/download
+fallback. Source and copied images are independently hashed; source observations
+must remain equal, copied inodes must differ and copied files become read-only.
+A private receipt is written last; partial failures remain without reset/retry.
+This prepares files only. It does not start a service, prove backend ownership,
+settlement or later freshness, resume the closed cohort or authorize inference.
+The owned service/operator/freeze/approval gates remain incomplete; no quality claim.
+
 **2026-10-30 — Read-only protocol model-image verification:** the pinned local
 manifest can be verified with every declared config/layer digest and exact size,
 streamed reads and before/after identity checks. Reports retain hashes/modes but
