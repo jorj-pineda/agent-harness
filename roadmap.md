@@ -4,6 +4,18 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-30 — Owned metadata-only backend rehearsal:** a fresh prepared image can
+be checked with a separately grouped installed Ollama child on loopback 11447,
+using a private HOME and explicit environment. Exact listener-PID checks surround
+bounded metadata GETs; a nonempty loaded-model list or protocol mismatch refuses.
+Every post-spawn failure runs owned-group cleanup; forced or unknown settlement
+cannot pass. Native rehearsal matched version/digest with no loaded models and
+settled cleanly after three retained metadata readiness timeouts; the earlier
+failed rehearsal remains preserved. Final image/executable checks precede the result receipt. This does
+not start a comparison, resume the old cohort or authorize generation. Non-atomic
+ownership observations are not isolation; full operator/refusal/settlement,
+execution freeze, parent approval and fresh launch gates remain incomplete.
+
 **2026-10-30 — Fresh model-image preparation:** a separate evaluation utility
 creates only the pinned manifest and declared blobs at an exclusive directory
 outside Git workspaces, using macOS clonefile without hardlink/copy/download
