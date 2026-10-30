@@ -5,6 +5,8 @@ from __future__ import annotations
 import argparse
 import os
 import shutil
+from collections.abc import Iterator
+from contextlib import contextmanager
 from itertools import islice
 from pathlib import Path
 from typing import Literal
@@ -20,6 +22,8 @@ from evals.heldout_guard import (
     verify_fixture,
 )
 from evals.real_run import Task, load_tasks
+from workspace import DisposableWorkspace, Workspace
+from workspace.disposable import _snapshot
 
 
 class PreparedFixture(BaseModel):
@@ -85,6 +89,25 @@ def verify_prepared(directory: Path, *, task_id: str) -> Path:
         raise HeldoutDriftError("Prepared receipt does not match reviewed task identity")
     verify_fixture(task.fixture, destination / "workspace")
     return destination / "workspace"
+
+
+@contextmanager
+def admit_prepared(directory: Path, *, task_id: str) -> Iterator[DisposableWorkspace]:
+    """Single-use evaluation admission; retain all artifacts on every exit path."""
+    root = verify_prepared(directory, task_id=task_id)
+    baseline = _snapshot(root)
+    marker = root.parent / "admitted.json"
+    descriptor = os.open(marker, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    with os.fdopen(descriptor, "w") as stream:
+        stream.write(
+            PreparedFixture(
+                task_id=task_id, seal_sha256=REGISTRATIONS[0].seal_sha256
+            ).model_dump_json()
+            + "\n"
+        )
+    _, task = _registered_task(task_id)
+    verify_fixture(task.fixture, root)
+    yield DisposableWorkspace(workspace=Workspace(root=root), baseline=baseline)
 
 
 def main() -> None:

@@ -88,7 +88,9 @@ def _plan_digest(path: Path) -> str:
     return hashlib.sha256(content).hexdigest()
 
 
-async def capture_inputs(directory: Path, plan_path: Path = PLAN_PATH) -> dict[str, Any]:
+async def capture_inputs(
+    directory: Path, plan_path: Path = PLAN_PATH, *, prepared: bool = False
+) -> dict[str, Any]:
     before_plan = _plan_digest(plan_path)
     plan = validate_plan(plan_path)
     manifest = REGISTRATIONS[0].root / "tasks.yaml"
@@ -106,6 +108,12 @@ async def capture_inputs(directory: Path, plan_path: Path = PLAN_PATH) -> dict[s
     rows = []
     prior: dict[tuple[str, str], tuple[str, str]] = {}
     for index, (task, mode, attempt) in enumerate(schedule):
+        prepared_directory = None
+        if prepared:
+            from evals.heldout_workspaces import prepare_fixture
+
+            prepared_directory = directory / f"cell-{index + 1:02d}"
+            prepare_fixture(task.id, prepared_directory)
         normalized: list[bytes] = []
         wire: list[bytes] = []
 
@@ -131,6 +139,7 @@ async def capture_inputs(directory: Path, plan_path: Path = PLAN_PATH) -> dict[s
                 settings=settings,
                 mode=mode,
                 attempt=attempt,
+                prepared_directory=prepared_directory,
             )
         finally:
             await adapter.aclose()
@@ -176,8 +185,9 @@ async def capture_inputs(directory: Path, plan_path: Path = PLAN_PATH) -> dict[s
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--directory", type=Path, required=True)
+    parser.add_argument("--prepared-workspaces", action="store_true")
     args = parser.parse_args()
-    asyncio.run(capture_inputs(args.directory))
+    asyncio.run(capture_inputs(args.directory, prepared=args.prepared_workspaces))
     print("Captured sixteen first-input pairs; zero requests forwarded. Not launch approval.")
 
 
