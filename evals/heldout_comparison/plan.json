@@ -1,0 +1,67 @@
+{
+  "format": "heldout-comparison-protocol-v1",
+  "inference_authorized": false,
+  "provider": "ollama",
+  "model": "gemma4:12b",
+  "model_digest": "4eb23ef187e2c5462566d6a1d3bbbc2f1346d0b4327cbb66d58fffbcc9b2b05c",
+  "expected_ollama_version": "0.33.2",
+  "catalog_id": "lower-tier-heldout-v1",
+  "repeats": 2,
+  "seal_sha256": "dfda71293f2ba2569514fd3049c849e5c647e2725e937d85be174a760e4b9eee",
+  "modes": [
+    "harness",
+    "minimal"
+  ],
+  "tasks": [
+    {
+      "id": "ho_iso_week",
+      "category": "bugfix",
+      "request_sha256": "bbcbbaca93a9e31720fa55a5ad0eb1f1c6a2f02a21ef48fcef82dbaa72cf302f"
+    },
+    {
+      "id": "ho_rolling_mean",
+      "category": "feature",
+      "request_sha256": "70b68094335cf148df11a58510d81c3dd4b982d3d59e477aec8483e0255712c8"
+    },
+    {
+      "id": "ho_endpoint_record",
+      "category": "refactor",
+      "request_sha256": "839408c6cf4aeda959493ff6442408287d44bb0acd8148ab7d9b9e4bf2f404dd"
+    },
+    {
+      "id": "ho_cache_policy",
+      "category": "repository_question",
+      "request_sha256": "dc04ee1a941dd44c00176ac1e50a2e50acb4327954e6e792e2acb44a3fba0f5a"
+    }
+  ],
+  "runtime": {
+    "coding_prompt_profile": "compact",
+    "coding_toolset": "full",
+    "load_root_agents": false,
+    "read_file_default_lines": 0,
+    "max_turn_wall_seconds": 150,
+    "max_total_tokens_per_turn": 32000,
+    "max_completion_tokens_per_turn": 4096,
+    "max_request_output_tokens": 2048,
+    "min_request_output_tokens": 256,
+    "max_tool_calls_per_turn": 12,
+    "max_tool_iterations": 6,
+    "max_context_tokens": 16384,
+    "ollama_num_ctx": 16384,
+    "ollama_think": false,
+    "prompt_estimate_bytes_per_token": 3,
+    "request_timeout_seconds": 180,
+    "require_verification_before_finish": true,
+    "require_plan_before_edit": false,
+    "max_completion_retries": 1,
+    "max_identical_tool_calls": 2,
+    "max_files_touched_per_turn": 2,
+    "project_check_argv": [
+      "python",
+      "-m",
+      "pytest",
+      "-q",
+      "test_visible.py"
+    ]
+  }
+}
