@@ -4,6 +4,18 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-30 — Named-workspace native-adapter operator rehearsal:** a mandatory
+in-memory transport connects all sixteen staged single-use cells, exact first
+normalized/wire pins, protocol model/usage checks, production response decoding,
+real tools and original grading. A same-clean-revision precondition and staged
+receipts precede allocation; native request/response evidence and a scripted
+cohort report retain failures/unrun cells without retry or reset. Provider-close
+errors stop the cohort and preserve primary failures. All usage/reference edits
+are simulation overrides. This is not HTTP/application transport, real backend
+settlement, a full settings freeze or inference. The live operator/refusal recipe,
+exact freeze, parent approval and fresh launch gates remain incomplete; no quality
+or release claim.
+
 **2026-10-30 — Owned metadata-only backend rehearsal:** a fresh prepared image can
 be checked with a separately grouped installed Ollama child on loopback 11447,
 using a private HOME and explicit environment. Exact listener-PID checks surround
