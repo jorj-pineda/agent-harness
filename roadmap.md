@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-30 — Named held-out workspace preparation:** an offline utility creates
+fresh exclusive evaluation-owned fixture containers outside Git workspaces and
+verifies them against registered source byte/mode pins. Task/seal receipts cannot
+redefine source criteria; existing/changed/unknown state refuses without reset or
+delete. This supplies stable named copies for the observed random-path input issue,
+without changing prompts. Integration with capture/execution, reviewed admission,
+operator/resource/freeze and approval gates remain incomplete. No inference,
+resume authorization, process isolation or quality/release claim.
+
 **2026-10-30 — Offline held-out production-input capture:** a mandatory mock
 transport records sixteen normalized/actual Ollama request pairs through the
 shared runtime without forwarding. Private exclusive artifacts retain hashes,
