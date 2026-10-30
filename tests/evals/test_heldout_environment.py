@@ -101,3 +101,23 @@ async def test_unavailable_environment_is_preserved_without_raw_exception_text(
     assert json.loads(report.read_text()) == result
     with pytest.raises(FileExistsError):
         await environment.record_observation("http://127.0.0.1:11434", report)
+
+
+@pytest.mark.parametrize(
+    "endpoint",
+    [
+        "http://user:secret@127.0.0.1:11434",
+        "http://127.0.0.1:11434?key=secret",
+        "http://public.example",
+        "http://127.0.0.1:11434/api/chat",
+    ],
+)
+async def test_invalid_origin_cannot_become_an_unavailable_report(monkeypatch, tmp_path, endpoint):
+    async def forbidden(*args, **kwargs):
+        pytest.fail("Invalid origin reached observation")
+
+    monkeypatch.setattr(environment, "observe", forbidden)
+    report = tmp_path / "report.json"
+    with pytest.raises(ValueError):
+        await environment.record_observation(endpoint, report)
+    assert not report.exists()
