@@ -5,7 +5,9 @@ inference. Validate offline with `uv run python -m evals.heldout_comparison`.
 The validator bounds the plan, verifies the registered catalog seal and exact
 ordered request/category identities, checks the fixed modes/budgets and validates
 application Settings without loading a .env file. It constructs no provider.
-Ambient configuration outside the listed overrides is not an execution freeze.
+Application environment/.env sources cannot populate protocol Settings. A full
+validated Settings pin is separately retained during capture; validation alone is
+not an execution freeze of runtime dependencies, commands, resources or host state.
 
 Use all four original held-out v1 tasks in manifest order, two repeats each, with
 both shared-runtime `harness` (compact/full) and `minimal` prompts. Preserve the

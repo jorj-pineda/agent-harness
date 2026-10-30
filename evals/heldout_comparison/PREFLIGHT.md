@@ -11,8 +11,8 @@ runtime, file tools, configured visible commands and original external graders.
 Coding scripts write references, check and answer; question scripts read and
 return the reference facts under inspection-only policy. Each cell owns a fresh
 provider, session and workspace. Mode order, request/category identities, seal and
-fixed budgets come from the reviewed protocol. Standard application environment
-variables are bypassed with a rehearsal-specific settings prefix; .env is disabled.
+fixed budgets come from the reviewed protocol. Protocol Settings use only explicit initialization values and defaults;
+application environment, .env and file-secret sources cannot populate them.
 Actual execution will still need a frozen fully resolved configuration.
 
 The evaluation provider wrapper latches transport exceptions, wrong response model

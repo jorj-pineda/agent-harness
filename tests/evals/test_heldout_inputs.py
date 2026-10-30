@@ -19,7 +19,7 @@ async def test_production_adapter_inputs_are_retained_without_forwarding(monkeyp
     result = await capture.capture_inputs(directory)
     assert result["forwarded_requests"] == 0 and result["inference_ran"] is False
     assert result["planned_cells"] == len(result["cells"]) == 16
-    assert len(list(directory.iterdir())) == 33
+    assert len(list(directory.iterdir())) == 34
     assert stat.S_IMODE(directory.stat().st_mode) == 0o700
     for row in result["cells"]:
         for name, digest in row["files"].items():
@@ -52,3 +52,24 @@ async def test_failed_boundary_capture_preserves_partial_directory_without_compl
     with pytest.raises(RuntimeError):
         await capture.capture_inputs(directory)
     assert directory.is_dir() and not (directory / "index.json").exists()
+
+
+async def test_settings_drift_during_capture_refuses_without_native_boundary_or_final_index(
+    monkeypatch, tmp_path
+):
+    run = capture.run_task
+
+    async def drift(*args, **kwargs):
+        kwargs["settings"].max_tracked_bytes = 123
+        return await run(*args, **kwargs)
+
+    monkeypatch.setattr(capture, "run_task", drift)
+    monkeypatch.setattr(
+        capture.CaptureProvider, "chat", lambda *a, **k: pytest.fail("native capture boundary")
+    )
+    directory = tmp_path / "drift"
+    with pytest.raises(ValueError, match="settings differ from capture"):
+        await capture.capture_inputs(directory)
+    assert (directory / "settings.json").exists()
+    assert not (directory / "index.json").exists()
+    assert not (directory / "01-wire.json").exists()

@@ -13,7 +13,8 @@ uv run python -m evals.heldout_staging \
 
 Before mutation, verification binds the caller-supplied index digest, original
 plan/seal, clean recorded runtime identity, all sixteen schedule rows, exact
-normalized/wire file maps, hashes and private file modes. Every captured named
+normalized/wire file maps, hashes and private file modes. When present, the
+validated Settings file and its index hash are verified and preserved too. Every captured named
 workspace must remain the unchanged original fixture, with matching prepared and
 admission receipts and no extra inventory. Recorded roots and both request bodies
 must name the original canonical workspace path. Unknown files are inventoried

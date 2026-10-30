@@ -9,7 +9,8 @@ provider failure observation or acceptance outcome. The original grader may run
 on the unchanged disposable fixture; those results are not model evidence.
 
 The exclusive mode-0700 directory contains sixteen normalized JSON requests and
-sixteen exact wire bodies, all mode 0600. A final index binds their SHA-256 hashes,
+sixteen exact wire bodies and a classified validated Settings snapshot, all mode
+0600. A final index binds their SHA-256 hashes,
 plan/seal identity, observed runtime Git identity and safe runtime configuration.
 Only the final index indicates capture completion. Failures preserve partial
 artifacts without an index; reuse is refused. Reads/writes are bounded, not atomic
@@ -27,8 +28,13 @@ mock captures as reusable exact first-input approval for random future copies.
 
 This bundle supplies a missing prerequisite, not the promised launch freeze.
 Still required: reviewed workspace/input-path policy and execution recipe, actual
-clean retained runtime and full resolved settings, current owned model-image and
+clean retained runtime with command/dependency/environment pins, current owned model-image and
 backend version/endpoint pins, no-forward refusal probes, resource lifecycle and
 settlement checks, independent exact-freeze review/CI/merge, parent approval receipt
 and fresh launch gates. The generic CLI and scripted rehearsal are not approved
 live launchers. No live inference, release approval or model-quality claim follows.
+
+The new settings.json snapshot and optional index hash are described in
+[SETTINGS.md](SETTINGS.md). Historical captures without that field stay readable
+for preservation, but the named operator requires a newly captured pin. Do not
+retrofit old evidence or reuse consumed fixtures to satisfy the precondition.

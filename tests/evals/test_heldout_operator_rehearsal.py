@@ -179,3 +179,82 @@ async def test_primary_failure_survives_close_failure_with_no_synthesized_row(st
     assert data["cohort"]["cleanup_error"] == "OSError"
     assert [c["status"] for c in data["cohort"]["cells"]] == ["no_result"] + ["unrun"] * 15
     assert not (source / "cell-01/admitted.json").exists()
+
+
+async def test_unserialized_setting_drift_refuses_before_allocation_and_admission(
+    staged, monkeypatch
+):
+    source, _, _, output = staged
+    build = operator.protocol_settings
+
+    def changed(plan):
+        settings = build(plan)
+        settings.max_tracked_bytes = 123
+        return settings
+
+    monkeypatch.setattr(operator, "protocol_settings", changed)
+    monkeypatch.setattr(operator, "ScriptedTransport", lambda *a: pytest.fail("allocated"))
+    with pytest.raises(ValueError, match="settings differ from capture"):
+        await run(staged)
+    assert not output.exists() and not (source / "cell-01/admitted.json").exists()
+
+
+async def test_between_cell_settings_drift_stops_before_second_admission(staged, monkeypatch):
+    from evals.heldout_comparison import validate_plan
+
+    settings = operator.protocol_settings(validate_plan())
+    monkeypatch.setattr(operator, "protocol_settings", lambda plan: settings)
+    close = operator.ScriptedTransport.aclose
+
+    async def drift(self):
+        await close(self)
+        settings.max_tracked_bytes = 123
+
+    monkeypatch.setattr(operator.ScriptedTransport, "aclose", drift)
+    with pytest.raises(ValueError, match="settings differ from capture"):
+        await run(staged)
+    source, _, _, output = staged
+    data = json.loads((output / "report.json").read_bytes())
+    assert len(data["results"]) == 1
+    assert data["cohort"]["cells"][0]["status"] == "recorded"
+    assert all(c["status"] == "unrun" for c in data["cohort"]["cells"][1:])
+    assert not (source / "cell-02/admitted.json").exists()
+
+
+async def test_synthetic_legacy_capture_stays_verifiable_but_not_admissible(staged, monkeypatch):
+    from evals.heldout_staging import verify_capture
+
+    source, capture, _, output = staged
+    index_path = capture / "index.json"
+    index = json.loads(index_path.read_bytes())
+    del index["settings_sha256"]
+    (capture / "settings.json").unlink()
+    index_path.write_text(json.dumps(index))
+    digest = hashlib.sha256(index_path.read_bytes()).hexdigest()
+    legacy = verify_capture(capture, expected_index_sha256=digest, original_directory=source)
+    assert legacy.settings_sha256 is None
+    monkeypatch.setattr(operator, "ScriptedTransport", lambda *a: pytest.fail("allocated"))
+    with pytest.raises(ValueError, match="legacy capture is not admissible"):
+        await operator.rehearse(source, capture, output, expected_index_sha256=digest)
+    assert not output.exists() and not (source / "cell-01/admitted.json").exists()
+
+
+async def test_final_settings_archive_drift_cannot_finish_rehearsal(staged, monkeypatch):
+    _, capture, _, output = staged
+    close = operator.ScriptedTransport.aclose
+    closed = []
+
+    async def change_last(self):
+        await close(self)
+        closed.append(True)
+        if len(closed) == 16:
+            (capture / "settings.json").chmod(0o644)
+
+    monkeypatch.setattr(operator.ScriptedTransport, "aclose", change_last)
+    with pytest.raises(ValueError, match="Settings pin bytes/mode changed"):
+        await run(staged)
+    report = json.loads((output / "report.json").read_bytes())
+    assert len(report["results"]) == 16
+    assert report["cohort"]["status"] == "stopped"
+    assert all(cell["status"] == "recorded" for cell in report["cohort"]["cells"])
+    assert json.loads((output / "operator.json").read_bytes())["status"] == "stopped"

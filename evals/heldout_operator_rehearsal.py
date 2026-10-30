@@ -21,6 +21,12 @@ from evals.heldout_rehearsal import (
     ProtocolStop,
     stop_reason,
 )
+from evals.heldout_settings import (
+    SettingsPinnedProvider,
+    check_settings,
+    load_settings_pin,
+    protocol_settings,
+)
 from evals.heldout_staging import verify_capture
 from evals.heldout_workspaces import _owned_location, verify_prepared
 from evals.real_run import (
@@ -35,7 +41,6 @@ from evals.real_run import (
     validate_task,
     write_report,
 )
-from harness.config import Settings
 
 
 def _save_evidence(path: Path, raw: bytes) -> None:
@@ -129,18 +134,19 @@ async def rehearse(
     )
     runtime = index.runtime.model_dump()
     _runtime_matches(runtime)
+    if index.settings_sha256 is None:
+        raise ValueError("Capture lacks validated settings pin; legacy capture is not admissible")
+    expected_settings = load_settings_pin(
+        capture / "settings.json", expected_sha256=index.settings_sha256
+    )
+    settings = protocol_settings(plan)
+    check_settings(settings, expected_settings)
     _staged_inventory(staged, capture, expected_index_sha256, index.cells)
     for cell in index.cells:
         verify_prepared(staged / f"cell-{cell.ordinal:02d}", task_id=cell.task_id)
     manifest = REGISTRATIONS[0].root / "tasks.yaml"
     tasks = load_tasks(manifest)
     ledger, schedule = _plan_cohort(tasks, MODES, plan.repeats)
-    settings = Settings(
-        _env_file=None,
-        _env_prefix="HELDOUT_OPERATOR_UNUSED_",
-        ollama_model=plan.model,
-        **plan.runtime.model_dump(),
-    )
     destination.mkdir(mode=0o700, exist_ok=False)
     results: list[RealTaskResult] = []
 
@@ -161,6 +167,7 @@ async def rehearse(
         ledger.status = "running"
         for ordinal, (task, mode, attempt) in enumerate(schedule, 1):
             _runtime_matches(runtime)
+            check_settings(settings, expected_settings)
             _staged_inventory(staged, capture, expected_index_sha256, index.cells)
             cell = ledger.cells[ordinal - 1]
             cell.status = "started"
@@ -180,14 +187,18 @@ async def rehearse(
             failure = None
             try:
                 provider = CheckedProvider(
-                    PinnedOllamaProvider(
-                        pins=pins,
-                        host="http://127.0.0.1:11447",
-                        model=plan.model,
-                        num_ctx=plan.runtime.ollama_num_ctx,
-                        think=plan.runtime.ollama_think,
-                        timeout_seconds=plan.runtime.request_timeout_seconds,
-                        transport=transport,
+                    SettingsPinnedProvider(
+                        PinnedOllamaProvider(
+                            pins=pins,
+                            host="http://127.0.0.1:11447",
+                            model=plan.model,
+                            num_ctx=plan.runtime.ollama_num_ctx,
+                            think=plan.runtime.ollama_think,
+                            timeout_seconds=plan.runtime.request_timeout_seconds,
+                            transport=transport,
+                        ),
+                        settings,
+                        expected_settings,
                     ),
                     plan,
                 )
@@ -222,6 +233,10 @@ async def rehearse(
                     if failure is None:
                         raise
         _runtime_matches(runtime)
+        check_settings(settings, expected_settings)
+        verify_capture(
+            capture, expected_index_sha256=expected_index_sha256, original_directory=staged
+        )
         ledger.status = "finished"
     except BaseException as error:
         ledger.stop(str(error) if isinstance(error, ProtocolStop) else type(error).__name__)
@@ -236,6 +251,7 @@ async def rehearse(
                     "evidence_kind": "scripted-native-adapter-real-tools",
                     "runtime": runtime,
                     "capture_index_sha256": expected_index_sha256,
+                    "settings_sha256": index.settings_sha256,
                     "status": ledger.status,
                     "stop_reason": ledger.stop_reason,
                     "cleanup_error": ledger.cleanup_error,

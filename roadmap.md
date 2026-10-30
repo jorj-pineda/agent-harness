@@ -4,6 +4,17 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-30 — Preventive validated Settings pins:** no-forward captures now retain
+a private, bounded hash-bound snapshot of every explicitly classified non-secret
+Settings field. Shared protocol construction excludes ambient configuration;
+credentials, profile/hosted overrides and unclassified new fields refuse before
+serialization. The named operator compares the actual Settings object before
+allocation, each admission and every request, latching mismatch failures closed.
+Older captures remain verifiable without rewriting but lack this admission pin.
+This closes the Settings-field precondition gap, not command/dependency/host
+state, backend settlement, full live operator/freeze/approval or fresh launch
+gates. No inference, historical regrade, model-quality or release claim.
+
 **2026-10-30 — Named-workspace native-adapter operator rehearsal:** a mandatory
 in-memory transport connects all sixteen staged single-use cells, exact first
 normalized/wire pins, protocol model/usage checks, production response decoding,
