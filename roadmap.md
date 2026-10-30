@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-30 — Preserved capture-to-workspace staging:** an explicit index-hash
+precondition binds complete no-forward named captures before exclusive archival.
+Source/copy/input identities are verified before and after the move; fresh original
+fixtures are prepared at the same canonical paths without deleting old admission
+markers. A scripted production-adapter regression reproduces exact first-input
+bytes at the staged path. Changed, unknown, occupied or partial state refuses;
+failures preserve artifacts without rollback/retry. No live-attempt reset,
+external-writer lock, inference or launch approval. Resource/freeze/settlement and
+fresh approval gates remain incomplete; no quality/release claim.
+
 **2026-10-30 — Single-use prepared-workspace evaluation admission:** registered
 held-out runs can explicitly verify and admit named copies through the shared
 runtime. Exclusive admission markers and all work remain retained on every exit;
