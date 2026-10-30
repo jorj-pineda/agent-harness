@@ -7,9 +7,9 @@ import pytest
 from evals import heldout_inputs as inputs
 from evals import heldout_staging as staging
 from evals.heldout_comparison import validate_plan
+from evals.heldout_input_guard import PinnedOllamaProvider, load_pins
 from evals.heldout_workspaces import verify_prepared
 from harness.config import Settings
-from providers.ollama import OllamaProvider
 
 
 @pytest.fixture
@@ -47,10 +47,13 @@ async def test_stage_preserves_capture_and_reproduces_exact_first_input_at_origi
         wire.append(request.content)
         raise inputs.CaptureComplete("mock")
 
-    adapter = OllamaProvider(
-        host="http://capture.invalid",
+    pins = load_pins(
+        archive / "captured", original_directory=source, expected_index_sha256=digest, ordinal=1
+    )
+    adapter = PinnedOllamaProvider(
+        pins=pins,
+        host="http://127.0.0.1:11447",
         model=plan.model,
-        embed_model="unused",
         num_ctx=plan.runtime.ollama_num_ctx,
         think=plan.runtime.ollama_think,
         timeout_seconds=plan.runtime.request_timeout_seconds,

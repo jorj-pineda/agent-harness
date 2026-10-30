@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-30 — Exact held-out first-input guard:** verified capture pins now gate
+both normalized first requests before adapter calls and actual Ollama body bytes
+before transport delegation. Mismatches/failed or uncertain submissions latch
+closed; concurrent submissions refuse. The staged-path regression reproduces the
+archived first input through this guard using mock transport. Successful later
+serial requests still require separate protocol budget/usage/preservation rules.
+No live CLI/default transport or approval mechanism is added. Current service
+metadata is unavailable; owned resource/settlement/operator recipe and exact
+freeze/approval/launch gates remain incomplete. No inference or quality claim.
+
 **2026-10-30 — Read-only local model metadata gate:** a loopback-only bounded
 probe observes Ollama version and selected model digest using metadata GETs only.
 Redirects/proxy inheritance and credentialed/nonliteral origins refuse; unknown,

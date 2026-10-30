@@ -41,6 +41,30 @@ def _save(path: Path, content: bytes) -> str:
     return hashlib.sha256(content).hexdigest()
 
 
+def normalized_input(
+    messages: list[ChatMessage],
+    tools: list[ToolSpec] | None,
+    temperature: float,
+    max_tokens: int | None,
+) -> bytes:
+    identity = request_identity(messages, tools or [], max_tokens)
+    if identity is None:
+        raise ValueError("Normalized input identity unavailable")
+    content = json.dumps(
+        {
+            "identity": identity.model_dump(),
+            "messages": [m.model_dump(mode="json") for m in messages],
+            "tools": [t.model_dump(mode="json") for t in tools] if tools is not None else None,
+            "temperature": temperature,
+            "max_tokens": max_tokens,
+        },
+        sort_keys=True,
+    ).encode()
+    if len(content) > 2_000_000:
+        raise ValueError("Normalized input exceeds capture bound")
+    return content
+
+
 class CaptureProvider:
     name = "ollama"
 
@@ -57,20 +81,7 @@ class CaptureProvider:
     ) -> ProviderResponse:
         if self.normalized:
             raise ValueError("Unexpected second request during first-input capture")
-        self.normalized.append(
-            json.dumps(
-                {
-                    "identity": request_identity(messages, tools, max_tokens).model_dump(),
-                    "messages": [m.model_dump(mode="json") for m in messages],
-                    "tools": [t.model_dump(mode="json") for t in tools]
-                    if tools is not None
-                    else None,
-                    "temperature": temperature,
-                    "max_tokens": max_tokens,
-                },
-                sort_keys=True,
-            ).encode()
-        )
+        self.normalized.append(normalized_input(messages, tools, temperature, max_tokens))
         return await self.adapter.chat(
             messages, tools=tools, temperature=temperature, max_tokens=max_tokens
         )
