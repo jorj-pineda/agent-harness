@@ -55,6 +55,7 @@ def build_registry(
     read_file_default_lines: int = 0,
     code_tool_transform: Callable[[Tool], Tool] | None = None,
     command_env: Mapping[str, str] | None = None,
+    inherit_environment: bool = True,
     memory_session: Session | None = None,
     inspection_only: bool = False,
 ) -> ToolRegistry:
@@ -83,6 +84,7 @@ def build_registry(
         for tool in build_code_tools(
             Workspace(root=Path(workspace_root)),
             command_env=command_env,
+            inherit_environment=inherit_environment,
             read_file_default_lines=read_file_default_lines,
         ):
             if coding_toolset == "whole_file" and tool.name == "replace_text":

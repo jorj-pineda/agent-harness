@@ -235,9 +235,15 @@ def build_code_tools(
     workspace: Workspace,
     *,
     command_env: Mapping[str, str] | None = None,
+    inherit_environment: bool = True,
     read_file_default_lines: int = 0,
 ) -> list[Tool]:
-    """Build code tools bound to a specific workspace."""
+    """Build workspace tools; opt-in replacement requires a stable explicit PATH."""
+    if not inherit_environment:
+        command_env = command_environment(command_env, inherit_environment=False)
+        path = command_env.get("PATH", "")
+        if not path or any(not Path(part).is_absolute() for part in path.split(os.pathsep)):
+            raise ValueError("Replacement tool environment requires an absolute nonempty PATH")
 
     if (
         type(read_file_default_lines) is not int
@@ -339,8 +345,16 @@ def build_code_tools(
         except WorkspaceError as exc:
             raise _workspace_error(exc) from exc
 
-        if shutil.which("rg"):
-            return await _grep_ripgrep(workspace, target, args.pattern, args.glob, command_env)
+        if (
+            shutil.which("rg")
+            if inherit_environment
+            else shutil.which(
+                "rg", path=command_environment(command_env, inherit_environment=False)["PATH"]
+            )
+        ):
+            return await _grep_ripgrep(
+                workspace, target, args.pattern, args.glob, command_env, inherit_environment
+            )
 
         try:
             regex = re.compile(args.pattern)
@@ -392,7 +406,9 @@ def build_code_tools(
 
     async def git_status(_args: GitStatusInput) -> dict[str, str | bool]:
         log.info("code_tool=git_status")
-        return await _run_git(workspace, ["status", "--porcelain"], command_env)
+        return await _run_git(
+            workspace, ["status", "--porcelain"], command_env, inherit_environment
+        )
 
     async def git_diff(args: GitDiffInput) -> dict[str, str | bool]:
         log.info("code_tool=git_diff path=%s", args.path)
@@ -404,7 +420,7 @@ def build_code_tools(
                 cmd.append(workspace.relative_str(resolved))
             except WorkspaceError as exc:
                 raise _workspace_error(exc) from exc
-        return await _run_git(workspace, cmd, command_env)
+        return await _run_git(workspace, cmd, command_env, inherit_environment)
 
     def write_file(args: WriteFileInput) -> dict[str, Any]:
         log.info("code_tool=write_file path=%s bytes=%d", args.path, len(args.content.encode()))
@@ -506,7 +522,15 @@ def build_code_tools(
         if argv[0] == "python3":
             argv[0] = "python"
         executable = argv[0]
-        if shutil.which(executable, path=command_environment(command_env).get("PATH")) is None:
+        if (
+            shutil.which(
+                executable,
+                path=command_environment(command_env, inherit_environment=inherit_environment).get(
+                    "PATH"
+                ),
+            )
+            is None
+        ):
             raise ToolError(f"Command not found on PATH: {executable}")
 
         try:
@@ -516,6 +540,7 @@ def build_code_tools(
                 timeout_seconds=RUN_COMMAND_TIMEOUT_S,
                 output_limit=MAX_COMMAND_OUTPUT_CHARS,
                 env=command_env,
+                inherit_environment=inherit_environment,
             )
         except ProcessTimeoutError as exc:
             raise ToolError(str(exc)) from exc
@@ -653,11 +678,15 @@ def register_code_tools(
     *,
     workspace: Workspace,
     command_env: Mapping[str, str] | None = None,
+    inherit_environment: bool = True,
     read_file_default_lines: int = 0,
 ) -> None:
     """Register code tools (read, write, verify) on the given registry."""
     for tool in build_code_tools(
-        workspace, command_env=command_env, read_file_default_lines=read_file_default_lines
+        workspace,
+        command_env=command_env,
+        inherit_environment=inherit_environment,
+        read_file_default_lines=read_file_default_lines,
     ):
         registry.register(tool)
 
@@ -733,6 +762,7 @@ async def _grep_ripgrep(
     pattern: str,
     glob: str | None,
     command_env: Mapping[str, str] | None,
+    inherit_environment: bool = True,
 ) -> list[dict[str, Any]]:
     cmd = [
         "rg",
@@ -760,6 +790,7 @@ async def _grep_ripgrep(
             timeout_seconds=GREP_TIMEOUT_S,
             output_limit=MAX_GREP_OUTPUT_BYTES,
             env=command_env,
+            inherit_environment=inherit_environment,
         )
     except ProcessTimeoutError as exc:
         raise ToolError(str(exc)) from exc
@@ -898,6 +929,7 @@ async def _run_git(
     workspace: Workspace,
     git_args: list[str],
     command_env: Mapping[str, str] | None,
+    inherit_environment: bool = True,
 ) -> dict[str, str | bool]:
     git_dir = workspace.root / ".git"
     if not git_dir.exists():
@@ -911,6 +943,7 @@ async def _run_git(
             timeout_seconds=GIT_TIMEOUT_S,
             output_limit=MAX_COMMAND_OUTPUT_CHARS,
             env=command_env,
+            inherit_environment=inherit_environment,
         )
     except ProcessTimeoutError as exc:
         raise ToolError(str(exc)) from exc
