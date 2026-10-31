@@ -25,8 +25,14 @@ class ProcessResult:
     stderr_truncated: bool
 
 
-def command_environment(extra: Mapping[str, str] | None = None) -> dict[str, str]:
-    """Pass a small runtime environment, plus explicitly configured additions."""
+def command_environment(
+    extra: Mapping[str, str] | None = None, *, inherit_environment: bool = True
+) -> dict[str, str]:
+    """Merge allowlisted ambient values by default, or copy an explicit replacement."""
+    if not inherit_environment:
+        if extra is None:
+            raise ValueError("Replacement command environment must be explicit")
+        return dict(extra)
     keys = ("PATH", "VIRTUAL_ENV", "LANG", "LC_ALL", "SYSTEMROOT", "TMPDIR")
     env = {key: os.environ[key] for key in keys if key in os.environ}
     if extra:
@@ -73,12 +79,18 @@ async def run_process(
     timeout_seconds: float,
     output_limit: int,
     env: Mapping[str, str] | None = None,
+    inherit_environment: bool = True,
 ) -> ProcessResult:
-    """Run argv without a shell; terminate its process group on timeout/cancel."""
+    """Run argv without a shell; terminate its process group on timeout/cancel.
+
+    Replacement mode does not import ambient PATH/locale/virtualenv/temp values.
+    Executable paths and platform-required variables remain the caller's responsibility.
+    This selects child environment only; it is not process isolation.
+    """
     process = await asyncio.create_subprocess_exec(
         *argv,
         cwd=str(cwd),
-        env=command_environment(env),
+        env=command_environment(env, inherit_environment=inherit_environment),
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE,
         start_new_session=os.name == "posix",
