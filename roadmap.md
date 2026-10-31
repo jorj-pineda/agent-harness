@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-31 — Capture-bound command environment selection:** no-forward captures
+can bind a private effective-environment file/hash, preserved by staging. The
+mandatory-mock operator independently validates the caller-selected mapping
+before allocation/admission and uses it for controls, tools and grading. Missing,
+different or changed pins refuse; omission retains explicitly unfrozen mock mode.
+Old artifacts are not rewritten. This pins configured values, not executable or
+library bytes, host state or child mutations. Runtime/dependency/resource freeze,
+full live operator/settlement, approval and fresh launch gates remain incomplete.
+No inference, model-quality or release claim.
+
 **2026-10-31 — Explicit evaluator command environments:** task execution, visible
 controls and independent grader subprocesses can use a validated copied mapping
 in replacement mode. Known runtime keys and absolute PATH entries are required;

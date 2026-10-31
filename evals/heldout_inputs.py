@@ -7,11 +7,13 @@ import asyncio
 import hashlib
 import json
 import os
+from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
 import httpx
 
+from evals.heldout_command_environment import environment_bytes, load_environment_pin
 from evals.heldout_comparison import PLAN_PATH, validate_plan
 from evals.heldout_guard import REGISTRATIONS
 from evals.heldout_settings import (
@@ -25,6 +27,7 @@ from evals.real_run import (
     MODES,
     _harness_revision,
     _plan_cohort,
+    _task_command_environment,
     _validate_report_path,
     load_tasks,
     run_task,
@@ -106,8 +109,14 @@ def _plan_digest(path: Path) -> str:
 
 
 async def capture_inputs(
-    directory: Path, plan_path: Path = PLAN_PATH, *, prepared: bool = False
+    directory: Path,
+    plan_path: Path = PLAN_PATH,
+    *,
+    prepared: bool = False,
+    command_env: Mapping[str, str] | None = None,
 ) -> dict[str, Any]:
+    selected_env = _task_command_environment(command_env)
+    env_kwargs = {"command_env": selected_env} if selected_env is not None else {}
     before_plan = _plan_digest(plan_path)
     plan = validate_plan(plan_path)
     manifest = REGISTRATIONS[0].root / "tasks.yaml"
@@ -119,6 +128,11 @@ async def capture_inputs(
     settings = protocol_settings(plan)
     expected_settings = settings_bytes(settings)
     settings_digest = _save(directory / "settings.json", expected_settings)
+    environment_digest = (
+        _save(directory / "command-environment.json", environment_bytes(selected_env))
+        if selected_env is not None
+        else None
+    )
     rows = []
     prior: dict[tuple[str, str], tuple[str, str]] = {}
     for index, (task, mode, attempt) in enumerate(schedule):
@@ -157,6 +171,7 @@ async def capture_inputs(
                 mode=mode,
                 attempt=attempt,
                 prepared_directory=prepared_directory,
+                **env_kwargs,
             )
         finally:
             await adapter.aclose()
@@ -187,6 +202,8 @@ async def capture_inputs(
         raise ValueError("Plan changed during capture")
     check_settings(settings, expected_settings)
     load_settings_pin(directory / "settings.json", expected_sha256=settings_digest)
+    if environment_digest is not None:
+        load_environment_pin(directory / "command-environment.json", environment_digest)
     result_index = {
         "format": "heldout-first-inputs-v1",
         "evidence_kind": "mock-production-adapter",
@@ -196,6 +213,7 @@ async def capture_inputs(
         "plan_sha256": _plan_digest(plan_path),
         "seal_sha256": plan.seal_sha256,
         "settings_sha256": settings_digest,
+        "command_environment_sha256": environment_digest,
         "cells": rows,
         "planned_cells": len(ledger.cells),
     }
@@ -207,8 +225,19 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--directory", type=Path, required=True)
     parser.add_argument("--prepared-workspaces", action="store_true")
+    parser.add_argument(
+        "--command-path", help="Explicit replacement PATH; locale C, no ambient merge"
+    )
     args = parser.parse_args()
-    asyncio.run(capture_inputs(args.directory, prepared=args.prepared_workspaces))
+    asyncio.run(
+        capture_inputs(
+            args.directory,
+            prepared=args.prepared_workspaces,
+            command_env={"PATH": args.command_path, "LC_ALL": "C"}
+            if args.command_path is not None
+            else None,
+        )
+    )
     print("Captured sixteen first-input pairs; zero requests forwarded. Not launch approval.")
 
 
