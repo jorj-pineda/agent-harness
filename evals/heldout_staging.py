@@ -11,6 +11,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from evals.heldout_command_environment import load_environment_pin
 from evals.heldout_comparison import PLAN_PATH, validate_plan
 from evals.heldout_guard import REGISTRATIONS, _read_regular, verify_fixture
 from evals.heldout_inputs import _plan_digest, _save
@@ -51,6 +52,7 @@ class CaptureIndex(BaseModel):
     plan_sha256: str
     seal_sha256: str
     settings_sha256: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
+    command_environment_sha256: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
     cells: list[CaptureCell] = Field(min_length=16, max_length=16)
     planned_cells: Literal[16]
 
@@ -74,6 +76,9 @@ def verify_capture(
     if index.settings_sha256 is not None:
         load_settings_pin(source / "settings.json", expected_sha256=index.settings_sha256)
         inventory.add("settings.json")
+    if index.command_environment_sha256 is not None:
+        load_environment_pin(source / "command-environment.json", index.command_environment_sha256)
+        inventory.add("command-environment.json")
     for ordinal, (cell, (task, mode_name, attempt)) in enumerate(
         zip(index.cells, schedule, strict=True), 1
     ):

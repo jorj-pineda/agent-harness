@@ -27,3 +27,25 @@ existing defaults until a separately reviewed environment pin is wired through
 that whole recipe. Old captures must not be retrofitted or consumed workspaces
 reused. Full live operator/refusal/settlement, exact execution freeze, parent
 approval and fresh launch gates remain required before inference.
+
+## Capture-bound selection
+
+The no-forward capture CLI and mandatory-mock operator accept --command-path.
+This explicitly selects PATH plus LC_ALL=C and the forced pytest flags. Python
+callers may supply the same supported mapping through command_env. New explicit
+captures retain a private command-environment.json and optional index hash;
+staging verifies/preserves it with the bundle. The operator requires an independently
+supplied matching mapping before allocation or workspace admission. It never
+loads the pin as automatic configuration. Missing or different selection refuses.
+Controls, tools and final grading use the replacement path; post-result runtime
+configuration must still match capture, and final archive checks include the pin.
+
+Omitting selection retains the existing unfrozen mock mode. Older captures stay
+readable, and no old artifact or consumed workspace is retrofitted. An absent hash
+means no selected-environment evidence, not a verified ambient environment. The
+operator remains mandatory mock with zero forwarding and no launch authority.
+The hash binds configured values, not executable/library bytes, command resolution
+after checking, host state or child-program mutations. Actual retained runtime,
+dependency-byte/resource pins, full live operator/refusal/settlement recipe, exact
+freeze, parent approval and fresh launch gates remain incomplete. No inference or
+model-quality claim follows.

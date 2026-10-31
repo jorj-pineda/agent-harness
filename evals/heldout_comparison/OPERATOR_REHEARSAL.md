@@ -79,3 +79,9 @@ without that optional hash remain readable for preservation; this operator
 refuses them before provider allocation/admission. Do not edit old indexes or
 insert a newly generated pin to make historical evidence admissible. Generate a
 new capture at a new path. See SETTINGS.md for the bounded Settings policy.
+
+An explicit --command-path capture can additionally bind the effective command
+environment. Supply the same selection to this mock operator; omission or a
+different mapping refuses when a pin is present. See COMMAND_ENVIRONMENT.md.
+Captures without the optional pin retain unfrozen mock behavior, never launch
+readiness. Do not retrofit historical evidence.

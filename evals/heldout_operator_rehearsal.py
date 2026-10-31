@@ -5,11 +5,13 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+from collections.abc import Mapping
 from itertools import islice
 from pathlib import Path
 
 import httpx
 
+from evals.heldout_command_environment import environment_bytes, load_environment_pin
 from evals.heldout_comparison import validate_plan
 from evals.heldout_guard import REGISTRATIONS, _read_regular
 from evals.heldout_input_guard import PinnedOllamaProvider, load_pins
@@ -35,6 +37,7 @@ from evals.real_run import (
     RealTaskResult,
     _harness_revision,
     _plan_cohort,
+    _task_command_environment,
     _validate_report_path,
     load_tasks,
     run_task,
@@ -121,7 +124,10 @@ async def rehearse(
     *,
     expected_index_sha256: str,
     fault: Fault = "none",
+    command_env: Mapping[str, str] | None = None,
 ) -> CohortLedger:
+    selected_env = _task_command_environment(command_env)
+    env_kwargs = {"command_env": selected_env} if selected_env is not None else {}
     plan = validate_plan()
     staged, capture, destination = (
         _owned_location(path) for path in (staged_directory, capture_directory, directory)
@@ -139,6 +145,14 @@ async def rehearse(
     expected_settings = load_settings_pin(
         capture / "settings.json", expected_sha256=index.settings_sha256
     )
+    if index.command_environment_sha256 is not None:
+        expected_environment = load_environment_pin(
+            capture / "command-environment.json", index.command_environment_sha256
+        )
+        if selected_env is None or environment_bytes(selected_env) != expected_environment:
+            raise ValueError("Selected command environment differs from capture")
+    elif selected_env is not None:
+        raise ValueError("Capture lacks selected command environment pin")
     settings = protocol_settings(plan)
     check_settings(settings, expected_settings)
     _staged_inventory(staged, capture, expected_index_sha256, index.cells)
@@ -163,7 +177,7 @@ async def rehearse(
     persist()
     try:
         for task in tasks:
-            await validate_task(task)
+            await validate_task(task, **env_kwargs)
         ledger.status = "running"
         for ordinal, (task, mode, attempt) in enumerate(schedule, 1):
             _runtime_matches(runtime)
@@ -209,6 +223,7 @@ async def rehearse(
                     mode=mode,
                     attempt=attempt,
                     prepared_directory=staged / f"cell-{ordinal:02d}",
+                    **env_kwargs,
                 )
                 cell.result_index = len(results)
                 results.append(result)
@@ -252,6 +267,7 @@ async def rehearse(
                     "runtime": runtime,
                     "capture_index_sha256": expected_index_sha256,
                     "settings_sha256": index.settings_sha256,
+                    "command_environment_sha256": index.command_environment_sha256,
                     "status": ledger.status,
                     "stop_reason": ledger.stop_reason,
                     "cleanup_error": ledger.cleanup_error,
@@ -273,6 +289,9 @@ def main() -> None:
     parser.add_argument("--directory", type=Path, required=True)
     parser.add_argument("--index-sha256", required=True)
     parser.add_argument(
+        "--command-path", help="Explicit replacement PATH; locale C, no ambient merge"
+    )
+    parser.add_argument(
         "--fault", choices=("none", "missing_usage", "wrong_model", "transport"), default="none"
     )
     args = parser.parse_args()
@@ -283,6 +302,9 @@ def main() -> None:
             args.directory,
             expected_index_sha256=args.index_sha256,
             fault=args.fault,
+            command_env={"PATH": args.command_path, "LC_ALL": "C"}
+            if args.command_path is not None
+            else None,
         )
     )
     print("Scripted operator rehearsal finished; zero requests forwarded, no launch approval.")
