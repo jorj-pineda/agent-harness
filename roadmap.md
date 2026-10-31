@@ -4,6 +4,14 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-31 — Command-tool environment replacement wiring:** shared registry/code
+builders can opt into replacement for run_command, Git and ripgrep subprocesses.
+Replacement snapshots the supplied mapping and requires a nonempty absolute PATH;
+command and ripgrep discovery use that path instead of ambient lookup. Default
+merge behavior and model-visible schemas are unchanged. Evaluator selection and
+reviewed environment pins remain separate; this is not isolation, executable-byte
+verification, launch approval or inference. Full operator/freeze gates stay open.
+
 **2026-10-31 — Explicit subprocess environment replacement:** the shared process
 helper can use a caller-supplied mapping without merging ambient PATH, locale,
 virtualenv or temporary-directory values. Replacement requires an explicit mapping;
