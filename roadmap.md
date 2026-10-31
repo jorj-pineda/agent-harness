@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-31 — Read-only runtime inventory:** explicit installed executable paths
+can be hashed with bounded regular-file identity checks, requiring the selected
+Python to be the running interpreter. A private exclusive report also retains
+normalized installed distribution names/versions; ambiguous or unbounded metadata
+refuses. No executables run or packages imported. Distribution metadata does not
+verify dependency/library bytes or command environment; those flags remain false.
+The retained runtime, full operator/freeze/approval and launch gates stay incomplete.
+No inference, model-quality or release claim.
+
 **2026-10-30 — Preventive validated Settings pins:** no-forward captures now retain
 a private, bounded hash-bound snapshot of every explicitly classified non-secret
 Settings field. Shared protocol construction excludes ambient configuration;
