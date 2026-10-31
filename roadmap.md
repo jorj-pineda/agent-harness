@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-31 — Explicit subprocess environment replacement:** the shared process
+helper can use a caller-supplied mapping without merging ambient PATH, locale,
+virtualenv or temporary-directory values. Replacement requires an explicit mapping;
+the default allowlisted merge contract is unchanged. Real-child tests distinguish
+these modes. Callers still own executable resolution and required platform values;
+this is not isolation. Evaluation command wiring, reviewed environment pins and
+the full operator/freeze/approval/launch gates remain incomplete. No inference or
+model-quality claim.
+
 **2026-10-31 — Read-only runtime inventory:** explicit installed executable paths
 can be hashed with bounded regular-file identity checks, requiring the selected
 Python to be the running interpreter. A private exclusive report also retains
