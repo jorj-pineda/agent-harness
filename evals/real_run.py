@@ -18,7 +18,7 @@ import sys
 import tempfile
 import time
 from collections import Counter
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
@@ -395,7 +395,39 @@ def _reference_files(task: Task, root: Path) -> None:
             target.write_bytes(reference.read_bytes())
 
 
-async def acceptance_check(task: Task, root: Path, *, answer: str = "") -> ProcessResult:
+def _task_command_environment(value: Mapping[str, str] | None) -> dict[str, str] | None:
+    if value is None:
+        return None
+    selected = dict(value)
+    allowed = {
+        "PATH",
+        "VIRTUAL_ENV",
+        "LANG",
+        "LC_ALL",
+        "SYSTEMROOT",
+        "TMPDIR",
+        "HOME",
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD",
+        "PYTHONDONTWRITEBYTECODE",
+    }
+    if set(selected) - allowed or any(
+        not isinstance(v, str) or "\x00" in v or len(v) > 4096 for v in selected.values()
+    ):
+        raise ValueError("Unsupported evaluation command environment")
+    path = selected.get("PATH", "")
+    if not path or any(not Path(part).is_absolute() for part in path.split(os.pathsep)):
+        raise ValueError("Evaluation command environment requires an absolute nonempty PATH")
+    return {**selected, "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1", "PYTHONDONTWRITEBYTECODE": "1"}
+
+
+async def acceptance_check(
+    task: Task,
+    root: Path,
+    *,
+    answer: str = "",
+    command_env: Mapping[str, str] | None = None,
+) -> ProcessResult:
+    selected_env = _task_command_environment(command_env)
     guard = _heldout_guard(task)
     if task.category == "repository_question":
         result = grade_question(task.fixture, root, task.acceptance, answer)
@@ -412,7 +444,10 @@ async def acceptance_check(task: Task, root: Path, *, answer: str = "") -> Proce
             cwd=root,
             timeout_seconds=30,
             output_limit=12_000,
-            env={"PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1"},
+            env=selected_env
+            if selected_env is not None
+            else {"PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1"},
+            inherit_environment=selected_env is None,
         )
     if guard is not None:
         guard()
@@ -448,42 +483,51 @@ def _acceptance_digest(directory: Path, *, question: bool = False) -> str | None
     return hashlib.sha256(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()
 
 
-async def _visible_check(root: Path) -> ProcessResult:
+async def _visible_check(
+    root: Path, *, command_env: Mapping[str, str] | None = None
+) -> ProcessResult:
+    selected_env = _task_command_environment(command_env)
     return await run_process(
         [sys.executable, "-m", "pytest", "-q", "test_visible.py"],
         cwd=root,
         timeout_seconds=30,
         output_limit=12_000,
-        env={"PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1", "PYTHONDONTWRITEBYTECODE": "1"},
+        env=selected_env
+        if selected_env is not None
+        else {"PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1", "PYTHONDONTWRITEBYTECODE": "1"},
+        inherit_environment=selected_env is None,
     )
 
 
-async def validate_task(task: Task) -> None:
+async def validate_task(task: Task, *, command_env: Mapping[str, str] | None = None) -> None:
+    selected_env = _task_command_environment(command_env)
+    env_kwargs = {"command_env": selected_env} if selected_env is not None else {}
     guard = _heldout_guard(task)
     if task.category == "repository_question":
         with disposable_workspace(task.fixture) as copy:
-            initial = await acceptance_check(task, copy.workspace.root)
+            initial = await acceptance_check(task, copy.workspace.root, **env_kwargs)
             reference = await acceptance_check(
                 task,
                 copy.workspace.root,
                 answer=(task.reference / "answer.json").read_text(encoding="utf-8"),
+                **env_kwargs,
             )
             if initial.exit_code == 0 or reference.exit_code != 0:
                 raise ValueError(f"Question {task.id} blank/reference answer validation failed")
         return
     with disposable_workspace(task.fixture) as baseline:
-        initial = await acceptance_check(task, baseline.workspace.root)
+        initial = await acceptance_check(task, baseline.workspace.root, **env_kwargs)
         if initial.exit_code == 0:
             raise ValueError(f"Task {task.id} does not fail on its initial fixture")
-        visible = await _visible_check(baseline.workspace.root)
+        visible = await _visible_check(baseline.workspace.root, **env_kwargs)
         if visible.exit_code == 0:
             raise ValueError(f"Task {task.id} visible check does not fail initially")
     with disposable_workspace(task.fixture) as reference:
         _reference_files(task, reference.workspace.root)
-        solved = await acceptance_check(task, reference.workspace.root)
+        solved = await acceptance_check(task, reference.workspace.root, **env_kwargs)
         if solved.exit_code != 0:
             raise ValueError(f"Task {task.id} reference solution fails: {solved.stdout}")
-        visible = await _visible_check(reference.workspace.root)
+        visible = await _visible_check(reference.workspace.root, **env_kwargs)
         if visible.exit_code != 0:
             raise ValueError(f"Task {task.id} visible check fails for reference solution")
     if guard is not None:
@@ -516,7 +560,10 @@ async def run_task(
     mode: Mode,
     attempt: int = 1,
     prepared_directory: Path | None = None,
+    command_env: Mapping[str, str] | None = None,
 ) -> RealTaskResult:
+    selected_env = _task_command_environment(command_env)
+    env_kwargs = {"command_env": selected_env} if selected_env is not None else {}
     turn_trace: list[TurnTraceRecord] = []
     profiles: list[ExecutionProfile] = []
     guard = _heldout_guard(task, execution=True)
@@ -547,7 +594,10 @@ async def run_task(
                     workspace_root=str(copy.workspace.root),
                     coding_toolset=settings.coding_toolset,
                     read_file_default_lines=settings.read_file_default_lines,
-                    command_env={"PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1"},
+                    command_env=selected_env
+                    if selected_env is not None
+                    else {"PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1"},
+                    inherit_environment=selected_env is None,
                     memory_session=session,
                     inspection_only=question,
                 )
@@ -587,9 +637,9 @@ async def run_task(
                 else _acceptance_digest(task.acceptance)
             )
             acceptance = (
-                await acceptance_check(task, copy.workspace.root, answer=answer)
+                await acceptance_check(task, copy.workspace.root, answer=answer, **env_kwargs)
                 if question
-                else await acceptance_check(task, copy.workspace.root)
+                else await acceptance_check(task, copy.workspace.root, **env_kwargs)
             )
             criteria_after = (
                 _acceptance_digest(task.acceptance, question=True)
@@ -690,6 +740,14 @@ async def run_task(
             tool_trace=[call.model_dump(mode="json") for call in trace],
             turn_trace=[record.model_dump(mode="json") for record in turn_trace],
             runtime_config={
+                "command_environment": {
+                    "policy": "replacement-v1",
+                    "sha256": hashlib.sha256(
+                        json.dumps(selected_env, sort_keys=True).encode()
+                    ).hexdigest(),
+                }
+                if selected_env is not None
+                else None,
                 "workspace_policy": "prepared-heldout-single-use-v1"
                 if prepared_directory is not None
                 else "disposable-v1",

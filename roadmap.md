@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-10-31 — Explicit evaluator command environments:** task execution, visible
+controls and independent grader subprocesses can use a validated copied mapping
+in replacement mode. Known runtime keys and absolute PATH entries are required;
+pytest startup protections are forced. Results retain policy/effective-environment
+hash rather than raw values; default merge behavior is unchanged. A scripted
+real-tool regression exercises controls, tool checks and external grading. This
+is not a reviewed environment manifest, dependency-byte freeze, isolation or model
+quality evidence. Held-out recipe pinning and full operator/freeze/approval/launch
+gates remain incomplete; no inference.
+
 **2026-10-31 — Command-tool environment replacement wiring:** shared registry/code
 builders can opt into replacement for run_command, Git and ripgrep subprocesses.
 Replacement snapshots the supplied mapping and requires a nonempty absolute PATH;
