@@ -48,3 +48,29 @@ dependency closure or reserve paths/ports. Current service version, exclusive
 single-use execution admission, request-time checks, provenance, and settlement
 still belong to the future trusted live operator. Passing this preflight alone
 cannot start or authorize inference.
+
+`evals.heldout_execution_admission.admit_execution` provides a separate single-use
+reservation step. It requires both selected files/hashes and an explicit trusted
+`verify_parent(manifest, approval)` callback with no default. The callback must
+raise unless the authorized parent and real exact-head review/CI/merge/launch
+prerequisites have been independently verified. This is a trust boundary for
+operator code, not authentication implemented by this package. A no-op callback
+does not establish authority. Scripted tests use synthetic callbacks and receipts;
+no actual launch approval has been issued.
+
+After binding and provenance checks, admission runs semantic preflight, rereads
+the selected private bytes, and exclusively creates the fixed output directory.
+The exact manifest and receipt are preserved as private files and verified before
+`admission.json` is written last. The record says admitted, not executed or
+completed. Source selections must be canonical, outside managed trees and Git.
+Concurrent attempts with the same fixed output can reserve it only once. Any
+post-allocation failure retains partial artifacts; there is no rollback, deletion,
+reset, output reassignment or automatic retry. Failure-recording errors do not
+replace the primary failure. Caller callbacks receive deep copies of the models.
+
+This function starts no provider, tool, service or inference and admits no task
+workspace. It is not the cohort runner or a full execution freeze. Future trusted
+runner code must use the admitted selections, fresh request/resource gates and
+the owned lifecycle, retain every planned result/unrun cell, and stop on uncertain
+submission or failed cleanup. The reservation does not lock external writers or
+provide power-loss durability, isolation, continuous monitoring or settlement.
