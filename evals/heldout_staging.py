@@ -53,6 +53,7 @@ class CaptureIndex(BaseModel):
     seal_sha256: str
     settings_sha256: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
     command_environment_sha256: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
+    runtime_inventory_sha256: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
     cells: list[CaptureCell] = Field(min_length=16, max_length=16)
     planned_cells: Literal[16]
 
@@ -79,6 +80,17 @@ def verify_capture(
     if index.command_environment_sha256 is not None:
         load_environment_pin(source / "command-environment.json", index.command_environment_sha256)
         inventory.add("command-environment.json")
+    if index.runtime_inventory_sha256 is not None:
+        from evals.heldout_runtime_guard import RuntimeInventory
+
+        raw_runtime, runtime_mode = _read_regular(source / "runtime-inventory.json", 2_000_000)
+        if (
+            runtime_mode != 0o600
+            or hashlib.sha256(raw_runtime).hexdigest() != index.runtime_inventory_sha256
+        ):
+            raise ValueError("Archived runtime inventory bytes/mode changed")
+        RuntimeInventory.model_validate_json(raw_runtime)
+        inventory.add("runtime-inventory.json")
     for ordinal, (cell, (task, mode_name, attempt)) in enumerate(
         zip(index.cells, schedule, strict=True), 1
     ):
