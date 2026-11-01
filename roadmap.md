@@ -4,6 +4,14 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-01 — Admitted cell provider composition:** an explicit transport and
+ownership callback now connect selected first inputs, actual Settings, native
+model/completion/usage checks and owned-endpoint guards through the production
+adapter. Preserved manifest, clean runtime and selected dependencies are rechecked
+around transport delegation. This supplies no network default, lifecycle, cohort
+loop, approval or settlement. Mock-only checks do not establish model quality.
+The exact freeze and fresh launch gates remain incomplete.
+
 **2026-11-01 — Single-use execution artifact admission:** an explicit trusted
 parent-provenance verifier and read-only semantic preflight now precede exclusive
 output reservation. Exact selected manifest/receipt bytes are privately preserved,

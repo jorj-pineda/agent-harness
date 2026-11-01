@@ -74,3 +74,15 @@ runner code must use the admitted selections, fresh request/resource gates and
 the owned lifecycle, retain every planned result/unrun cell, and stop on uncertain
 submission or failed cleanup. The reservation does not lock external writers or
 provide power-loss durability, isolation, continuous monitoring or settlement.
+
+The admitted-cell factory in `heldout_execution_provider` composes the production
+Ollama adapter with first normalized/wire input pins, actual Settings, native
+model/completion/usage checks and the exact owned endpoint transport. It requires
+an explicit transport and trusted ownership callback; it creates neither. The
+callback and preserved manifest/runtime/dependency checks run before construction
+and around HTTP delegation. Settings drift also refuses before adapter dispatch.
+There is no default network connection or launch CLI. Successful factory return
+transfers transport closure to the provider; on construction failure the caller
+still owns closing its transport. The caller must supply valid admission and
+manage lifecycle, task admission, result recording and settlement. This factory
+is not an approval authenticator, resource lease or complete cohort runner.
