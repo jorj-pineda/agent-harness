@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-01 — Owned endpoint submission boundary:** an evaluation-only transport
+requires explicit delegate and ownership checks around the exact loopback chat
+submission. Unknown route/ownership, transport/cancellation/HTTP failure or
+concurrency conflict latches closed without retries. Mock-only tests exercise
+these refusals; no live CLI or default network delegate is supplied. This is not
+stream/body validation, backend settlement, an ownership lease or isolation.
+The actual live operator, exact freeze/approval and launch gates remain incomplete.
+No inference or model-quality claim.
+
 **2026-11-01 — Native response identity/completion refusal:** a scripted payload
 without model identity and with done=false decoded to the configured fallback
 model plus tool calls. The evaluation-only pinned provider now requires explicit
