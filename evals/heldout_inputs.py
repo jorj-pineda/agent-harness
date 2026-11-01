@@ -117,6 +117,15 @@ def check_runtime_selection(path: Path | None, digest: str | None) -> None:
         verify_runtime(path, expected_sha256=digest)
 
 
+def check_dependency_selection(path: Path | None, digest: str | None) -> None:
+    if (path is None) != (digest is None):
+        raise ValueError("Dependency manifest path and selected hash must be supplied together")
+    if path is not None and digest is not None:
+        from evals.heldout_dependency_files import verify_files
+
+        verify_files(path, expected_sha256=digest)
+
+
 async def capture_inputs(
     directory: Path,
     plan_path: Path = PLAN_PATH,
@@ -125,8 +134,11 @@ async def capture_inputs(
     command_env: Mapping[str, str] | None = None,
     runtime_inventory: Path | None = None,
     runtime_sha256: str | None = None,
+    dependency_manifest: Path | None = None,
+    dependency_sha256: str | None = None,
 ) -> dict[str, Any]:
     check_runtime_selection(runtime_inventory, runtime_sha256)
+    check_dependency_selection(dependency_manifest, dependency_sha256)
     selected_env = _task_command_environment(command_env)
     env_kwargs = {"command_env": selected_env} if selected_env is not None else {}
     before_plan = _plan_digest(plan_path)
@@ -153,10 +165,19 @@ async def capture_inputs(
             raise ValueError("Runtime inventory changed before preservation")
         _save(directory / "runtime-inventory.json", raw)
         runtime_inventory = directory / "runtime-inventory.json"
+    if dependency_manifest is not None:
+        from evals.heldout_guard import _read_regular
+
+        raw, mode = _read_regular(dependency_manifest, 2_000_000)
+        if mode != 0o600 or hashlib.sha256(raw).hexdigest() != dependency_sha256:
+            raise ValueError("Dependency manifest changed before preservation")
+        _save(directory / "dependency-files.json", raw)
+        dependency_manifest = directory / "dependency-files.json"
     rows = []
     prior: dict[tuple[str, str], tuple[str, str]] = {}
     for index, (task, mode, attempt) in enumerate(schedule):
         check_runtime_selection(runtime_inventory, runtime_sha256)
+        check_dependency_selection(dependency_manifest, dependency_sha256)
         check_settings(settings, expected_settings)
         prepared_directory = None
         if prepared:
@@ -226,6 +247,7 @@ async def capture_inputs(
     if environment_digest is not None:
         load_environment_pin(directory / "command-environment.json", environment_digest)
     check_runtime_selection(runtime_inventory, runtime_sha256)
+    check_dependency_selection(dependency_manifest, dependency_sha256)
     result_index = {
         "format": "heldout-first-inputs-v1",
         "evidence_kind": "mock-production-adapter",
@@ -237,6 +259,7 @@ async def capture_inputs(
         "settings_sha256": settings_digest,
         "command_environment_sha256": environment_digest,
         "runtime_inventory_sha256": runtime_sha256,
+        "dependency_files_sha256": dependency_sha256,
         "cells": rows,
         "planned_cells": len(ledger.cells),
     }
@@ -253,6 +276,8 @@ def main() -> None:
     )
     parser.add_argument("--runtime-inventory", type=Path)
     parser.add_argument("--runtime-sha256")
+    parser.add_argument("--dependency-manifest", type=Path)
+    parser.add_argument("--dependency-sha256")
     args = parser.parse_args()
     asyncio.run(
         capture_inputs(
@@ -260,6 +285,8 @@ def main() -> None:
             prepared=args.prepared_workspaces,
             runtime_inventory=args.runtime_inventory,
             runtime_sha256=args.runtime_sha256,
+            dependency_manifest=args.dependency_manifest,
+            dependency_sha256=args.dependency_sha256,
             command_env={"PATH": args.command_path, "LC_ALL": "C"}
             if args.command_path is not None
             else None,

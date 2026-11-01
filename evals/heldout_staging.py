@@ -54,6 +54,7 @@ class CaptureIndex(BaseModel):
     settings_sha256: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
     command_environment_sha256: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
     runtime_inventory_sha256: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
+    dependency_files_sha256: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
     cells: list[CaptureCell] = Field(min_length=16, max_length=16)
     planned_cells: Literal[16]
 
@@ -91,6 +92,19 @@ def verify_capture(
             raise ValueError("Archived runtime inventory bytes/mode changed")
         RuntimeInventory.model_validate_json(raw_runtime)
         inventory.add("runtime-inventory.json")
+    if index.dependency_files_sha256 is not None:
+        from evals.heldout_dependency_files import DependencyFiles
+
+        raw_dependencies, dependency_mode = _read_regular(
+            source / "dependency-files.json", 2_000_000
+        )
+        if (
+            dependency_mode != 0o600
+            or hashlib.sha256(raw_dependencies).hexdigest() != index.dependency_files_sha256
+        ):
+            raise ValueError("Archived dependency manifest bytes/mode changed")
+        DependencyFiles.model_validate_json(raw_dependencies)
+        inventory.add("dependency-files.json")
     for ordinal, (cell, (task, mode_name, attempt)) in enumerate(
         zip(index.cells, schedule, strict=True), 1
     ):
