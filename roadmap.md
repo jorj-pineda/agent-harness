@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-01 — Read-only execution artifact preflight:** the selected manifest
+can now be checked against the clean runtime, full capture pins, fresh sixteen-cell
+staging, prepared image/receipt and executable bytes. Canonical disjoint owned
+directories and absent output refuse aliases, overlap and reuse before allocation.
+This observes bounded non-atomic prerequisites without creating output, markers,
+providers or services. Resource/version startup, single-use live execution,
+provenance, settlement, exact freeze and approval remain incomplete. No inference
+or model-quality claim.
+
 **2026-11-01 — Execution manifest/parent-receipt binding:** a read-only bounded
 schema binds explicit execution paths, artifact hashes, runtime revision and
 effective environment to a separately selected parent receipt. Missing, changed,

@@ -30,3 +30,21 @@ resource startup, request guards, single-use output reservation, final preservat
 and owned settlement. Failure or unknown evidence stops without rebinding/retry.
 The live runner and concrete exact freeze are still incomplete; no inference or
 launch authority follows from loading this tuple.
+
+The separate `evals.heldout_execution_preflight.preflight(manifest)` API now
+checks semantic artifact bindings read-only, including the actual clean runtime,
+current protocol, capture settings/environment/runtime/dependency selections,
+all sixteen fresh staged fixtures, prepared model receipt/image, and selected
+executable bytes and executable mode. Managed directories must be canonical,
+outside Git workspaces and pairwise nonoverlapping; the output must be absent.
+Aliases, an occupied output, and an executable inside managed directories refuse
+before large artifact inspection. Runtime and paths are rechecked at completion.
+
+This API is usable during freeze preparation without an approval receipt. It
+creates no output, admission marker, provider, service or request, and supplies
+no approval. Image verification reads the full selected image and may take time.
+Checks are bounded and non-atomic: they do not lock external writers, prove full
+dependency closure or reserve paths/ports. Current service version, exclusive
+single-use execution admission, request-time checks, provenance, and settlement
+still belong to the future trusted live operator. Passing this preflight alone
+cannot start or authorize inference.
