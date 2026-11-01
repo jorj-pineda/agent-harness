@@ -258,3 +258,17 @@ async def test_final_settings_archive_drift_cannot_finish_rehearsal(staged, monk
     assert report["cohort"]["status"] == "stopped"
     assert all(cell["status"] == "recorded" for cell in report["cohort"]["cells"])
     assert json.loads((output / "operator.json").read_bytes())["status"] == "stopped"
+
+
+@pytest.mark.parametrize("fault", ["missing_model", "not_done"])
+async def test_invalid_native_metadata_stops_before_tools_or_next_cell(staged, fault):
+    with pytest.raises(operator.ProtocolStop, match="transport"):
+        await run(staged, fault=fault)
+    source, _, _, output = staged
+    data = json.loads((output / "report.json").read_bytes())
+    assert len(data["results"]) == 1
+    assert not data["results"][0]["modified"] and data["results"][0]["tool_trace"] == []
+    assert [cell["status"] for cell in data["cohort"]["cells"]] == ["recorded"] + ["unrun"] * 15
+    assert not (source / "cell-02/admitted.json").exists()
+    raw = json.loads((output / "cell-01/response-01.json").read_bytes())
+    assert ("model" not in raw) if fault == "missing_model" else raw["done"] is False

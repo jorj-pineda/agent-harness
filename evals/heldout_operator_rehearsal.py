@@ -8,6 +8,7 @@ import json
 from collections.abc import Mapping
 from itertools import islice
 from pathlib import Path
+from typing import Literal
 
 import httpx
 
@@ -52,10 +53,17 @@ def _save_evidence(path: Path, raw: bytes) -> None:
     _save(path, raw)
 
 
+NativeFault = Literal["missing_model", "not_done"]
+OperatorFault = Fault | NativeFault
+
+
 class ScriptedTransport(httpx.MockTransport):
     """In-memory responses only; no network transport or injectable delegate."""
 
-    def __init__(self, oracle: CannedProvider, directory: Path) -> None:
+    def __init__(
+        self, oracle: CannedProvider, directory: Path, native_fault: NativeFault | None = None
+    ) -> None:
+        self.native_fault = native_fault
         self.oracle, self.directory = oracle, directory
         self.requests = 0
         self.closed = False
@@ -84,6 +92,10 @@ class ScriptedTransport(httpx.MockTransport):
                 ],
             },
         }
+        if self.native_fault == "missing_model":
+            payload.pop("model")
+        elif self.native_fault == "not_done":
+            payload["done"] = False
         _save_evidence(
             self.directory / f"response-{self.requests:02d}.json",
             json.dumps(payload, indent=2).encode(),
@@ -123,7 +135,7 @@ async def rehearse(
     directory: Path,
     *,
     expected_index_sha256: str,
-    fault: Fault = "none",
+    fault: OperatorFault = "none",
     command_env: Mapping[str, str] | None = None,
     runtime_sha256: str | None = None,
     dependency_sha256: str | None = None,
@@ -209,7 +221,15 @@ async def rehearse(
             cell_output = destination / f"cell-{ordinal:02d}"
             cell_output.mkdir(mode=0o700)
             transport = ScriptedTransport(
-                CannedProvider(task, plan, fault if ordinal == 1 else "none"), cell_output
+                CannedProvider(
+                    task,
+                    plan,
+                    fault
+                    if ordinal == 1 and fault in ("missing_usage", "wrong_model", "transport")
+                    else "none",
+                ),
+                cell_output,
+                fault if ordinal == 1 and fault in ("missing_model", "not_done") else None,
             )
             provider = None
             failure = None
@@ -310,7 +330,9 @@ def main() -> None:
         "--command-path", help="Explicit replacement PATH; locale C, no ambient merge"
     )
     parser.add_argument(
-        "--fault", choices=("none", "missing_usage", "wrong_model", "transport"), default="none"
+        "--fault",
+        choices=("none", "missing_usage", "wrong_model", "transport", "missing_model", "not_done"),
+        default="none",
     )
     parser.add_argument("--runtime-sha256")
     parser.add_argument("--dependency-sha256")

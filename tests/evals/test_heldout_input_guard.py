@@ -181,3 +181,56 @@ async def test_concurrent_request_cannot_pass_while_first_submission_is_unresolv
         release.set()
         await first
         await guard.aclose()
+
+
+@pytest.mark.parametrize(
+    "fault",
+    ["missing_model", "empty_model", "null_model", "missing_done", "false_done", "numeric_done"],
+)
+async def test_native_identity_and_terminal_state_refuse_before_response_and_latch(
+    setup_guard, fault
+):
+    messages, pins = setup_guard
+    calls = []
+
+    def respond(request):
+        calls.append(request)
+        payload = {
+            "model": "test",
+            "done": True,
+            "message": {
+                "tool_calls": [
+                    {
+                        "function": {
+                            "name": "write_file",
+                            "arguments": {"path": "file.py", "content": "scripted"},
+                        }
+                    }
+                ]
+            },
+            "prompt_eval_count": 10,
+            "eval_count": 5,
+        }
+        if fault == "missing_model":
+            del payload["model"]
+        elif fault == "empty_model":
+            payload["model"] = ""
+        elif fault == "null_model":
+            payload["model"] = None
+        elif fault == "missing_done":
+            del payload["done"]
+        elif fault == "false_done":
+            payload["done"] = False
+        else:
+            payload["done"] = 1
+        return httpx.Response(200, json=payload)
+
+    guard = make(pins, respond)
+    try:
+        with pytest.raises(ValueError, match="explicit model"):
+            await guard.chat(messages, max_tokens=2048)
+        with pytest.raises(ValueError):
+            await guard.chat(messages, max_tokens=2048)
+        assert len(calls) == 1 and guard.failed
+    finally:
+        await guard.aclose()
