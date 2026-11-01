@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-01 — Single-use execution artifact admission:** an explicit trusted
+parent-provenance verifier and read-only semantic preflight now precede exclusive
+output reservation. Exact selected manifest/receipt bytes are privately preserved,
+verified and recorded last; races admit one output and failures retain partial
+evidence without reset/retry. The callback is trusted operator code, not issuer
+authentication or a model supervisor. No real approval was issued. This allocates
+artifacts only: the full live cohort runner, fresh resource/request/settlement
+recipe, concrete reviewed freeze and actual approval still remain incomplete.
+No inference, task admission or model-quality claim.
+
 **2026-11-01 — Read-only execution artifact preflight:** the selected manifest
 can now be checked against the clean runtime, full capture pins, fresh sixteen-cell
 staging, prepared image/receipt and executable bytes. Canonical disjoint owned
