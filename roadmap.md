@@ -4,6 +4,14 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-01 — Shared owned backend session:** the metadata-only CLI now reuses a
+synchronous lifecycle context, yielding an ownership-check callback only after
+validated startup and deactivating it before cleanup. Caller failures retain
+failure/settlement evidence without success receipts; normal exit rechecks image
+and executable bytes. Async entry refuses before resource allocation. The session
+records no generation count or approval authority. Live operator/freeze/approval
+and fresh launch gates remain incomplete; no inference or model-quality claim.
+
 **2026-11-01 — Owned endpoint submission boundary:** an evaluation-only transport
 requires explicit delegate and ownership checks around the exact loopback chat
 submission. Unknown route/ownership, transport/cancellation/HTTP failure or

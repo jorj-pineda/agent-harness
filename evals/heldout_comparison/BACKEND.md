@@ -66,3 +66,28 @@ observation substituted so CI needs no lsof installation. They exercise actual
 process groups, signals, port settlement and the metadata-only request sequence;
 they do not prove Ollama or APFS behavior. Native preparation and metadata-only
 Ollama rehearsal remain separate recorded environment observations.
+
+## Shared synchronous ownership context
+
+owned_backend(image_directory, fresh_directory, installed_binary) now owns the
+same validated startup and cleanup path used by the metadata-only CLI. It yields
+OwnedBackendSession only after the selected image, executable, listener ownership
+and empty-model protocol metadata checks pass. check_owned() can serve as the
+raise-on-refusal callback for OwnedInferenceTransport. It refuses outside the
+active context and re-observes child/group/listener ownership each time.
+
+Enter and exit outside an active event loop; misuse refuses before image access
+or process creation. A future synchronous cohort owner can enter the context,
+run its separately approved asynchronous cell, and then exit for settlement.
+The context is deactivated before cleanup. Caller exceptions are recorded and
+still run owned cleanup; no successful session receipt is written on that path.
+Normal exit rechecks image/executable bytes and records session.json only after
+settlement. The session record makes no generation-count claim because resource
+ownership alone cannot observe arbitrary caller work. The metadata-only wrapper
+retains its own result format and zero-generation count for its empty body.
+
+This context grants no inference permission or reusable ownership lease. A caller
+must enforce the exact freeze/parent approval/fresh gates before submitting any
+request, and must stop its cohort on failed or unknown settlement. Resource code,
+callbacks and host processes remain trusted; there is no isolation or exclusion
+of external writers. The live operator and approval/freeze gates remain unfinished.

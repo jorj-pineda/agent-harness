@@ -11,6 +11,9 @@ import socket
 import stat
 import subprocess
 import time
+from collections.abc import Iterator
+from contextlib import contextmanager
+from dataclasses import dataclass, field
 from itertools import islice
 from pathlib import Path
 
@@ -170,7 +173,29 @@ def _stop(process: subprocess.Popen, gate: OwnedAPIGate) -> dict:
     return evidence
 
 
-def rehearse(image_directory: Path, directory: Path, binary: Path) -> dict:
+@dataclass
+class OwnedBackendSession:
+    process: subprocess.Popen
+    evidence: dict = field(default_factory=dict)
+    active: bool = False
+
+    def check_owned(self) -> None:
+        if not self.active:
+            raise ValueError("Owned backend session is not active")
+        _owned_listener(self.process)
+
+
+@contextmanager
+def owned_backend(
+    image_directory: Path, directory: Path, binary: Path
+) -> Iterator[OwnedBackendSession]:
+    """Synchronous resource ownership only; enter/exit outside an active event loop."""
+    try:
+        asyncio.get_running_loop()
+    except RuntimeError:
+        pass
+    else:
+        raise ValueError("Enter owned backend lifecycle outside an active event loop")
     models, initial_image = _prepared_models(image_directory)
     destination = _owned_location(directory)
     image_container = models.parent
@@ -214,6 +239,7 @@ def rehearse(image_directory: Path, directory: Path, binary: Path) -> dict:
         )
         # Enter cleanup before any post-spawn recording/registration can fail.
         gate = OwnedAPIGate(process, PORT)
+        session = OwnedBackendSession(process)
         try:
             OwnedAPIGate.register(process, PORT)
             _save(
@@ -249,6 +275,20 @@ def rehearse(image_directory: Path, directory: Path, binary: Path) -> dict:
                 time.sleep(0.1)
             _owned_listener(process)
             _save(destination / "metadata.json", json.dumps(metadata, indent=2).encode())
+            session.evidence.update(
+                {
+                    "format": "heldout-owned-backend-session-v1",
+                    "endpoint": ENDPOINT,
+                    "binary": str(binary),
+                    "binary_pin": binary_pin,
+                    "image": initial_image,
+                    "metadata": metadata,
+                    "readiness_errors": readiness_errors,
+                    "inference_authorized": False,
+                }
+            )
+            session.active = True
+            yield session
         except BaseException as error:
             _save(
                 destination / "failure.json",
@@ -256,6 +296,7 @@ def rehearse(image_directory: Path, directory: Path, binary: Path) -> dict:
             )
             raise
         finally:
+            session.active = False
             try:
                 cleanup = _stop(process, gate)
             except BaseException as error:
@@ -269,23 +310,23 @@ def rehearse(image_directory: Path, directory: Path, binary: Path) -> dict:
                 )
                 raise
             else:
+                session.evidence["cleanup"] = cleanup
                 _save(destination / "cleanup.json", json.dumps(cleanup).encode())
     _, final_image = _prepared_models(image_directory)
     if initial_image != final_image or binary_pin != _hash_blob(binary, binary_stat.st_size):
         raise ValueError("Prepared image or executable changed during rehearsal")
+    _save(destination / "session.json", json.dumps(session.evidence, indent=2).encode())
+
+
+def rehearse(image_directory: Path, directory: Path, binary: Path) -> dict:
+    with owned_backend(image_directory, directory, binary) as session:
+        session.check_owned()
     result = {
+        **session.evidence,
         "format": "heldout-owned-backend-rehearsal-v1",
-        "endpoint": ENDPOINT,
-        "binary": str(binary),
-        "binary_pin": binary_pin,
-        "image": initial_image,
-        "metadata": metadata,
-        "readiness_errors": readiness_errors,
-        "cleanup": cleanup,
         "generation_requests": 0,
-        "inference_authorized": False,
     }
-    _save(destination / "result.json", json.dumps(result, indent=2).encode())
+    _save(_owned_location(directory) / "result.json", json.dumps(result, indent=2).encode())
     return result
 
 
