@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-01 — Capture-bound runtime inventory gate:** explicit runtime selection
+can now refuse before capture/output allocation and cell admission, preserving a
+private hash-bound inventory in the bundle. Staging checks bytes/schema without
+requiring the historical machine; the mandatory-mock operator independently
+selects the hash and re-observes runtime around controls/cells and at completion.
+Unselected legacy mock mode remains explicitly unverified. These are non-atomic
+boundary checks, not dependency/library-byte verification, isolation or launch
+authority. Full retained runtime/operator/freeze/approval gates remain incomplete;
+no inference or model-quality claim.
+
 **2026-11-01 — Runtime inventory recheck:** a selected private report hash and
 strict bounded schema now precede read-only observation of interpreter identity,
 explicit executable bytes/paths/modes and installed distribution metadata. Drift

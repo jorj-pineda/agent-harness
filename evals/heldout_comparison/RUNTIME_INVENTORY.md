@@ -50,3 +50,25 @@ later freshness. Package versions still do not verify dependency/library bytes.
 The recheck is not yet wired into capture/operator dispatch and does not authorize
 inference. Retained runtime/dependency/resource pins, the full live operator and
 exact freeze/approval/fresh-launch gates remain incomplete.
+
+## Capture and mock-operator gate
+
+The capture CLI accepts --runtime-inventory and --runtime-sha256 together. An
+explicit selection is checked before capture allocation, copied privately into
+the bundle with its selected hash, checked before each cell and again before the
+completion index. Staging verifies preserved bytes/schema without re-observing
+the current machine, so historical evidence remains inspectable elsewhere.
+
+When a capture has this optional pin, the mandatory-mock operator requires the
+same independently selected --runtime-sha256 before output allocation/admission.
+It rechecks actual runtime before control tasks, before each cell and at the end.
+Mismatched selection, changed inventory or observed runtime drift refuses without
+rebinding. Pin absence retains the existing unpinned mock mode; it does not imply
+runtime verification or launch readiness. No old captures/workspaces are repaired
+or reused. No provider request can reach a live transport in this operator.
+
+These are cell-boundary observations, not continuous monitoring, process isolation
+or a lock on executable/package state during a cell. Package metadata remains
+metadata rather than installed dependency-byte verification. Dependency/shared
+library pins, retained runtime ownership, full live operator/refusal/settlement,
+exact freeze, parent approval and fresh launch gates remain incomplete.
