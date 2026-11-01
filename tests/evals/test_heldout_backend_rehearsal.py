@@ -367,3 +367,60 @@ def test_cleanup_error_receipt_keeps_settlement_separate_from_pass(owned, monkey
     assert cleanup["errors"] == {"poll": "OSError"}
     assert not (directory / "result.json").exists()
     assert_settled(directory)
+
+
+def test_session_checks_ownership_only_while_active_and_settles(owned):
+    image, directory, binary = owned
+    executable(binary)
+    with backend.owned_backend(image, directory, binary) as session:
+        assert session.active and not session.evidence["inference_authorized"]
+        session.check_owned()
+        assert not (directory / "session.json").exists()
+    assert not session.active and session.evidence["cleanup"]["passed"]
+    with pytest.raises(ValueError, match="not active"):
+        session.check_owned()
+    assert_settled(directory)
+    data = json.loads((directory / "session.json").read_bytes())
+    assert "generation_requests" not in data
+    assert not (directory / "result.json").exists()
+
+
+def test_session_body_failure_retains_failure_and_settles_without_success_receipt(owned):
+    image, directory, binary = owned
+    executable(binary)
+    with (
+        pytest.raises(RuntimeError, match="caller failure"),
+        backend.owned_backend(image, directory, binary) as session,
+    ):
+        session.check_owned()
+        raise RuntimeError("caller failure")
+    assert not session.active
+    assert_settled(directory)
+    assert json.loads((directory / "failure.json").read_bytes())["error_type"] == "RuntimeError"
+    assert json.loads((directory / "cleanup.json").read_bytes())["passed"]
+    assert not (directory / "session.json").exists()
+
+
+def test_session_rejects_foreign_ownership_during_body_and_still_stops_child(owned, monkeypatch):
+    image, directory, binary = owned
+    executable(binary)
+    with (
+        pytest.raises(ValueError, match="Listener does not belong"),
+        backend.owned_backend(image, directory, binary) as session,
+    ):
+        monkeypatch.setattr(backend, "_listener_pids", lambda: {999999})
+        session.check_owned()
+    assert not session.active
+    assert_settled(directory)
+    assert not (directory / "session.json").exists()
+
+
+async def test_async_entry_refuses_before_image_access_or_process_creation(owned, monkeypatch):
+    image, directory, binary = owned
+    monkeypatch.setattr(backend, "_prepared_models", lambda *args: pytest.fail("image accessed"))
+    with (
+        pytest.raises(ValueError, match="outside an active event loop"),
+        backend.owned_backend(image, directory, binary),
+    ):
+        pytest.fail("entered")
+    assert not directory.exists()
