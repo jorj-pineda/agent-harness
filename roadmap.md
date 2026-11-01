@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-01 — Execution manifest/parent-receipt binding:** a read-only bounded
+schema binds explicit execution paths, artifact hashes, runtime revision and
+effective environment to a separately selected parent receipt. Missing, changed,
+non-private or mismatched artifacts refuse; no output/provider/resource is created.
+Review/CI/merge/approval fields remain parent assertions, not authenticated facts;
+trusted provenance and all semantic/fresh launch gates still need independent
+verification. This supplies no approval generator or live CLI. Full runner/exact
+freeze/approval gates remain incomplete; no inference or quality claim.
+
 **2026-11-01 — Shared owned backend session:** the metadata-only CLI now reuses a
 synchronous lifecycle context, yielding an ownership-check callback only after
 validated startup and deactivating it before cleanup. Caller failures retain
