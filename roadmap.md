@@ -4,6 +4,14 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-01 — Selected dependency code/library byte pins:** explicitly selected
+trusted files can be bounded, hashed read-only and rechecked against a private
+selected report without rebinding. Missing/changed/linked/configuration files and
+count/size overflow refuse. The manifest keeps import closure unverified: it does
+not discover or prove all imported source, bytecode, data or transitive libraries.
+Capture/dispatch wiring and complete retained runtime/operator/freeze/approval
+gates remain incomplete. No inference, dependency-completeness or quality claim.
+
 **2026-11-01 — Capture-bound runtime inventory gate:** explicit runtime selection
 can now refuse before capture/output allocation and cell admission, preserving a
 private hash-bound inventory in the bundle. Staging checks bytes/schema without
