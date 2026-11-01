@@ -15,7 +15,7 @@ from evals.heldout_command_environment import environment_bytes, load_environmen
 from evals.heldout_comparison import validate_plan
 from evals.heldout_guard import REGISTRATIONS, _read_regular
 from evals.heldout_input_guard import PinnedOllamaProvider, load_pins
-from evals.heldout_inputs import _save, check_runtime_selection
+from evals.heldout_inputs import _save, check_dependency_selection, check_runtime_selection
 from evals.heldout_rehearsal import (
     CannedProvider,
     CheckedProvider,
@@ -126,6 +126,7 @@ async def rehearse(
     fault: Fault = "none",
     command_env: Mapping[str, str] | None = None,
     runtime_sha256: str | None = None,
+    dependency_sha256: str | None = None,
 ) -> CohortLedger:
     selected_env = _task_command_environment(command_env)
     env_kwargs = {"command_env": selected_env} if selected_env is not None else {}
@@ -158,6 +159,10 @@ async def rehearse(
         raise ValueError("Selected runtime hash differs from capture")
     runtime_path = capture / "runtime-inventory.json" if runtime_sha256 is not None else None
     check_runtime_selection(runtime_path, runtime_sha256)
+    if dependency_sha256 != index.dependency_files_sha256:
+        raise ValueError("Selected dependency hash differs from capture")
+    dependency_path = capture / "dependency-files.json" if dependency_sha256 is not None else None
+    check_dependency_selection(dependency_path, dependency_sha256)
     settings = protocol_settings(plan)
     check_settings(settings, expected_settings)
     _staged_inventory(staged, capture, expected_index_sha256, index.cells)
@@ -183,11 +188,13 @@ async def rehearse(
     try:
         for task in tasks:
             check_runtime_selection(runtime_path, runtime_sha256)
+            check_dependency_selection(dependency_path, dependency_sha256)
             await validate_task(task, **env_kwargs)
         ledger.status = "running"
         for ordinal, (task, mode, attempt) in enumerate(schedule, 1):
             _runtime_matches(runtime)
             check_runtime_selection(runtime_path, runtime_sha256)
+            check_dependency_selection(dependency_path, dependency_sha256)
             check_settings(settings, expected_settings)
             _staged_inventory(staged, capture, expected_index_sha256, index.cells)
             cell = ledger.cells[ordinal - 1]
@@ -260,6 +267,7 @@ async def rehearse(
             capture, expected_index_sha256=expected_index_sha256, original_directory=staged
         )
         check_runtime_selection(runtime_path, runtime_sha256)
+        check_dependency_selection(dependency_path, dependency_sha256)
         ledger.status = "finished"
     except BaseException as error:
         ledger.stop(str(error) if isinstance(error, ProtocolStop) else type(error).__name__)
@@ -277,6 +285,7 @@ async def rehearse(
                     "settings_sha256": index.settings_sha256,
                     "command_environment_sha256": index.command_environment_sha256,
                     "runtime_inventory_sha256": index.runtime_inventory_sha256,
+                    "dependency_files_sha256": index.dependency_files_sha256,
                     "status": ledger.status,
                     "stop_reason": ledger.stop_reason,
                     "cleanup_error": ledger.cleanup_error,
@@ -304,6 +313,7 @@ def main() -> None:
         "--fault", choices=("none", "missing_usage", "wrong_model", "transport"), default="none"
     )
     parser.add_argument("--runtime-sha256")
+    parser.add_argument("--dependency-sha256")
     args = parser.parse_args()
     asyncio.run(
         rehearse(
@@ -313,6 +323,7 @@ def main() -> None:
             expected_index_sha256=args.index_sha256,
             fault=args.fault,
             runtime_sha256=args.runtime_sha256,
+            dependency_sha256=args.dependency_sha256,
             command_env={"PATH": args.command_path, "LC_ALL": "C"}
             if args.command_path is not None
             else None,

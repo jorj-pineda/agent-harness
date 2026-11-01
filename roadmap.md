@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-01 — Capture-bound selected dependency byte gate:** explicit manifests
+can refuse selected-file drift before capture/output allocation and admission,
+are privately preserved with the bundle, and are independently selected/rechecked
+around mock controls/cells/completion. Archival byte/schema inspection remains
+independent of the current dependency installation. Only selected bytes are covered;
+complete import closure, continuous monitoring, isolation and launch readiness are
+not established. Full retained runtime/operator/freeze/approval gates remain open.
+No inference, dependency-completeness or quality claim.
+
 **2026-11-01 — Selected dependency code/library byte pins:** explicitly selected
 trusted files can be bounded, hashed read-only and rechecked against a private
 selected report without rebinding. Missing/changed/linked/configuration files and
