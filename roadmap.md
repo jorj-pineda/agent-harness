@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-01 — Admitted fixed-cohort execution loop:** explicit transport selection
+now connects the sixteen fixed cells to shared task controls/execution and separate
+owned backend contexts outside event loops. Rows precede cleanup; failed settlement
+stops later cells. Exclusive start evidence prevents re-entry, selected pins are
+rechecked between cells and failures retain reports/unrun cells. Scripted tests
+replace lifecycle and transport; no real settlement or model-quality evidence.
+There is no launch CLI or approval authentication; concrete freeze, real parent
+approval and fresh launch/refusal/settlement rehearsal remain outstanding.
+
 **2026-11-01 — Admitted cell provider composition:** an explicit transport and
 ownership callback now connect selected first inputs, actual Settings, native
 model/completion/usage checks and owned-endpoint guards through the production

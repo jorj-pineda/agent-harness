@@ -31,7 +31,9 @@ async def prepared(tmp_path, monkeypatch):
     dependency.write_text("value = 1\n")
     dependencies = root / "dependencies.json"
     record_files([dependency], dependencies)
-    environment = _task_command_environment({"PATH": "/usr/bin:/bin", "LC_ALL": "C"})
+    environment = _task_command_environment(
+        {"PATH": f"{Path(sys.executable).parent}:/usr/bin:/bin", "LC_ALL": "C"}
+    )
     source = root / "inputs"
     await inputs.capture_inputs(
         source,

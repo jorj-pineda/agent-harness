@@ -86,3 +86,24 @@ transfers transport closure to the provider; on construction failure the caller
 still owns closing its transport. The caller must supply valid admission and
 manage lifecycle, task admission, result recording and settlement. This factory
 is not an approval authenticator, resource lease or complete cohort runner.
+
+`heldout_execution_cohort.run_admitted_cohort` accepts trusted admission and an
+explicit transport factory (without a network default). It requires an explicit
+scripted/real evidence label. After a private exclusive start marker and initial
+ledger, shared controls run before any backend. Each fixed cell gets a separate
+synchronous owned backend context; task execution and provider closure happen in
+an event loop inside it. The result row is persisted before backend exit, and
+the next cell starts only after successful owned cleanup and preservation checks.
+Provider/criteria/usage/runtime/preservation/cleanup failures stop the cohort;
+ordinary artifact rejection/native budget outcomes can continue after settlement.
+Report failures do not trigger another attempt. A failed final report may leave
+the last safe ledger incomplete; secondary recording errors annotate the primary.
+
+The API authenticates no constructed Admission object. Trusted operator code must
+use actual approved admission, provide a no-retry transport factory that performs
+no submissions itself, and retain all lifecycle evidence. Tests replace ownership
+and settlement with scripted contexts and mock responses. No actual freeze or
+parent launch approval has been issued, and no generation was run to validate this
+slice. Concrete operator/no-forward/refusal probes and fresh launch gates remain
+required. Boundary checks are non-atomic, not process isolation or a hard end-to-end
+deadline. The generic metadata-only CLI remains metadata-only.
