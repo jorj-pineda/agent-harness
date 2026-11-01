@@ -129,9 +129,20 @@ class PinnedOllamaProvider:
             ):
                 raise ValueError("Frozen normalized first input differs; adapter not called")
             self.started = True
-            return await self.adapter.chat(
+            response = await self.adapter.chat(
                 messages, tools=tools, temperature=temperature, max_tokens=max_tokens
             )
+            raw = response.raw
+            if (
+                not isinstance(raw, dict)
+                or not isinstance(raw.get("model"), str)
+                or not raw["model"].strip()
+                or raw.get("done") is not True
+            ):
+                raise ValueError(
+                    "Native Ollama response lacks explicit model or terminal done=true"
+                )
+            return response
         except BaseException:
             self.failed = True
             raise

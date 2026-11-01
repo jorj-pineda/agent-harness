@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-01 — Native response identity/completion refusal:** a scripted payload
+without model identity and with done=false decoded to the configured fallback
+model plus tool calls. The evaluation-only pinned provider now requires explicit
+nonempty native model identity and literal done=true before returning any response,
+latching invalid submissions closed. Mock operator probes retain a failed row and
+unrun cells before tool dispatch. Shared adapter fallback and application behavior
+remain unchanged. Reported fields are not backend settlement or authenticated
+model evidence; live operator/freeze/approval and launch gates remain incomplete.
+No inference or model-quality claim.
+
 **2026-11-01 — Capture-bound selected dependency byte gate:** explicit manifests
 can refuse selected-file drift before capture/output allocation and admission,
 are privately preserved with the bundle, and are independently selected/rechecked

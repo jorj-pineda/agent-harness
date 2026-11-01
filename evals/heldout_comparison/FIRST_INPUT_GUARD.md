@@ -41,3 +41,21 @@ unverified. The exact execution freeze, independent review/CI/merge, parent appr
 receipt and fresh launch gates remain incomplete. This fifth development slice
 adds an enforceable prerequisite; it does not complete the initially proposed
 freeze, authorize generation or establish a useful unattended envelope.
+
+## Reported native response identity and completion
+
+The evaluation-only pinned Ollama provider also requires a nonempty explicit model
+string and literal done=true in every decoded native payload before returning it
+to the runtime. The shared production adapter retains its existing fallback
+contract; the evaluation guard must not treat that fallback as observed identity.
+The separate protocol wrapper still compares an explicit returned model with the
+selected model and requires normalized usage. Missing/empty native identity or a
+missing/false/non-boolean completion marker fails and latches closed, even if the
+response contains tool calls and valid usage. No retry or later response escapes.
+
+The mandatory-mock operator has --fault missing_model and --fault not_done probes.
+They retain the raw scripted native response, one failed result and fifteen unrun
+cells without tool dispatch or second admission. A normal scripted 16-cell run
+still passes. These checks establish reported payload fields, not backend
+settlement, authenticated model identity, inference quality or launch readiness.
+The live operator/freeze/approval and fresh-launch gates remain incomplete.
