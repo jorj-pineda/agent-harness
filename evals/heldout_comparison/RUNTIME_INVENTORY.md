@@ -27,3 +27,26 @@ atomic snapshots or launch gates. A retained runtime, dependency/environment pin
 full live operator/refusal/settlement recipe, exact reviewed execution freeze,
 parent approval and fresh launch gates remain required before inference. No model
 quality or release claim follows.
+
+## Read-only recheck
+
+```sh
+uv run python -m evals.heldout_runtime_guard \
+  --inventory /tmp/selected-runtime-inventory.json \
+  --sha256 SELECTED_REPORT_SHA256
+```
+
+The recheck binds the supplied report hash and private mode before parsing a
+strict bounded schema or observing runtime files. It compares a fresh observation
+of the actual running interpreter, selected executable paths/targets/bytes/modes,
+Python identity and installed distribution metadata with the selected inventory.
+Report bytes/mode are checked again afterward. Mismatch refuses without rewriting
+or rebinding the inventory. This utility constructs no provider and runs no selected
+executable. The hash selects bytes, not approval authority; an arbitrary report
+must not be treated as a trusted freeze. Host code remains trusted.
+
+These observations are non-atomic and do not exclude external writers or establish
+later freshness. Package versions still do not verify dependency/library bytes.
+The recheck is not yet wired into capture/operator dispatch and does not authorize
+inference. Retained runtime/dependency/resource pins, the full live operator and
+exact freeze/approval/fresh-launch gates remain incomplete.

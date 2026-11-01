@@ -4,6 +4,14 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-01 — Runtime inventory recheck:** a selected private report hash and
+strict bounded schema now precede read-only observation of interpreter identity,
+explicit executable bytes/paths/modes and installed distribution metadata. Drift
+refuses without rebinding; report identity is rechecked afterward. This does not
+verify dependency/library bytes, lock host writers or establish launch authority.
+Dispatch wiring and full retained-runtime/operator/freeze/approval gates remain
+incomplete. No inference or model-quality claim.
+
 **2026-10-31 — Capture-bound command environment selection:** no-forward captures
 can bind a private effective-environment file/hash, preserved by staging. The
 mandatory-mock operator independently validates the caller-selected mapping
