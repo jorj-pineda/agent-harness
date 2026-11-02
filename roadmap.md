@@ -4,6 +4,14 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-02 — Cohort refusal/recovery probes:** scripted regression cases now
+exercise controls before startup, provider construction/closure, preservation
+drift, uncertain cancellation, report failures and active-event-loop refusal.
+They inspect retained rows/unrun cells, consumed start evidence and closure
+ordering without retries. Runtime behavior is unchanged. Mock lifecycle evidence
+is not real settlement, launch approval or model quality. Concrete retained
+freeze and fresh operator/resource/refusal gates remain outstanding.
+
 **2026-11-02 — Bounded native submission evidence:** admitted cohort transports
 now preserve private request bytes before delegation and bounded response bytes
 before HTTP/native refusal. Failed reads retain bounded incomplete prefixes and
