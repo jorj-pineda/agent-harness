@@ -363,6 +363,29 @@ async def test_run_command_rejects_disallowed_executable(registry: ToolRegistry)
 
 @pytest.mark.parametrize(
     "argv",
+    [
+        ["python -m pytest"],
+        ['["python", "-m", "pytest"]'],
+        ["python**,**-m**,**pytest**"],
+        ["bash", "-c", "echo hi"],
+    ],
+)
+async def test_unknown_command_tokens_explain_array_boundaries_without_dispatch(
+    registry: ToolRegistry, monkeypatch: pytest.MonkeyPatch, argv: list[str]
+) -> None:
+    dispatch = AsyncMock()
+    monkeypatch.setattr("tools.code.run_process", dispatch)
+    original = list(argv)
+    with pytest.raises(ToolError, match="Command not allowlisted") as error:
+        await registry.invoke("run_command", {"argv": argv})
+    assert 'Example: {"argv": ["python", "-m", "pytest"]}' in str(error.value)
+    assert "No command ran; arguments were not split or rewritten." in str(error.value)
+    assert argv == original
+    dispatch.assert_not_awaited()
+
+
+@pytest.mark.parametrize(
+    "argv",
     ['["python", "-m", "pytest"]', '["python",', "python -m pytest"],
 )
 async def test_string_argv_feedback_rejects_before_dispatch_and_accepts_list_retry(

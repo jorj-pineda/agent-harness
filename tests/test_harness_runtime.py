@@ -377,15 +377,20 @@ async def test_whole_file_toolset_rejects_exact_edits_and_preserves_other_specs(
 
 
 @pytest.mark.parametrize("mode", ["corrected", "repeated", "tool_limit"])
+@pytest.mark.parametrize("shape", ["string", "joined", "separator"])
 async def test_string_command_recovery_uses_shared_feedback_and_existing_budgets(
-    tmp_path: Path, mode: str
+    tmp_path: Path, mode: str, shape: str
 ) -> None:
     (tmp_path / "test_ok.py").write_text(
         "from pathlib import Path\ndef test_ok():\n    Path('command-ran').write_text('yes')\n",
         encoding="utf-8",
     )
     argv = ["python", "-m", "pytest", "-q", "test_ok.py"]
-    malformed = '["python", "-m", "pytest", "-q", "test_ok.py"]'
+    malformed: str | list[str] = {
+        "string": '["python", "-m", "pytest", "-q", "test_ok.py"]',
+        "joined": ["python -m pytest -q test_ok.py"],
+        "separator": ["python**,**-m**,**pytest**,**-q**,**test_ok.py**"],
+    }[shape]
     provider = ScriptedProvider()
     provider.script(
         make_response(

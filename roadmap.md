@@ -4,6 +4,17 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-02 — Command token-boundary feedback; v1 retired for tuning:** observed
+single-token malformed argv arrays previously received only an allowlist error.
+That refusal now explains separate executable/argument elements with a literal
+JSON example; it still refuses before dispatch without splitting or rewriting.
+Scripted shared-runtime recovery tests cover corrected, repeated and tool-budget
+paths for quoted strings, joined commands and malformed separators. This is
+mechanics evidence, not a measured Gemma remedy. Held-out v1 is explicitly retired
+from future held-out claims before this outcome-guided tuning; original bytes,
+identities and closed results remain preserved. A new held-out version, inference
+approval and actual measured benefit remain open. No defaults or budgets change.
+
 **2026-11-02 — Authorized held-out cohort stopped:** after exact freeze #334
 review/CI/merge, explicit Jorge approval and fresh gates, the fixed local Gemma run
 recorded one unchanged, rejected `ho_iso_week` harness artifact. Its 150-second
