@@ -17,6 +17,7 @@ from evals.heldout_execution_provider import build_cell_provider
 from evals.heldout_guard import REGISTRATIONS
 from evals.heldout_inputs import _save, check_dependency_selection, check_runtime_selection
 from evals.heldout_model_image import _hash_blob
+from evals.heldout_native_evidence import NativeEvidenceTransport
 from evals.heldout_operator_rehearsal import _runtime_matches, _staged_inventory
 from evals.heldout_rehearsal import ProtocolStop, stop_reason
 from evals.heldout_settings import protocol_settings
@@ -142,6 +143,7 @@ def run_admitted_cohort(
                 provider = None
                 primary = None
                 try:
+                    transport = NativeEvidenceTransport(transport, cell_output / "native")
                     provider = build_cell_provider(
                         admission,
                         ordinal,
