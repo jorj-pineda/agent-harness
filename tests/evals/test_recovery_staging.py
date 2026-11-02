@@ -40,7 +40,9 @@ def case(tmp_path):
         directory.mkdir()
     (fixture / "code.txt").write_text("broken\n")
     (fixture / "keep.txt").write_text("preserve\n")
+    (fixture / "keep.txt").chmod(0o644)
     (fixture / "empty").mkdir(mode=0o750)
+    (fixture / "empty").chmod(0o750)
     (fixture / "code.txt").chmod(0o640)
     (criteria / "test_acceptance.py").write_text(
         "from pathlib import Path\n"

@@ -87,7 +87,8 @@ def test_failed_or_changed_copy_retains_partial_without_receipt(model, monkeypat
         if fault == "corrupt":
             target.write_bytes(b"bad")
         else:
-            source.chmod(0o600)
+            # Always change the mode, including fixtures created under umask 077.
+            source.chmod(0o640 if source.stat().st_mode & 0o777 == 0o600 else 0o600)
 
     monkeypatch.setattr(copy, "_clone_file", broken)
     with pytest.raises((ValueError, OSError)):
