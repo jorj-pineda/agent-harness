@@ -4,6 +4,18 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-02 — Fresh held-out execution freeze proposal:** a new clean retained
+runtime at930efd3 uses the existing absolute interpreter with no source-local
+environment/resolver. Fresh clones, candidate/first-input/settings/command/dependency
+pins, actual owned metadata/mock-cohort rehearsal and13 refusal probes are retained.
+All16 scripted workflows passed original grading (12 code artifacts,4 structured
+answers),17 owned groups settled, and retained G0 passed2796 offline tests plus
+static/matrix gates. The reviewed machine-bound recipe has explicit check-only
+and parent-controlled execute modes; Git/hash checks are not issuer or CI/review
+authentication. The proposal still requires independent review/CI/merge and an
+actual parent receipt/fresh launch gates. No generation or quality claim. The
+earlier withdrawn candidate remains excluded.
+
 **2026-11-02 — Existing-interpreter offline preparation:** one explicit entry
 point now connects inventory, selected dependency pins, independent image clone,
 mandatory mock inputs, staging and preflight without a resolver/installer/service.
