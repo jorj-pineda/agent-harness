@@ -11,6 +11,12 @@ workflow are still unproven. PR/test counts are not a release-completion percent
 
 ## Current disposition — 2026-10-23
 
+**2026-11-02 held-out follow-up:** the [authorized frozen cohort](evals/heldout_comparison/RESULTS_20261102.md)
+stopped after one unchanged rejected harness artifact. A wall-limit cancellation
+left aggregate usage unknown; fifteen cells remain unrun and no minimal comparison
+is observed. Regrading and clean unforced owned settlement verify. This closes the
+cohort without retries or changes to the no-go, 8/10 target or G2–G5.
+
 **2026-10-25 UTC feedback follow-up:** the four-cell
 [invalid-hash comparison](evals/projects/duodoro/HASH_FEEDBACK_RESULTS.md) closed
 control 0/2 and treatment 0/2 accepted artifacts/completions. Every second request

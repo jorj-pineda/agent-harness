@@ -1,5 +1,15 @@
 # Real-task baselines
 
+## 2026-11-02 — Held-out v1 cohort stopped
+
+The [authorized frozen run](heldout_comparison/RESULTS_20261102.md) recorded one
+unchanged rejected harness artifact before a 150-second wall stop and missing
+aggregate usage stopped the fifteen remaining cells. Five complete responses
+report a 10,870/165 token prefix; the cancelled sixth submission is unknown.
+Original acceptance regrade and clean unforced owned settlement verify. No minimal
+row or question attempt ran, so no policy/category comparison or release gain is
+established. The cohort is closed without retries; original no-go and G2–G5 remain.
+
 ## 2026-10-29 — Replacement schema comparison
 
 The [eight-row comparison](projects/python_utility_trial/SCHEMA_COMPARISON_RESULTS.md)
