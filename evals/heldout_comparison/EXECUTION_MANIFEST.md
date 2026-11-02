@@ -170,3 +170,22 @@ canonical parent refuses rather than rebinding. Existing synthetic scripted
 fixtures may omit provenance but cannot use that omission for the real cohort.
 These checks remain non-atomic observations, not issuer authentication or a lease.
 The caller's actual parent verifier and complete reviewed freeze remain required.
+
+`heldout_preparation.prepare_candidate` is a one-shot offline entry point for a
+new trial, invoked with the selected existing absolute Python from a clean retained
+source tree. It requires the expected lexical interpreter path and clean commit,
+rejecting a source-local interpreter/prefix or any source-local `.venv` entry; resolving the base Python alone would
+not distinguish different venvs. It snapshots explicit executable/dependency/env
+selections before allocation, uses the existing clone/capture/staging helpers,
+performs semantic preflight, and writes candidate manifest/preparation evidence
+last. There is no resolver, installer, service, generation, CLI or parent receipt.
+
+Post-allocation failures retain partial evidence and a withdrawal marker; occupied
+outputs refuse without reset or retry. A preparation receipt does not authorize
+admission or make dependency/import closure complete. The caller still selects
+trusted existing dependencies and exact command environment. Checks are bounded
+and non-atomic; this function cannot prevent a launcher from installing something
+before it starts or detect every unrelated host mutation. The approved recipe must
+use the original absolute interpreter directly, never uv environment resolution.
+The earlier withdrawn candidate remains excluded and cannot be repaired into a
+launch by this entry point.

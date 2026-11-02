@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-02 — Existing-interpreter offline preparation:** one explicit entry
+point now connects inventory, selected dependency pins, independent image clone,
+mandatory mock inputs, staging and preflight without a resolver/installer/service.
+It checks the expected lexical Python/clean revision and refuses a source-local
+interpreter, prefix or `.venv` entry. Partial failure retains artifacts/withdrawal; candidate
+receipts grant no authority. External launchers remain outside this boundary.
+Mock tests do not prove native image copying or model quality; fresh compliant
+preparation, exact freeze and actual parent launch approval remain open.
+
 **2026-11-02 — Selected operator and ongoing withdrawal checks:** an explicit
 trusted-parent API now connects selected admission to the real owned cohort and
 zero-retry, proxy-environment-disabled transport. Source provenance is retained
