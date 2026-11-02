@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-02 — Preventive withdrawal admission refusal:** any withdrawal marker
+beside the selected manifest now refuses before parent verification and is
+rechecked before preflight/output/final receipt. Unsafe or malformed entries
+refuse without reading them; late withdrawal retains partial failure evidence.
+This closes the documented-marker admission gap, not parent authentication,
+ongoing execution monitoring or external-writer isolation. The prior candidate
+remains withdrawn; fresh preparation/operator/freeze/approval gates remain open.
+No inference or model-quality claim.
+
 **2026-11-02 — Permission-independent refusal fixtures:** retained-runtime G0
 under umask077 exposed three tests whose fixture modes assumed umask022. Fixtures
 now set intended modes explicitly and the source-mode probe always changes mode.

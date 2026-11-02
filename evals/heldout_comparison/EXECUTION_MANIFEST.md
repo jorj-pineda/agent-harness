@@ -137,3 +137,18 @@ safe ledger incomplete; the caller receives the primary exception with secondary
 recording notes. Active event-loop entry refuses before resources. These tests
 use synthetic admission and mocked ownership/settlement and do not replace real
 resource refusal probes or authorize generation. No runtime policy changed.
+
+Admission now refuses any `WITHDRAWN.json` entry beside the selected source
+manifest, including malformed files, directories, FIFOs or broken symlinks. It
+checks before parent verification, after that callback, after semantic preflight
+and before writing the final admission record. Marker contents are never opened
+or interpreted as a permission override. A withdrawal observed after allocation
+retains partial preservation/failure evidence without a success receipt or retry.
+This enforces the documented withdrawn trial at admission, not just in prose.
+
+Read-only loading/preflight remain available for forensic inspection. No marker
+removal/reset/reapproval API is provided. Checks are non-atomic and do not lock
+external writers, authenticate a parent or monitor already admitted execution.
+Constructed Admission objects remain a trusted-caller boundary; future real
+operator code must also recheck withdrawal before resource/request admission.
+No launch approval or inference follows from an absent marker.
