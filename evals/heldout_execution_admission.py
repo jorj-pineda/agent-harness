@@ -25,13 +25,25 @@ class ExecutionAdmission:
     manifest: ExecutionManifest
     approval: ParentApproval
     capture: CaptureIndex
+    source_manifest: Path | None = None
 
 
 def refuse_withdrawn_selection(manifest_path: Path) -> None:
     """Any withdrawal marker is a refusal, without opening its possibly unsafe contents."""
-    marker = manifest_path.parent.resolve(strict=True) / "WITHDRAWN.json"
+    parent = manifest_path.parent.resolve(strict=True)
+    if parent != manifest_path.parent:
+        raise ValueError("Selected source manifest path is noncanonical or changed")
+    marker = parent / "WITHDRAWN.json"
     if marker.exists() or marker.is_symlink():
         raise ValueError("Execution selection is withdrawn or has an unresolved withdrawal marker")
+
+
+def check_admission_withdrawal(admission: ExecutionAdmission) -> None:
+    """Recheck selected source provenance when present; legacy mock objects lack it."""
+    source = getattr(admission, "source_manifest", None)
+    if source is not None:
+        refuse_withdrawn_selection(source)
+        _selected_bytes(source, admission.approval.manifest_sha256, 64_000)
 
 
 def admit_execution(
@@ -108,6 +120,7 @@ def admit_execution(
                     "format": "heldout-execution-admission-v1",
                     "status": "admitted",
                     "manifest_sha256": manifest_sha256,
+                    "source_manifest": str(manifest_path),
                     "approval_sha256": approval_sha256,
                     "approval_id": approval.approval_id,
                     "runtime_commit": manifest.runtime_commit,
@@ -129,4 +142,4 @@ def admit_execution(
                 f"Admission failure recording also failed: {type(recording_error).__name__}"
             )
         raise
-    return ExecutionAdmission(directory, manifest, approval, capture)
+    return ExecutionAdmission(directory, manifest, approval, capture, manifest_path)

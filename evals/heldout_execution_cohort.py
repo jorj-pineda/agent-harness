@@ -11,7 +11,7 @@ import httpx
 
 from evals.heldout_backend_rehearsal import owned_backend
 from evals.heldout_comparison import PLAN_PATH, validate_plan
-from evals.heldout_execution_admission import ExecutionAdmission
+from evals.heldout_execution_admission import ExecutionAdmission, check_admission_withdrawal
 from evals.heldout_execution_manifest import _selected_bytes
 from evals.heldout_execution_provider import build_cell_provider
 from evals.heldout_guard import REGISTRATIONS
@@ -53,6 +53,8 @@ def run_admitted_cohort(
         pass
     else:
         raise ValueError("Run the owned cohort outside an active event loop")
+    if not scripted and getattr(admission, "source_manifest", None) is None:
+        raise ValueError("Real cohort requires selected source manifest provenance")
     manifest = admission.manifest.model_copy(deep=True)
     staged, capture = Path(manifest.staged_directory), Path(manifest.capture_directory)
     destination = admission.directory
@@ -63,6 +65,7 @@ def run_admitted_cohort(
     results = []
 
     def check() -> None:
+        check_admission_withdrawal(admission)
         _selected_bytes(destination / "manifest.json", admission.approval.manifest_sha256, 64_000)
         _selected_bytes(
             Path(manifest.image_directory) / "prepared-image.json",

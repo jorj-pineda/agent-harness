@@ -152,3 +152,21 @@ external writers, authenticate a parent or monitor already admitted execution.
 Constructed Admission objects remain a trusted-caller boundary; future real
 operator code must also recheck withdrawal before resource/request admission.
 No launch approval or inference follows from an absent marker.
+
+The explicit `heldout_execution_operator.execute_selected` API connects actual
+selected manifest/receipt admission to the real cohort with `scripted=False` and
+a zero-retry, environment-proxy-disabled HTTP transport. It has no CLI, implicit
+launch or approval generator. A required trusted parent verifier must independently
+establish actual authority and freeze/review/CI/merge/fresh-launch prerequisites;
+a no-op callback or arbitrary affirmative JSON is not approval. Calling this API
+can generate and is not a read-only preflight. No invocation with real resources
+or inference was used to test it.
+
+Admission now retains the canonical selected source manifest path in its object
+and record. Real cohort entry refuses missing source provenance. When present,
+the cohort and owned request guards recheck source bytes/mode and withdrawal at
+construction, cell boundaries and around transport delegation/body read. A changed
+canonical parent refuses rather than rebinding. Existing synthetic scripted
+fixtures may omit provenance but cannot use that omission for the real cohort.
+These checks remain non-atomic observations, not issuer authentication or a lease.
+The caller's actual parent verifier and complete reviewed freeze remain required.
