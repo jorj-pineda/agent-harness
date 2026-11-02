@@ -27,6 +27,13 @@ class ExecutionAdmission:
     capture: CaptureIndex
 
 
+def refuse_withdrawn_selection(manifest_path: Path) -> None:
+    """Any withdrawal marker is a refusal, without opening its possibly unsafe contents."""
+    marker = manifest_path.parent.resolve(strict=True) / "WITHDRAWN.json"
+    if marker.exists() or marker.is_symlink():
+        raise ValueError("Execution selection is withdrawn or has an unresolved withdrawal marker")
+
+
 def admit_execution(
     manifest_path: Path,
     *,
@@ -42,6 +49,7 @@ def admit_execution(
     and is trusted operator code, not a JSON authenticator or model supervisor.
     Failure after allocation retains partial evidence, permanently consuming output.
     """
+    refuse_withdrawn_selection(manifest_path)
     manifest, approval = load_execution(
         manifest_path,
         manifest_sha256=manifest_sha256,
@@ -75,7 +83,9 @@ def admit_execution(
     # Pydantic frozen models still contain mutable dicts; don't let callback
     # mutations change the values used by preflight or returned to the runner.
     verify_parent(manifest.model_copy(deep=True), approval.model_copy(deep=True))
+    refuse_withdrawn_selection(manifest_path)
     capture = preflight(manifest)
+    refuse_withdrawn_selection(manifest_path)
     manifest_raw = _selected_bytes(manifest_path, manifest_sha256, 64_000)
     approval_raw = _selected_bytes(approval_path, approval_sha256, 16_000)
     directory = _owned_location(Path(manifest.output_directory))
@@ -90,6 +100,7 @@ def admit_execution(
         _selected_bytes(approval_path, approval_sha256, 16_000)
         _selected_bytes(directory / "manifest.json", manifest_sha256, 64_000)
         _selected_bytes(directory / "parent-approval.json", approval_sha256, 16_000)
+        refuse_withdrawn_selection(manifest_path)
         _save(
             directory / "admission.json",
             json.dumps(
