@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-02 — Compact tool validation feedback:** registry refusals now return
+field/index locations and all validation messages without Pydantic's input dumps,
+input-type annotations or documentation URLs. Custom corrective instructions remain
+intact; invalid inputs still refuse before dispatch and are never rewritten. The
+shared-runtime command recovery checks confirm the model receives the compact error.
+Validator-authored messages can still include values; this is not secret redaction,
+a total output bound or a model-quality claim. Held-out v1 stays retired for tuning;
+no new inference, schema/allowlist, budget or default change is included.
+
 **2026-11-02 — Command token-boundary feedback; v1 retired for tuning:** observed
 single-token malformed argv arrays previously received only an allowlist error.
 That refusal now explains separate executable/argument elements with a literal

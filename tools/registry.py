@@ -58,7 +58,13 @@ class ToolRegistry:
         try:
             validated = tool.input_model.model_validate(arguments)
         except ValidationError as exc:
-            raise ToolError(f"Invalid arguments for tool {name!r}: {exc}") from exc
+            details = "; ".join(
+                f"{'.'.join(str(part) for part in error['loc']) or '<arguments>'}: {error['msg']}"
+                for error in exc.errors(
+                    include_url=False, include_input=False, include_context=False
+                )
+            )
+            raise ToolError(f"Invalid arguments for tool {name!r}: {details}") from exc
 
         effective_timeout = timeout if timeout is not None else tool.timeout_seconds
         if effective_timeout is None:

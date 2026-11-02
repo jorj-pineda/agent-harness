@@ -435,6 +435,8 @@ async def test_string_command_recovery_uses_shared_feedback_and_existing_budgets
     assert "Resend argv as a JSON array" in (response.tool_calls[0].error or "")
     tool_messages = [m for m in provider.calls[1][0] if m.role == "tool"]
     assert "Resend argv as a JSON array" in tool_messages[-1].content
+    assert "https://errors.pydantic.dev" not in tool_messages[-1].content
+    assert "input_value=" not in tool_messages[-1].content
     assert (tmp_path / "command-ran").exists() == (mode == "corrected")
     if mode == "corrected":
         assert response.completion_status == "completed"
