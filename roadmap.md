@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-02 — Permission-independent refusal fixtures:** retained-runtime G0
+under umask077 exposed three tests whose fixture modes assumed umask022. Fixtures
+now set intended modes explicitly and the source-mode probe always changes mode.
+Runtime/acceptance criteria are unchanged. Real owned metadata/mock-cohort rehearsal
+completed16 scripted accepted workflows with clean settlement, but its candidate
+was withdrawn after an unintended cached uv environment was created during
+bookkeeping. The environment and failure evidence are preserved; no inference or
+parent approval occurred. See the dated rehearsal handoff. A new compliant
+preparation, exact freeze and fresh launch approval remain required.
+
 **2026-11-02 — Cohort refusal/recovery probes:** scripted regression cases now
 exercise controls before startup, provider construction/closure, preservation
 drift, uncertain cancellation, report failures and active-event-loop refusal.
