@@ -736,7 +736,11 @@ def _validate_command_argv(argv: list[str]) -> None:
         raise ToolError(
             f"Command not allowlisted: {root!r}. Allowed: pytest, ruff, mypy, "
             "git diff/status/show, python -m pytest, python3 -m pytest, "
-            "npm [--prefix DIR] run test:run [-- ARGS]."
+            "npm [--prefix DIR] run test:run [-- ARGS]. "
+            "Resend argv as a JSON array of separate strings: the executable and each "
+            'argument need separate elements. Example: {"argv": ["python", "-m", "pytest"]}. '
+            "Use the configured project check's exact tokens when provided. "
+            "No command ran; arguments were not split or rewritten."
         )
 
     if root == "npm" and npm_test_prefix(argv) is None:

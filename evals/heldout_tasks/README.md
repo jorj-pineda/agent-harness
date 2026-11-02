@@ -1,5 +1,17 @@
 # Held-out task preparation
 
+## v1 retired from future held-out claims — 2026-11-02
+
+The [closed live cohort](../heldout_comparison/RESULTS_20261102.md) exposed v1
+outcomes to tool-interface development. Version 1 is now diagnostic/development
+material, not eligible for a new held-out claim after tuning. Preserve its sealed
+bytes, original partition/identity metadata, closed results, and consumed/unrun
+cell states. Retirement does not change historical labels, acceptance criteria,
+registration or runtime preservation checks, and does not authorize another run.
+A future held-out comparison requires a separately versioned, reviewed catalog
+not used for this tuning. The preparation-time descriptions below are historical.
+
+
 `v1/tasks.yaml` is a separate four-task catalog covering an ISO-week bugfix,
 rolling-window feature, immutable-record refactor and cache-policy question.
 The default public development corpus remains twenty tasks. Select this catalog
