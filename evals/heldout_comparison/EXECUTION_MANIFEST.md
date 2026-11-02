@@ -126,3 +126,14 @@ and delegation and follow the bounded body read. It creates no network transport
 and supplies no approval or settlement. Files are exclusive/private but not atomic
 as a set, writer-isolated or power-loss durable. A recording failure can retain
 partial files and an incomplete ledger; it never becomes a retry slot.
+
+The additional scripted cohort failure probes cover control refusal before any
+backend opens, provider-construction transport closure before task admission,
+provider-close failure after a retained row, selected-manifest drift after a cell,
+cancellation after delegation with uncertain native evidence, and report errors
+at initial/row/final writes. They check later cells remain unrun and consumed
+start markers cannot become retry slots. A failed final write can leave the last
+safe ledger incomplete; the caller receives the primary exception with secondary
+recording notes. Active event-loop entry refuses before resources. These tests
+use synthetic admission and mocked ownership/settlement and do not replace real
+resource refusal probes or authorize generation. No runtime policy changed.
