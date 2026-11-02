@@ -107,3 +107,22 @@ parent launch approval has been issued, and no generation was run to validate th
 slice. Concrete operator/no-forward/refusal probes and fresh launch gates remain
 required. Boundary checks are non-atomic, not process isolation or a hard end-to-end
 deadline. The generic metadata-only CLI remains metadata-only.
+
+Each cohort transport now writes private native evidence under cell-NN/native.
+Requests are saved exclusively before submission; responses are read at most
+2,000,000 bytes in bounded chunks and saved before returning to HTTP/native guards.
+HTTP errors retain their exact bounded body too. Incomplete read prefixes are
+labelled partial; failure records distinguish pre-delegation from uncertain
+submitted work and do not include exception text or headers. Authorization/cookie
+headers and unexpected routes refuse before request capture. Oversized payloads,
+recording/read/closure failures, concurrent use or more than32 submissions latch
+closed. The count is above the fixed six-iteration/correction envelope, not a new
+allowance to bypass runtime budgets. Encoded responses refuse rather than claiming
+decoded bytes are wire bytes. Caller-supplied transports may already buffer bodies;
+this wrapper bounds its own reads/copies, not arbitrary delegate allocations.
+
+The recorder sits inside the owned transport: ownership/pin checks precede saving
+and delegation and follow the bounded body read. It creates no network transport
+and supplies no approval or settlement. Files are exclusive/private but not atomic
+as a set, writer-isolated or power-loss durable. A recording failure can retain
+partial files and an incomplete ledger; it never becomes a retry slot.

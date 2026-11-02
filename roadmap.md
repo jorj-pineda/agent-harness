@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-02 — Bounded native submission evidence:** admitted cohort transports
+now preserve private request bytes before delegation and bounded response bytes
+before HTTP/native refusal. Failed reads retain bounded incomplete prefixes and
+error types; recording/closure failures latch closed without retries. Limits are
+2 MB per payload and 32 submissions per cell, above the fixed iteration envelope.
+Headers are excluded; credential-bearing headers refuse. Mock-only checks do not
+prove ownership, model
+identity, settlement or quality. Exact freeze/approval/fresh launch remain open.
+
 **2026-11-01 — Admitted fixed-cohort execution loop:** explicit transport selection
 now connects the sixteen fixed cells to shared task controls/execution and separate
 owned backend contexts outside event loops. Rows precede cleanup; failed settlement
