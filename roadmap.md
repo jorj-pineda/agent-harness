@@ -4,6 +4,14 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-02 — Selected operator and ongoing withdrawal checks:** an explicit
+trusted-parent API now connects selected admission to the real owned cohort and
+zero-retry, proxy-environment-disabled transport. Source provenance is retained
+and real entry requires it; cell/request guards recheck source bytes and withdrawal.
+There is no CLI or approval generator, and the callback does not authenticate itself.
+Mock tests prove ordering/refusal only; no real operator/inference was invoked.
+Fresh compliant preparation, reviewed freeze and actual parent approval remain open.
+
 **2026-11-02 — Preventive withdrawal admission refusal:** any withdrawal marker
 beside the selected manifest now refuses before parent verification and is
 rechecked before preflight/output/final receipt. Unsafe or malformed entries

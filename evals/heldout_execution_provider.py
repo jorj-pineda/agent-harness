@@ -8,7 +8,7 @@ from pathlib import Path
 import httpx
 
 from evals.heldout_comparison import validate_plan
-from evals.heldout_execution_admission import ExecutionAdmission
+from evals.heldout_execution_admission import ExecutionAdmission, check_admission_withdrawal
 from evals.heldout_execution_manifest import _selected_bytes
 from evals.heldout_input_guard import PinnedOllamaProvider, load_pins
 from evals.heldout_inputs import check_dependency_selection, check_runtime_selection
@@ -43,6 +43,7 @@ def build_cell_provider(
     )
 
     def guard() -> None:
+        check_admission_withdrawal(admission)
         _selected_bytes(
             admission.directory / "manifest.json", admission.approval.manifest_sha256, 64_000
         )
