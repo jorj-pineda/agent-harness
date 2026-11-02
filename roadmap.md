@@ -4,6 +4,17 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-02 — Stop exhausted identical failures within one response:** when a
+single model response ends with the configured allowance of identical unchanged
+failed calls (limit greater than one), the shared loop now retains every tool
+result and returns blocked before another provider request. Previously it waited
+for the model to request the same call again. This intentional stopping-boundary
+change addresses the closed trace's duplicate refusals followed by a cancelled
+provider call. Disabled/higher limits, changed arguments/results, successful calls,
+failures across responses and existing cancellation/budget precedence retain their
+prior policies. No budget is enlarged and no model-quality or latency gain is
+claimed; v1 remains retired for tuning and its closed cohort is never replayed.
+
 **2026-11-02 — Compact tool validation feedback:** registry refusals now return
 field/index locations and all validation messages without Pydantic's input dumps,
 input-type annotations or documentation URLs. Custom corrective instructions remain
