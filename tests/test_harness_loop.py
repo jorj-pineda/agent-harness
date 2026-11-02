@@ -18,7 +18,7 @@ from providers.base import (
     ToolCall,
     ToolSpec,
 )
-from tools import ToolRegistry
+from tools import ToolError, ToolRegistry
 from tools.base import Tool
 
 
@@ -873,6 +873,83 @@ async def test_repeated_identical_tool_errors_stop_before_another_dispatch() -> 
     assert response.completion_status == "blocked"
 
 
+async def test_identical_failed_calls_in_one_response_stop_before_another_provider_request() -> (
+    None
+):
+    provider = FakeProvider(
+        [
+            _response(
+                tool_calls=[ToolCall(id=f"t{i}", name="missing", arguments={}) for i in range(2)]
+            )
+        ]
+    )
+    session = Session()
+    response = await run_turn(
+        session=session,
+        user_input="work",
+        provider=provider,
+        registry=_registry(),
+        max_identical_tool_calls=2,
+    )
+    assert len(provider.calls) == 1
+    assert len(response.tool_calls) == 2
+    assert all("Unknown tool" in (call.error or "") for call in response.tool_calls)
+    assert response.completion_status == "blocked"
+    assert "Repeated unchanged failed call" in (response.completion_reason or "")
+    assert len([message for message in session.messages if message.role == "tool"]) == 2
+
+
+@pytest.mark.parametrize("limit", [0, 3])
+async def test_failed_batch_below_repeat_limit_allows_model_correction(limit: int) -> None:
+    provider = FakeProvider(
+        [
+            _response(
+                tool_calls=[ToolCall(id=f"t{i}", name="missing", arguments={}) for i in range(2)]
+            ),
+            _response(content="Cannot use that tool."),
+        ]
+    )
+    response = await run_turn(
+        session=Session(),
+        user_input="work",
+        provider=provider,
+        registry=_registry(),
+        max_identical_tool_calls=limit,
+    )
+    assert len(provider.calls) == 2
+    assert response.completion_status == "completed"
+
+
+@pytest.mark.parametrize("successful", [False, True])
+async def test_changed_failed_arguments_or_successful_batch_does_not_stop_early(
+    successful: bool,
+) -> None:
+    provider = FakeProvider(
+        [
+            _response(
+                tool_calls=[
+                    ToolCall(
+                        id=f"t{i}",
+                        name="echo" if successful else "missing",
+                        arguments={"text": "same" if successful else str(i)},
+                    )
+                    for i in range(2)
+                ]
+            ),
+            _response(content="done"),
+        ]
+    )
+    response = await run_turn(
+        session=Session(),
+        user_input="work",
+        provider=provider,
+        registry=_registry(_echo_tool()),
+        max_identical_tool_calls=2,
+    )
+    assert len(provider.calls) == 2
+    assert response.completion_status == "completed"
+
+
 async def test_changed_call_result_does_not_trigger_repeat_gate() -> None:
     counter = 0
 
@@ -898,6 +975,39 @@ async def test_changed_call_result_does_not_trigger_repeat_gate() -> None:
         max_identical_tool_calls=2,
     )
     assert [call.result for call in response.tool_calls] == [1, 2, 3]
+    assert response.completion_status == "completed"
+
+
+async def test_failed_batch_with_changing_errors_allows_next_provider_request() -> None:
+    attempts = 0
+
+    async def changing_error(_: EchoInput) -> str:
+        nonlocal attempts
+        attempts += 1
+        raise ToolError(f"Failure {attempts}")
+
+    provider = FakeProvider(
+        [
+            _response(
+                tool_calls=[
+                    ToolCall(id=f"t{i}", name="changing", arguments={"text": "same"})
+                    for i in range(2)
+                ]
+            ),
+            _response(content="done"),
+        ]
+    )
+    response = await run_turn(
+        session=Session(),
+        user_input="work",
+        provider=provider,
+        registry=_registry(
+            Tool(name="changing", description="d", input_model=EchoInput, fn=changing_error)
+        ),
+        max_identical_tool_calls=2,
+    )
+    assert [call.error for call in response.tool_calls] == ["Failure 1", "Failure 2"]
+    assert len(provider.calls) == 2
     assert response.completion_status == "completed"
 
 

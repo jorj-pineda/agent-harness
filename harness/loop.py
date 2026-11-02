@@ -475,6 +475,7 @@ async def run_turn(
         stop_status: CompletionStatus = (
             budget_stop.status if budget_stop is not None else "completed"
         )
+        batch_start = len(turn.tool_calls)
         for tc in usable_calls:
             if on_event is not None:
                 await on_event(ToolStartEvent(tool=tc.name, arguments=dict(tc.arguments)))
@@ -567,6 +568,24 @@ async def run_turn(
                         message=tool_message.model_copy(deep=True),
                     )
                 )
+        # A single response can already exhaust the identical-failure allowance.
+        # Keep its tool results, but do not pay for another model call to discover
+        # a repetition that has already happened. Successful calls retain the
+        # existing pre-dispatch repeat policy, as do failures across responses.
+        if (
+            stop_reason is None
+            and max_identical_tool_calls > 1
+            and len(turn.tool_calls) - batch_start >= max_identical_tool_calls
+            and turn.tool_calls[-1].error is not None
+            and repeated_unchanged_call(
+                turn.tool_calls[-1].name,
+                turn.tool_calls[-1].arguments,
+                turn.tool_calls,
+                max_identical=max_identical_tool_calls,
+            )
+        ):
+            stop_reason = f"Repeated unchanged failed call to {turn.tool_calls[-1].name!r}."
+            stop_status = "blocked"
         if cancellation is not None and cancellation.requested:
             stop_reason = cancel_reason
             stop_status = "cancelled"
