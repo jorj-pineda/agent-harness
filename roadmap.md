@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-02 — Authorized held-out cohort stopped:** after exact freeze #334
+review/CI/merge, explicit Jorge approval and fresh gates, the fixed local Gemma run
+recorded one unchanged, rejected `ho_iso_week` harness artifact. Its 150-second
+wall stop cancelled the sixth submission; aggregate usage is unknown and the
+protocol stopped fifteen cells unrun. Five complete responses report only a
+10,870/165 token prefix. Original-criterion regrade, source/input/pin checks and
+clean unforced owned settlement verify. [Results](evals/heldout_comparison/RESULTS_20261102.md)
+retain every cell and audit corrections. This closes the run without retries,
+comparison/ranking, tuning, default changes or no-go/8-of-10/G2–G5 closure.
+
 **2026-11-02 — Fresh held-out execution freeze proposal:** a new clean retained
 runtime at930efd3 uses the existing absolute interpreter with no source-local
 environment/resolver. Fresh clones, candidate/first-input/settings/command/dependency
