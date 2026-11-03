@@ -16,6 +16,7 @@ from evals.heldout_execution_manifest import ExecutionManifest, _selected_bytes
 from evals.heldout_execution_provider import build_cell_provider
 from evals.heldout_guard import REGISTRATIONS
 from evals.heldout_inputs import check_dependency_selection, check_runtime_selection
+from evals.heldout_model_copy import prepare_image
 from evals.heldout_model_image import _hash_blob
 from evals.heldout_native_evidence import NativeEvidenceTransport
 from evals.heldout_operator_rehearsal import _runtime_matches, _staged_inventory
@@ -145,6 +146,16 @@ def run_residency_cohort(
         task = by_id[cell.task_id]
         output = destination / f"cell-{cell.ordinal:02d}"
         output.mkdir(mode=0o700)
+        # Each cell owns a fresh independently verified image; only the immutable
+        # selected source bundle is shared. Preparation failure preserves evidence
+        # and stops the schedule before backend or transport construction.
+        image = output / "image"
+        prepare_image(
+            Path(manifest.image_directory) / "models",
+            image,
+            expected_manifest_sha256=plan.model_digest,
+        )
+        check()
 
         async def execute(check_owned):
             def guarded_owned():
@@ -202,7 +213,7 @@ def run_residency_cohort(
                     primary.add_note(f"Provider cleanup also failed: {type(error).__name__}")
 
         with owned_backend(
-            Path(manifest.image_directory),
+            image,
             output / "backend",
             Path(manifest.ollama_binary),
             keep_alive_seconds=cell.keep_alive_seconds,

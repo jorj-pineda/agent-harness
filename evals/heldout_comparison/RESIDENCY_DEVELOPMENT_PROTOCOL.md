@@ -144,3 +144,18 @@ mode performs actual GETs; scripted executor tests omit observations rather than
 pretending the canned generation loaded a model. Provider wrapper tests use mock
 HTTP metadata and establish mechanics only. Actual owned metadata rehearsal and
 exact runtime/input/resource freeze still precede generation.
+
+
+## Per-cell image ownership
+
+The dedicated executor prepares a new image under each exclusive cell output,
+using only the selected immutable owned model bundle as the read-only source.
+Existing clone-only preparation independently verifies source and copy, refuses
+shared inodes, enforces read-only copied files and writes its receipt last. The
+owned backend receives this cell-specific image path, not the shared source path.
+Preparation is outside dispatch time, matching the protocol setup boundary.
+A clone or post-copy pin-check failure stops both arms before backend/transport or
+workspace admission, preserving partial image evidence. No fallback copy method,
+download, hardlink, reset or extra inference is added. Tests using synthetic copy
+and backend fixtures establish routing/refusal only; actual APFS copy and owned
+metadata rehearsal are required on the selected retained runtime before launch.
