@@ -4,6 +4,14 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-03 — Manifest-bound residency selection:** an optional strict0–300
+second field defaults to zero for legacy manifests. Nonzero selection changes
+manifest bytes and cannot reuse the old approval hash. The cohort revalidates its
+snapshot before starting and passes selection to every owned lifecycle; cleanup
+and failure stop rules remain. Scripted selection/refusal tests do not establish
+real model residency, prompt reuse, performance or quality. New reviewed experiment
+freeze/approval/fresh gates remain required. No inference or old-manifest rewrite.
+
 **2026-11-03 — Opt-in owned backend residency seam:** the evaluation lifecycle
 accepts an explicit integer0–300 second keep-alive selection, validates before
 resource inspection/allocation and records it in the private child environment.

@@ -189,3 +189,24 @@ before it starts or detect every unrelated host mutation. The approved recipe mu
 use the original absolute interpreter directly, never uv environment resolution.
 The earlier withdrawn candidate remains excluded and cannot be repaired into a
 launch by this entry point.
+
+
+## Bound optional residency
+
+`keep_alive_seconds` is an optional strict integer from 0 through 300, defaulting
+to zero when absent from a legacy manifest. A selected nonzero value is part of
+manifest bytes and therefore the actual parent receipt's selected manifest hash;
+editing it cannot reuse an old hash. Existing frozen manifests remain byte-for-byte
+unchanged and continue selecting zero. Do not rewrite old selections to add defaults.
+
+The cohort revalidates its manifest snapshot before recording the start marker,
+then passes the selection to each owned backend lifecycle. Its private environment
+records the value. Cleanup, provider/input guards, budgets and stop rules remain
+unchanged. Constructed admissions and trusted caller callbacks are still not
+authenticated by this API; revalidation checks schema, not issuer provenance.
+
+This wires selection only. Nonzero residency has not been exercised with a real
+model. A new explicit experiment/freezing recipe must bind its runtime, manifest,
+backend selection, resources and inputs, pass independent review and CI, and obtain
+actual launch approval and fresh gates. No warmup, inference grant, old-cohort
+resume, application default change or claimed quality/performance benefit follows.

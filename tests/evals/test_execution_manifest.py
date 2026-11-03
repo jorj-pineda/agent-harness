@@ -3,7 +3,7 @@ import json
 
 import pytest
 
-from evals.heldout_execution_manifest import load_execution
+from evals.heldout_execution_manifest import ExecutionManifest, load_execution
 from evals.heldout_inputs import _save
 
 
@@ -69,6 +69,33 @@ def test_exact_binding_is_read_only_and_allocates_no_execution_output(selected):
     manifest, approval = load(selected)
     assert approval.manifest_sha256 == selected[1] and not manifest.inference_authorized
     assert not selected[0].parent.joinpath("output_directory").exists()
+    assert manifest.keep_alive_seconds == 0
+
+
+@pytest.mark.parametrize("seconds", [0, 1, 300])
+def test_manifest_residency_is_explicit_and_round_trips(selected, seconds):
+    raw = json.loads(selected[0].read_bytes())
+    raw["keep_alive_seconds"] = seconds
+    model = ExecutionManifest.model_validate(raw)
+    assert (
+        ExecutionManifest.model_validate_json(model.model_dump_json()).keep_alive_seconds == seconds
+    )
+
+
+@pytest.mark.parametrize("seconds", [-1, 301, True, False, 1.0, "300", None])
+def test_invalid_manifest_residency_refuses(selected, seconds):
+    raw = json.loads(selected[0].read_bytes())
+    raw["keep_alive_seconds"] = seconds
+    with pytest.raises(ValueError):
+        ExecutionManifest.model_validate(raw)
+
+
+def test_residency_edit_cannot_reuse_old_manifest_approval_hash(selected):
+    raw = json.loads(selected[0].read_bytes())
+    raw["keep_alive_seconds"] = 300
+    selected[0].write_text(json.dumps(raw))
+    with pytest.raises(ValueError, match="bytes/mode differ"):
+        load(selected)
 
 
 @pytest.mark.parametrize(

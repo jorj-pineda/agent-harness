@@ -34,6 +34,7 @@ class ExecutionManifest(FrozenModel):
     image_directory: str = Field(min_length=1, max_length=4096)
     ollama_binary: str = Field(min_length=1, max_length=4096)
     command_environment: dict[str, str] = Field(min_length=1, max_length=10)
+    keep_alive_seconds: int = Field(default=0, ge=0, le=300)
     inference_authorized: Literal[False]
 
     @field_validator(
