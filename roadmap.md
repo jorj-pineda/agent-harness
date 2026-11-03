@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-03 — 300-second feasibility finished, artifact rejected:** the single
+authorized fresh ISO-week cell returned six complete responses with six loaded
+snapshots and known 13,559/171 token usage. It stopped at the six-iteration cap
+in 63.912 seconds after inspection, corrected command and a plan, with no edit.
+Original acceptance regrade rejects the unchanged artifact; one result recorded,
+all 15 unused capture fixtures intact, cleanup clean/unforced. [Results](evals/heldout_comparison/RESIDENCY_300_FEASIBILITY_RESULTS_20261103.md)
+close this one-attempt run without retry. No causal speedup, coding-quality or
+held-out gain, default adoption or no-go/8-of-10/G2–G5 closure follows.
+
 **2026-11-03 — Fresh 300-second feasibility freeze proposal:** retained 3e5caa9
 binds one fresh ISO-week harness attempt (ordinal 2) with unchanged limits and
 criteria. Fresh preparation, one mandatory-mock accepted workflow/owned metadata
