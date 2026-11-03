@@ -4,6 +4,14 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-03 — Fixed residency development schedule:** an offline strict plan
+retains sixteen harness-only task/repeat/residency cells, alternating zero/300 then
+300/zero. It pins the original plan bytes and validates original catalog/settings
+before accepting the exact order. This implements schedule validation only, not
+execution, capture, observation or launch approval. The new
+[protocol](evals/heldout_comparison/RESIDENCY_DEVELOPMENT_PROTOCOL.md) preserves
+budgets, criteria and whole-experiment stop rules. No inference or benefit claim.
+
 **2026-11-03 — Manifest-bound residency selection:** an optional strict0–300
 second field defaults to zero for legacy manifests. Nonzero selection changes
 manifest bytes and cannot reuse the old approval hash. The cohort revalidates its

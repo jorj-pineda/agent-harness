@@ -1,0 +1,120 @@
+{
+  "format": "residency-development-plan-v1",
+  "evidence_label": "development-on-retired-v1",
+  "inference_authorized": false,
+  "base_plan_sha256": "e3d09a3e0eb500918b4dda8282b03de4ebcea30f57dde3e191c38045c12fb51d",
+  "cells": [
+    {
+      "ordinal": 1,
+      "task_id": "ho_iso_week",
+      "mode": "harness",
+      "repeat": 1,
+      "keep_alive_seconds": 0
+    },
+    {
+      "ordinal": 2,
+      "task_id": "ho_iso_week",
+      "mode": "harness",
+      "repeat": 1,
+      "keep_alive_seconds": 300
+    },
+    {
+      "ordinal": 3,
+      "task_id": "ho_rolling_mean",
+      "mode": "harness",
+      "repeat": 1,
+      "keep_alive_seconds": 0
+    },
+    {
+      "ordinal": 4,
+      "task_id": "ho_rolling_mean",
+      "mode": "harness",
+      "repeat": 1,
+      "keep_alive_seconds": 300
+    },
+    {
+      "ordinal": 5,
+      "task_id": "ho_endpoint_record",
+      "mode": "harness",
+      "repeat": 1,
+      "keep_alive_seconds": 0
+    },
+    {
+      "ordinal": 6,
+      "task_id": "ho_endpoint_record",
+      "mode": "harness",
+      "repeat": 1,
+      "keep_alive_seconds": 300
+    },
+    {
+      "ordinal": 7,
+      "task_id": "ho_cache_policy",
+      "mode": "harness",
+      "repeat": 1,
+      "keep_alive_seconds": 0
+    },
+    {
+      "ordinal": 8,
+      "task_id": "ho_cache_policy",
+      "mode": "harness",
+      "repeat": 1,
+      "keep_alive_seconds": 300
+    },
+    {
+      "ordinal": 9,
+      "task_id": "ho_iso_week",
+      "mode": "harness",
+      "repeat": 2,
+      "keep_alive_seconds": 300
+    },
+    {
+      "ordinal": 10,
+      "task_id": "ho_iso_week",
+      "mode": "harness",
+      "repeat": 2,
+      "keep_alive_seconds": 0
+    },
+    {
+      "ordinal": 11,
+      "task_id": "ho_rolling_mean",
+      "mode": "harness",
+      "repeat": 2,
+      "keep_alive_seconds": 300
+    },
+    {
+      "ordinal": 12,
+      "task_id": "ho_rolling_mean",
+      "mode": "harness",
+      "repeat": 2,
+      "keep_alive_seconds": 0
+    },
+    {
+      "ordinal": 13,
+      "task_id": "ho_endpoint_record",
+      "mode": "harness",
+      "repeat": 2,
+      "keep_alive_seconds": 300
+    },
+    {
+      "ordinal": 14,
+      "task_id": "ho_endpoint_record",
+      "mode": "harness",
+      "repeat": 2,
+      "keep_alive_seconds": 0
+    },
+    {
+      "ordinal": 15,
+      "task_id": "ho_cache_policy",
+      "mode": "harness",
+      "repeat": 2,
+      "keep_alive_seconds": 300
+    },
+    {
+      "ordinal": 16,
+      "task_id": "ho_cache_policy",
+      "mode": "harness",
+      "repeat": 2,
+      "keep_alive_seconds": 0
+    }
+  ]
+}
