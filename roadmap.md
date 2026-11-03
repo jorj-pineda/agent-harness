@@ -4,6 +4,14 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-03 — Residency capture verification/staging:** explicit format-specific
+entry points verify schedule hash/arms and preserve existing bounded file, pin,
+receipt, root and fixture checks. Archival precedes fresh exact-path fixture
+staging; distinct receipt is last. Legacy entry points continue rejecting residency
+format. Partial failures remain preserved and non-atomic; no approval/isolation
+or actual residency evidence follows. Manifest/provider/executor adoption remains
+open; no inference or closed-cohort reuse.
+
 **2026-11-03 — Residency first-input capture:** explicit named-workspace capture
 uses the fixed sixteen-cell residency schedule through shared runtime and mock
 production adapter. A separate format binds schedule hash, development label and
