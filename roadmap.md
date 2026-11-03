@@ -4,6 +4,13 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-03 — Residency loaded-model snapshots:** real residency responses now
+require a bounded owned GET observation before tool dispatch, recording loaded or
+not-loaded with timestamp/selection. Identity/ownership/recording failures latch
+closed. Snapshots are not continuous-residency/cache/GPU proof; cancelled calls
+remain unknown. Scripted executor tests omit actual GETs and wrapper tests mock
+metadata. No inference, budget increase or performance/quality claim.
+
 **2026-11-03 — Dedicated owned residency executor:** the serial ledger connects
 to explicit admitted cells, shared runtime/grading, native evidence and per-cell
 owned residency lifecycle. Results persist before cleanup; ledger records a cell

@@ -123,3 +123,24 @@ and owned-lifecycle fixtures verify orchestration, not actual model residency or
 GPU cleanup. Real residency observation, full actual owned rehearsal/refusal
 checks and exact reviewed freeze/receipt/fresh gates remain required before launch.
 No default transport, warmup or extra attempt is supplied.
+
+
+## Loaded-model point observations
+
+Real residency execution wraps each complete provider response with a bounded,
+GET-only `/api/ps` observation before returning tool-bearing content. Ownership
+and source/pin guards run before and after the GET. Only no loaded model or the
+single selected model/digest is accepted. Private response-ordinal records retain
+selected keep-alive, timestamp and loaded/not-loaded state. Missing/invalid data,
+identity/ownership errors or recording failures latch the provider closed and stop
+the experiment. Cancelled requests without complete responses have no inferred
+observation; their usage/state stays unknown. No GET retry or warmup is added.
+
+These snapshots do not prove continuous residency, prefix-cache reuse or GPU
+settlement. A not-loaded snapshot in the 300-second arm is recorded as observed,
+not silently treated as effective residency. Read-only observation time is inside
+the existing dispatch budget and can itself fail; no allowance is enlarged. Real
+mode performs actual GETs; scripted executor tests omit observations rather than
+pretending the canned generation loaded a model. Provider wrapper tests use mock
+HTTP metadata and establish mechanics only. Actual owned metadata rehearsal and
+exact runtime/input/resource freeze still precede generation.
