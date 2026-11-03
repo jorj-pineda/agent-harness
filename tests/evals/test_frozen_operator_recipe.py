@@ -12,7 +12,13 @@ import pytest
 PATH = Path(__file__).parents[2] / "evals/heldout_comparison/operator_20261102.py"
 
 
-@pytest.fixture(params=["operator_20261102.py", "operator_fixes_dev_20261102.py"])
+@pytest.fixture(
+    params=[
+        "operator_20261102.py",
+        "operator_fixes_dev_20261102.py",
+        "operator_residency_20261103.py",
+    ]
+)
 def recipe(request):
     spec = importlib.util.spec_from_file_location(
         "frozen_operator_recipe_fixture", PATH.with_name(request.param)
