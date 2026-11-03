@@ -110,7 +110,39 @@ def test_real_owned_child_only_gets_metadata_then_settles(owned, monkeypatch):
     env = json.loads((directory / "environment.json").read_bytes())
     assert env["HOME"] == str(directory / "home")
     assert env["OLLAMA_MODELS"] == str(image / "models")
+    assert env["OLLAMA_KEEP_ALIVE"] == "0"
     assert_settled(directory)
+
+
+@pytest.mark.parametrize("seconds", [1, 300])
+def test_explicit_residency_is_recorded_and_metadata_child_still_settles(owned, seconds):
+    image, directory, binary = owned
+    executable(binary)
+    with backend.owned_backend(image, directory, binary, keep_alive_seconds=seconds) as session:
+        session.check_owned()
+    env = json.loads((directory / "environment.json").read_bytes())
+    assert env["OLLAMA_KEEP_ALIVE"] == str(seconds)
+    assert json.loads((directory / "cleanup.json").read_bytes())["passed"]
+    assert [
+        json.loads(line) for line in (directory / "requests.jsonl").read_text().splitlines()
+    ] == [["GET", "/api/version"], ["GET", "/api/tags"], ["GET", "/api/ps"]]
+    assert_settled(directory)
+
+
+@pytest.mark.parametrize("seconds", [-1, 301, True, False, 1.0, "300", None])
+def test_invalid_residency_refuses_before_image_inspection_or_allocation(
+    tmp_path, monkeypatch, seconds
+):
+    monkeypatch.setattr(backend, "_prepared_models", lambda *a: pytest.fail("inspected image"))
+    directory = tmp_path / "output"
+    with (
+        pytest.raises(ValueError, match="integer from 0 to 300"),
+        backend.owned_backend(
+            tmp_path / "image", directory, tmp_path / "binary", keep_alive_seconds=seconds
+        ),
+    ):
+        pytest.fail("started backend")
+    assert not directory.exists()
 
 
 @pytest.mark.parametrize("fault", ["version", "loaded"])
