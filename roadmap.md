@@ -4,6 +4,14 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-03 — Residency first-input capture:** explicit named-workspace capture
+uses the fixed sixteen-cell residency schedule through shared runtime and mock
+production adapter. A separate format binds schedule hash, development label and
+per-cell selection; legacy staging rejects it. Default capture remains unchanged.
+Five focused tests verify no forwarding, correct order, occupied-path refusal and
+preallocation refusal without named workspaces. Residency verification/staging and
+owned execution remain open; no inference or launch authority.
+
 **2026-11-03 — Serial residency scheduling core:** one single-use ledger now
 retains all sixteen fixed cells and stops both arms on callback or recording
 failure. Callbacks must record results and settle resources before returning;
