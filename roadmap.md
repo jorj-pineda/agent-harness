@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-02 — Fresh fixes development freeze:** Jorge requested fresh development
+validation of #336–338. A new clean cf52e2e runtime, independent image/fixture/input
+bundles, sixteen-cell mandatory-mock rehearsal, thirteen refusal probes and exact
+G0 (2,825 offline) are retained. Retired v1 is known development material; old
+identity labels do not renew holdout eligibility. The [new freeze](evals/heldout_comparison/DEVELOPMENT_FREEZE_FIXES_20261102.md)
+pins unchanged budgets/criteria and actual parent authorization scope. Exact-head
+review/CI/merge, parent receipt and fresh launch gates still precede generation.
+No inference or model-quality claim; the old cohort remains closed.
+
 **2026-11-02 — Stop exhausted identical failures within one response:** when a
 single model response ends with the configured allowance of identical unchanged
 failed calls (limit greater than one), the shared loop now retains every tool
