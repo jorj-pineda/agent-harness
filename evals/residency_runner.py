@@ -10,6 +10,7 @@ from pydantic import Field
 
 from evals.heldout_comparison import ProtocolModel
 from evals.heldout_inputs import _save
+from evals.heldout_rehearsal import ProtocolStop
 from evals.residency_comparison import ResidencyCell, validate_residency_plan
 
 
@@ -23,6 +24,7 @@ class ResidencyLedger(ProtocolModel):
     status: Literal["planned", "running", "finished", "stopped"] = "planned"
     cells: list[CellState] = Field(min_length=16, max_length=16)
     error_type: str | None = None
+    stop_reason: str | None = None
 
 
 def run_schedule(
@@ -57,7 +59,13 @@ def run_schedule(
         ledger = ledger.model_copy(update={"status": "finished"})
         persist(ledger.model_copy(deep=True))
     except BaseException as error:
-        ledger = ledger.model_copy(update={"status": "stopped", "error_type": type(error).__name__})
+        ledger = ledger.model_copy(
+            update={
+                "status": "stopped",
+                "error_type": type(error).__name__,
+                "stop_reason": str(error) if isinstance(error, ProtocolStop) else None,
+            }
+        )
         try:
             persist(ledger.model_copy(deep=True))
         except BaseException as recording_error:

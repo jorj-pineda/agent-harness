@@ -4,6 +4,14 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-03 — Dedicated owned residency executor:** the serial ledger connects
+to explicit admitted cells, shared runtime/grading, native evidence and per-cell
+owned residency lifecycle. Results persist before cleanup; ledger records a cell
+only after clean settlement. Failures stop both arms and retain unrun cells and
+protocol reason. Synthetic integration checks are mechanics only; actual residency
+observation/rehearsal, exact freeze and fresh gates remain before generation.
+No launch CLI, default transport or quality claim.
+
 **2026-11-03 — Explicit residency admission/pin selection:** manifest schedule
 hash selects matching preflight/verifier/staging receipt and rejects conflicting
 global residency. Explicit provider pin loading verifies residency captures; absent

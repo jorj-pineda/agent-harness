@@ -98,3 +98,28 @@ the operation is bounded/non-atomic and does not isolate external writers. A has
 selects bytes, not approval authority. Runtime provider pin loading, manifest
 admission and owned executor integration still need explicit residency adoption;
 legacy operators remain unable to launch these bundles.
+
+
+## Dedicated owned executor
+
+`run_residency_cohort` accepts an explicitly selected residency admission and an
+explicit transport factory. Real mode requires retained source provenance. Before
+start it validates the selected schedule and ordered admitted cells, captures,
+staged inventory and fresh fixtures. Per-request guards recheck source withdrawal,
+manifest/plan bytes, capture/runtime/dependency and owned-listener conditions.
+Original controls and independent grading use the shared runtime and explicit
+command environment. The selected per-cell residency reaches the owned lifecycle.
+
+The executor uses the single-use serial ledger. It writes each result before
+provider/backend cleanup; a cell becomes `recorded` only after clean settlement
+and final pin checks. A stopped `started` cell can therefore have the last result
+row, matched by ordinal order. Later cells remain unrun. Provider cleanup failure
+never replaces a primary failure; protocol stop reasons are retained in the ledger.
+Reports are replaced through the existing safe report writer. Callers must not
+submit requests from transport factories or construct fake admissions as approval.
+
+This is an execution API, not a launch CLI or approval issuer. Synthetic transport
+and owned-lifecycle fixtures verify orchestration, not actual model residency or
+GPU cleanup. Real residency observation, full actual owned rehearsal/refusal
+checks and exact reviewed freeze/receipt/fresh gates remain required before launch.
+No default transport, warmup or extra attempt is supplied.
