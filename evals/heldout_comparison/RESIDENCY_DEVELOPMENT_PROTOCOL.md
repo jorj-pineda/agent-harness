@@ -146,6 +146,15 @@ HTTP metadata and establish mechanics only. Actual owned metadata rehearsal and
 exact runtime/input/resource freeze still precede generation.
 
 
+Provider failures and cancelled generation latch the observation wrapper closed
+without becoming an observation failure. Existing inner guard reasons are preserved;
+when the cancelled request has no complete usage, normal result checks retain the
+missing-usage stop. Only an exception during the post-response observation sets
+residency_observation, including cancellation during that observation. This changes
+diagnostic attribution, not retry, cleanup or cohort stop policy. Historical frozen
+runtimes retain their original labels and are never rewritten.
+
+
 ## Per-cell image ownership
 
 The dedicated executor prepares a new image under each exclusive cell output,

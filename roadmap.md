@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-03 — Residency failure-cause preservation:** the observation wrapper
+still latches closed for every provider/observation failure or cancellation, but
+only failures inside the observation set residency_observation. Inner guard
+reasons remain intact; cancelled generation with unknown usage reaches the
+existing missing_usage stop selection. Actual observation cancellation remains
+an observation failure. Regression checks cover those boundaries without model
+inference. Historical frozen results are unchanged; a fresh one-cell 300-second
+feasibility freeze and its execution/results remain the next authorized slices.
+No budget, retry, acceptance, default or quality claim changes.
+
 **2026-11-03 — Frozen residency run stopped:** after reviewed/CI-passing merged
 #352, actual parent receipt and fresh gates, the zero-second ISO-week cell reached
 its 150-second wall limit during request six. One unchanged artifact is rejected;
