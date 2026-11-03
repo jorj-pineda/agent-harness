@@ -31,6 +31,7 @@ from evals.real_run import (
     write_report,
 )
 from evals.residency_comparison import RESIDENCY_PLAN_PATH, validate_residency_plan
+from evals.residency_observation import ResidencyObservedProvider, record_residency
 from evals.residency_runner import ResidencyLedger, run_schedule
 
 
@@ -162,6 +163,14 @@ def run_residency_cohort(
                     transport=transport,
                     check_owned=guarded_owned,
                 )
+                if not scripted:
+
+                    async def observe(ordinal):
+                        await record_residency(
+                            output, ordinal, cell.keep_alive_seconds, guarded_owned
+                        )
+
+                    provider = ResidencyObservedProvider(provider, observe)
                 result = await run_task(
                     task,
                     provider=provider,
