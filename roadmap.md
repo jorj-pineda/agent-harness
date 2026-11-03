@@ -4,6 +4,17 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-03 — Frozen residency run stopped:** after reviewed/CI-passing merged
+#352, actual parent receipt and fresh gates, the zero-second ISO-week cell reached
+its 150-second wall limit during request six. One unchanged artifact is rejected;
+usage is unknown and fifteen cells stay unrun, including all 300-second cells.
+Five complete native responses and five not_loaded snapshots are retained. The
+ledger's residency_observation reason reflects the cancellation latch, not proof
+of metadata failure. Original-criterion regrade, fifteen fresh unrun fixtures and
+clean unforced settlement verify. [Results](evals/heldout_comparison/RESIDENCY_DEVELOPMENT_RESULTS_20261103.md)
+close the run without retries; the residency comparison remains unresolved.
+No model-quality/held-out gain, default adoption or no-go/8-of-10/G2–G5 closure.
+
 **2026-11-03 — Residency execution freeze proposal:** clean retained 06502c6
 uses fresh candidate/rehearsal bundles, sixteen native image/owned metadata
 lifecycles with mandatory mock generation, thirteen refusal probes and a real

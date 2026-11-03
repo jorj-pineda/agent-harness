@@ -1,5 +1,17 @@
 # Real-task baselines
 
+## 2026-11-03 — Residency development experiment stopped
+
+The [frozen residency run](heldout_comparison/RESIDENCY_DEVELOPMENT_RESULTS_20261103.md)
+closed after one zero-second ISO-week cell hit the 150-second wall limit during
+its sixth request. The unchanged artifact is rejected; aggregate usage is unknown
+and fifteen cells remain unrun, including every 300-second cell. Five complete
+responses report a 10,772/131 token prefix and five not_loaded snapshots. The exact
+ledger reason residency_observation comes from the wrapper's cancellation latch;
+it does not establish a failed metadata GET. Original-criterion regrade and clean
+unforced settlement verify. No residency contrast, causal/held-out gain or
+release closure is established; no retry or default change follows.
+
 ## 2026-11-03 — Fixes development validation stopped
 
 The [fresh development run](heldout_comparison/DEVELOPMENT_RESULTS_FIXES_20261103.md)
