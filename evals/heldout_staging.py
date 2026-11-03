@@ -59,8 +59,33 @@ class CaptureIndex(BaseModel):
     planned_cells: Literal[16]
 
 
+class ResidencyCaptureCell(CaptureCell):
+    keep_alive_seconds: Literal[0, 300]
+
+
+class ResidencyCaptureIndex(CaptureIndex):
+    format: Literal["residency-first-inputs-v1"]  # type: ignore[assignment]
+    evidence_label: Literal["development-on-retired-v1"]
+    residency_plan_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    cells: list[ResidencyCaptureCell]  # type: ignore[assignment]
+
+
 def verify_capture(
     directory: Path, *, expected_index_sha256: str, original_directory: Path | None = None
+) -> CaptureIndex:
+    return _verify_capture(directory, expected_index_sha256, original_directory, residency=False)
+
+
+def verify_residency_capture(
+    directory: Path, *, expected_index_sha256: str, original_directory: Path | None = None
+) -> ResidencyCaptureIndex:
+    index = _verify_capture(directory, expected_index_sha256, original_directory, residency=True)
+    assert isinstance(index, ResidencyCaptureIndex)
+    return index
+
+
+def _verify_capture(
+    directory: Path, expected_index_sha256: str, original_directory: Path | None, *, residency: bool
 ) -> CaptureIndex:
     source = _owned_location(directory)
     if source.is_symlink() or not source.is_dir():
@@ -68,12 +93,29 @@ def verify_capture(
     raw, mode = _read_regular(source / "index.json", 2_000_000)
     if mode != 0o600 or hashlib.sha256(raw).hexdigest() != expected_index_sha256:
         raise ValueError("Capture index differs from reviewed hash")
-    index = CaptureIndex.model_validate_json(raw)
+    index = (
+        ResidencyCaptureIndex.model_validate_json(raw)
+        if residency
+        else CaptureIndex.model_validate_json(raw)
+    )
     plan = validate_plan()
     if index.plan_sha256 != _plan_digest(PLAN_PATH) or index.seal_sha256 != plan.seal_sha256:
         raise ValueError("Capture plan/seal changed")
     tasks = load_tasks(REGISTRATIONS[0].root / "tasks.yaml")
     _, schedule = _plan_cohort(tasks, MODES, plan.repeats)
+    if residency:
+        from evals.residency_comparison import RESIDENCY_PLAN_PATH, validate_residency_plan
+
+        selected = validate_residency_plan()
+        assert isinstance(index, ResidencyCaptureIndex)
+        if index.residency_plan_sha256 != _plan_digest(RESIDENCY_PLAN_PATH):
+            raise ValueError("Residency capture schedule hash changed")
+        by_id = {task.id: task for task in tasks}
+        schedule = [(by_id[cell.task_id], cell.mode, cell.repeat) for cell in selected.cells]
+        if [cell.keep_alive_seconds for cell in index.cells] != [
+            cell.keep_alive_seconds for cell in selected.cells
+        ]:
+            raise ValueError("Residency capture arm selection changed")
     inventory = {"index.json"}
     if index.settings_sha256 is not None:
         load_settings_pin(source / "settings.json", expected_sha256=index.settings_sha256)
@@ -155,15 +197,26 @@ def verify_capture(
 
 
 def stage_capture(directory: Path, archive: Path, *, expected_index_sha256: str) -> None:
+    _stage_capture(directory, archive, expected_index_sha256, residency=False)
+
+
+def stage_residency_capture(directory: Path, archive: Path, *, expected_index_sha256: str) -> None:
+    _stage_capture(directory, archive, expected_index_sha256, residency=True)
+
+
+def _stage_capture(
+    directory: Path, archive: Path, expected_index_sha256: str, *, residency: bool
+) -> None:
+    verify = verify_residency_capture if residency else verify_capture
     source = _owned_location(directory)
     target = _owned_location(archive)
     if source.is_relative_to(target) or target.is_relative_to(source):
         raise ValueError("Capture and archive paths overlap")
-    index = verify_capture(source, expected_index_sha256=expected_index_sha256)
+    index = verify(source, expected_index_sha256=expected_index_sha256)
     target.mkdir(mode=0o700, exist_ok=False)
     # The exclusive archive container reserves an absent child destination.
     source.rename(target / "captured")
-    verify_capture(
+    verify(
         target / "captured", expected_index_sha256=expected_index_sha256, original_directory=source
     )
     source.mkdir(mode=0o700, exist_ok=False)
@@ -175,7 +228,9 @@ def stage_capture(directory: Path, archive: Path, *, expected_index_sha256: str)
         source / "staged.json",
         json.dumps(
             {
-                "format": "staged-heldout-capture-v1",
+                "format": "staged-residency-capture-v1"
+                if residency
+                else "staged-heldout-capture-v1",
                 "capture_index_sha256": expected_index_sha256,
                 "archive": str(target / "captured"),
                 "inference_authorized": False,

@@ -78,3 +78,23 @@ The legacy verifier/stager deliberately rejects this new format. A matching
 residency verifier/stager and executor integration are still required; no existing
 manifest or operator can treat these bundles as approved legacy captures. The
 ordinary capture default and CLI remain unchanged.
+
+
+## Residency verification and staging
+
+`verify_residency_capture` accepts only the distinct residency index and verifies
+its selected bytes/mode, fixed schedule hash, ordered task/repeat/mode identities
+and each residency arm. It retains the existing settings/environment/runtime/
+dependency artifact checks, captured file hashes/modes, workspace-root bindings,
+prepared/admitted receipts, fixture equality and unknown-inventory refusal.
+Legacy `verify_capture` still accepts only the legacy format. Neither entry point
+promotes one format into the other or checks actual model residency.
+
+`stage_residency_capture` verifies before allocation, archives consumed capture
+bytes in an exclusive disjoint container, verifies them at their original roots,
+then creates fresh original fixtures at exactly those paths. It writes the distinct
+staged-residency receipt last. Failure preserves partial artifacts without reset;
+the operation is bounded/non-atomic and does not isolate external writers. A hash
+selects bytes, not approval authority. Runtime provider pin loading, manifest
+admission and owned executor integration still need explicit residency adoption;
+legacy operators remain unable to launch these bundles.
