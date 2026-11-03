@@ -14,7 +14,7 @@ from evals.heldout_inputs import check_dependency_selection, check_runtime_selec
 from evals.heldout_model_image import _hash_blob
 from evals.heldout_operator_rehearsal import _runtime_matches, _staged_inventory
 from evals.heldout_settings import check_settings, load_settings_pin, protocol_settings
-from evals.heldout_staging import CaptureIndex, verify_capture
+from evals.heldout_staging import CaptureIndex, verify_capture, verify_residency_capture
 from evals.heldout_workspaces import _owned_location, verify_prepared
 
 
@@ -58,7 +58,19 @@ def preflight(manifest: ExecutionManifest) -> CaptureIndex:
     if hashlib.sha256(PLAN_PATH.read_bytes()).hexdigest() != manifest.protocol_sha256:
         raise ValueError("Execution protocol differs from selected hash")
     plan = validate_plan()
-    index = verify_capture(
+    residency = manifest.residency_plan_sha256 is not None
+    if residency:
+        from evals.residency_comparison import RESIDENCY_PLAN_PATH, validate_residency_plan
+
+        validate_residency_plan()
+        if (
+            hashlib.sha256(RESIDENCY_PLAN_PATH.read_bytes()).hexdigest()
+            != manifest.residency_plan_sha256
+            or manifest.keep_alive_seconds != 0
+        ):
+            raise ValueError("Residency schedule selection differs or has a global arm override")
+    verify = verify_residency_capture if residency else verify_capture
+    index = verify(
         capture, expected_index_sha256=manifest.capture_index_sha256, original_directory=staged
     )
     if (
@@ -80,7 +92,9 @@ def preflight(manifest: ExecutionManifest) -> CaptureIndex:
         raise ValueError("Execution command environment differs from capture")
     check_runtime_selection(capture / "runtime-inventory.json", manifest.runtime_inventory_sha256)
     check_dependency_selection(capture / "dependency-files.json", manifest.dependency_files_sha256)
-    _staged_inventory(staged, capture, manifest.capture_index_sha256, index.cells)
+    _staged_inventory(
+        staged, capture, manifest.capture_index_sha256, index.cells, residency=residency
+    )
     for cell in index.cells:
         verify_prepared(staged / f"cell-{cell.ordinal:02d}", task_id=cell.task_id)
     receipt = image / "prepared-image.json"

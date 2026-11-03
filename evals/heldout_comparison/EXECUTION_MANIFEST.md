@@ -210,3 +210,22 @@ model. A new explicit experiment/freezing recipe must bind its runtime, manifest
 backend selection, resources and inputs, pass independent review and CI, and obtain
 actual launch approval and fresh gates. No warmup, inference grant, old-cohort
 resume, application default change or claimed quality/performance benefit follows.
+
+
+## Residency schedule admission
+
+An explicit optional `residency_plan_sha256` selects the residency capture verifier
+and staging receipt. The selected schedule must match current validated bytes;
+a schedule admission must leave global keep_alive_seconds at zero because each
+arm is already fixed by the per-cell schedule. Missing selection retains strict
+legacy behavior and rejects residency captures. The optional field is inside the
+manifest bytes covered by the parent receipt's selected hash, not free caller
+metadata. Existing manifest bytes are not rewritten.
+
+Explicit residency pin loading verifies the matching capture format. This change
+admits and loads pins only: the old cohort executor refuses a residency admission
+before any start marker or transport, even in scripted mode. Dedicated owned
+execution must still combine the serial schedule, per-cell residency, native
+preservation and final settlement. Approval callbacks remain trusted provenance
+boundaries; schema validation and hashes do not authenticate authority. No new
+launch path, warmup, inference or observed performance gain is added here.

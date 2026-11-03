@@ -56,6 +56,10 @@ def run_admitted_cohort(
     if not scripted and getattr(admission, "source_manifest", None) is None:
         raise ValueError("Real cohort requires selected source manifest provenance")
     manifest = ExecutionManifest.model_validate(admission.manifest.model_dump())
+    if manifest.residency_plan_sha256 is not None:
+        raise ValueError(
+            "Residency schedule requires its dedicated executor, not the legacy cohort"
+        )
     staged, capture = Path(manifest.staged_directory), Path(manifest.capture_directory)
     destination = admission.directory
     plan = validate_plan()

@@ -35,6 +35,7 @@ class ExecutionManifest(FrozenModel):
     ollama_binary: str = Field(min_length=1, max_length=4096)
     command_environment: dict[str, str] = Field(min_length=1, max_length=10)
     keep_alive_seconds: int = Field(default=0, ge=0, le=300)
+    residency_plan_sha256: Digest | None = None
     inference_authorized: Literal[False]
 
     @field_validator(

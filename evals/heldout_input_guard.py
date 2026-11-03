@@ -11,7 +11,7 @@ import httpx
 from evals.heldout_environment import local_endpoint
 from evals.heldout_guard import _read_regular
 from evals.heldout_inputs import normalized_input
-from evals.heldout_staging import verify_capture
+from evals.heldout_staging import verify_capture, verify_residency_capture
 from providers.base import ChatMessage, ProviderResponse, ToolSpec
 from providers.ollama import OllamaProvider
 
@@ -31,9 +31,15 @@ class InputPins:
 
 
 def load_pins(
-    capture: Path, *, original_directory: Path, expected_index_sha256: str, ordinal: int
+    capture: Path,
+    *,
+    original_directory: Path,
+    expected_index_sha256: str,
+    ordinal: int,
+    residency: bool = False,
 ) -> InputPins:
-    index = verify_capture(
+    verify = verify_residency_capture if residency else verify_capture
+    index = verify(
         capture,
         expected_index_sha256=expected_index_sha256,
         original_directory=original_directory.resolve(),

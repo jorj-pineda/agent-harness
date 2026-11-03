@@ -113,7 +113,7 @@ def _runtime_matches(expected: dict) -> None:
         raise ValueError("Operator runtime differs from clean capture revision")
 
 
-def _staged_inventory(staged: Path, capture: Path, digest: str, cells) -> None:
+def _staged_inventory(staged: Path, capture: Path, digest: str, cells, *, residency=False) -> None:
     if staged.is_symlink() or {p.name for p in islice(staged.iterdir(), 18)} != {
         "staged.json",
         *(f"cell-{cell.ordinal:02d}" for cell in cells),
@@ -121,7 +121,7 @@ def _staged_inventory(staged: Path, capture: Path, digest: str, cells) -> None:
         raise ValueError("Staged root inventory changed")
     raw, mode = _read_regular(staged / "staged.json", 4096)
     if mode != 0o600 or json.loads(raw) != {
-        "format": "staged-heldout-capture-v1",
+        "format": "staged-residency-capture-v1" if residency else "staged-heldout-capture-v1",
         "capture_index_sha256": digest,
         "archive": str(capture),
         "inference_authorized": False,
