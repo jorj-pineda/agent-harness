@@ -12,7 +12,7 @@ import httpx
 from evals.heldout_backend_rehearsal import owned_backend
 from evals.heldout_comparison import PLAN_PATH, validate_plan
 from evals.heldout_execution_admission import ExecutionAdmission, check_admission_withdrawal
-from evals.heldout_execution_manifest import _selected_bytes
+from evals.heldout_execution_manifest import ExecutionManifest, _selected_bytes
 from evals.heldout_execution_provider import build_cell_provider
 from evals.heldout_guard import REGISTRATIONS
 from evals.heldout_inputs import _save, check_dependency_selection, check_runtime_selection
@@ -55,7 +55,7 @@ def run_admitted_cohort(
         raise ValueError("Run the owned cohort outside an active event loop")
     if not scripted and getattr(admission, "source_manifest", None) is None:
         raise ValueError("Real cohort requires selected source manifest provenance")
-    manifest = admission.manifest.model_copy(deep=True)
+    manifest = ExecutionManifest.model_validate(admission.manifest.model_dump())
     staged, capture = Path(manifest.staged_directory), Path(manifest.capture_directory)
     destination = admission.directory
     plan = validate_plan()
@@ -189,6 +189,7 @@ def run_admitted_cohort(
                 Path(manifest.image_directory),
                 cell_output / "backend",
                 Path(manifest.ollama_binary),
+                keep_alive_seconds=manifest.keep_alive_seconds,
             ) as session:
                 asyncio.run(execute(session.check_owned))
             check()

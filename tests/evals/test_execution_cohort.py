@@ -36,10 +36,11 @@ def setup(prepared, monkeypatch):
         approval=SimpleNamespace(manifest_sha256=hashlib.sha256(raw).hexdigest()),
     )
     events = []
-    state = {"cleanup_failure": False}
+    state = {"cleanup_failure": False, "residency": []}
 
     @contextmanager
-    def owned(image, directory, binary):
+    def owned(image, directory, binary, *, keep_alive_seconds=0):
+        state["residency"].append(keep_alive_seconds)
         events.append("open")
         try:
             yield SimpleNamespace(check_owned=lambda: None)
@@ -61,10 +62,11 @@ def setup(prepared, monkeypatch):
 
 
 def test_sixteen_rows_settle_serially_and_cannot_restart(setup):
-    admission, events, _state, transport = setup
+    admission, events, state, transport = setup
     result = cohort.run_admitted_cohort(admission, transport_factory=transport, scripted=True)
     assert result.status == "finished"
     assert events == ["open", "settle"] * 16
+    assert state["residency"] == [0] * 16
     data = json.loads((admission.directory / "report.json").read_bytes())
     assert len(data["results"]) == 16 and all(c.status == "recorded" for c in result.cells)
     assert all(row["passed"] and row["completion_status"] == "completed" for row in data["results"])
@@ -90,3 +92,30 @@ def test_failure_preserves_first_row_and_fifteen_unrun_cells(setup, fault):
     assert data["cohort"]["status"] == "stopped"
     assert events == ["open", "settle"]
     assert not Path(admission.manifest.staged_directory, "cell-02/admitted.json").exists()
+
+
+def test_selected_residency_reaches_lifecycle_and_failure_still_stops_cohort(setup):
+    admission, events, state, transport = setup
+    admission.manifest = admission.manifest.model_copy(update={"keep_alive_seconds": 300})
+    raw = admission.manifest.model_dump_json().encode()
+    (admission.directory / "manifest.json").write_bytes(raw)
+    admission.approval.manifest_sha256 = hashlib.sha256(raw).hexdigest()
+    with pytest.raises(ValueError):
+        cohort.run_admitted_cohort(
+            admission,
+            transport_factory=lambda ordinal, directory: transport(ordinal, directory, "transport"),
+            scripted=True,
+        )
+    assert state["residency"] == [300]
+    assert events == ["open", "settle"]
+    data = json.loads((admission.directory / "report.json").read_bytes())
+    assert [cell["status"] for cell in data["cohort"]["cells"]] == ["recorded"] + ["unrun"] * 15
+
+
+def test_unvalidated_constructed_residency_refuses_before_any_lifecycle(setup):
+    admission, events, _state, transport = setup
+    admission.manifest = admission.manifest.model_copy(update={"keep_alive_seconds": True})
+    with pytest.raises(ValueError):
+        cohort.run_admitted_cohort(admission, transport_factory=transport, scripted=True)
+    assert events == []
+    assert not (admission.directory / "cohort-started.json").exists()
