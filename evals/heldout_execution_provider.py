@@ -66,6 +66,7 @@ def build_cell_provider(
         original_directory=Path(manifest.staged_directory),
         expected_index_sha256=manifest.capture_index_sha256,
         ordinal=ordinal,
+        residency=manifest.residency_plan_sha256 is not None,
     )
     return CheckedProvider(
         SettingsPinnedProvider(

@@ -4,6 +4,13 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-03 — Explicit residency admission/pin selection:** manifest schedule
+hash selects matching preflight/verifier/staging receipt and rejects conflicting
+global residency. Explicit provider pin loading verifies residency captures; absent
+selection remains legacy-strict. The old cohort refuses residency admissions before
+transport/start. Dedicated owned execution and freeze remain open. No inference,
+issuer authentication or measured residency/quality benefit is claimed.
+
 **2026-11-03 — Residency capture verification/staging:** explicit format-specific
 entry points verify schedule hash/arms and preserve existing bounded file, pin,
 receipt, root and fixture checks. Archival precedes fresh exact-path fixture

@@ -11,7 +11,7 @@ from evals.heldout_comparison import PLAN_PATH
 from evals.heldout_dependency_files import record_files
 from evals.heldout_execution_manifest import ExecutionManifest
 from evals.heldout_runtime_inventory import record_runtime
-from evals.heldout_staging import stage_capture
+from evals.heldout_staging import stage_capture, stage_residency_capture
 from evals.real_run import _task_command_environment
 
 
@@ -20,7 +20,8 @@ def digest(path):
 
 
 @pytest.fixture
-async def prepared(tmp_path, monkeypatch):
+async def prepared(tmp_path, monkeypatch, request):
+    residency = getattr(request, "param", False)
     root = tmp_path.resolve()
     runtime = {"commit": "a" * 40, "dirty": False}
     monkeypatch.setattr(inputs, "_harness_revision", lambda: runtime)
@@ -43,9 +44,11 @@ async def prepared(tmp_path, monkeypatch):
         runtime_sha256=digest(inventory),
         dependency_manifest=dependencies,
         dependency_sha256=digest(dependencies),
+        residency_schedule=residency,
     )
     selected = digest(source / "index.json")
-    stage_capture(source, root / "archive", expected_index_sha256=selected)
+    stage = stage_residency_capture if residency else stage_capture
+    stage(source, root / "archive", expected_index_sha256=selected)
     image = root / "image"
     image.mkdir()
     inputs._save(image / "prepared-image.json", b"scripted-model-image-receipt")
@@ -55,6 +58,8 @@ async def prepared(tmp_path, monkeypatch):
     binary = root / "ollama"
     binary.write_bytes(b"scripted-executable-never-run")
     binary.chmod(0o700)
+    from evals.residency_comparison import RESIDENCY_PLAN_PATH
+
     return ExecutionManifest(
         format="heldout-execution-manifest-v1",
         runtime_commit=runtime["commit"],
@@ -71,6 +76,7 @@ async def prepared(tmp_path, monkeypatch):
         ollama_binary=str(binary),
         command_environment=environment,
         inference_authorized=False,
+        residency_plan_sha256=digest(RESIDENCY_PLAN_PATH) if residency else None,
     )
 
 
