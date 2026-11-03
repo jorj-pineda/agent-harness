@@ -52,8 +52,17 @@ def setup(prepared, monkeypatch):
     events = []
     state = {"cleanup_failure": False}
 
+    def prepare(source, destination, *, expected_manifest_sha256):
+        assert source == Path(prepared.image_directory) / "models"
+        assert expected_manifest_sha256 == validate_plan().model_digest
+        destination.mkdir()
+
+    monkeypatch.setattr(executor, "prepare_image", prepare)
+
     @contextmanager
     def owned(image, directory, binary, *, keep_alive_seconds):
+        assert image == directory.parent / "image"
+        assert image.is_dir()
         events.append(("open", keep_alive_seconds))
         try:
             yield SimpleNamespace(check_owned=lambda: None)
@@ -111,3 +120,29 @@ def test_stopped_cell_keeps_result_before_cleanup_and_leaves_both_arms_unrun(set
     assert [cell["status"] for cell in report["cohort"]["cells"]] == ["started"] + ["unrun"] * 15
     assert events == [("open", 0), ("settle", 0)]
     assert not Path(admission.manifest.staged_directory, "cell-02/admitted.json").exists()
+
+
+@pytest.mark.parametrize("prepared", [True], indirect=True)
+def test_cell_image_failure_stops_before_backend_transport_or_workspace_admission(
+    setup, monkeypatch
+):
+    admission, events, _state, _transport = setup
+
+    def fail(source, destination, **kwargs):
+        destination.mkdir()
+        raise OSError("clone failed")
+
+    monkeypatch.setattr(executor, "prepare_image", fail)
+    with pytest.raises(OSError, match="clone failed"):
+        executor.run_residency_cohort(
+            admission,
+            transport_factory=lambda *a: pytest.fail("transport constructed"),
+            scripted=True,
+        )
+    assert events == []
+    assert (admission.directory / "cell-01/image").is_dir()
+    assert not Path(admission.manifest.staged_directory, "cell-01/admitted.json").exists()
+    report = json.loads((admission.directory / "report.json").read_bytes())
+    assert report["results"] == []
+    assert report["cohort"]["status"] == "stopped"
+    assert [cell["status"] for cell in report["cohort"]["cells"]] == ["started"] + ["unrun"] * 15

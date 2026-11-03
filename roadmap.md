@@ -4,6 +4,14 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-03 — Residency per-cell images:** executor setup now creates an
+independently verified owned image for each cell through the existing clone-only
+preparation helper, using the selected read-only bundle as source. Backend receives
+only the cell image. Copy/pin failures stop before backend/transport/workspace
+admission and preserve partial evidence. This corrects the protocol/executor image
+ownership mismatch before launch; native rehearsal remains required. No inference
+or actual residency/performance claim.
+
 **2026-11-03 — Residency loaded-model snapshots:** real residency responses now
 require a bounded owned GET observation before tool dispatch, recording loaded or
 not-loaded with timestamp/selection. Identity/ownership/recording failures latch
