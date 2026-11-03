@@ -51,10 +51,11 @@ class ResidencyObservedProvider:
         self.name = inner.name
         self.responses = 0
         self.failed = False
+        self.observation_failed = False
 
     @property
     def stop_reason(self):
-        return "residency_observation" if self.failed else self.inner.stop_reason
+        return "residency_observation" if self.observation_failed else self.inner.stop_reason
 
     async def chat(self, messages, *, tools=None, temperature=0, max_tokens=None):
         if self.failed:
@@ -64,7 +65,11 @@ class ResidencyObservedProvider:
                 messages, tools=tools, temperature=temperature, max_tokens=max_tokens
             )
             self.responses += 1
-            await self.observe(self.responses)
+            try:
+                await self.observe(self.responses)
+            except BaseException:
+                self.observation_failed = True
+                raise
             return response
         except BaseException:
             self.failed = True

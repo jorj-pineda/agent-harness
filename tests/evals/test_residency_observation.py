@@ -1,3 +1,4 @@
+import asyncio
 import json
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
@@ -7,6 +8,7 @@ import pytest
 
 from evals import residency_observation as observation
 from evals.heldout_comparison import validate_plan
+from evals.heldout_rehearsal import ProtocolStop, stop_reason
 
 
 @pytest.mark.parametrize("loaded", [False, True])
@@ -66,6 +68,59 @@ async def test_observation_completes_before_response_is_returned():
 
     result = await observation.ResidencyObservedProvider(inner, observe).chat([])
     assert result is response and events == [1]
+
+
+async def test_cancelled_generation_preserves_unknown_usage_reason_and_latches():
+    error = asyncio.CancelledError()
+    inner = SimpleNamespace(
+        name="fake", stop_reason=None, chat=AsyncMock(side_effect=error), aclose=AsyncMock()
+    )
+    observe = AsyncMock()
+    provider = observation.ResidencyObservedProvider(inner, observe)
+    with pytest.raises(asyncio.CancelledError) as caught:
+        await provider.chat([])
+    assert caught.value is error
+    observe.assert_not_awaited()
+    assert provider.responses == 0
+    result = SimpleNamespace(
+        termination="budget_exhausted",
+        model=validate_plan().model,
+        prompt_tokens=None,
+        completion_tokens=None,
+    )
+    assert (provider.stop_reason or stop_reason(result, validate_plan())) == "missing_usage"
+    with pytest.raises(ValueError, match="latched closed"):
+        await provider.chat([])
+    assert inner.chat.await_count == 1
+    await provider.aclose()
+    inner.aclose.assert_awaited_once()
+
+
+@pytest.mark.parametrize("reason", ["transport", "wrong_model", "missing_usage"])
+async def test_inner_guard_reason_is_preserved_without_observation(reason):
+    error = ProtocolStop(reason)
+    inner = SimpleNamespace(name="fake", stop_reason=reason, chat=AsyncMock(side_effect=error))
+    observe = AsyncMock()
+    provider = observation.ResidencyObservedProvider(inner, observe)
+    with pytest.raises(ProtocolStop) as caught:
+        await provider.chat([])
+    assert caught.value is error and provider.stop_reason == reason
+    observe.assert_not_awaited()
+    with pytest.raises(ValueError, match="latched closed"):
+        await provider.chat([])
+    assert inner.chat.await_count == 1
+
+
+async def test_cancelled_observation_retains_observation_reason_and_latches():
+    inner = SimpleNamespace(name="fake", stop_reason=None, chat=AsyncMock(return_value=object()))
+    observe = AsyncMock(side_effect=asyncio.CancelledError())
+    provider = observation.ResidencyObservedProvider(inner, observe)
+    with pytest.raises(asyncio.CancelledError):
+        await provider.chat([])
+    assert provider.stop_reason == "residency_observation" and provider.responses == 1
+    with pytest.raises(ValueError, match="latched closed"):
+        await provider.chat([])
+    assert inner.chat.await_count == observe.await_count == 1
 
 
 @pytest.mark.parametrize("fault", ["identity", "ownership"])
