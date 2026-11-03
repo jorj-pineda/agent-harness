@@ -1,5 +1,14 @@
 # Real-task baselines
 
+## 2026-11-03 — Fixes development validation stopped
+
+The [fresh development run](heldout_comparison/DEVELOPMENT_RESULTS_FIXES_20261103.md)
+observed one corrected command array after compact feedback, but no edit or
+accepted artifact. Wall cancellation left aggregate usage unknown and fifteen
+cells unrun. Original-criterion regrade and clean unforced settlement verify.
+This is retired-v1 development evidence, not a causal/held-out gain or release
+closure; the cohort is closed without retries.
+
 ## 2026-11-02 — Held-out v1 cohort stopped
 
 The [authorized frozen run](heldout_comparison/RESULTS_20261102.md) recorded one
