@@ -1,5 +1,17 @@
 # Real-task baselines
 
+## 2026-11-03 — 300-second residency feasibility finished
+
+The [one-cell development run](heldout_comparison/RESIDENCY_300_FEASIBILITY_RESULTS_20261103.md)
+returned six complete responses with six loaded snapshots and known 13,559/171
+tokens, then reached the six-iteration cap in 63.912 dispatch seconds. It read files,
+corrected a command and emitted a plan, but made no edit; original acceptance
+regrade rejects the unchanged artifact (0/1 accepted, 0/1 completed-and-accepted).
+The one-cell ledger finished and owned cleanup settled cleanly without force.
+Fifteen unused capture fixtures remain unadmitted. The attempt is closed without
+retry; no matched residency effect, coding-quality/held-out gain or release
+closure is established. The prior stopped sixteen-cell comparison stays closed.
+
 ## 2026-11-03 — Residency development experiment stopped
 
 The [frozen residency run](heldout_comparison/RESIDENCY_DEVELOPMENT_RESULTS_20261103.md)
