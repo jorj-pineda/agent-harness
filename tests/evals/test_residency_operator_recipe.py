@@ -5,9 +5,11 @@ from types import SimpleNamespace
 import pytest
 
 
-@pytest.fixture
-def recipe():
-    path = Path(__file__).parents[2] / "evals/heldout_comparison/operator_residency_20261103.py"
+@pytest.fixture(
+    params=["operator_residency_20261103.py", "operator_residency_300_feasibility_20261103.py"]
+)
+def recipe(request):
+    path = Path(__file__).parents[2] / "evals/heldout_comparison" / request.param
     spec = importlib.util.spec_from_file_location("residency_recipe_fixture", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -35,7 +37,13 @@ def test_recipe_admission_precedes_transport_and_real_executor(recipe, monkeypat
 
     monkeypatch.setattr(recipe, "admit_execution", admit)
     monkeypatch.setattr(recipe.httpx, "AsyncHTTPTransport", transport)
-    monkeypatch.setattr(recipe, "run_residency_cohort", execute)
+    monkeypatch.setattr(
+        recipe,
+        "run_residency_feasibility"
+        if hasattr(recipe, "run_residency_feasibility")
+        else "run_residency_cohort",
+        execute,
+    )
     assert (
         recipe.execute_selected(
             tmp_path / "manifest",
@@ -56,7 +64,13 @@ def test_recipe_refusal_does_not_enter_executor_or_construct_transport(
         raise ValueError("parent refused")
 
     monkeypatch.setattr(recipe, "admit_execution", refuse)
-    monkeypatch.setattr(recipe, "run_residency_cohort", lambda *a, **k: pytest.fail("executor"))
+    monkeypatch.setattr(
+        recipe,
+        "run_residency_feasibility"
+        if hasattr(recipe, "run_residency_feasibility")
+        else "run_residency_cohort",
+        lambda *a, **k: pytest.fail("executor"),
+    )
     monkeypatch.setattr(
         recipe.httpx, "AsyncHTTPTransport", lambda *a, **k: pytest.fail("transport")
     )

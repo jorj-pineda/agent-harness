@@ -4,6 +4,17 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-03 — Fresh 300-second feasibility freeze proposal:** retained 3e5caa9
+binds one fresh ISO-week harness attempt (ordinal 2) with unchanged limits and
+criteria. Fresh preparation, one mandatory-mock accepted workflow/owned metadata
+session, 16 refusal probes and a GET-only observer probe pass; all 3 groups settled
+cleanly unforced. Retained G0 passes 2,938 offline; final PR suite passes 2,952; static
+and both 90/90 matrices pass. Actual check-only and missing-arguments/default-mode
+refusals pass without admission or generation. The [freeze](evals/heldout_comparison/RESIDENCY_300_FEASIBILITY_FREEZE_20261103.md)
+selects concrete inputs/runtime/environment/image/recipe and evidence. Exact-head
+review/CI/merge, actual parent receipt and fresh launch gates remain required.
+No real residency/patch, causal/held-out gain, default or release claim yet.
+
 **2026-11-03 — Explicit 300-second feasibility selection:** a new manifest field
 binds only residency ordinal 2 (ISO-week/harness/repeat 1/300 seconds). The normal
 cohort and one-cell entry points reject mismatched selections; provider construction
