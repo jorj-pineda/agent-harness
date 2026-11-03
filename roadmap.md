@@ -4,6 +4,18 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-03 — Explicit 300-second feasibility selection:** a new manifest field
+binds only residency ordinal 2 (ISO-week/harness/repeat 1/300 seconds). The normal
+cohort and one-cell entry points reject mismatched selections; provider construction
+refuses other ordinals. A distinct one-cell ledger reuses shared execution, first
+inputs, original grading and owned settlement. The full offline 16-input bundle
+remains preservation input; its other 15 fixtures never become live attempts.
+The [separate protocol](evals/heldout_comparison/RESIDENCY_300_FEASIBILITY_PROTOCOL.md)
+retains all original limits, one fresh attempt, no warmup/retry or causal claim.
+Scripted regression checks establish scope/refusal mechanics only. Concrete
+retained freeze, independent review/CI/merge, parent receipt and fresh gates remain
+before inference. The closed prior cohort and historical labels are preserved.
+
 **2026-11-03 — Residency failure-cause preservation:** the observation wrapper
 still latches closed for every provider/observation failure or cancellation, but
 only failures inside the observation set residency_observation. Inner guard

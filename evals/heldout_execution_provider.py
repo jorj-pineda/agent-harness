@@ -34,6 +34,11 @@ def build_cell_provider(
     admission or settlement is performed by this factory.
     """
     manifest = admission.manifest.model_copy(deep=True)
+    if (
+        manifest.residency_feasibility_ordinal is not None
+        and ordinal != manifest.residency_feasibility_ordinal
+    ):
+        raise ValueError("Ordinal is outside the selected single-cell feasibility scope")
     plan = validate_plan()
     capture = Path(manifest.capture_directory)
     if admission.capture.settings_sha256 is None:

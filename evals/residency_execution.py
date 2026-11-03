@@ -33,7 +33,7 @@ from evals.real_run import (
 )
 from evals.residency_comparison import RESIDENCY_PLAN_PATH, validate_residency_plan
 from evals.residency_observation import ResidencyObservedProvider, record_residency
-from evals.residency_runner import ResidencyLedger, run_schedule
+from evals.residency_runner import ResidencyFeasibilityLedger, ResidencyLedger, run_schedule
 
 
 def run_residency_cohort(
@@ -42,6 +42,35 @@ def run_residency_cohort(
     transport_factory: Callable[[int, Path], httpx.AsyncBaseTransport],
     scripted: bool,
 ) -> ResidencyLedger:
+    """Run the full fixed cohort; refuse a single-cell feasibility selection."""
+    ledger = _run_residency(
+        admission, transport_factory=transport_factory, scripted=scripted, feasibility=False
+    )
+    assert isinstance(ledger, ResidencyLedger)
+    return ledger
+
+
+def run_residency_feasibility(
+    admission: ExecutionAdmission,
+    *,
+    transport_factory: Callable[[int, Path], httpx.AsyncBaseTransport],
+    scripted: bool,
+) -> ResidencyFeasibilityLedger:
+    """Execute only the explicitly approved fresh ISO-week 300-second cell once."""
+    ledger = _run_residency(
+        admission, transport_factory=transport_factory, scripted=scripted, feasibility=True
+    )
+    assert isinstance(ledger, ResidencyFeasibilityLedger)
+    return ledger
+
+
+def _run_residency(
+    admission: ExecutionAdmission,
+    *,
+    transport_factory: Callable[[int, Path], httpx.AsyncBaseTransport],
+    scripted: bool,
+    feasibility: bool,
+) -> ResidencyLedger | ResidencyFeasibilityLedger:
     """Trusted admitted caller only; explicit transport, no default launch or approval.
 
     Results are recorded before cleanup; a ledger cell is recorded only after
@@ -57,6 +86,8 @@ def run_residency_cohort(
     if not scripted and getattr(admission, "source_manifest", None) is None:
         raise ValueError("Real residency execution requires selected source provenance")
     manifest = ExecutionManifest.model_validate(admission.manifest.model_dump())
+    if (manifest.residency_feasibility_ordinal is not None) != feasibility:
+        raise ValueError("Use the matching explicit feasibility or full-cohort executor")
     selected = validate_residency_plan()
     if (
         manifest.residency_plan_sha256
@@ -74,6 +105,7 @@ def run_residency_cohort(
     tasks = load_tasks(REGISTRATIONS[0].root / "tasks.yaml")
     by_id = {task.id: task for task in tasks}
     settings = protocol_settings(plan)
+    first_ordinal = 2 if feasibility else 1
     results = []
     current = None
 
@@ -128,7 +160,7 @@ def run_residency_cohort(
         )
         write_report(
             destination / "report.json",
-            "residency development cohort",
+            "residency development feasibility" if feasibility else "residency development cohort",
             results,
             cohort=ledger,
             scripted=scripted,
@@ -141,7 +173,7 @@ def run_residency_cohort(
 
     def execute_and_settle(cell):
         check()
-        if cell.ordinal == 1:
+        if cell.ordinal == first_ordinal:
             asyncio.run(controls())
         task = by_id[cell.task_id]
         output = destination / f"cell-{cell.ordinal:02d}"
@@ -225,5 +257,8 @@ def run_residency_cohort(
     for pinned in admission.capture.cells:
         verify_prepared(staged / f"cell-{pinned.ordinal:02d}", task_id=pinned.task_id)
     return run_schedule(
-        destination / "cohort-started.json", execute_and_settle=execute_and_settle, persist=persist
+        destination / "cohort-started.json",
+        execute_and_settle=execute_and_settle,
+        persist=persist,
+        feasibility=feasibility,
     )

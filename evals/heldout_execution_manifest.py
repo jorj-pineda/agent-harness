@@ -6,7 +6,7 @@ import hashlib
 from pathlib import Path
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from evals.heldout_guard import _read_regular
 from evals.real_run import _task_command_environment
@@ -36,7 +36,18 @@ class ExecutionManifest(FrozenModel):
     command_environment: dict[str, str] = Field(min_length=1, max_length=10)
     keep_alive_seconds: int = Field(default=0, ge=0, le=300)
     residency_plan_sha256: Digest | None = None
+    residency_feasibility_ordinal: int | None = Field(default=None, ge=2, le=2)
     inference_authorized: Literal[False]
+
+    @model_validator(mode="after")
+    def feasibility_selection(self) -> ExecutionManifest:
+        if self.residency_feasibility_ordinal is not None and (
+            self.residency_plan_sha256 is None or self.keep_alive_seconds != 0
+        ):
+            raise ValueError(
+                "Feasibility requires the residency schedule without a global override"
+            )
+        return self
 
     @field_validator(
         "staged_directory",
