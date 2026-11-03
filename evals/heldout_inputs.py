@@ -136,7 +136,17 @@ async def capture_inputs(
     runtime_sha256: str | None = None,
     dependency_manifest: Path | None = None,
     dependency_sha256: str | None = None,
+    residency_schedule: bool = False,
 ) -> dict[str, Any]:
+    residency = None
+    residency_digest = None
+    if residency_schedule:
+        from evals.residency_comparison import RESIDENCY_PLAN_PATH, validate_residency_plan
+
+        residency_digest = _plan_digest(RESIDENCY_PLAN_PATH)
+        residency = validate_residency_plan()
+        if not prepared:
+            raise ValueError("Residency capture requires named prepared workspaces")
     check_runtime_selection(runtime_inventory, runtime_sha256)
     check_dependency_selection(dependency_manifest, dependency_sha256)
     selected_env = _task_command_environment(command_env)
@@ -149,6 +159,9 @@ async def capture_inputs(
     # A fresh exclusive directory makes interrupted/failed captures non-retryable artifacts.
     _prepare_directory(directory)
     ledger, schedule = _plan_cohort(tasks, MODES, plan.repeats)
+    if residency is not None:
+        by_id = {task.id: task for task in tasks}
+        schedule = [(by_id[cell.task_id], cell.mode, cell.repeat) for cell in residency.cells]
     settings = protocol_settings(plan)
     expected_settings = settings_bytes(settings)
     settings_digest = _save(directory / "settings.json", expected_settings)
@@ -229,19 +242,25 @@ async def capture_inputs(
         key = (task.id, mode)
         repeat_equal = prior[key] == digests if key in prior else None
         prior[key] = digests
-        rows.append(
-            {
-                "ordinal": index + 1,
-                "task_id": task.id,
-                "mode": mode,
-                "attempt": attempt,
-                "files": dict(zip(names, digests, strict=True)),
-                "runtime_config": result.runtime_config,
-                "repeat_bytes_equal": repeat_equal,
-            }
-        )
+        row = {
+            "ordinal": index + 1,
+            "task_id": task.id,
+            "mode": mode,
+            "attempt": attempt,
+            "files": dict(zip(names, digests, strict=True)),
+            "runtime_config": result.runtime_config,
+            "repeat_bytes_equal": repeat_equal,
+        }
+        if residency is not None:
+            row["keep_alive_seconds"] = residency.cells[index].keep_alive_seconds
+        rows.append(row)
     if _plan_digest(plan_path) != before_plan:
         raise ValueError("Plan changed during capture")
+    if residency is not None and (
+        _plan_digest(RESIDENCY_PLAN_PATH) != residency_digest
+        or validate_residency_plan() != residency
+    ):
+        raise ValueError("Residency schedule changed during capture")
     check_settings(settings, expected_settings)
     load_settings_pin(directory / "settings.json", expected_sha256=settings_digest)
     if environment_digest is not None:
@@ -263,6 +282,12 @@ async def capture_inputs(
         "cells": rows,
         "planned_cells": len(ledger.cells),
     }
+    if residency is not None:
+        result_index.update(
+            format="residency-first-inputs-v1",
+            evidence_label="development-on-retired-v1",
+            residency_plan_sha256=residency_digest,
+        )
     _save(directory / "index.json", json.dumps(result_index, indent=2).encode())
     return result_index
 

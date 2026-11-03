@@ -65,3 +65,16 @@ Record whether the selected residency is actually observed, rather than assuming
 environment configuration proves backend compliance. A nonzero setting does not
 prove effective prefix caching. No artifact gain, supported envelope, production
 default, held-out improvement or no-go/8-of-10/G2–G5 closure follows automatically.
+
+
+## Current capture boundary
+
+`capture_inputs(..., prepared=True, residency_schedule=True)` explicitly selects
+this schedule and produces a separate `residency-first-inputs-v1` index with the
+schedule hash, development label and each cell's residency. Production-adapter
+requests still stop at mandatory MockTransport; no generation is forwarded.
+Named fixtures are consumed by capture and are not launch workspaces yet.
+The legacy verifier/stager deliberately rejects this new format. A matching
+residency verifier/stager and executor integration are still required; no existing
+manifest or operator can treat these bundles as approved legacy captures. The
+ordinary capture default and CLI remain unchanged.
