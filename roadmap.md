@@ -4,6 +4,13 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-03 — Serial residency scheduling core:** one single-use ledger now
+retains all sixteen fixed cells and stops both arms on callback or recording
+failure. Callbacks must record results and settle resources before returning;
+this core neither authenticates approval nor proves settlement. Synthetic tests
+cover ordering, failure at both arms/repeats, occupied marker and recording errors.
+Owned execution/capture integration and exact freeze remain open; no inference.
+
 **2026-11-03 — Fixed residency development schedule:** an offline strict plan
 retains sixteen harness-only task/repeat/residency cells, alternating zero/300 then
 300/zero. It pins the original plan bytes and validates original catalog/settings
