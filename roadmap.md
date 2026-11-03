@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-03 — Fresh fixes development run stopped:** one retired-v1 ISO-week
+harness cell recovered from a quoted argv string to a valid visible-check call,
+but the unchanged artifact failed and the sixth request was cancelled at150s.
+Unknown aggregate usage stopped fifteen cells unrun. [Results](evals/heldout_comparison/DEVELOPMENT_RESULTS_FIXES_20261103.md)
+retain the10,777/131 token prefix, original-criterion regrade, generated pytest
+cache distinction and clean owned settlement. Only compact validation feedback was
+exercised; no accepted patch, attributed fix benefit, held-out comparison or
+no-go/8-of-10/G2–G5 closure. Cohort closed without retries.
+
 **2026-11-02 — Fresh fixes development freeze:** Jorge requested fresh development
 validation of #336–338. A new clean cf52e2e runtime, independent image/fixture/input
 bundles, sixteen-cell mandatory-mock rehearsal, thirteen refusal probes and exact
