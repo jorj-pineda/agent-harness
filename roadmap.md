@@ -4,6 +4,18 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-03 — Residency execution freeze proposal:** clean retained 06502c6
+uses fresh candidate/rehearsal bundles, sixteen native image/owned metadata
+lifecycles with mandatory mock generation, thirteen refusal probes and a real
+GET-only observation probe. All eighteen groups settled unforced; eight first-input
+pairs match after documented path normalization. Retained G0 passes 2,901 offline
+plus static and both 90/90 scripted matrices. Interrupted G0 evidence is preserved.
+The [freeze](evals/heldout_comparison/RESIDENCY_EXECUTION_FREEZE_20261103.md)
+binds the selected runtime/manifest/settings/environment/image/recipe and evidence;
+actual check-only and missing-arguments/default-mode refusals pass. Exact-head
+review, CI, merge, actual parent receipt and fresh launch gates remain required.
+No generation, held-out/causal gain, default adoption or release closure.
+
 **2026-11-03 — Residency per-cell images:** executor setup now creates an
 independently verified owned image for each cell through the existing clone-only
 preparation helper, using the selected read-only bundle as source. Backend receives
