@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-03 — Opt-in owned backend residency seam:** the evaluation lifecycle
+accepts an explicit integer0–300 second keep-alive selection, validates before
+resource inspection/allocation and records it in the private child environment.
+All existing callers retain zero; process ownership/cleanup remains unchanged.
+Synthetic metadata-child tests establish selection/refusal and clean shutdown,
+not actual model residency, prompt reuse or a coding-quality remedy. Manifest/
+cohort experiment selection, reviewed freeze and fresh launch approval remain
+separate. No real inference, application/default/budget or old evidence change.
+
 **2026-11-03 — Development timing diagnosis:** read-only analysis of the five
 complete native responses separates backend-reported loading, prompt evaluation
 and output evaluation prefixes. Prompt evaluation dominates; nonzero load durations

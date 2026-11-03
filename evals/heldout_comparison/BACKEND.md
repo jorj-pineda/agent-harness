@@ -91,3 +91,26 @@ must enforce the exact freeze/parent approval/fresh gates before submitting any
 request, and must stop its cohort on failed or unknown settlement. Resource code,
 callbacks and host processes remain trusted; there is no isolation or exclusion
 of external writers. The live operator and approval/freeze gates remain unfinished.
+
+
+## Explicit residency experiment seam
+
+`owned_backend(..., keep_alive_seconds=N)` accepts only actual integers from 0
+through 300 inclusive; booleans, floats, strings, negative and larger values refuse
+before image inspection or resource allocation. The default remains zero. The
+selected value is written as `OLLAMA_KEEP_ALIVE` in the private child environment
+and retained environment.json. Ollama 0.33.2 interprets integer values as seconds
+([versioned implementation](https://github.com/ollama/ollama/blob/v0.33.2/envconfig/config.go#L118)).
+
+This seam is evaluation-only. Current cohort callers, manifests, operator recipes
+and metadata CLI still select the existing zero default. A future residency
+experiment must separately bind its selected value into its manifest/recipe and
+obtain exact freeze and launch approval. This change does not wire an experiment,
+load a real model, authorize inference, change application Settings or prove that
+residency improves prompt evaluation or artifact acceptance.
+
+The owned process/group and final settlement checks are unchanged: an opt-in
+residency duration does not permit leaving the backend running after context exit
+or managing the user's service. Synthetic metadata-only child tests verify env
+selection and clean shutdown; they do not exercise real model residency or GPU
+settlement. Unknown/forced cleanup remains a failure. No warmup request is added.

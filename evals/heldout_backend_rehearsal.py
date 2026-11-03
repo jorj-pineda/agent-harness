@@ -187,9 +187,15 @@ class OwnedBackendSession:
 
 @contextmanager
 def owned_backend(
-    image_directory: Path, directory: Path, binary: Path
+    image_directory: Path, directory: Path, binary: Path, *, keep_alive_seconds: int = 0
 ) -> Iterator[OwnedBackendSession]:
-    """Synchronous resource ownership only; enter/exit outside an active event loop."""
+    """Own one backend; optional residency is experimental, not inference approval.
+
+    Existing callers keep zero residency. A new experiment must bind its explicit
+    selection separately; this helper does not change any execution manifest.
+    """
+    if type(keep_alive_seconds) is not int or not 0 <= keep_alive_seconds <= 300:
+        raise ValueError("Owned model residency must be an integer from 0 to 300 seconds")
     try:
         asyncio.get_running_loop()
     except RuntimeError:
@@ -219,7 +225,7 @@ def owned_backend(
         "OLLAMA_NO_CLOUD": "1",
         "OLLAMA_NOPRUNE": "1",
         "OLLAMA_NOHISTORY": "1",
-        "OLLAMA_KEEP_ALIVE": "0",
+        "OLLAMA_KEEP_ALIVE": str(keep_alive_seconds),
         "OLLAMA_MAX_LOADED_MODELS": "1",
         "OLLAMA_NUM_PARALLEL": "1",
         "OLLAMA_MAX_QUEUE": "1",
