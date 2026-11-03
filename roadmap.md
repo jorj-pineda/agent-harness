@@ -4,6 +4,14 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-03 — Development timing diagnosis:** read-only analysis of the five
+complete native responses separates backend-reported loading, prompt evaluation
+and output evaluation prefixes. Prompt evaluation dominates; nonzero load durations
+and explicit owned keep-alive zero motivate a residency hypothesis, not an assumed
+remedy. The [diagnosis](evals/heldout_comparison/DEVELOPMENT_TIMING_DIAGNOSIS_20261103.md)
+retains cancelled-call timing as unknown and proposes no default, budget or old
+freeze change. No new inference, causal gain or release gate closure.
+
 **2026-11-03 — Fresh fixes development run stopped:** one retired-v1 ISO-week
 harness cell recovered from a quoted argv string to a valid visible-check call,
 but the unchanged artifact failed and the sixth request was cancelled at150s.
