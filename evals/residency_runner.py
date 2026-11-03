@@ -27,12 +27,21 @@ class ResidencyLedger(ProtocolModel):
     stop_reason: str | None = None
 
 
+class ResidencyFeasibilityLedger(ProtocolModel):
+    format: Literal["residency-feasibility-ledger-v1"] = "residency-feasibility-ledger-v1"
+    status: Literal["planned", "running", "finished", "stopped"] = "planned"
+    cells: list[CellState] = Field(min_length=1, max_length=1)
+    error_type: str | None = None
+    stop_reason: str | None = None
+
+
 def run_schedule(
     marker: Path,
     *,
     execute_and_settle: Callable[[ResidencyCell], None],
-    persist: Callable[[ResidencyLedger], None],
-) -> ResidencyLedger:
+    persist: Callable[[ResidencyLedger | ResidencyFeasibilityLedger], None],
+    feasibility: bool = False,
+) -> ResidencyLedger | ResidencyFeasibilityLedger:
     """Enforce one schedule and stop on any cell/settlement/recording failure.
 
     Not a launch API. Trusted caller supplies an evaluation-owned marker path,
@@ -42,8 +51,17 @@ def run_schedule(
     or approval. Single-use marker and partial evidence are never removed here.
     """
     plan = validate_residency_plan()
-    ledger = ResidencyLedger(cells=[CellState(cell=cell) for cell in plan.cells])
-    _save(marker, b'{"format":"residency-schedule-started-v1"}')
+    ledger = (
+        ResidencyFeasibilityLedger(cells=[CellState(cell=plan.cells[1])])
+        if feasibility
+        else ResidencyLedger(cells=[CellState(cell=cell) for cell in plan.cells])
+    )
+    _save(
+        marker,
+        b'{"format":"residency-feasibility-started-v1"}'
+        if feasibility
+        else b'{"format":"residency-schedule-started-v1"}',
+    )
     try:
         persist(ledger.model_copy(deep=True))
         ledger = ledger.model_copy(update={"status": "running"})

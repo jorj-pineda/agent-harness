@@ -4,6 +4,29 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-03 — Fresh 300-second feasibility freeze proposal:** retained 3e5caa9
+binds one fresh ISO-week harness attempt (ordinal 2) with unchanged limits and
+criteria. Fresh preparation, one mandatory-mock accepted workflow/owned metadata
+session, 16 refusal probes and a GET-only observer probe pass; all 3 groups settled
+cleanly unforced. Retained G0 passes 2,938 offline; final PR suite passes 2,952; static
+and both 90/90 matrices pass. Actual check-only and missing-arguments/default-mode
+refusals pass without admission or generation. The [freeze](evals/heldout_comparison/RESIDENCY_300_FEASIBILITY_FREEZE_20261103.md)
+selects concrete inputs/runtime/environment/image/recipe and evidence. Exact-head
+review/CI/merge, actual parent receipt and fresh launch gates remain required.
+No real residency/patch, causal/held-out gain, default or release claim yet.
+
+**2026-11-03 — Explicit 300-second feasibility selection:** a new manifest field
+binds only residency ordinal 2 (ISO-week/harness/repeat 1/300 seconds). The normal
+cohort and one-cell entry points reject mismatched selections; provider construction
+refuses other ordinals. A distinct one-cell ledger reuses shared execution, first
+inputs, original grading and owned settlement. The full offline 16-input bundle
+remains preservation input; its other 15 fixtures never become live attempts.
+The [separate protocol](evals/heldout_comparison/RESIDENCY_300_FEASIBILITY_PROTOCOL.md)
+retains all original limits, one fresh attempt, no warmup/retry or causal claim.
+Scripted regression checks establish scope/refusal mechanics only. Concrete
+retained freeze, independent review/CI/merge, parent receipt and fresh gates remain
+before inference. The closed prior cohort and historical labels are preserved.
+
 **2026-11-03 — Residency failure-cause preservation:** the observation wrapper
 still latches closed for every provider/observation failure or cancellation, but
 only failures inside the observation set residency_observation. Inner guard

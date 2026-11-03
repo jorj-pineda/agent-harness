@@ -52,6 +52,7 @@ def preflight(manifest: ExecutionManifest) -> CaptureIndex:
     Callable before approval to prepare an exact freeze. The caller still owns
     approval provenance, fresh resource gates and exclusive execution admission.
     """
+    manifest = ExecutionManifest.model_validate(manifest.model_dump())
     staged, capture, _, image, binary = execution_paths(manifest)
     runtime = {"commit": manifest.runtime_commit, "dirty": False}
     _runtime_matches(runtime)
