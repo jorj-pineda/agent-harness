@@ -37,10 +37,13 @@ class ExecutionManifest(FrozenModel):
     keep_alive_seconds: int = Field(default=0, ge=0, le=300)
     residency_plan_sha256: Digest | None = None
     residency_feasibility_ordinal: int | None = Field(default=None, ge=2, le=2)
+    coding_prompt_profile: Literal["compact", "direct"] = "compact"
     inference_authorized: Literal[False]
 
     @model_validator(mode="after")
     def feasibility_selection(self) -> ExecutionManifest:
+        if self.coding_prompt_profile == "direct" and self.residency_feasibility_ordinal != 2:
+            raise ValueError("Direct prompt requires the explicit single-cell feasibility scope")
         if self.residency_feasibility_ordinal is not None and (
             self.residency_plan_sha256 is None or self.keep_alive_seconds != 0
         ):

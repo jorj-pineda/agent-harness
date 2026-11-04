@@ -9,7 +9,7 @@ import json
 import os
 from collections.abc import Mapping
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 import httpx
 
@@ -137,7 +137,12 @@ async def capture_inputs(
     dependency_manifest: Path | None = None,
     dependency_sha256: str | None = None,
     residency_schedule: bool = False,
+    prompt_profile: Literal["compact", "direct"] = "compact",
 ) -> dict[str, Any]:
+    if prompt_profile not in ("compact", "direct") or (
+        prompt_profile == "direct" and not residency_schedule
+    ):
+        raise ValueError("Direct capture requires explicit residency preparation")
     residency = None
     residency_digest = None
     if residency_schedule:
@@ -162,7 +167,7 @@ async def capture_inputs(
     if residency is not None:
         by_id = {task.id: task for task in tasks}
         schedule = [(by_id[cell.task_id], cell.mode, cell.repeat) for cell in residency.cells]
-    settings = protocol_settings(plan)
+    settings = protocol_settings(plan, prompt_profile=prompt_profile)
     expected_settings = settings_bytes(settings)
     settings_digest = _save(directory / "settings.json", expected_settings)
     environment_digest = (

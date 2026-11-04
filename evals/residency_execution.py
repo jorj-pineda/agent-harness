@@ -104,7 +104,7 @@ def _run_residency(
     plan = validate_plan()
     tasks = load_tasks(REGISTRATIONS[0].root / "tasks.yaml")
     by_id = {task.id: task for task in tasks}
-    settings = protocol_settings(plan)
+    settings = protocol_settings(plan, prompt_profile=manifest.coding_prompt_profile)
     first_ordinal = 2 if feasibility else 1
     results = []
     current = None

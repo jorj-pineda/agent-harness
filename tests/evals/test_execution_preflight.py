@@ -21,7 +21,9 @@ def digest(path):
 
 @pytest.fixture
 async def prepared(tmp_path, monkeypatch, request):
-    residency = getattr(request, "param", False)
+    selection = getattr(request, "param", False)
+    residency = bool(selection)
+    prompt_profile = "direct" if selection == "direct" else "compact"
     root = tmp_path.resolve()
     runtime = {"commit": "a" * 40, "dirty": False}
     monkeypatch.setattr(inputs, "_harness_revision", lambda: runtime)
@@ -45,6 +47,7 @@ async def prepared(tmp_path, monkeypatch, request):
         dependency_manifest=dependencies,
         dependency_sha256=digest(dependencies),
         residency_schedule=residency,
+        prompt_profile=prompt_profile,
     )
     selected = digest(source / "index.json")
     stage = stage_residency_capture if residency else stage_capture
@@ -77,6 +80,8 @@ async def prepared(tmp_path, monkeypatch, request):
         command_environment=environment,
         inference_authorized=False,
         residency_plan_sha256=digest(RESIDENCY_PLAN_PATH) if residency else None,
+        coding_prompt_profile=prompt_profile,
+        residency_feasibility_ordinal=2 if prompt_profile == "direct" else None,
     )
 
 

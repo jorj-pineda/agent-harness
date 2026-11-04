@@ -6,7 +6,11 @@ import pytest
 
 
 @pytest.fixture(
-    params=["operator_residency_20261103.py", "operator_residency_300_feasibility_20261103.py"]
+    params=[
+        "operator_residency_20261103.py",
+        "operator_residency_300_feasibility_20261103.py",
+        "operator_direct_feasibility_20261104.py",
+    ]
 )
 def recipe(request):
     path = Path(__file__).parents[2] / "evals/heldout_comparison" / request.param
