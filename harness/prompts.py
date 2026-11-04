@@ -45,8 +45,23 @@ COMPACT_SYSTEM_PROMPT = (
 )
 
 
+DIRECT_SYSTEM_PROMPT = COMPACT_SYSTEM_PROMPT.replace(
+    "- Inspect applicable repository instructions and relevant code. Narrow large or "
+    "incomplete reads/searches.\n",
+    "- Read applicable instructions and named files directly; discover paths only when needed.\n",
+).replace(
+    "- Preserve user edits and make focused changes.\n",
+    "- Preserve user edits. For a small clear fix, edit next; "
+    "make a formal plan only when needed.\n",
+)
+
+
 def coding_prompt(toolset: CodingToolset, profile: CodingPromptProfile = "legacy") -> str:
-    base = COMPACT_SYSTEM_PROMPT if profile == "compact" else BASE_SYSTEM_PROMPT
+    base = {
+        "legacy": BASE_SYSTEM_PROMPT,
+        "compact": COMPACT_SYSTEM_PROMPT,
+        "direct": DIRECT_SYSTEM_PROMPT,
+    }[profile]
     if toolset == "whole_file":
         return base.replace(
             _EXACT_EDIT_INSTRUCTION,
@@ -56,6 +71,10 @@ def coding_prompt(toolset: CodingToolset, profile: CodingPromptProfile = "legacy
 
 
 def coding_prompt_version(toolset: CodingToolset, profile: CodingPromptProfile = "legacy") -> str:
+    if profile == "direct":
+        return (
+            "coding-v1-direct-whole-file-v1" if toolset == "whole_file" else "coding-v1-direct-v1"
+        )
     if profile == "compact":
         return (
             "coding-v3-compact-whole-file-v1" if toolset == "whole_file" else "coding-v3-compact-v1"

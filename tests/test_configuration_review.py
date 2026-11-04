@@ -43,7 +43,7 @@ def archive_with_profile(settings: Settings, registry: ToolRegistry) -> SessionA
     )
 
 
-@pytest.mark.parametrize("prompt_profile", ["legacy", "compact"])
+@pytest.mark.parametrize("prompt_profile", ["legacy", "compact", "direct"])
 @pytest.mark.parametrize("ratio", [3, 4.5])
 def test_matching_configuration_does_not_grant_resume_permission(
     tmp_path: Path, prompt_profile, ratio

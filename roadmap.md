@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-04 — Opt-in direct coding prompt:** a separately versioned direct
+profile asks models to read named files without unnecessary discovery and move
+small clear fixes toward editing instead of formal planning. Shared application,
+evaluation and configuration-review paths use the same prompt selection. Existing
+legacy/compact prompt bytes, tools, policy and budgets remain unchanged. This
+responds to the closed six-iteration trace, not a measured remedy. Scripted tests
+verify prompt delivery and configuration identity; a fresh bounded development
+freeze and actual results remain required before claiming any coding benefit.
+
 **2026-11-03 — 300-second feasibility finished, artifact rejected:** the single
 authorized fresh ISO-week cell returned six complete responses with six loaded
 snapshots and known 13,559/171 token usage. It stopped at the six-iteration cap
