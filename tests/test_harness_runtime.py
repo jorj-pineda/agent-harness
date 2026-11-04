@@ -704,3 +704,49 @@ async def test_canonical_memory_namespace_preserves_scope_and_records_schema_dri
             "user preference",
             "another workspace",
         ]
+
+
+@pytest.mark.parametrize("require_plan", [False, True])
+async def test_direct_prompt_edit_respects_optional_plan_policy(tmp_path: Path, require_plan: bool):
+    target = tmp_path / "value.py"
+    target.write_text("value = 1\n")
+    settings = Settings(
+        _env_file=None,
+        coding_prompt_profile="direct",
+        require_plan_before_edit=require_plan,
+        max_completion_retries=0,
+    )
+    provider = ScriptedProvider()
+    provider.script(
+        make_response(
+            tool_calls=[ToolCall(id="read", name="read_file", arguments={"path": "value.py"})]
+        ),
+        make_response(
+            tool_calls=[
+                ToolCall(
+                    id="edit",
+                    name="write_file",
+                    arguments={"path": "value.py", "content": "value = 2\n"},
+                )
+            ]
+        ),
+        make_response(content="Changed value.py"),
+    )
+    with FactStore(tmp_path / "facts.db") as store:
+        registry = build_registry(fact_store=store, user_id="dev", workspace_root=str(tmp_path))
+        spec = next(spec for spec in registry.as_tool_specs() if spec.name == "emit_plan")
+        assert "Otherwise a plan is optional" in spec.description
+        response = await run_configured_turn(
+            settings=settings,
+            session=Session(workspace_root=str(tmp_path)),
+            user_id="dev",
+            message="Change value to 2",
+            provider=provider,
+            fact_store=store,
+            registry=registry,
+        )
+    assert target.read_text() == ("value = 1\n" if require_plan else "value = 2\n")
+    if require_plan:
+        assert response.files_touched == []
+    else:
+        assert response.files_touched == ["value.py"]

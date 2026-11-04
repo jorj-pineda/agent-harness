@@ -16,3 +16,10 @@ is unchanged. Application, recovery/configuration review and evaluations select
 through the shared prompt helper. The prior closed trials are never rewritten
 or resumed. A fresh reviewed freeze and actual parent approval must precede a
 new local inference attempt; no inference is authorized by this documentation.
+
+The emit_plan tool description now also states that planning is optional unless
+configured policy requires it. This corrects its previous unconditional
+before-edit advice. Tool names, arguments and enforcement are unchanged; the
+description changes the captured schema identity, so old execution profiles may
+require explicit configuration review rather than silently continuing. This is
+a consistency fix, not measured evidence of better model behavior.

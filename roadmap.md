@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-04 — Optional planning guidance aligned:** emit_plan and its steps
+schema now describe planning as optional unless configured policy requires it.
+This removes unconditional before-edit advice that conflicted with the opt-in
+direct prompt. Tool names/arguments and planning enforcement remain unchanged;
+scripted shared-runtime coverage checks an edit with planning optional and its
+refusal when planning is required. Description changes affect captured schema
+identity and existing drift review. This is mechanics evidence, not measured
+coding improvement; closed experiments and original release gates remain intact.
+
 **2026-11-04 — Direct prompt feasibility finished, artifact rejected:** one fresh
 ISO-week attempt returned six complete responses with known 13,607/171 tokens and
 six loaded snapshots, then hit the six-iteration cap in 64.352 dispatch seconds.
