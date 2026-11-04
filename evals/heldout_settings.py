@@ -88,13 +88,19 @@ class ProtocolSettings(Settings):
         return (init_settings,)
 
 
-def protocol_settings(plan: ComparisonPlan) -> Settings:
+def protocol_settings(
+    plan: ComparisonPlan, *, prompt_profile: Literal["compact", "direct"] = "compact"
+) -> Settings:
+    if prompt_profile not in ("compact", "direct"):
+        raise ValueError("Unknown bounded experiment prompt profile")
+    runtime = plan.runtime.model_dump()
+    runtime["coding_prompt_profile"] = prompt_profile
     return ProtocolSettings(
         _env_file=None,
         default_provider="ollama",
         ollama_host="http://127.0.0.1:11447",
         ollama_model=plan.model,
-        **plan.runtime.model_dump(),
+        **runtime,
     )
 
 

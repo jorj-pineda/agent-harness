@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-04 — Explicit direct-profile feasibility binding:** the manifest now
+selects compact/direct, with direct restricted to the existing single-cell scope.
+Capture opts in explicitly; preflight binds selected Settings to captured bytes,
+and shared execution/provider checks preserve that identity. Original defaults,
+fixed budget plan and closed cohorts remain unchanged. The separate direct
+[protocol](evals/heldout_comparison/DIRECT_PROMPT_FEASIBILITY_PROTOCOL.md) plans
+one new 300-second ISO-week attempt with original criteria and limits. Scripted
+checks establish binding/refusal mechanics, not a coding improvement. Concrete
+freeze/review/CI/merge, actual parent receipt and fresh gates remain before inference.
+
 **2026-11-04 — Opt-in direct coding prompt:** a separately versioned direct
 profile asks models to read named files without unnecessary discovery and move
 small clear fixes toward editing instead of formal planning. Shared application,
