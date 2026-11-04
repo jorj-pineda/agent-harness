@@ -86,7 +86,10 @@ def preflight(manifest: ExecutionManifest) -> CaptureIndex:
         capture / "settings.json", expected_sha256=index.settings_sha256
     )
     check_settings(
-        protocol_settings(plan, prompt_profile=manifest.coding_prompt_profile), expected_settings
+        protocol_settings(
+            plan, prompt_profile=manifest.coding_prompt_profile, toolset=manifest.coding_toolset
+        ),
+        expected_settings,
     )
     expected_env = load_environment_pin(
         capture / "command-environment.json", index.command_environment_sha256

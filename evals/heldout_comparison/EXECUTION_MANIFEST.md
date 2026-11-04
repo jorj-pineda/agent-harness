@@ -229,3 +229,9 @@ execution must still combine the serial schedule, per-cell residency, native
 preservation and final settlement. Approval callbacks remain trusted provenance
 boundaries; schema validation and hashes do not authenticate authority. No new
 launch path, warmup, inference or observed performance gain is added here.
+
+Optional coding_toolset defaults to full; no_plan is accepted only in the explicit
+single-cell residency feasibility scope. Captured Settings must match the selected
+toolset before execution; the manifest hash binds selection to approval. This
+does not reopen old cohorts or supply launch authority. See
+[no-plan protocol](NO_PLAN_FEASIBILITY_PROTOCOL.md).
