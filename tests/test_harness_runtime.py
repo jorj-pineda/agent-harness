@@ -7,7 +7,7 @@ from pydantic import ValidationError
 
 from harness.config import Settings
 from harness.loop import MAX_ITERATIONS_STUB
-from harness.prompts import BASE_SYSTEM_PROMPT
+from harness.prompts import BASE_SYSTEM_PROMPT, coding_prompt, coding_prompt_version
 from harness.runtime import build_registry, run_configured_turn
 from harness.state import Session, TurnResponse
 from memory import FactStore
@@ -44,6 +44,29 @@ async def test_configured_check_is_shown_in_shared_system_prompt(tmp_path: Path)
             registry=build_registry(fact_store=store, user_id="dev", workspace_root=str(tmp_path)),
         )
     assert '["pytest", "-q", "test_calc.py"]' in provider.calls[0][0][0].content
+
+
+@pytest.mark.parametrize("toolset", ["full", "whole_file"])
+async def test_direct_prompt_reaches_shared_provider_without_changing_limits(tmp_path, toolset):
+    settings = Settings(_env_file=None, coding_prompt_profile="direct", coding_toolset=toolset)
+    provider = ScriptedProvider()
+    provider.script(make_response(content="Inspected"))
+    with FactStore(tmp_path / "memory.db") as store:
+        await run_configured_turn(
+            settings=settings,
+            session=Session(workspace_root=str(tmp_path)),
+            user_id="dev",
+            message="Inspect week_key.py",
+            provider=provider,
+            fact_store=store,
+            registry=build_registry(fact_store=store, user_id="dev", workspace_root=str(tmp_path)),
+        )
+    assert provider.calls[0][0][0].content.startswith(coding_prompt(toolset, "direct"))
+    assert coding_prompt_version(toolset, "direct") != coding_prompt_version(toolset, "compact")
+    assert "make a formal plan only when needed" in provider.calls[0][0][0].content
+    baseline = Settings(_env_file=None, coding_toolset=toolset)
+    assert settings.max_tool_iterations == baseline.max_tool_iterations
+    assert settings.require_plan_before_edit == baseline.require_plan_before_edit
 
 
 async def test_runtime_refreshes_memory_without_duplicating_system_message(tmp_path: Path) -> None:
@@ -348,6 +371,8 @@ def test_prompt_profile_setting_validates_env(monkeypatch: pytest.MonkeyPatch) -
     assert Settings(_env_file=None).coding_prompt_profile == "legacy"
     monkeypatch.setenv("CODING_PROMPT_PROFILE", "compact")
     assert Settings(_env_file=None).coding_prompt_profile == "compact"
+    monkeypatch.setenv("CODING_PROMPT_PROFILE", "direct")
+    assert Settings(_env_file=None).coding_prompt_profile == "direct"
     monkeypatch.setenv("CODING_PROMPT_PROFILE", "unknown")
     with pytest.raises(ValidationError):
         Settings(_env_file=None)

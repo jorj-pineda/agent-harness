@@ -14,7 +14,7 @@ from .model_profiles import ModelProfile, ModelProfileIdentity, ProfileName
 from .outcome import is_verification_command
 
 CodingToolset = Literal["full", "whole_file"]
-CodingPromptProfile = Literal["legacy", "compact"]
+CodingPromptProfile = Literal["legacy", "compact", "direct"]
 
 
 class Settings(BaseSettings):
@@ -227,7 +227,8 @@ class Settings(BaseSettings):
 
     # Coding agent (Phase 4+)
     coding_prompt_profile: CodingPromptProfile = Field(
-        default="legacy", description="Opt-in compact coding contract; tools and budgets unchanged."
+        default="legacy",
+        description="Opt-in compact/direct coding prompts; tools and budgets unchanged.",
     )
     coding_toolset: CodingToolset = Field(
         default="full",
