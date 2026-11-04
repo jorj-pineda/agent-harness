@@ -89,12 +89,18 @@ class ProtocolSettings(Settings):
 
 
 def protocol_settings(
-    plan: ComparisonPlan, *, prompt_profile: Literal["compact", "direct"] = "compact"
+    plan: ComparisonPlan,
+    *,
+    prompt_profile: Literal["compact", "direct"] = "compact",
+    toolset: Literal["full", "no_plan"] = "full",
 ) -> Settings:
     if prompt_profile not in ("compact", "direct"):
         raise ValueError("Unknown bounded experiment prompt profile")
+    if toolset not in ("full", "no_plan"):
+        raise ValueError("Unknown bounded experiment toolset")
     runtime = plan.runtime.model_dump()
     runtime["coding_prompt_profile"] = prompt_profile
+    runtime["coding_toolset"] = toolset
     return ProtocolSettings(
         _env_file=None,
         default_provider="ollama",

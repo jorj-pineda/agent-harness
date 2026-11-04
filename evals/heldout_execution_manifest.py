@@ -38,10 +38,13 @@ class ExecutionManifest(FrozenModel):
     residency_plan_sha256: Digest | None = None
     residency_feasibility_ordinal: int | None = Field(default=None, ge=2, le=2)
     coding_prompt_profile: Literal["compact", "direct"] = "compact"
+    coding_toolset: Literal["full", "no_plan"] = "full"
     inference_authorized: Literal[False]
 
     @model_validator(mode="after")
     def feasibility_selection(self) -> ExecutionManifest:
+        if self.coding_toolset == "no_plan" and self.residency_feasibility_ordinal != 2:
+            raise ValueError("No-plan toolset requires the explicit single-cell feasibility scope")
         if self.coding_prompt_profile == "direct" and self.residency_feasibility_ordinal != 2:
             raise ValueError("Direct prompt requires the explicit single-cell feasibility scope")
         if self.residency_feasibility_ordinal is not None and (

@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-04 — Explicit no-plan feasibility binding:** manifest/capture selection
+now binds full/no_plan independently of the compact/direct prompt. Nondefault
+capture requires named residency preparation, and no_plan manifests require the
+single-cell ordinal2 scope. Preflight and shared execution use selected validated
+Settings, rejecting captured-toolset mismatches. Legacy defaults and original
+fixed plan remain full. The [protocol](evals/heldout_comparison/NO_PLAN_FEASIBILITY_PROTOCOL.md)
+retains original budgets/criteria and one fresh direct/no-plan attempt. Mocked
+checks establish input/refusal mechanics only; retained preparation, concrete
+freeze/review/CI/merge, actual receipt and fresh launch remain before inference.
+
 **2026-11-04 — Opt-in no-plan toolset:** shared registry selection can omit only
 emit_plan while preserving the full default, existing whole-file mode, other tools
 and prompt bytes. Settings reject no_plan with required planning. Application and

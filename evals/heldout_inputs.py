@@ -138,11 +138,14 @@ async def capture_inputs(
     dependency_sha256: str | None = None,
     residency_schedule: bool = False,
     prompt_profile: Literal["compact", "direct"] = "compact",
+    toolset: Literal["full", "no_plan"] = "full",
 ) -> dict[str, Any]:
     if prompt_profile not in ("compact", "direct") or (
         prompt_profile == "direct" and not residency_schedule
     ):
         raise ValueError("Direct capture requires explicit residency preparation")
+    if toolset not in ("full", "no_plan") or (toolset == "no_plan" and not residency_schedule):
+        raise ValueError("No-plan capture requires explicit residency preparation")
     residency = None
     residency_digest = None
     if residency_schedule:
@@ -167,7 +170,7 @@ async def capture_inputs(
     if residency is not None:
         by_id = {task.id: task for task in tasks}
         schedule = [(by_id[cell.task_id], cell.mode, cell.repeat) for cell in residency.cells]
-    settings = protocol_settings(plan, prompt_profile=prompt_profile)
+    settings = protocol_settings(plan, prompt_profile=prompt_profile, toolset=toolset)
     expected_settings = settings_bytes(settings)
     settings_digest = _save(directory / "settings.json", expected_settings)
     environment_digest = (
