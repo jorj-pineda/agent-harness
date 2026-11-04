@@ -163,7 +163,7 @@ class EmitPlanInput(BaseModel):
     steps: list[str] = Field(
         ...,
         min_length=1,
-        description="Ordered plan steps before making filesystem edits.",
+        description="Ordered steps for a useful plan or a configured planning requirement.",
     )
     summary: str | None = Field(
         default=None,
@@ -633,8 +633,8 @@ def build_code_tools(
         Tool(
             name="emit_plan",
             description=(
-                "Record a structured plan (ordered steps) in the tool trace before editing "
-                "files. No filesystem changes."
+                "Record a structured plan when useful or when configured policy requires one "
+                "before editing. Otherwise a plan is optional. No filesystem changes."
             ),
             input_model=EmitPlanInput,
             fn=emit_plan,
