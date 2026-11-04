@@ -4,6 +4,18 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-04 — Fresh no-plan feasibility freeze proposal:** retained db6a14b9
+selects one direct/no_plan ISO-week attempt, preserving original criteria/budgets
+and keep-alive 300. Separate candidate/rehearsal images and exact staged inputs
+verify; one mandatory-mock accepted workflow, 20 refusal probes, GET-only observer
+and 3 clean unforced owned group settlements pass. Retained G0 passes 2,990 offline;
+final working suite 3,004; 78 recipe contracts, static and both 90-result scripted matrices
+pass. Actual check-only and missing-arguments/default-mode refusals pass without
+admission or generation. The [freeze](evals/heldout_comparison/NO_PLAN_FEASIBILITY_FREEZE_20261104.md)
+pins concrete inputs/settings/runtime/image/recipe/evidence. Exact-head review,
+CI, merge, actual parent receipt and fresh launch remain before inference; no
+coding-quality/causal/held-out gain, default adoption or release closure is claimed.
+
 **2026-11-04 — Explicit no-plan feasibility binding:** manifest/capture selection
 now binds full/no_plan independently of the compact/direct prompt. Nondefault
 capture requires named residency preparation, and no_plan manifests require the
