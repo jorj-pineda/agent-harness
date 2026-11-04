@@ -1,5 +1,17 @@
 # Real-task baselines
 
+## 2026-11-04 — Direct prompt feasibility finished
+
+One fresh ISO-week attempt returned six complete responses with known 13,607/171 tokens and
+six loaded snapshots, then hit the six-iteration cap in 64.352 dispatch seconds.
+It listed/read files, corrected a command, ran the failing check and emitted a plan;
+no edit followed. Original acceptance and copied-workspace regrade reject it
+(0/1 accepted and completed-and-accepted). All 15 unused capture fixtures verify;
+owned cleanup settled cleanly unforced. [Results](heldout_comparison/DIRECT_PROMPT_FEASIBILITY_RESULTS_20261104.md)
+close the attempt without retry. No causal/equivalence/held-out gain, default
+adoption or no-go/8-of-10/G2–G5 closure follows. The earlier permission-mode
+preparation failure remains withdrawn and separate from the single model attempt.
+
 ## 2026-11-03 — 300-second residency feasibility finished
 
 The [one-cell development run](heldout_comparison/RESIDENCY_300_FEASIBILITY_RESULTS_20261103.md)
