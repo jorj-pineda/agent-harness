@@ -18,6 +18,7 @@ PATH = Path(__file__).parents[2] / "evals/heldout_comparison/operator_20261102.p
         "operator_fixes_dev_20261102.py",
         "operator_residency_20261103.py",
         "operator_residency_300_feasibility_20261103.py",
+        "operator_direct_feasibility_20261104.py",
     ]
 )
 def recipe(request):

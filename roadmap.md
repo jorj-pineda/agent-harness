@@ -4,6 +4,18 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-04 — Direct prompt feasibility freeze proposal:** a fresh retained
+b23f64e runtime binds one direct-profile ISO-week harness attempt at 300 seconds
+with original criteria/budgets. Direct mock capture/shared execution, 18 refusal
+probes, GET-only observer and three clean metadata group settlements pass.
+Retained G0 passes 2,963 offline; final PR suite passes 2,977; static/both 90 matrices
+and actual check-only/refusal gates pass. The first wrongly permissioned checkout
+is withdrawn with failed logs preserved; fresh catalog bytes/modes verify without
+weakening seals. The [freeze](evals/heldout_comparison/DIRECT_PROMPT_FEASIBILITY_FREEZE_20261104.md)
+pins the direct inputs/settings/runtime/image/recipe and incident evidence.
+Independent exact-head review/CI/merge, actual parent receipt and fresh launch
+still precede generation. No coding/causal/held-out gain or release claim yet.
+
 **2026-11-04 — Explicit direct-profile feasibility binding:** the manifest now
 selects compact/direct, with direct restricted to the existing single-cell scope.
 Capture opts in explicitly; preflight binds selected Settings to captured bytes,
