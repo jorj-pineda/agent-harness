@@ -13,7 +13,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from .model_profiles import ModelProfile, ModelProfileIdentity, ProfileName
 from .outcome import is_verification_command
 
-CodingToolset = Literal["full", "whole_file"]
+CodingToolset = Literal["full", "whole_file", "no_plan"]
 CodingPromptProfile = Literal["legacy", "compact", "direct"]
 
 
@@ -55,6 +55,12 @@ class Settings(BaseSettings):
             or (profile.provider == "openai" and not self.openai_api_key)
         ):
             raise ValueError("Selected model profile requires configured provider credentials")
+        return self
+
+    @model_validator(mode="after")
+    def validate_planning_toolset(self) -> Settings:
+        if self.coding_toolset == "no_plan" and self.require_plan_before_edit:
+            raise ValueError("no_plan toolset cannot require_plan_before_edit")
         return self
 
     @property
@@ -232,7 +238,7 @@ class Settings(BaseSettings):
     )
     coding_toolset: CodingToolset = Field(
         default="full",
-        description="whole_file omits replace_text; all other tools remain unchanged.",
+        description="whole_file omits replace_text; no_plan omits emit_plan. Full is the default.",
     )
     read_file_default_lines: int = Field(
         default=0,

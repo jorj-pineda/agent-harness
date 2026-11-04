@@ -89,6 +89,8 @@ def build_registry(
         ):
             if coding_toolset == "whole_file" and tool.name == "replace_text":
                 continue
+            if coding_toolset == "no_plan" and tool.name == "emit_plan":
+                continue
             code_registry.register(tool)
         for tool in code_registry:
             registry.register(code_tool_transform(tool) if code_tool_transform else tool)

@@ -23,3 +23,18 @@ before-edit advice. Tool names, arguments and enforcement are unchanged; the
 description changes the captured schema identity, so old execution profiles may
 require explicit configuration review rather than silently continuing. This is
 a consistency fix, not measured evidence of better model behavior.
+
+## Optional planning-tool experiment
+
+Set CODING_TOOLSET=no_plan to omit only emit_plan from the shared coding
+registry. Full remains the default; whole_file retains its existing behavior.
+The no_plan selection retains both edit tools, discovery, commands and memory.
+REQUIRE_PLAN_BEFORE_EDIT=true is incompatible and refuses at settings validation.
+Other edit, verification and budget policies remain enforced.
+
+Application and real-task evaluations already forward the shared toolset selection.
+Captured settings and actual schema hashes record it; prompt text/version remains
+that of the selected prompt profile because prompt bytes are unchanged. Existing
+configuration drift checks reject incompatible continuation without rewriting
+historical records. The fixed retired experiment protocol still selects full.
+This option supplies no fresh launch authority or evidence of coding benefit.
