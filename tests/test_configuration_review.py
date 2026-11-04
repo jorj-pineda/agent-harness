@@ -110,6 +110,7 @@ def test_matching_configuration_does_not_grant_resume_permission(
         ("ollama_model", "different", "configured_model"),
         ("ollama_host", "http://fixture-other:11434", "endpoint_sha256"),
         ("coding_toolset", "whole_file", "settings.coding_toolset"),
+        ("coding_toolset", "no_plan", "settings.coding_toolset"),
         ("coding_prompt_profile", "compact", "prompt_version"),
         ("max_tool_calls_per_turn", 10, "settings.max_tool_calls_per_turn"),
         ("project_check_argv", ["pytest", "-q"], "project_check_sha256"),

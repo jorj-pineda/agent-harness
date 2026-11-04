@@ -64,6 +64,7 @@ def test_allowlist_does_not_serialize_secrets_paths_endpoints_or_check_arguments
         ("ollama_think", False),
         ("require_plan_before_edit", True),
         ("coding_toolset", "whole_file"),
+        ("coding_toolset", "no_plan"),
         ("max_tracked_bytes", 100),
     ],
 )

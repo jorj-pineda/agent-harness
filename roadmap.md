@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-04 — Opt-in no-plan toolset:** shared registry selection can omit only
+emit_plan while preserving the full default, existing whole-file mode, other tools
+and prompt bytes. Settings reject no_plan with required planning. Application and
+real-task execution use the shared selection; captured settings/schema identity
+and continuation drift checks retain it. Scripted real-file coverage verifies
+namespace refusal, editing and configuration drift. This exposes an evidence-led
+experiment seam after repeated plan-without-edit traces, not a measured remedy.
+Prior cohorts remain closed and fresh reviewed launch gates remain necessary.
+
 **2026-11-04 — Optional planning guidance aligned:** emit_plan and its steps
 schema now describe planning as optional unless configured policy requires it.
 This removes unconditional before-edit advice that conflicted with the opt-in

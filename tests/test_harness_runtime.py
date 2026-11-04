@@ -750,3 +750,59 @@ async def test_direct_prompt_edit_respects_optional_plan_policy(tmp_path: Path, 
         assert response.files_touched == []
     else:
         assert response.files_touched == ["value.py"]
+
+
+async def test_no_plan_toolset_omits_only_plan_and_refuses_dispatch(tmp_path):
+    with FactStore(tmp_path / "facts.db") as store:
+        full = build_registry(fact_store=store, user_id="dev", workspace_root=str(tmp_path))
+        reduced = build_registry(
+            fact_store=store, user_id="dev", workspace_root=str(tmp_path), coding_toolset="no_plan"
+        )
+        assert reduced.as_tool_specs() == [
+            spec for spec in full.as_tool_specs() if spec.name != "emit_plan"
+        ]
+        with pytest.raises(ToolError, match="Unknown tool"):
+            await reduced.invoke("emit_plan", {"steps": ["Edit"]})
+        provider = ScriptedProvider()
+        provider.script(
+            make_response(
+                tool_calls=[
+                    ToolCall(
+                        id="edit",
+                        name="write_file",
+                        arguments={"path": "value.py", "content": "value = 2\n"},
+                    )
+                ]
+            ),
+            make_response(content="Changed value.py"),
+        )
+        settings = Settings(
+            _env_file=None, coding_toolset="no_plan", coding_prompt_profile="direct"
+        )
+        session = Session(workspace_root=str(tmp_path))
+        response = await run_configured_turn(
+            settings=settings,
+            session=session,
+            user_id="dev",
+            message="Create value.py",
+            provider=provider,
+            fact_store=store,
+            registry=reduced,
+        )
+        assert response.files_touched == ["value.py"]
+        assert all(spec.name != "emit_plan" for spec in provider.calls[0][1])
+        from harness.execution_profile import capture_execution_profile
+
+        captured = capture_execution_profile(settings, "ollama", reduced)
+        assert captured.settings.coding_toolset == "no_plan"
+        assert "emit_plan" not in captured.tool_names
+
+
+def test_no_plan_refuses_required_planning_before_execution(monkeypatch):
+    from pydantic import ValidationError
+
+    with pytest.raises(ValidationError, match="cannot require_plan_before_edit"):
+        Settings(_env_file=None, coding_toolset="no_plan", require_plan_before_edit=True)
+    monkeypatch.setenv("CODING_TOOLSET", "no_plan")
+    monkeypatch.setenv("REQUIRE_PLAN_BEFORE_EDIT", "false")
+    assert Settings(_env_file=None).coding_toolset == "no_plan"
