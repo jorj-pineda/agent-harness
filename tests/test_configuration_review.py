@@ -111,6 +111,7 @@ def test_matching_configuration_does_not_grant_resume_permission(
         ("ollama_host", "http://fixture-other:11434", "endpoint_sha256"),
         ("coding_toolset", "whole_file", "settings.coding_toolset"),
         ("coding_toolset", "no_plan", "settings.coding_toolset"),
+        ("coding_toolset", "no_plan_check", "settings.coding_toolset"),
         ("coding_prompt_profile", "compact", "prompt_version"),
         ("max_tool_calls_per_turn", 10, "settings.max_tool_calls_per_turn"),
         ("project_check_argv", ["pytest", "-q"], "project_check_sha256"),
@@ -121,7 +122,17 @@ def test_drift_reports_names_without_values(field, value, expected):
     registry = ToolRegistry()
     first = capture_execution_profile(Settings(_env_file=None), "ollama", registry)
     current = capture_execution_profile(
-        Settings(_env_file=None, **{field: value}), "ollama", registry
+        Settings(
+            _env_file=None,
+            **(
+                {"project_check_argv": ["pytest"]}
+                if field == "coding_toolset" and value == "no_plan_check"
+                else {}
+            ),
+            **{field: value},
+        ),
+        "ollama",
+        registry,
     )
     review = compare_profiles(first, current)
     assert review.status == "changed"

@@ -17,7 +17,7 @@ from typing import Literal
 from memory import FactStore
 from providers.base import ChatMessage, ChatProvider, ConversationProvider
 from tools import Tool, ToolRegistry
-from tools.code import build_code_tools
+from tools.code import ProjectCheckInput, RunCommandInput, build_code_tools
 from tools.memory import register_memory_tools
 from workspace import SnapshotLimitError, Workspace, compare, snapshot
 from workspace.changes import TextCapture, review_diffs
@@ -52,6 +52,7 @@ def build_registry(
     workspace_root: str | None,
     support_tools: Iterable[Tool] = (),
     coding_toolset: CodingToolset = "full",
+    project_check_argv: list[str] | None = None,
     read_file_default_lines: int = 0,
     code_tool_transform: Callable[[Tool], Tool] | None = None,
     command_env: Mapping[str, str] | None = None,
@@ -68,6 +69,11 @@ def build_registry(
         turn = memory_session.turns[-1]
         return turn.turn_id if turn.finished_at is None else None
 
+    selected_check = None
+    if coding_toolset == "no_plan_check":
+        if project_check_argv is None:
+            raise ValueError("no_plan_check requires project_check_argv")
+        selected_check = list(Settings.validate_project_check(list(project_check_argv)) or [])
     registry = ToolRegistry()
     for tool in support_tools:
         registry.register(tool)
@@ -81,15 +87,36 @@ def build_registry(
     )
     if workspace_root is not None:
         code_registry = ToolRegistry()
-        for tool in build_code_tools(
+        code_tools = build_code_tools(
             Workspace(root=Path(workspace_root)),
             command_env=command_env,
             inherit_environment=inherit_environment,
             read_file_default_lines=read_file_default_lines,
-        ):
+        )
+        if selected_check is not None:
+            command = next(tool for tool in code_tools if tool.name == "run_command")
+            check_argv = list(selected_check)
+
+            async def run_project_check(_args: ProjectCheckInput) -> object:
+                return await command.fn(RunCommandInput(argv=list(check_argv)))
+
+            code_tools = [tool for tool in code_tools if tool.name != "run_command"]
+            code_tools.append(
+                Tool(
+                    name="run_project_check",
+                    description=(
+                        "Run the configured project check with no arguments. "
+                        "Returns the actual argv, exit code and bounded output."
+                    ),
+                    input_model=ProjectCheckInput,
+                    fn=run_project_check,
+                    timeout_seconds=command.timeout_seconds,
+                )
+            )
+        for tool in code_tools:
             if coding_toolset == "whole_file" and tool.name == "replace_text":
                 continue
-            if coding_toolset == "no_plan" and tool.name == "emit_plan":
+            if coding_toolset in {"no_plan", "no_plan_check"} and tool.name == "emit_plan":
                 continue
             code_registry.register(tool)
         for tool in code_registry:
@@ -104,6 +131,7 @@ def refresh_system_message(
     *,
     system_prompt: str = BASE_SYSTEM_PROMPT,
     project_check_argv: list[str] | None = None,
+    fixed_project_check: bool = False,
     repository_instructions: RepositoryInstructions | None = None,
     system_suffix: str | None = None,
 ) -> None:
@@ -119,8 +147,12 @@ def refresh_system_message(
             blocks.append(instruction_block)
     if project_check_argv is not None and not session.inspection_only:
         blocks.append(
-            "After editing, run this project check with run_command argv: "
-            f"{json.dumps(project_check_argv)}"
+            (
+                "After editing, call run_project_check with no arguments. Configured argv: "
+                if fixed_project_check
+                else "After editing, run this project check with run_command argv: "
+            )
+            + f"{json.dumps(project_check_argv)}"
         )
     if session.workspace_root:
         blocks.append(f"Workspace root: {session.workspace_root}")
@@ -274,6 +306,7 @@ async def run_configured_turn(
             if system_prompt is not None
             else coding_prompt(settings.coding_toolset, settings.coding_prompt_profile),
             project_check_argv=settings.project_check_argv,
+            fixed_project_check=settings.coding_toolset == "no_plan_check",
             repository_instructions=instructions,
             system_suffix=system_suffix,
         )

@@ -13,7 +13,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from .model_profiles import ModelProfile, ModelProfileIdentity, ProfileName
 from .outcome import is_verification_command
 
-CodingToolset = Literal["full", "whole_file", "no_plan"]
+CodingToolset = Literal["full", "whole_file", "no_plan", "no_plan_check"]
 CodingPromptProfile = Literal["legacy", "compact", "direct"]
 
 
@@ -59,8 +59,10 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def validate_planning_toolset(self) -> Settings:
-        if self.coding_toolset == "no_plan" and self.require_plan_before_edit:
+        if self.coding_toolset in {"no_plan", "no_plan_check"} and self.require_plan_before_edit:
             raise ValueError("no_plan toolset cannot require_plan_before_edit")
+        if self.coding_toolset == "no_plan_check" and self.project_check_argv is None:
+            raise ValueError("no_plan_check requires project_check_argv")
         return self
 
     @property
@@ -238,7 +240,10 @@ class Settings(BaseSettings):
     )
     coding_toolset: CodingToolset = Field(
         default="full",
-        description="whole_file omits replace_text; no_plan omits emit_plan. Full is the default.",
+        description=(
+            "whole_file omits replace_text; no_plan omits emit_plan; "
+            "no_plan_check also replaces run_command with a fixed check."
+        ),
     )
     read_file_default_lines: int = Field(
         default=0,

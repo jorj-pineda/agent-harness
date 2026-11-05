@@ -20,7 +20,7 @@ from pathlib import Path
 from typing import Any, BinaryIO
 from uuid import uuid4
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from workspace import Workspace, WorkspaceError
 from workspace.npm import npm_test_prefix
@@ -134,6 +134,10 @@ class ReplaceTextInput(BaseModel):
                 "No edit was applied; arguments were not rewritten."
             )
         return value
+
+
+class ProjectCheckInput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
 
 
 class RunCommandInput(BaseModel):
