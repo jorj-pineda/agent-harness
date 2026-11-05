@@ -9,7 +9,7 @@ import re
 import stat
 from itertools import islice
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -48,7 +48,7 @@ class NativeSummary(BaseModel):
     )
 
 
-def _object(path: Path) -> dict:
+def _object(path: Path) -> dict[str, Any]:
     raw, mode = _read_regular(path, MAX_BYTES)
     if mode != 0o600:
         raise ValueError("Native evidence mode changed")
@@ -95,17 +95,22 @@ def summarize(directory: Path) -> NativeSummary:
         failure = f"{prefix}.failure.json" in names
         if timing is None and failure:
             timing = _object(directory / f"{prefix}.failure.json").get("timing")
-        elapsed = None
+        elapsed: float | None = None
         if timing is not None:
             if (
                 not isinstance(timing, dict)
                 or timing.get("scope") != "native_request_to_evidence_record_v1"
             ):
                 raise ValueError("Unknown native timing scope")
-            elapsed = timing.get("elapsed_seconds")
-            if type(elapsed) not in (int, float) or not math.isfinite(elapsed) or elapsed < 0:
+            observed_elapsed = timing.get("elapsed_seconds")
+            if (
+                isinstance(observed_elapsed, bool)
+                or not isinstance(observed_elapsed, (int, float))
+                or not math.isfinite(observed_elapsed)
+                or observed_elapsed < 0
+            ):
                 raise ValueError("Invalid native elapsed time")
-            elapsed = float(elapsed)
+            elapsed = float(observed_elapsed)
         completed = None
         prompt = output = None
         if f"{prefix}.response.bin" in names:
