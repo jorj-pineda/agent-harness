@@ -242,3 +242,14 @@ timeout and unrelated guard exceptions retain transport. Both paths stop without
 retry; status alone does not identify a backend root cause or establish usage.
 Native evidence remains the source for bounded response bytes. Error messages
 do not copy response bodies. Historical transport labels are not rewritten.
+
+Native evidence metadata now adds a timing object for success/HTTP responses and
+failure records: UTC started_at/observed_at, monotonic elapsed_seconds and scope
+native_request_to_evidence_record_v1. Timing begins on accepted wrapper entry
+before request validation and ends when preparing that evidence record. It
+includes request preservation, delegation and response reading/preservation; it
+excludes the metadata write itself, response closure, later ownership checks and
+outer setup/grading/settlement. It is observation, not a deadline, usage claim or
+backend timing. UTC may jump independently; monotonic clock behavior across host
+suspend is platform dependent. Legacy records without timing remain unmeasured
+and historical artifacts are not rewritten. Response bytes and limits are unchanged.

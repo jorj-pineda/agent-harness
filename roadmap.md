@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-05 — Native request timing evidence:** owned native success and failure
+records now include UTC endpoints and monotonic elapsed time with an explicit
+wrapper/evidence scope. Success, HTTP error, timeout, cancellation and pre-delegate
+refusal tests use a deterministic clock. Response bytes, bounds, request policy
+and cleanup are unchanged. This supports future investigation of the observed
+outer/dispatch timing gap without explaining it, altering deadlines or rerunning
+closed trials. UTC jumps and platform suspend-clock behavior remain limitations;
+legacy records have no inferred timing. No inference or model-quality claim.
+
 **2026-11-05 — Received HTTP failure classification:** the evaluation-owned
 transport preserves a numeric HTTP error in a typed refusal, and the checked
 provider records http_status rather than conflating it with connection/timeout

@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import json
+import time
+from datetime import UTC, datetime
 from pathlib import Path
 
 import httpx
@@ -32,6 +34,17 @@ class NativeEvidenceTransport(httpx.AsyncBaseTransport):
             self.failed = True
             raise ValueError("Native evidence transport is closed or exhausted")
         self.inflight = True
+        started_at = datetime.now(UTC).isoformat()
+        started_ns = time.perf_counter_ns()
+
+        def timing() -> dict[str, str | float]:
+            return {
+                "started_at": started_at,
+                "observed_at": datetime.now(UTC).isoformat(),
+                "elapsed_seconds": (time.perf_counter_ns() - started_ns) / 1_000_000_000,
+                "scope": "native_request_to_evidence_record_v1",
+            }
+
         self.requests += 1
         prefix = self.directory / f"request-{self.requests:02d}"
         response = None
@@ -75,6 +88,7 @@ class NativeEvidenceTransport(httpx.AsyncBaseTransport):
                         "request_bytes": len(request.content),
                         "response_bytes": len(body),
                         "delegated": True,
+                        "timing": timing(),
                     }
                 ).encode(),
             )
@@ -96,6 +110,7 @@ class NativeEvidenceTransport(httpx.AsyncBaseTransport):
                             "error_type": type(error).__name__,
                             "delegated": delegated,
                             "response_body_complete": body_complete,
+                            "timing": timing(),
                         }
                     ).encode(),
                 )
