@@ -11,6 +11,7 @@ import pytest
         "operator_residency_300_feasibility_20261103.py",
         "operator_direct_feasibility_20261104.py",
         "operator_no_plan_feasibility_20261104.py",
+        "operator_fixed_check_feasibility_20261105.py",
     ]
 )
 def recipe(request):

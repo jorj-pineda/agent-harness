@@ -4,6 +4,18 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-05 — Fresh fixed-check feasibility freeze proposal:** clean retained
+d3f67e0 selects one direct/no_plan_check ISO-week attempt with original budgets,
+criteria and keep-alive 300. Fresh separate bundles, one mandatory-mock accepted
+fixed-check workflow, 21 refusal probes, GET-only observation and 3 clean unforced
+owned settlements verify. Retained G0 passes 3,055 offline; final working suite 3,069;
+92 recipe contracts, static and both 90-result scripted matrices pass. Actual check-only
+and missing-argument/default-mode refusals pass without admission or generation.
+The [freeze](evals/heldout_comparison/FIXED_CHECK_FEASIBILITY_FREEZE_20261105.md)
+pins 29 evidence files and concrete inputs/settings/runtime/image/recipe. Exact-head
+review, CI, merge, actual parent receipt and fresh launch remain before inference.
+No model-quality/causal/held-out/default/release gain is claimed.
+
 **2026-11-05 — Fixed-check evaluation binding:** captured Settings and manifests
 can explicitly select no_plan_check only with direct/single-cell feasibility.
 Nondefault capture requires named residency preparation before allocation; current
