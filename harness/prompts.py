@@ -62,6 +62,10 @@ def coding_prompt(toolset: CodingToolset, profile: CodingPromptProfile = "legacy
         "compact": COMPACT_SYSTEM_PROMPT,
         "direct": DIRECT_SYSTEM_PROMPT,
     }[profile]
+    if toolset == "whole_file_check":
+        return coding_prompt("whole_file", profile).replace(
+            "run_command's argv array", "run_project_check with no arguments"
+        )
     if toolset == "no_plan_check":
         return base.replace("run_command's argv array", "run_project_check with no arguments")
     if toolset == "whole_file":
@@ -73,6 +77,8 @@ def coding_prompt(toolset: CodingToolset, profile: CodingPromptProfile = "legacy
 
 
 def coding_prompt_version(toolset: CodingToolset, profile: CodingPromptProfile = "legacy") -> str:
+    if toolset == "whole_file_check":
+        return coding_prompt_version("whole_file", profile) + "-fixed-check-v1"
     if toolset == "no_plan_check":
         return coding_prompt_version("no_plan", profile) + "-fixed-check-v1"
     if profile == "direct":

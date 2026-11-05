@@ -70,9 +70,9 @@ def build_registry(
         return turn.turn_id if turn.finished_at is None else None
 
     selected_check = None
-    if coding_toolset == "no_plan_check":
+    if coding_toolset in {"no_plan_check", "whole_file_check"}:
         if project_check_argv is None:
-            raise ValueError("no_plan_check requires project_check_argv")
+            raise ValueError(f"{coding_toolset} requires project_check_argv")
         selected_check = list(Settings.validate_project_check(list(project_check_argv)) or [])
     registry = ToolRegistry()
     for tool in support_tools:
@@ -114,9 +114,12 @@ def build_registry(
                 )
             )
         for tool in code_tools:
-            if coding_toolset == "whole_file" and tool.name == "replace_text":
+            if coding_toolset in {"whole_file", "whole_file_check"} and tool.name == "replace_text":
                 continue
-            if coding_toolset in {"no_plan", "no_plan_check"} and tool.name == "emit_plan":
+            if (
+                coding_toolset in {"no_plan", "no_plan_check", "whole_file_check"}
+                and tool.name == "emit_plan"
+            ):
                 continue
             code_registry.register(tool)
         for tool in code_registry:
@@ -306,7 +309,7 @@ async def run_configured_turn(
             if system_prompt is not None
             else coding_prompt(settings.coding_toolset, settings.coding_prompt_profile),
             project_check_argv=settings.project_check_argv,
-            fixed_project_check=settings.coding_toolset == "no_plan_check",
+            fixed_project_check=settings.coding_toolset in {"no_plan_check", "whole_file_check"},
             repository_instructions=instructions,
             system_suffix=system_suffix,
         )
