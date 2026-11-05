@@ -4,6 +4,17 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-05 — Fixed-check feasibility closed:**
+The sole fresh direct/no_plan_check ISO-week attempt ran the fixed visible check
+(exit 1), then repeated two overescaped replacement calls that were refused.
+Six complete responses used 12,478/440 tokens; the six-iteration cap left the
+original fixture unchanged and rejected (0/1 accepted and completed-and-accepted).
+Six loaded snapshots, 15 unused fixtures, original-criteria regrade 1 and clean
+unforced settlement verify. [Results](evals/heldout_comparison/FIXED_CHECK_FEASIBILITY_RESULTS_20261105.md) close the attempt without retry.
+This known development run establishes no causal/held-out/default/release gain;
+no-go, 8-of-10 and G2–G5 remain open.
+
+
 **2026-11-05 — Fresh fixed-check feasibility freeze proposal:** clean retained
 d3f67e0 selects one direct/no_plan_check ISO-week attempt with original budgets,
 criteria and keep-alive 300. Fresh separate bundles, one mandatory-mock accepted
