@@ -194,7 +194,7 @@ def review_configuration(
         fact_store,
         user_id,
         project_check_argv=settings.project_check_argv,
-        fixed_project_check=settings.coding_toolset == "no_plan_check",
+        fixed_project_check=settings.coding_toolset in {"no_plan_check", "whole_file_check"},
         system_prompt=coding_prompt(settings.coding_toolset, settings.coding_prompt_profile),
         repository_instructions=instructions,
     )

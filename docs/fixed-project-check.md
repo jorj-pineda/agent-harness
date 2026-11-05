@@ -26,3 +26,19 @@ Scripted and real-file tests establish mechanics, not improved model completion.
 The retired experiment protocol still selects full/no_plan; a new bounded capture,
 reviewed execution freeze, actual parent receipt and fresh gates must precede any
 new model attempt. No retry of a closed attempt or automatic default adoption.
+
+
+## Whole-file fixed-check variant
+
+`CODING_TOOLSET=whole_file_check` combines the existing whole-file editor with
+the fixed project check. It omits replace_text, run_command and emit_plan;
+write_file and run_project_check remain available. It requires a configured
+check and refuses required planning, like no_plan_check. Shared prompt selection,
+configuration/recovery review and execution identity record this distinct choice.
+
+This explicit experiment seam responds to the two refused overescaped replacement
+calls in the fixed-check feasibility run. It does not decode or rewrite model
+arguments, change existing defaults, or establish a model-quality gain. Whole-file
+writes retain their existing bounds and risks. Current frozen evaluator manifests
+do not admit this variant; fresh evaluation binding and reviewed launch gates
+are still required before inference. No closed attempt is reopened.

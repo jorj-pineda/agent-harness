@@ -15,13 +15,14 @@ from tools import ToolError
 CHECK = ["python", "-m", "pytest", "-q", "test_value.py"]
 
 
-def test_fixed_check_refuses_missing_command_or_required_plan():
+@pytest.mark.parametrize("toolset", ["no_plan_check", "whole_file_check"])
+def test_fixed_check_refuses_missing_command_or_required_plan(toolset):
     with pytest.raises(ValidationError, match="requires project_check_argv"):
-        Settings(_env_file=None, coding_toolset="no_plan_check")
+        Settings(_env_file=None, coding_toolset=toolset)
     with pytest.raises(ValidationError, match="cannot require_plan_before_edit"):
         Settings(
             _env_file=None,
-            coding_toolset="no_plan_check",
+            coding_toolset=toolset,
             project_check_argv=CHECK,
             require_plan_before_edit=True,
         )
@@ -51,10 +52,11 @@ async def test_fixed_check_copies_tokens_and_refuses_model_overrides(tmp_path):
         assert {"write_file", "replace_text", "run_project_check"} <= names
 
 
+@pytest.mark.parametrize("toolset", ["no_plan_check", "whole_file_check"])
 @pytest.mark.parametrize("python_root", ["python", "python3"])
 @pytest.mark.parametrize("check_after_edit", [True, False])
 async def test_fixed_check_is_actual_verification_only_after_latest_edit(
-    tmp_path: Path, check_after_edit, python_root
+    tmp_path: Path, check_after_edit, python_root, toolset
 ):
     (tmp_path / "value.py").write_text("value = 1\n")
     (tmp_path / "test_value.py").write_text(
@@ -64,7 +66,7 @@ async def test_fixed_check_is_actual_verification_only_after_latest_edit(
     settings = Settings(
         _env_file=None,
         coding_prompt_profile="direct",
-        coding_toolset="no_plan_check",
+        coding_toolset=toolset,
         project_check_argv=selected_check,
         require_verification_before_finish=True,
         max_completion_retries=0,
@@ -168,3 +170,32 @@ def test_fixed_python3_check_error_is_retained_as_relevant_unavailable_evidence(
         required_check=selected,
     )
     assert len(checks) == 1 and checks[0].relevant and checks[0].status == "unavailable"
+
+
+async def test_whole_file_check_omits_fragile_edit_interface(tmp_path):
+    with FactStore(tmp_path / "facts.db") as store:
+        registry = build_registry(
+            fact_store=store,
+            user_id="dev",
+            workspace_root=str(tmp_path),
+            coding_toolset="whole_file_check",
+            project_check_argv=CHECK,
+        )
+        names = {spec.name for spec in registry.as_tool_specs()}
+        assert {"write_file", "run_project_check"} <= names
+        assert not {"replace_text", "run_command", "emit_plan"} & names
+        with pytest.raises(ToolError, match="Unknown tool"):
+            await registry.invoke("replace_text", {})
+        assert not (tmp_path / "value.py").exists()
+
+
+@pytest.mark.parametrize("profile", ["legacy", "compact", "direct"])
+def test_whole_file_check_prompt_matches_offered_tools(profile):
+    prompt = coding_prompt("whole_file_check", profile)
+    assert "run_command" not in prompt and "replace_text" not in prompt
+    assert "write_file" in prompt
+    if profile != "legacy":
+        assert "run_project_check" in prompt
+    assert coding_prompt_version("whole_file_check", profile) != coding_prompt_version(
+        "no_plan_check", profile
+    )

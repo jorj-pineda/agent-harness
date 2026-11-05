@@ -178,7 +178,7 @@ def build_recovery_draft(
         user_id,
         system_prompt=coding_prompt(settings.coding_toolset, settings.coding_prompt_profile),
         project_check_argv=settings.project_check_argv,
-        fixed_project_check=settings.coding_toolset == "no_plan_check",
+        fixed_project_check=settings.coding_toolset in {"no_plan_check", "whole_file_check"},
         repository_instructions=instructions,
     )
     proposed = ChatMessage(role="user", content=selection.message)

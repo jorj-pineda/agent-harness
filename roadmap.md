@@ -4,6 +4,14 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-05 — Opt-in whole-file fixed check:** whole_file_check combines the
+existing whole-file editor and fixed-check interface, omitting exact replacement,
+raw commands and formal planning. Shared settings, prompt identity and review
+paths select it explicitly; full and prior toolsets remain unchanged. Scripted
+real-file verification covers check ordering and absent-tool refusal. This targets
+the two observed overescaped edits, not a measured quality improvement. Fresh
+evaluation binding, reviewed freeze and launch gates remain before inference.
+
 **2026-11-05 — Fixed-check feasibility closed:**
 The sole fresh direct/no_plan_check ISO-week attempt ran the fixed visible check
 (exit 1), then repeated two overescaped replacement calls that were refused.
