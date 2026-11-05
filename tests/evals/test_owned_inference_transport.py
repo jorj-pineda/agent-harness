@@ -101,3 +101,28 @@ async def test_concurrent_submission_invalidates_original_without_second_delegat
     finally:
         release.set()
         await transport.aclose()
+
+
+@pytest.mark.parametrize("status", [302, 429, 500])
+async def test_http_refusal_retains_status_without_body_or_retry(status):
+    from evals.owned_inference_transport import OwnedInferenceHTTPError
+
+    calls = []
+    response = httpx.Response(status, text="private error body")
+
+    def reply(request):
+        calls.append(request)
+        return response
+
+    transport = OwnedInferenceTransport(httpx.MockTransport(reply), lambda: None)
+    try:
+        with pytest.raises(OwnedInferenceHTTPError) as caught:
+            await transport.handle_async_request(httpx.Request("POST", ENDPOINT))
+        assert caught.value.status_code == status
+        assert "private" not in str(caught.value)
+        assert response.is_closed
+        with pytest.raises(ValueError):
+            await transport.handle_async_request(httpx.Request("POST", ENDPOINT))
+        assert len(calls) == 1
+    finally:
+        await transport.aclose()

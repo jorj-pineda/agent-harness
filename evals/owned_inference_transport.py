@@ -9,6 +9,14 @@ import httpx
 ENDPOINT = httpx.URL("http://127.0.0.1:11447/api/chat")
 
 
+class OwnedInferenceHTTPError(ValueError):
+    """A received HTTP refusal, distinct from an unresolved transport failure."""
+
+    def __init__(self, status_code: int) -> None:
+        self.status_code = status_code
+        super().__init__(f"Owned inference HTTP {status_code}; no retry permitted")
+
+
 class OwnedInferenceTransport(httpx.AsyncBaseTransport):
     """No default network delegate, redirects, retries or ownership discovery."""
 
@@ -34,7 +42,7 @@ class OwnedInferenceTransport(httpx.AsyncBaseTransport):
             self.attempted_requests += 1
             response = await self.inner.handle_async_request(request)
             if response.status_code >= 300:
-                raise ValueError("Owned inference HTTP response failed; no retry permitted")
+                raise OwnedInferenceHTTPError(response.status_code)
             self.check_owned()
             if self.failed or self.closed:
                 raise ValueError("Owned inference transport failed during submission")

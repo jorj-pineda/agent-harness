@@ -117,3 +117,28 @@ async def test_guarded_native_request_and_predelegation_drift(setup, monkeypatch
             assert not calls
     finally:
         await provider.aclose()
+
+
+@pytest.mark.parametrize("status", [429, 500])
+async def test_owned_http_failure_survives_provider_guard_composition(setup, status):
+    admission, settings, messages, kwargs = setup
+    calls = []
+
+    def reply(request):
+        calls.append(request)
+        return httpx.Response(status, json={"error": "scripted backend failure"})
+
+    provider = factory.build_cell_provider(
+        admission,
+        1,
+        settings=settings,
+        transport=httpx.MockTransport(reply),
+        check_owned=lambda: None,
+    )
+    try:
+        for _ in range(2):
+            with pytest.raises(ValueError, match="http_status"):
+                await provider.chat(messages, **kwargs)
+        assert provider.stop_reason == "http_status" and len(calls) == 1
+    finally:
+        await provider.aclose()

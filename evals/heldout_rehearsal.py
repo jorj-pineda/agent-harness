@@ -9,6 +9,7 @@ from typing import Literal
 
 from evals.heldout_comparison import PLAN_PATH, ComparisonPlan, validate_plan
 from evals.heldout_settings import protocol_settings
+from evals.owned_inference_transport import OwnedInferenceHTTPError
 from evals.real_run import (
     MODES,
     CohortLedger,
@@ -130,6 +131,9 @@ class CheckedProvider:
             response = await self.provider.chat(
                 messages, tools=tools, temperature=temperature, max_tokens=max_tokens
             )
+        except OwnedInferenceHTTPError as exc:
+            self.stop_reason = "http_status"
+            raise ProtocolStop(self.stop_reason) from exc
         except Exception as exc:
             self.stop_reason = "transport"
             raise ProtocolStop(self.stop_reason) from exc
