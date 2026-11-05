@@ -45,6 +45,7 @@ from evals.real_run import (
     validate_task,
     write_report,
 )
+from providers.base import ToolSpec
 
 
 def _save_evidence(path: Path, raw: bytes) -> None:
@@ -76,7 +77,16 @@ class ScriptedTransport(httpx.MockTransport):
         _save_evidence(self.directory / f"request-{self.requests:02d}.json", request.content)
         # Deliberate simulation override: the scripted oracle selects reference
         # edits/answers, not a model. Responses traverse the production decoder.
-        response = await self.oracle.chat([])
+        wire = json.loads(request.content)
+        specs = [
+            ToolSpec(
+                name=row["function"]["name"],
+                description=row["function"].get("description", ""),
+                parameters_schema=row["function"]["parameters"],
+            )
+            for row in wire.get("tools", [])
+        ]
+        response = await self.oracle.chat([], tools=specs)
         payload = {
             "model": response.model,
             "done": True,

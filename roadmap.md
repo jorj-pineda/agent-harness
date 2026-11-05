@@ -4,6 +4,17 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-05 — Fixed-check evaluation binding:** captured Settings and manifests
+can explicitly select no_plan_check only with direct/single-cell feasibility.
+Nondefault capture requires named residency preparation before allocation; current
+preflight/execution compare the same selected Settings. The canned native-adapter
+rehearsal selects its check from actual offered schemas, preserving legacy paths.
+The [protocol](evals/heldout_comparison/FIXED_CHECK_FEASIBILITY_PROTOCOL.md) retains
+original budgets/criteria and one fresh attempt; other 15 capture fixtures remain
+unused. Scripted checks establish scope/input/verification mechanics only. Fresh
+retained preparation, reviewed freeze/CI/merge, actual receipt and launch gates
+remain before inference; no closed attempt is reopened or quality gain assumed.
+
 **2026-11-05 — Opt-in fixed project check interface:** no_plan_check replaces
 run_command with argument-free run_project_check using copied configured tokens
 and the existing execution bounds. Missing checks or required planning refuse;

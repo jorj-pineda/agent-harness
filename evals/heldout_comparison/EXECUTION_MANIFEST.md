@@ -288,3 +288,9 @@ status/body/timing/usage remains unknown where evidence is insufficient. Invalid
 JSON bodies are not model completions; unsafe or drifting files refuse. Read-only
 observations are non-atomic and do not validate an artifact seal or all bytes that
 are not read. Legacy timing is never inferred.
+
+no_plan_check selection additionally requires direct prompt and explicit one-cell
+feasibility scope. Capture requires direct and named residency preparation before
+allocation. The canned rehearsal receives actual native tool schemas so it can
+choose the configured empty-input check; this remains reference-script simulation,
+not model inference. See [fixed-check protocol](FIXED_CHECK_FEASIBILITY_PROTOCOL.md).

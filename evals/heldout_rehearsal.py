@@ -79,11 +79,12 @@ class CannedProvider:
                     for i, p in enumerate(files)
                 ]
         elif not question and self.calls == 2:
+            fixed_check = tools is not None and any(t.name == "run_project_check" for t in tools)
             calls = [
                 ToolCall(
                     id="check",
-                    name="run_command",
-                    arguments={"argv": self.plan.runtime.project_check_argv},
+                    name="run_project_check" if fixed_check else "run_command",
+                    arguments={} if fixed_check else {"argv": self.plan.runtime.project_check_argv},
                 )
             ]
         else:
