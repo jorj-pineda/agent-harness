@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-05 — No-plan feasibility stopped on backend load failure:** the sole
+fresh direct/no_plan ISO-week request returned HTTP 500 with an Ollama llama-server
+startup timeout. No complete model response, tool call, edit or residency snapshot
+was recorded; usage is unknown. The unchanged artifact and original-criteria
+regrade reject (0/1 accepted and completed-and-accepted); all 15 unused fixtures
+verify and owned cleanup settled cleanly unforced. [Results](evals/heldout_comparison/NO_PLAN_FEASIBILITY_RESULTS_20261105.md)
+close the attempt without retry. This backend failure does not assess no_plan
+coding benefit; no causal/held-out/default/release gain or original gate closure.
+
 **2026-11-04 — Fresh no-plan feasibility freeze proposal:** retained db6a14b9
 selects one direct/no_plan ISO-week attempt, preserving original criteria/budgets
 and keep-alive 300. Separate candidate/rehearsal images and exact staged inputs
