@@ -23,8 +23,14 @@ def digest(path):
 async def prepared(tmp_path, monkeypatch, request):
     selection = getattr(request, "param", False)
     residency = bool(selection)
-    prompt_profile = "direct" if selection in ("direct", "no_plan") else "compact"
-    toolset = "no_plan" if selection == "no_plan" else "full"
+    prompt_profile = "direct" if selection in ("direct", "no_plan", "fixed_check") else "compact"
+    toolset = (
+        "no_plan_check"
+        if selection == "fixed_check"
+        else "no_plan"
+        if selection == "no_plan"
+        else "full"
+    )
     root = tmp_path.resolve()
     runtime = {"commit": "a" * 40, "dirty": False}
     monkeypatch.setattr(inputs, "_harness_revision", lambda: runtime)

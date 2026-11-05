@@ -138,14 +138,18 @@ async def capture_inputs(
     dependency_sha256: str | None = None,
     residency_schedule: bool = False,
     prompt_profile: Literal["compact", "direct"] = "compact",
-    toolset: Literal["full", "no_plan"] = "full",
+    toolset: Literal["full", "no_plan", "no_plan_check"] = "full",
 ) -> dict[str, Any]:
     if prompt_profile not in ("compact", "direct") or (
         prompt_profile == "direct" and not residency_schedule
     ):
         raise ValueError("Direct capture requires explicit residency preparation")
-    if toolset not in ("full", "no_plan") or (toolset == "no_plan" and not residency_schedule):
+    if toolset not in ("full", "no_plan", "no_plan_check") or (
+        toolset != "full" and not residency_schedule
+    ):
         raise ValueError("No-plan capture requires explicit residency preparation")
+    if toolset == "no_plan_check" and prompt_profile != "direct":
+        raise ValueError("Fixed-check capture requires the direct prompt")
     residency = None
     residency_digest = None
     if residency_schedule:
