@@ -23,9 +23,15 @@ def digest(path):
 async def prepared(tmp_path, monkeypatch, request):
     selection = getattr(request, "param", False)
     residency = bool(selection)
-    prompt_profile = "direct" if selection in ("direct", "no_plan", "fixed_check") else "compact"
+    prompt_profile = (
+        "direct"
+        if selection in ("direct", "no_plan", "fixed_check", "whole_file_check_fixture")
+        else "compact"
+    )
     toolset = (
-        "no_plan_check"
+        "whole_file_check"
+        if selection == "whole_file_check_fixture"
+        else "no_plan_check"
         if selection == "fixed_check"
         else "no_plan"
         if selection == "no_plan"
