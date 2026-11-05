@@ -4,6 +4,17 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-05 — Whole-file fixed-check evaluation binding:** explicit direct/
+whole_file_check selection now requires named residency capture and the original
+single-cell ordinal2 feasibility scope. Preflight and shared execution compare
+captured Settings and exact first inputs. A mandatory-mock reference workflow
+writes the fixture, runs its configured check and preserves accepted results;
+this is mechanics evidence, not model improvement. The
+[protocol](evals/heldout_comparison/WHOLE_FILE_CHECK_FEASIBILITY_PROTOCOL.md)
+retains original budgets/criteria, 15 unused fixtures and all stop rules. Fresh
+retained preparation, reviewed freeze/CI/merge, actual receipt and launch gates
+remain before generation. Old attempts remain closed and defaults stay full.
+
 **2026-11-05 — Opt-in whole-file fixed check:** whole_file_check combines the
 existing whole-file editor and fixed-check interface, omitting exact replacement,
 raw commands and formal planning. Shared settings, prompt identity and review

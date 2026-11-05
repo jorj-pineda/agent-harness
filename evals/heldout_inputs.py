@@ -138,17 +138,17 @@ async def capture_inputs(
     dependency_sha256: str | None = None,
     residency_schedule: bool = False,
     prompt_profile: Literal["compact", "direct"] = "compact",
-    toolset: Literal["full", "no_plan", "no_plan_check"] = "full",
+    toolset: Literal["full", "no_plan", "no_plan_check", "whole_file_check"] = "full",
 ) -> dict[str, Any]:
     if prompt_profile not in ("compact", "direct") or (
         prompt_profile == "direct" and not residency_schedule
     ):
         raise ValueError("Direct capture requires explicit residency preparation")
-    if toolset not in ("full", "no_plan", "no_plan_check") or (
+    if toolset not in ("full", "no_plan", "no_plan_check", "whole_file_check") or (
         toolset != "full" and not residency_schedule
     ):
         raise ValueError("No-plan capture requires explicit residency preparation")
-    if toolset == "no_plan_check" and prompt_profile != "direct":
+    if toolset in {"no_plan_check", "whole_file_check"} and prompt_profile != "direct":
         raise ValueError("Fixed-check capture requires the direct prompt")
     residency = None
     residency_digest = None
@@ -185,16 +185,16 @@ async def capture_inputs(
     if runtime_inventory is not None:
         from evals.heldout_guard import _read_regular
 
-        raw, mode = _read_regular(runtime_inventory, 2_000_000)
-        if mode != 0o600 or hashlib.sha256(raw).hexdigest() != runtime_sha256:
+        raw, file_mode = _read_regular(runtime_inventory, 2_000_000)
+        if file_mode != 0o600 or hashlib.sha256(raw).hexdigest() != runtime_sha256:
             raise ValueError("Runtime inventory changed before preservation")
         _save(directory / "runtime-inventory.json", raw)
         runtime_inventory = directory / "runtime-inventory.json"
     if dependency_manifest is not None:
         from evals.heldout_guard import _read_regular
 
-        raw, mode = _read_regular(dependency_manifest, 2_000_000)
-        if mode != 0o600 or hashlib.sha256(raw).hexdigest() != dependency_sha256:
+        raw, file_mode = _read_regular(dependency_manifest, 2_000_000)
+        if file_mode != 0o600 or hashlib.sha256(raw).hexdigest() != dependency_sha256:
             raise ValueError("Dependency manifest changed before preservation")
         _save(directory / "dependency-files.json", raw)
         dependency_manifest = directory / "dependency-files.json"
@@ -247,9 +247,9 @@ async def capture_inputs(
             raise ValueError("First-input capture did not reach the unique mock boundary")
         _validate_report_path(directory / "index.json", manifest, tasks)
         names = (f"{index + 1:02d}-normalized.json", f"{index + 1:02d}-wire.json")
-        digests = tuple(
-            _save(directory / name, content)
-            for name, content in zip(names, (normalized[0], wire[0]), strict=True)
+        digests = (
+            _save(directory / names[0], normalized[0]),
+            _save(directory / names[1], wire[0]),
         )
         key = (task.id, mode)
         repeat_equal = prior[key] == digests if key in prior else None

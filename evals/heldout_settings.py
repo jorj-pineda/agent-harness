@@ -92,13 +92,13 @@ def protocol_settings(
     plan: ComparisonPlan,
     *,
     prompt_profile: Literal["compact", "direct"] = "compact",
-    toolset: Literal["full", "no_plan", "no_plan_check"] = "full",
+    toolset: Literal["full", "no_plan", "no_plan_check", "whole_file_check"] = "full",
 ) -> Settings:
     if prompt_profile not in ("compact", "direct"):
         raise ValueError("Unknown bounded experiment prompt profile")
-    if toolset not in ("full", "no_plan", "no_plan_check"):
+    if toolset not in ("full", "no_plan", "no_plan_check", "whole_file_check"):
         raise ValueError("Unknown bounded experiment toolset")
-    if toolset == "no_plan_check" and prompt_profile != "direct":
+    if toolset in {"no_plan_check", "whole_file_check"} and prompt_profile != "direct":
         raise ValueError("Fixed-check evaluation requires the direct prompt")
     runtime = plan.runtime.model_dump()
     runtime["coding_prompt_profile"] = prompt_profile
