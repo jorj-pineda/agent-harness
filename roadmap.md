@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-05 — Received HTTP failure classification:** the evaluation-owned
+transport preserves a numeric HTTP error in a typed refusal, and the checked
+provider records http_status rather than conflating it with connection/timeout
+failures. Unknown transport failures retain transport. Both latch closed without
+retry or response-body disclosure; original stop, cleanup and usage rules remain.
+Mocked guard-composition tests cover status retention and a second-call refusal.
+This responds to the retained first-request HTTP 500 startup failure, without
+rewriting its historical label, diagnosing root cause, rerunning inference or
+claiming model-quality improvement. Remaining work must follow measured failures.
+
 **2026-11-05 — No-plan feasibility stopped on backend load failure:** the sole
 fresh direct/no_plan ISO-week request returned HTTP 500 with an Ollama llama-server
 startup timeout. No complete model response, tool call, edit or residency snapshot

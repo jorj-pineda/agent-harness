@@ -235,3 +235,10 @@ single-cell residency feasibility scope. Captured Settings must match the select
 toolset before execution; the manifest hash binds selection to approval. This
 does not reopen old cohorts or supply launch authority. See
 [no-plan protocol](NO_PLAN_FEASIBILITY_PROTOCOL.md).
+
+Received HTTP refusals in the owned inference boundary now raise a typed error
+with a numeric status, and the checked provider latches http_status. Connection,
+timeout and unrelated guard exceptions retain transport. Both paths stop without
+retry; status alone does not identify a backend root cause or establish usage.
+Native evidence remains the source for bounded response bytes. Error messages
+do not copy response bodies. Historical transport labels are not rewritten.
