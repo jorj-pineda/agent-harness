@@ -1,5 +1,15 @@
 # Real-task baselines
 
+## 2026-11-05 — No-plan feasibility backend failure
+
+The sole fresh direct/no_plan ISO-week request returned HTTP 500 with an Ollama llama-server
+startup timeout. No complete model response, tool call, edit or residency snapshot
+was recorded; usage is unknown. The unchanged artifact and original-criteria
+regrade reject (0/1 accepted and completed-and-accepted); all 15 unused fixtures
+verify and owned cleanup settled cleanly unforced. [Results](heldout_comparison/NO_PLAN_FEASIBILITY_RESULTS_20261105.md)
+close the attempt without retry. This backend failure does not assess no_plan
+coding benefit; no causal/held-out/default/release gain or original gate closure.
+
 ## 2026-11-04 — Direct prompt feasibility finished
 
 One fresh ISO-week attempt returned six complete responses with known 13,607/171 tokens and
