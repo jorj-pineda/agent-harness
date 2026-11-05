@@ -269,3 +269,22 @@ and final receipt writes. Caller-body time is not necessarily inference time.
 UTC is not ordered across clock changes; monotonic suspend behavior is platform
 dependent. Checkpoints do not impose a deadline, explain historical gaps or grant
 launch authority; old records remain unmeasured.
+
+Inspect native evidence without execution using:
+
+```sh
+python -m evals.native_summary /absolute/path/to/cell-02/native
+```
+
+This stdout-only reader bounds directory entries, ordinals, file sizes and private
+regular-file types. It emits numeric status, native completion observation, valid
+reported usage counts, scoped elapsed timing, and failure/partial-file presence.
+It never prints request/response text or backend error strings, writes reports,
+contacts a provider, grades or replays a request. failure_recorded means a failure
+or close-failure metadata file exists, not that the HTTP status succeeded. A
+complete model response requires a 2xx record, literal done=true and a nonempty
+model field; that is neither identity attestation nor artifact acceptance. Missing
+status/body/timing/usage remains unknown where evidence is insufficient. Invalid
+JSON bodies are not model completions; unsafe or drifting files refuse. Read-only
+observations are non-atomic and do not validate an artifact seal or all bytes that
+are not read. Legacy timing is never inferred.

@@ -4,6 +4,14 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-05 — Read-only native evidence summary:** a bounded stdout-only command
+separates HTTP status/error bodies from complete native model responses, reported
+usage, partial/failure-file presence and available scoped timing. Payload text is
+omitted; legacy timing and unavailable usage stay unknown. Unsafe/drifting inputs
+refuse without writing, grading, provider calls or replay. Synthetic coverage and
+read-only inspection of both retained failed/completed-response bundles verify
+classification, not model quality, root cause, acceptance or launch authority.
+
 **2026-11-05 — Owned lifecycle timing checkpoints:** process, failure and successful
 session evidence now records cumulative UTC/monotonic checkpoints across image/
 executable validation, spawn, metadata readiness, caller return and successful
