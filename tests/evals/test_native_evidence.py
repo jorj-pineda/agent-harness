@@ -132,3 +132,47 @@ async def test_response_close_failure_retains_bytes_and_latches(directory):
             await transport.handle_async_request(httpx.Request("POST", ENDPOINT, content=b"{}"))
     finally:
         await transport.aclose()
+
+
+@pytest.mark.parametrize("fault", ["none", "http", "timeout", "cancel", "route"])
+async def test_native_records_elapsed_evidence_for_success_and_failure(
+    directory, monkeypatch, fault
+):
+    import asyncio
+    from datetime import datetime
+
+    ticks = iter([1_000_000_000, 3_500_000_000])
+    monkeypatch.setattr(evidence.time, "perf_counter_ns", lambda: next(ticks))
+    calls = []
+
+    def reply(request):
+        calls.append(request)
+        if fault == "timeout":
+            raise httpx.ReadTimeout("scripted")
+        if fault == "cancel":
+            raise asyncio.CancelledError()
+        return httpx.Response(500 if fault == "http" else 200, content=b"body")
+
+    transport = evidence.NativeEvidenceTransport(httpx.MockTransport(reply), directory)
+    request = httpx.Request(
+        "POST", ENDPOINT if fault != "route" else "https://example.invalid", content=b"{}"
+    )
+    try:
+        if fault in ("none", "http"):
+            response = await transport.handle_async_request(request)
+            assert response.status_code == (500 if fault == "http" else 200)
+            record = directory / "request-01.json"
+        else:
+            with pytest.raises((httpx.ReadTimeout, asyncio.CancelledError, ValueError)):
+                await transport.handle_async_request(request)
+            record = directory / "request-01.failure.json"
+        data = json.loads(record.read_bytes())
+        clock = data["timing"]
+        assert clock["elapsed_seconds"] == 2.5
+        assert clock["scope"] == "native_request_to_evidence_record_v1"
+        assert datetime.fromisoformat(clock["started_at"]).utcoffset().total_seconds() == 0
+        assert datetime.fromisoformat(clock["observed_at"]).utcoffset().total_seconds() == 0
+        assert data["delegated"] == (fault != "route")
+        assert len(calls) == (0 if fault == "route" else 1)
+    finally:
+        await transport.aclose()
