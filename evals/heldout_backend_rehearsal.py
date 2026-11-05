@@ -14,6 +14,7 @@ import time
 from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass, field
+from datetime import UTC, datetime
 from itertools import islice
 from pathlib import Path
 
@@ -202,6 +203,19 @@ def owned_backend(
         pass
     else:
         raise ValueError("Enter owned backend lifecycle outside an active event loop")
+    started_ns = time.perf_counter_ns()
+    checkpoints: list[dict[str, str | float]] = []
+
+    def mark(stage: str) -> None:
+        checkpoints.append(
+            {
+                "stage": stage,
+                "observed_at": datetime.now(UTC).isoformat(),
+                "elapsed_seconds": (time.perf_counter_ns() - started_ns) / 1_000_000_000,
+            }
+        )
+
+    mark("preparation_started")
     models, initial_image = _prepared_models(image_directory)
     destination = _owned_location(directory)
     image_container = models.parent
@@ -247,10 +261,18 @@ def owned_backend(
         gate = OwnedAPIGate(process, PORT)
         session = OwnedBackendSession(process)
         try:
+            mark("spawned")
             OwnedAPIGate.register(process, PORT)
             _save(
                 destination / "process.json",
-                json.dumps({"pid": process.pid, "pgid": process.pid, "port": PORT}).encode(),
+                json.dumps(
+                    {
+                        "pid": process.pid,
+                        "pgid": process.pid,
+                        "port": PORT,
+                        "timing_checkpoints": checkpoints,
+                    }
+                ).encode(),
             )
             deadline = time.monotonic() + 30
             readiness_errors = []
@@ -293,12 +315,21 @@ def owned_backend(
                     "inference_authorized": False,
                 }
             )
+            mark("metadata_ready")
             session.active = True
             yield session
+            mark("body_returned")
         except BaseException as error:
+            mark("failed")
             _save(
                 destination / "failure.json",
-                json.dumps({"status": "failed", "error_type": type(error).__name__}).encode(),
+                json.dumps(
+                    {
+                        "status": "failed",
+                        "error_type": type(error).__name__,
+                        "timing_checkpoints": checkpoints,
+                    }
+                ).encode(),
             )
             raise
         finally:
@@ -316,11 +347,14 @@ def owned_backend(
                 )
                 raise
             else:
+                mark("cleanup_returned")
                 session.evidence["cleanup"] = cleanup
                 _save(destination / "cleanup.json", json.dumps(cleanup).encode())
     _, final_image = _prepared_models(image_directory)
     if initial_image != final_image or binary_pin != _hash_blob(binary, binary_stat.st_size):
         raise ValueError("Prepared image or executable changed during rehearsal")
+    mark("final_verification")
+    session.evidence["timing_checkpoints"] = checkpoints
     _save(destination / "session.json", json.dumps(session.evidence, indent=2).encode())
 
 

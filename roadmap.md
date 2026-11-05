@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-05 — Owned lifecycle timing checkpoints:** process, failure and successful
+session evidence now records cumulative UTC/monotonic checkpoints across image/
+executable validation, spawn, metadata readiness, caller return and successful
+cleanup/final verification. Failure evidence stops before cleanup, whose schema
+and ownership rules remain unchanged. Real synthetic-child regressions verify
+success/failure checkpoint ordering and clean settlement. This adds observations
+for the known outer/dispatch gap, not a deadline, backend diagnosis, inference or
+model-quality result. Prior image creation/controls and legacy timing stay unknown.
+
 **2026-11-05 — Native request timing evidence:** owned native success and failure
 records now include UTC endpoints and monotonic elapsed time with an explicit
 wrapper/evidence scope. Success, HTTP error, timeout, cancellation and pre-delegate

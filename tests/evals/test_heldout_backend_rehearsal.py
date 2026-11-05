@@ -456,3 +456,50 @@ async def test_async_entry_refuses_before_image_access_or_process_creation(owned
     ):
         pytest.fail("entered")
     assert not directory.exists()
+
+
+@pytest.mark.parametrize("fail_body", [False, True])
+def test_owned_lifecycle_checkpoints_preserve_failure_and_cleanup(owned, fail_body):
+    from datetime import datetime
+
+    image, directory, binary = owned
+    executable(binary)
+    if fail_body:
+        with (
+            pytest.raises(ValueError, match="scripted body"),
+            backend.owned_backend(image, directory, binary),
+        ):
+            raise ValueError("scripted body")
+        record = json.loads((directory / "failure.json").read_bytes())
+        expected = ["preparation_started", "spawned", "metadata_ready", "failed"]
+        assert not (directory / "session.json").exists()
+    else:
+        with backend.owned_backend(image, directory, binary):
+            pass
+        record = json.loads((directory / "session.json").read_bytes())
+        expected = [
+            "preparation_started",
+            "spawned",
+            "metadata_ready",
+            "body_returned",
+            "cleanup_returned",
+            "final_verification",
+        ]
+    points = record["timing_checkpoints"]
+    assert [p["stage"] for p in points] == expected
+    assert [p["elapsed_seconds"] for p in points] == sorted(p["elapsed_seconds"] for p in points)
+    assert all(p["elapsed_seconds"] >= 0 for p in points)
+    assert all(
+        datetime.fromisoformat(p["observed_at"]).utcoffset().total_seconds() == 0 for p in points
+    )
+    process_points = json.loads((directory / "process.json").read_bytes())["timing_checkpoints"]
+    assert process_points == points[:2]
+    cleanup = json.loads((directory / "cleanup.json").read_bytes())
+    assert cleanup == {
+        "settled": True,
+        "passed": True,
+        "forced": False,
+        "returncode": 0,
+        "errors": {},
+    }
+    assert_settled(directory)

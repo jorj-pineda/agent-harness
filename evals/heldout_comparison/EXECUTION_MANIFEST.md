@@ -253,3 +253,19 @@ outer setup/grading/settlement. It is observation, not a deadline, usage claim o
 backend timing. UTC may jump independently; monotonic clock behavior across host
 suspend is platform dependent. Legacy records without timing remain unmeasured
 and historical artifacts are not rewritten. Response bytes and limits are unchanged.
+
+Owned-backend records now carry cumulative timing_checkpoints with UTC observation
+and monotonic elapsed seconds from preparation_started (after argument/event-loop
+validation, before image/executable checks). process.json captures through spawned;
+failure.json captures through failed before cleanup; successful session.json also
+captures metadata_ready, body_returned, cleanup_returned and final_verification.
+Failures before process recording may leave no timing artifact; failures during
+cleanup or final verification have no successful session receipt. The existing
+cleanup.json schema and ownership/settlement rules are unchanged.
+
+These scopes include lifecycle image/executable validation and metadata readiness,
+but exclude prior per-cell image creation, grading controls, caller outer setup
+and final receipt writes. Caller-body time is not necessarily inference time.
+UTC is not ordered across clock changes; monotonic suspend behavior is platform
+dependent. Checkpoints do not impose a deadline, explain historical gaps or grant
+launch authority; old records remain unmeasured.
