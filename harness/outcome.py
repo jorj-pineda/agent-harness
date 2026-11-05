@@ -16,6 +16,7 @@ WRITE_FILE_TOOL_NAME = "write_file"
 REPLACE_TEXT_TOOL_NAME = "replace_text"
 EDIT_TOOL_NAMES = frozenset({WRITE_FILE_TOOL_NAME, REPLACE_TEXT_TOOL_NAME})
 RUN_COMMAND_TOOL_NAME = "run_command"
+PROJECT_CHECK_TOOL_NAME = "run_project_check"
 
 VERIFICATION_ROOT_COMMANDS = frozenset({"pytest", "ruff", "mypy"})
 
@@ -82,7 +83,10 @@ def harvest_patch_summary(tool_calls: list[ToolCallRecord]) -> list[str]:
 def _may_have_mutated(call: ToolCallRecord) -> bool:
     return (
         call.name in EDIT_TOOL_NAMES and call.error is None and isinstance(call.result, dict)
-    ) or (call.interrupted and call.name in {*EDIT_TOOL_NAMES, RUN_COMMAND_TOOL_NAME})
+    ) or (
+        call.interrupted
+        and call.name in {*EDIT_TOOL_NAMES, RUN_COMMAND_TOOL_NAME, PROJECT_CHECK_TOOL_NAME}
+    )
 
 
 def harvest_checks(
@@ -96,8 +100,15 @@ def harvest_checks(
                 check.superseded_by_edit = True
             if call.name in EDIT_TOOL_NAMES:
                 continue
-        argv = call.arguments.get("argv")
-        if call.name != RUN_COMMAND_TOOL_NAME or not isinstance(argv, list):
+        result = call.result if isinstance(call.result, dict) else {}
+        argv = (
+            (result.get("argv") if call.error is None else required_check)
+            if call.name == PROJECT_CHECK_TOOL_NAME
+            else call.arguments.get("argv")
+        )
+        if call.name not in {RUN_COMMAND_TOOL_NAME, PROJECT_CHECK_TOOL_NAME} or not isinstance(
+            argv, list
+        ):
             continue
         if not all(isinstance(token, str) for token in argv) or not is_verification_command(argv):
             continue
@@ -113,6 +124,14 @@ def harvest_checks(
                 error = "Check result has no boolean success flag."
             elif valid_exit and success != (exit_code == 0):
                 error = "Check success flag disagrees with exit_code."
+        expected_argv = required_check
+        if (
+            call.name == PROJECT_CHECK_TOOL_NAME
+            and required_check
+            and required_check[0] == "python3"
+            and call.error is None
+        ):
+            expected_argv = ["python", *required_check[1:]]
         checks.append(
             CheckRecord(
                 argv=argv,
@@ -124,7 +143,7 @@ def harvest_checks(
                     if result.get("success") is True
                     else "failed"
                 ),
-                relevant=required_check is None or argv == required_check,
+                relevant=expected_argv is None or argv == expected_argv,
                 error=error,
             )
         )

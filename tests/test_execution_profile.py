@@ -65,6 +65,7 @@ def test_allowlist_does_not_serialize_secrets_paths_endpoints_or_check_arguments
         ("require_plan_before_edit", True),
         ("coding_toolset", "whole_file"),
         ("coding_toolset", "no_plan"),
+        ("coding_toolset", "no_plan_check"),
         ("max_tracked_bytes", 100),
     ],
 )
@@ -72,7 +73,17 @@ def test_relevant_configuration_changes_are_visible(field, value):
     registry = ToolRegistry()
     first = capture_execution_profile(Settings(_env_file=None), "ollama", registry)
     changed = capture_execution_profile(
-        Settings(_env_file=None, **{field: value}), "ollama", registry
+        Settings(
+            _env_file=None,
+            **(
+                {"project_check_argv": ["pytest"]}
+                if field == "coding_toolset" and value == "no_plan_check"
+                else {}
+            ),
+            **{field: value},
+        ),
+        "ollama",
+        registry,
     )
     assert changed != first
 

@@ -593,6 +593,7 @@ async def run_task(
                     user_id="eval",
                     workspace_root=str(copy.workspace.root),
                     coding_toolset=settings.coding_toolset,
+                    project_check_argv=settings.project_check_argv,
                     read_file_default_lines=settings.read_file_default_lines,
                     command_env=selected_env
                     if selected_env is not None

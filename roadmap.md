@@ -4,6 +4,17 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-05 — Opt-in fixed project check interface:** no_plan_check replaces
+run_command with argument-free run_project_check using copied configured tokens
+and the existing execution bounds. Missing checks or required planning refuse;
+other toolsets retain their behavior. Actual returned argv/check results feed
+verification, with later edits and interruption invalidating earlier evidence.
+Shared API/evaluation setup, prompt/version, configuration and recovery review
+identify the selection. Real-file/API scripted coverage verifies execution,
+argument refusal and verification order, not a model-quality gain. This targets
+observed malformed command arrays; [details](docs/fixed-project-check.md). Original
+closed cohorts remain closed; fresh comparison binding/freeze/gates remain open.
+
 **2026-11-05 — Read-only native evidence summary:** a bounded stdout-only command
 separates HTTP status/error bodies from complete native model responses, reported
 usage, partial/failure-file presence and available scoped timing. Payload text is
