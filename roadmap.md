@@ -4,6 +4,17 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-07 — Explicit public-pilot evaluator admission:** the shared evaluator
+can select a named public cell while preserving default disposable and old
+held-out-only paths. Canonical task/repeat/mode/policy checks precede admission;
+source/policy checks run before requests and around grading, latching failures.
+Failed preservation prevents accepted status while retaining an available grader
+result. Scripted real-file references verify named paths, repeat binding and
+original acceptance; drift/refusal/default compatibility regressions pass.
+[Details](evals/public_envelope/WORKSPACES.md). Complete settings/input/resource
+capture, rehearsal, freeze/approval and fresh launch gates remain before inference;
+this is not a public live CLI, continuous monitor or isolation guarantee.
+
 **2026-11-07 — Named public-pilot workspaces:** the fixed six-cell public plan
 can prepare verified named fixture copies outside Git/source inputs. Receipt,
 ordinal, inventory and byte/mode checks precede single-use admission; post-marker

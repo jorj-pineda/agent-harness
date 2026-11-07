@@ -22,7 +22,10 @@ from collections.abc import Callable, Mapping
 from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Literal
+from typing import TYPE_CHECKING, Any, Literal, TypedDict
+
+if TYPE_CHECKING:
+    from evals.public_admission import PublicCellWorkspace
 
 import yaml
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter
@@ -332,7 +335,9 @@ def load_tasks(path: Path = TASKS_ROOT / "tasks.yaml") -> list[Task]:
                 raise ValueError("Task directory escapes its catalog root")
         if not fixture.is_dir() or not acceptance.is_dir() or not reference.is_dir():
             raise ValueError(f"Incomplete task: {task_id}")
-        category = TypeAdapter(TaskCategory).validate_python(row.get("category", "unclassified"))
+        category: TaskCategory = TypeAdapter(TaskCategory).validate_python(
+            row.get("category", "unclassified")
+        )
         tasks.append(
             Task(task_id, str(row["request"]), fixture, acceptance, reference, category, identity)
         )
@@ -499,9 +504,15 @@ async def _visible_check(
     )
 
 
+class _CommandEnvKwargs(TypedDict, total=False):
+    command_env: Mapping[str, str]
+
+
 async def validate_task(task: Task, *, command_env: Mapping[str, str] | None = None) -> None:
     selected_env = _task_command_environment(command_env)
-    env_kwargs = {"command_env": selected_env} if selected_env is not None else {}
+    env_kwargs: _CommandEnvKwargs = (
+        {"command_env": selected_env} if selected_env is not None else {}
+    )
     guard = _heldout_guard(task)
     if task.category == "repository_question":
         with disposable_workspace(task.fixture) as copy:
@@ -522,12 +533,12 @@ async def validate_task(task: Task, *, command_env: Mapping[str, str] | None = N
         visible = await _visible_check(baseline.workspace.root, **env_kwargs)
         if visible.exit_code == 0:
             raise ValueError(f"Task {task.id} visible check does not fail initially")
-    with disposable_workspace(task.fixture) as reference:
-        _reference_files(task, reference.workspace.root)
-        solved = await acceptance_check(task, reference.workspace.root, **env_kwargs)
+    with disposable_workspace(task.fixture) as reference_copy:
+        _reference_files(task, reference_copy.workspace.root)
+        solved = await acceptance_check(task, reference_copy.workspace.root, **env_kwargs)
         if solved.exit_code != 0:
             raise ValueError(f"Task {task.id} reference solution fails: {solved.stdout}")
-        visible = await _visible_check(reference.workspace.root, **env_kwargs)
+        visible = await _visible_check(reference_copy.workspace.root, **env_kwargs)
         if visible.exit_code != 0:
             raise ValueError(f"Task {task.id} visible check fails for reference solution")
     if guard is not None:
@@ -560,15 +571,33 @@ async def run_task(
     mode: Mode,
     attempt: int = 1,
     prepared_directory: Path | None = None,
+    public_cell: PublicCellWorkspace | None = None,
     command_env: Mapping[str, str] | None = None,
 ) -> RealTaskResult:
     selected_env = _task_command_environment(command_env)
-    env_kwargs = {"command_env": selected_env} if selected_env is not None else {}
+    env_kwargs: _CommandEnvKwargs = (
+        {"command_env": selected_env} if selected_env is not None else {}
+    )
     turn_trace: list[TurnTraceRecord] = []
     profiles: list[ExecutionProfile] = []
+    from evals.public_admission import PublicPilotDriftError, PublicTaskGuard
+
+    if prepared_directory is not None and public_cell is not None:
+        raise ValueError("Select only one prepared workspace policy")
+    public_guard = (
+        PublicTaskGuard(task, public_cell, mode=mode, attempt=attempt, settings=settings)
+        if public_cell is not None
+        else None
+    )
     guard = _heldout_guard(task, execution=True)
-    observed = ObservedProvider(provider, before_chat=guard)
-    if prepared_directory is not None:
+    observed = ObservedProvider(
+        provider, before_chat=public_guard if public_guard is not None else guard
+    )
+    if public_cell is not None:
+        from evals.public_workspaces import admit_public_cell
+
+        workspace_context = admit_public_cell(public_cell.directory, ordinal=public_cell.ordinal)
+    elif prepared_directory is not None:
         if guard is None:
             raise HeldoutDriftError("Prepared execution requires a registered held-out task")
         from evals.heldout_workspaces import admit_prepared
@@ -629,7 +658,10 @@ async def run_task(
                     failure = type(exc).__name__
                 latency_ms = (time.perf_counter() - start) * 1000
                 trace: list[ToolCallRecord] = session.turns[-1].tool_calls if session.turns else []
+        graded: ProcessResult | None = None
         try:
+            if public_guard is not None:
+                public_guard.check_at("before_grading")
             if guard is not None:
                 guard.check_at("before_grading")
             criteria_before = (
@@ -642,6 +674,7 @@ async def run_task(
                 if question
                 else await acceptance_check(task, copy.workspace.root, **env_kwargs)
             )
+            graded = acceptance
             criteria_after = (
                 _acceptance_digest(task.acceptance, question=True)
                 if question
@@ -649,6 +682,25 @@ async def run_task(
             )
             if guard is not None:
                 guard.check_at("after_grading")
+            if public_guard is not None:
+                public_guard.check_at("after_grading")
+        except PublicPilotDriftError:
+            failure = "PublicPilotDriftError"
+            criteria_before = criteria_after = None
+            acceptance = (
+                graded
+                if graded is not None
+                else ProcessResult(
+                    argv=[],
+                    exit_code=1,
+                    stdout=(
+                        "Independent acceptance not certified: public pilot preservation failed.\n"
+                    ),
+                    stderr="",
+                    stdout_truncated=False,
+                    stderr_truncated=False,
+                )
+            )
         except HeldoutDriftError:
             if guard is not None and guard.evidence.status != "failed":
                 guard.evidence.status = "failed"
@@ -718,7 +770,11 @@ async def run_task(
                 else coding_prompt_version(settings.coding_toolset, settings.coding_prompt_profile)
             ),
             source_revision=_source_revision(copy),
-            passed=acceptance.exit_code == 0 and not criteria_changed,
+            passed=(
+                acceptance.exit_code == 0
+                and not criteria_changed
+                and (public_guard is None or not public_guard.failed)
+            ),
             termination=termination,
             completion_status=completion_status,
             completion_reason=completion_reason,
@@ -749,11 +805,18 @@ async def run_task(
                 }
                 if selected_env is not None
                 else None,
-                "workspace_policy": "prepared-heldout-single-use-v1"
+                **(
+                    {"public_pilot_preservation": public_guard.evidence()}
+                    if public_guard is not None
+                    else {}
+                ),
+                "workspace_policy": "prepared-public-pilot-single-use-v1"
+                if public_cell is not None
+                else "prepared-heldout-single-use-v1"
                 if prepared_directory is not None
                 else "disposable-v1",
                 "prepared_workspace_root": str(copy.workspace.root)
-                if prepared_directory is not None
+                if prepared_directory is not None or public_cell is not None
                 else None,
                 "inspection_only": question,
                 "coding_toolset": settings.coding_toolset,
