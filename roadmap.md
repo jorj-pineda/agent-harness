@@ -4,6 +4,19 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-07 — Whole-file fixed-check freeze proposal:** clean retained ad7175d
+selects one fresh direct/whole_file_check ISO-week attempt with original budgets
+and criteria. Separate candidate/rehearsal bundles, one mandatory-mock accepted
+workflow, 22 refusal probes, GET-only observation and three clean unforced owned
+settlements verify. Retained G0 passes 3,087 offline and final working gate 3,101;
+106 recipe contracts, static checks and both 90-result matrices pass. Interrupted
+validation logs are preserved separately from the passing reruns. Actual copied
+check-only and missing-argument/default-mode refusals pass without admission or
+generation. The [freeze](evals/heldout_comparison/WHOLE_FILE_CHECK_FEASIBILITY_FREEZE_20261105.md)
+binds concrete runtime/settings/inputs/image/recipe and 32 evidence files.
+Exact-head independent review, CI, merge, actual parent receipt and fresh launch
+remain before inference; no causal/held-out/default/release gain is claimed.
+
 **2026-11-05 — Whole-file fixed-check evaluation binding:** explicit direct/
 whole_file_check selection now requires named residency capture and the original
 single-cell ordinal2 feasibility scope. Preflight and shared execution compare
