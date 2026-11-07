@@ -1,5 +1,15 @@
 # Real-task baselines
 
+## 2026-11-07 — Whole-file fixed-check feasibility rejected
+One fresh direct/whole_file_check ISO-week attempt edited the implementation,
+passed the visible check and returned an answer. Original acceptance and a separate
+copied-workspace regrade reject missing four-digit year padding (0/1 accepted and
+completed-and-accepted). Six complete responses used 10,406/383 tokens; six loaded
+points, 15 unused fixtures and clean unforced settlement verify.
+[Results](heldout_comparison/WHOLE_FILE_CHECK_FEASIBILITY_RESULTS_20261107.md) close the attempt without retry. This observed edit/check workflow
+does not establish causal/held-out/default/release improvement; original gates stay open.
+
+
 ## 2026-11-05 — Fixed-check feasibility rejected
 The sole fresh direct/no_plan_check ISO-week attempt ran the fixed visible check
 (exit 1), then repeated two overescaped replacement calls that were refused.
