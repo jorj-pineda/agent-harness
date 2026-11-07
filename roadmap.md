@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-07 — Whole-file fixed-check artifact rejected:**
+One fresh direct/whole_file_check ISO-week attempt edited the implementation,
+passed the visible check and returned an answer. Original acceptance and a separate
+copied-workspace regrade reject missing four-digit year padding (0/1 accepted and
+completed-and-accepted). Six complete responses used 10,406/383 tokens; six loaded
+points, 15 unused fixtures and clean unforced settlement verify.
+[Results](evals/heldout_comparison/WHOLE_FILE_CHECK_FEASIBILITY_RESULTS_20261107.md) close the attempt without retry. This observed edit/check workflow
+does not establish causal/held-out/default/release improvement; original gates stay open.
+
+
 **2026-11-07 — Whole-file fixed-check freeze proposal:** clean retained ad7175d
 selects one fresh direct/whole_file_check ISO-week attempt with original budgets
 and criteria. Separate candidate/rehearsal bundles, one mandatory-mock accepted
