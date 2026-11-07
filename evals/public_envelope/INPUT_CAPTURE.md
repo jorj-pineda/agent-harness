@@ -38,3 +38,6 @@ capture-preserving staging, full mock rehearsal, owned backend/resource checks,
 concrete reviewed freeze, actual parent receipt and fresh gates remain required
 before pilot generation. Observations are bounded and non-atomic, not isolation,
 continuous monitoring or authenticated launch authority.
+
+Offline verification and exact-path capture preservation are described in
+[STAGING.md](STAGING.md); they do not complete the later execution/approval gates.
