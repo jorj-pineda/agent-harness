@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-07 — Named public-pilot workspaces:** the fixed six-cell public plan
+can prepare verified named fixture copies outside Git/source inputs. Receipt,
+ordinal, inventory and byte/mode checks precede single-use admission; post-marker
+failure consumes admission and retains partial artifacts. The existing workspace
+baseline/change tracker is reused. Defaults and registered-held-out admission
+are unchanged; shared evaluator wiring and ongoing dispatch/grading guards remain
+open. [Details](evals/public_envelope/WORKSPACES.md). This provides bounded,
+non-atomic preparation mechanics, not isolation, parent approval or inference.
+
 **2026-11-07 — Public task-envelope protocol:** after the whole-file model run
 reached editing/checking but missed an explicit requirement, a six-cell pilot
 selects existing bugfix, feature and refactor tasks with two fixed repeats.
