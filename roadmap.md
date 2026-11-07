@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-07 — Public first-input guard selection:** the separate public archive
+can supply an explicitly selected ordinal's normalized/native bytes to the existing
+evaluation-only pinned provider. Full archive verification brackets extraction;
+invalid ordinals and hash/mode drift refuse without output or provider creation.
+Mock regressions exercise exact forwarding and refusal/latching before delegation.
+[Details](evals/public_envelope/STAGING.md#loading-a-selected-cells-first-inputs).
+This is a first-request prerequisite, not admission, ownership, launch authority
+or model-quality evidence. Public manifest/receipt, owned execution, full rehearsal,
+reviewed freeze and fresh launch gates remain open.
+
 **2026-11-07 — Public capture preservation and exact-path staging:** the distinct
 public index can be checked offline for selected bytes, schema, six-cell identity,
 receipts, fixtures, private modes and normalized/native agreement. Staging archives

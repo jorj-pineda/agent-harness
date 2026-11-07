@@ -38,3 +38,23 @@ not establish model quality, observed model identity or real backend settlement.
 No old held-out/residency format is accepted or relabeled by this API. Public
 owned execution, full rehearsal, concrete reviewed freeze, actual parent receipt
 and fresh launch gates remain incomplete. Staging grants no inference authority.
+
+## Loading a selected cell's first inputs
+
+`load_public_pins(capture, original_directory=..., expected_index_sha256=...,
+ordinal=...)` accepts only an explicit integer ordinal 1 through 6. It verifies
+the entire public archive, extracts the selected normalized and wire bytes with
+hash/mode checks, and verifies the archive again before returning the shared
+`InputPins` value. It creates no output, admission, provider or transport.
+
+The existing evaluation-only `PinnedOllamaProvider` can enforce these pins: a
+normalized mismatch refuses before adapter invocation; a wire mismatch refuses
+before transport delegation, and either failure latches the provider closed.
+Its production adapter and native-response checks are unchanged. Tests use an
+explicit HTTPX mock and synthetic native responses, not a real backend.
+
+Loading pins does not authorize their use. A later public executor must still
+bind the selected manifest/approval, reobserve runtime/dependency/Settings and
+source preservation, prove resource ownership at request boundaries, record
+results and settle each owned lifecycle. The pins describe the first request;
+they do not freeze all later conversation bytes or continuously monitor artifacts.
