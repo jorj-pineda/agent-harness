@@ -2,16 +2,12 @@
 
 from __future__ import annotations
 
-import hashlib
-import json
 from pathlib import Path
 
 from pydantic import Field
 
-from evals.heldout_comparison import PLAN_PATH as BUDGET_SOURCE
-from evals.heldout_comparison import ProtocolModel, Runtime
-from evals.heldout_guard import _read_regular
-from evals.public_envelope import PLAN_SHA256, validate_public_plan
+from evals.heldout_comparison import ProtocolModel
+from evals.public_envelope import PLAN_SHA256, policy_settings_values
 from evals.public_workspaces import _selection
 from evals.real_run import Task
 from harness.config import Settings
@@ -38,14 +34,7 @@ class PublicTaskGuard:
         self.failed = False
         self.failed_checkpoint: str | None = None
         self.checkpoints: list[str] = []
-        plan = validate_public_plan()
-        raw, _ = _read_regular(BUDGET_SOURCE, 64_000)
-        if hashlib.sha256(raw).hexdigest() != plan.budget_source_sha256:
-            raise PublicPilotDriftError("Public budget source changed")
-        self.expected_settings = Runtime.model_validate(json.loads(raw)["runtime"]).model_dump()
-        self.expected_settings.update(
-            coding_prompt_profile="direct", coding_toolset="whole_file_check"
-        )
+        self.expected_settings = policy_settings_values()
         self.check_at("initial")
 
     def check_at(self, stage: str) -> None:

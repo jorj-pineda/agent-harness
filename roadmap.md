@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-07 — Public-pilot native first-input capture:** the six public cells
+can capture shared-runtime normalized inputs and production Ollama wire requests
+behind mandatory MockTransport. Complete Settings/environment and selected
+runtime/dependency pins bind the distinct index; partial failures preserve first
+inputs and consumed cells, and only a complete checked capture writes its index.
+[Details](evals/public_envelope/INPUT_CAPTURE.md). Scripted regressions cover proxy
+non-forwarding, drift before/after allocation, private evidence and cleanup.
+Verification/staging, full rehearsal, owned execution and reviewed freeze/receipt/
+fresh launch remain open; no model-quality or launch claim follows.
+
 **2026-11-07 — Explicit public-pilot evaluator admission:** the shared evaluator
 can select a named public cell while preserving default disposable and old
 held-out-only paths. Canonical task/repeat/mode/policy checks precede admission;
