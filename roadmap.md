@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-07 — Public task-envelope protocol:** after the whole-file model run
+reached editing/checking but missed an explicit requirement, a six-cell pilot
+selects existing bugfix, feature and refactor tasks with two fixed repeats.
+The offline validator pins exact plan/catalog/budget/request/tree bytes and order;
+it creates no resources and grants no inference authority. The
+[protocol](evals/public_envelope/PROTOCOL.md) measures one policy on known public
+development tasks, not a causal or held-out gain. Shared execution/preservation,
+mock rehearsal, concrete freeze/review/CI/merge, actual receipt and fresh gates
+remain before generation. No prior attempt is reopened or release gate closed.
+
 **2026-11-07 — Whole-file fixed-check artifact rejected:**
 One fresh direct/whole_file_check ISO-week attempt edited the implementation,
 passed the visible check and returned an answer. Original acceptance and a separate
