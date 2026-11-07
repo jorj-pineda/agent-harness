@@ -1,0 +1,77 @@
+{
+  "format": "public-task-envelope-v1",
+  "evidence_label": "public-development-task-envelope",
+  "inference_authorized": false,
+  "model": "gemma4:12b",
+  "model_digest": "4eb23ef187e2c5462566d6a1d3bbbc2f1346d0b4327cbb66d58fffbcc9b2b05c",
+  "expected_ollama_version": "0.33.2",
+  "catalog_sha256": "3e6da853e1e62127f9da390ee58c6a90efb059d47698079c77770f64d3ff4b71",
+  "budget_source_sha256": "e3d09a3e0eb500918b4dda8282b03de4ebcea30f57dde3e191c38045c12fb51d",
+  "coding_prompt_profile": "direct",
+  "coding_toolset": "whole_file_check",
+  "keep_alive_seconds": 300,
+  "tasks": [
+    {
+      "id": "divide_zero",
+      "category": "bugfix",
+      "request_sha256": "d25396cd010de036c9de8b27cf7f7bd882316e5fc46dfb97493cb6db3b36d8ab",
+      "fixture_sha256": "94d73b57c2b908e62dac93eca4cd7e949e0dcfa1cc997394eb07971b40264c3f",
+      "acceptance_sha256": "4baedf3ecaf8d6c62f35183c4022cdb53429850738eae27c66e6d859e9272493",
+      "reference_sha256": "1930f16368f200ed198b24f43b3b5b8aa744f81ef1bcc875b38cbd011f64fd89"
+    },
+    {
+      "id": "paginate_items",
+      "category": "feature",
+      "request_sha256": "b4707e514e37a8645444972fc89cbd7349cfbfab5f71d1fc6e18eee5f5239aa5",
+      "fixture_sha256": "1597308d749664efb48922275d99af7b0e271ffdda98ed82c5a021faa57dd67b",
+      "acceptance_sha256": "fb587091f784beef3cb12668871a44c7cad29bd929de6113fc6087a2f535f5d3",
+      "reference_sha256": "37e98f218d02693645251167113b1194b96ecff5dc8f7ce084bd1572dbe26ccc"
+    },
+    {
+      "id": "extract_label_normalizer",
+      "category": "refactor",
+      "request_sha256": "183754c5166ac6cab6ceec2923e9fc1ccdf0a2f41417e943ca5252ec2c420433",
+      "fixture_sha256": "15e673fa4d4d8386964e47f4950f92c93e0cecf3e72d24b1aeb7bb330aa8019a",
+      "acceptance_sha256": "b02ef0f6427f3fa4bd07dedd3c2a8921a3743ec01eabaf9e7339f10ee389d54d",
+      "reference_sha256": "f8c104d9a48314302b5604e0e78d139c678347c3cb1c0ae77b8f627f95bb7483"
+    }
+  ],
+  "cells": [
+    {
+      "ordinal": 1,
+      "task_id": "divide_zero",
+      "mode": "harness",
+      "repeat": 1
+    },
+    {
+      "ordinal": 2,
+      "task_id": "paginate_items",
+      "mode": "harness",
+      "repeat": 1
+    },
+    {
+      "ordinal": 3,
+      "task_id": "extract_label_normalizer",
+      "mode": "harness",
+      "repeat": 1
+    },
+    {
+      "ordinal": 4,
+      "task_id": "divide_zero",
+      "mode": "harness",
+      "repeat": 2
+    },
+    {
+      "ordinal": 5,
+      "task_id": "paginate_items",
+      "mode": "harness",
+      "repeat": 2
+    },
+    {
+      "ordinal": 6,
+      "task_id": "extract_label_normalizer",
+      "mode": "harness",
+      "repeat": 2
+    }
+  ]
+}
