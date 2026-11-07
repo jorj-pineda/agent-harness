@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-07 — Public capture preservation and exact-path staging:** the distinct
+public index can be checked offline for selected bytes, schema, six-cell identity,
+receipts, fixtures, private modes and normalized/native agreement. Staging archives
+the consumed mock capture unchanged, then prepares fresh unadmitted fixtures at
+the original absolute paths and writes its receipt last. Failures retain partial
+evidence; archival checks do not reobserve historical executable/dependency files.
+[Details](evals/public_envelope/STAGING.md). These bounded, non-atomic mechanics
+provide no isolation, authenticated approval or inference authority. Dedicated
+owned execution, rehearsal, reviewed freeze/receipt and fresh gates remain open.
+
 **2026-11-07 — Public-pilot native first-input capture:** the six public cells
 can capture shared-runtime normalized inputs and production Ollama wire requests
 behind mandatory MockTransport. Complete Settings/environment and selected
