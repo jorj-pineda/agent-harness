@@ -5,7 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import Field
 
@@ -110,3 +110,16 @@ def validate_public_plan(path: Path = PLAN_PATH) -> PublicEnvelopePlan:
     if plan.tasks != task_pins() or plan.cells != expected_cells():
         raise ValueError("Pilot task pins or fixed six-cell order changed")
     return plan
+
+
+def policy_settings_values() -> dict[str, Any]:
+    """Shared selected policy fields; this is not a complete Settings or host freeze."""
+    plan = validate_public_plan()
+    raw, _ = _read_regular(BUDGET_SOURCE, 64_000)
+    if _digest(raw) != plan.budget_source_sha256:
+        raise ValueError("Public budget source changed")
+    values = Runtime.model_validate(json.loads(raw)["runtime"]).model_dump()
+    values.update(
+        coding_prompt_profile=plan.coding_prompt_profile, coding_toolset=plan.coding_toolset
+    )
+    return values
