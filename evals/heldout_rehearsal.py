@@ -5,7 +5,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 from pathlib import Path
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 from evals.heldout_comparison import PLAN_PATH, ComparisonPlan, validate_plan
 from evals.heldout_settings import protocol_settings
@@ -110,10 +110,14 @@ class CannedProvider:
         self.closed = True
 
 
+if TYPE_CHECKING:
+    from evals.public_envelope import PublicEnvelopePlan
+
+
 class CheckedProvider:
     """Evaluation boundary: latch failures before returning tool-bearing responses."""
 
-    def __init__(self, provider: ChatProvider, plan: ComparisonPlan) -> None:
+    def __init__(self, provider: ChatProvider, plan: ComparisonPlan | PublicEnvelopePlan) -> None:
         self.provider, self.plan = provider, plan
         self.name = provider.name
         self.stop_reason: str | None = None
