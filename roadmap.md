@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-08 — Public fixed serial schedule core:** an exclusive single-use marker
+precedes callbacks, and a distinct six-cell ledger persists start before execution
+and recorded state after trusted execution/settlement returns. Callback or report
+failure stops later cells, preserving partial evidence and primary exceptions.
+Callback inputs and snapshots are deep copies. [Details](evals/public_envelope/EXECUTION.md#fixed-serial-schedule-core).
+This core does not prove callback settlement or approval and constructs no provider.
+Owned runner integration, full rehearsal and concrete freeze/actual receipt/fresh
+launch gates remain open; scripted tests establish mechanics only.
+
 **2026-11-08 — Public admitted provider guards:** an explicit public factory
 composes the shared Settings, first-input, native-response and owned-transport
 guards. Selected source/receipt/withdrawal, preserved manifest, runtime/dependency
