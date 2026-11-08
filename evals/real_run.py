@@ -26,6 +26,7 @@ from typing import TYPE_CHECKING, Any, Literal, TypedDict
 
 if TYPE_CHECKING:
     from evals.public_admission import PublicCellWorkspace
+    from evals.public_runner import PublicLedger
 
 import yaml
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter
@@ -1102,7 +1103,7 @@ def write_report(
     started: str,
     results: list[RealTaskResult],
     *,
-    cohort: CohortLedger | None = None,
+    cohort: CohortLedger | PublicLedger | None = None,
     scripted: bool = False,
 ) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)

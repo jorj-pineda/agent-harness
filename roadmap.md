@@ -4,6 +4,17 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-08 — Serial owned public executor:** the public admission and fixed
+schedule can drive shared task controls/runtime/grading through separately prepared
+per-cell images, existing owned backend lifecycle, admitted provider guards and
+native evidence. Real mode adds bounded GET-only residency points. Results precede
+cleanup, ledger advancement follows settlement, and failures retain stopped rows
+and later unrun cells. [Details](evals/public_envelope/EXECUTION.md#serial-owned-public-execution).
+Mock integration stubs ownership/image operations; it establishes orchestration
+mechanics, not real settlement, approval or model quality. Full owned rehearsal,
+fresh retained preparation and concrete reviewed freeze/actual receipt/fresh gates
+remain before pilot inference.
+
 **2026-11-08 — Public fixed serial schedule core:** an exclusive single-use marker
 precedes callbacks, and a distinct six-cell ledger persists start before execution
 and recorded state after trusted execution/settlement returns. Callback or report

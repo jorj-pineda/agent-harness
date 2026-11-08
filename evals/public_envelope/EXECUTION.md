@@ -115,3 +115,42 @@ The caller owns the evaluation directory, safe report writing, trusted admission
 providers, lifecycle/settlement checks and results. Full public runner integration,
 owned mock rehearsal, concrete freeze and actual approval/fresh launch gates remain
 open. Scripted callback tests establish scheduling mechanics, not model quality.
+
+## Serial owned public execution
+
+`run_public_cohort` requires the public admission and an explicit per-cell
+transport factory. It refuses entry from an active event loop, rechecks selected
+source/receipt/withdrawal and fixed order, and verifies all fresh cells before
+consuming the schedule marker. It uses the shared task controls and evaluator.
+Each cell gets a separately prepared verified image and the existing owned backend
+lifecycle with the selected 300-second keep-alive. No user service is managed.
+
+The admitted provider is wrapped in bounded native request/response evidence.
+Real mode additionally preserves GET-only post-response residency points before
+tool-bearing responses return; scripted mode explicitly omits those observations.
+Named public admission and shared task/source/grading guards remain active.
+Resource-boundary checks repeat selected source, archive, Settings, runtime,
+dependency, image receipt, executable and staging-receipt observations.
+
+Each result is saved before provider closure and backend cleanup. A cell becomes
+recorded only after the owned context settles and final checks pass. Provider or
+cleanup failure preserves the stopped cell's available row and leaves later cells
+unrun. Provider cleanup failures do not replace a primary runtime error. Image
+preparation failure stops before backend, transport or workspace admission and
+retains partial image evidence. No start marker, result or partial artifact is
+reset or retried.
+
+Runtime configuration must match the selected captured configuration. The dynamic
+public-preservation checkpoint list is checked separately for passing status;
+request-count-dependent checkpoint lists are not expected to equal the one-request
+capture. Artifact rejection and iteration exhaustion may advance after known usage
+and clean settlement. Unknown usage/submission, HTTP/transport/runtime/model,
+criterion or preservation failure stops, as specified in the public protocol.
+
+The factory and runner still require a trusted caller to establish actual parent
+authority and fresh launch/resource gates. Their APIs do not issue approval. Mock
+integration tests stub image preparation and backend ownership/settlement and use
+scripted native responses with real disposable files and graders; accepted rows
+are mechanics evidence. A full owned rehearsal, fresh retained preparation,
+concrete reviewed freeze and actual receipt/fresh gates remain before pilot
+inference. Recorded GET snapshots do not prove continuous residency or model identity.
