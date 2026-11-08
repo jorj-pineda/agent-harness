@@ -43,3 +43,28 @@ Single-use trusted admission, ongoing request-boundary guards, owned per-cell
 execution/settlement, full mock rehearsal, concrete reviewed freeze and actual
 parent approval plus fresh launch gates remain required. These APIs do not grant
 inference authority or establish model-quality, causal or release improvement.
+
+## Single-use trusted admission
+
+`admit_public_execution` requires an explicit trusted `verify_parent` callback.
+The callback must refuse unless actual parent authority and exact freeze review,
+CI and merge have been independently established. It receives deep copies so
+mutating nested values cannot change effective preflight settings. Structural
+JSON assertions alone never establish those facts.
+
+Admission checks withdrawal and selected manifest/receipt bindings, keeps their
+canonical private source files outside managed trees, invokes the parent verifier,
+runs public preflight, then exclusively reserves output. It preserves the exact
+selected bytes, checks source and preserved pins again, checks withdrawal and
+writes `admission.json` last. Competing or repeated admission cannot reuse output.
+Post-allocation failures retain partial files and attempt failure evidence; a
+secondary recording error does not replace the primary exception. No public cell
+is consumed, and no provider or backend is constructed by admission.
+
+`check_public_admission` rechecks source manifest withdrawal, source manifest and
+receipt hashes, and both preserved copies. A later executor must call it at its
+resource and request boundaries, and still enforce its own single-use start,
+Settings/input/runtime/ownership checks and settlement. These calls observe bytes;
+they are not an atomic revocation mechanism or authenticated receipt verification.
+A public runner, full owned rehearsal, concrete freeze and actual parent receipt
+plus fresh launch gates remain open.
