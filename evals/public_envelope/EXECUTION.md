@@ -68,3 +68,28 @@ Settings/input/runtime/ownership checks and settlement. These calls observe byte
 they are not an atomic revocation mechanism or authenticated receipt verification.
 A public runner, full owned rehearsal, concrete freeze and actual parent receipt
 plus fresh launch gates remain open.
+
+## Admitted provider guard composition
+
+`build_public_cell_provider` requires a public admission, an ordinal, the actual
+Settings object, an explicit transport and an ownership-check callback. It checks
+source/receipt preservation and withdrawal, compares the effective manifest with
+its preserved bytes, checks current runtime/Settings/dependency pins and ownership,
+and loads the exact selected public first-input pins. It makes no provider request
+during construction and never supplies a default network transport.
+
+The composition reuses SettingsPinnedProvider, PinnedOllamaProvider,
+OwnedInferenceTransport and CheckedProvider. Normalized and native first requests
+must match the selected bytes. The owned transport rechecks the guard before
+request delegation and before returning the response; withdrawal or ownership
+loss at either boundary refuses and latches closed. Existing native completion,
+model, usage and received-HTTP refusal behavior remains shared. Model strings are
+not authenticated model identity, and these boundaries do not establish continuous
+ownership or isolation.
+
+On construction failure, the caller owns closing the supplied transport. After
+successful construction, closing the returned provider closes it. The factory
+creates no backend, task admission, retry, result or settlement evidence. The
+trusted caller still owns actual approval provenance and the full per-cell resource
+lifecycle. A serial public runner, full owned rehearsal and concrete freeze/receipt/
+fresh gates remain open. Mocked guard tests establish mechanics, not model quality.

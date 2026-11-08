@@ -4,6 +4,17 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-08 — Public admitted provider guards:** an explicit public factory
+composes the shared Settings, first-input, native-response and owned-transport
+guards. Selected source/receipt/withdrawal, preserved manifest, runtime/dependency
+and ownership checks run around transport delegation; construction requires an
+explicit transport and creates no request or backend. Mock regressions cover
+exact native forwarding, drift/HTTP refusal and withdrawal before/after delegation.
+[Details](evals/public_envelope/EXECUTION.md#admitted-provider-guard-composition).
+Caller lifecycle/settlement and actual trusted approval remain prerequisites;
+serial public execution, full rehearsal and reviewed freeze/fresh gates remain
+open. This establishes mechanics, not authenticated identity or model quality.
+
 **2026-11-08 — Single-use public execution admission:** explicit trusted-parent
 verification and public semantic preflight precede exclusive output reservation.
 Selected source and preserved manifest/receipt bytes are checked, withdrawal
