@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-08 — Existing-interpreter public preparation:** one-shot offline
+preparation checks the selected clean retained runtime/external interpreter and
+selected executable/dependency/environment inputs, makes a verified image, captures
+six mandatory-mock inputs, preserves/stages fresh fixtures and preflights a distinct
+public candidate manifest. Failures retain partial evidence and attempt withdrawal;
+occupied paths refuse. [Details](evals/public_envelope/PREPARATION.md). Separate
+candidate/rehearsal paths remain independent. Synthetic image tests establish
+mechanics only; native owned rehearsal/probes, concrete reviewed freeze/actual
+parent receipt and fresh launch gates remain before inference.
+
 **2026-11-08 — Serial owned public executor:** the public admission and fixed
 schedule can drive shared task controls/runtime/grading through separately prepared
 per-cell images, existing owned backend lifecycle, admitted provider guards and
