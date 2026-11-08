@@ -4,6 +4,17 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-08 — Single-use public execution admission:** explicit trusted-parent
+verification and public semantic preflight precede exclusive output reservation.
+Selected source and preserved manifest/receipt bytes are checked, withdrawal
+markers refuse, and success evidence is written last. Partial failures retain
+evidence without retry; competing admissions reserve one output. Ongoing selected
+source/receipt/withdrawal checks are exposed for the future runner.
+[Details](evals/public_envelope/EXECUTION.md#single-use-trusted-admission). These
+mechanics create no provider or cell admission and do not authenticate the parent.
+Owned execution, full rehearsal, concrete freeze/actual receipt and fresh launch
+gates remain before inference; no model-quality claim follows.
+
 **2026-11-07 — Public execution selection and read-only preflight:** a distinct
 strict public manifest and structural parent-receipt schema bind the exact public
 plan, runtime, capture, Settings/environment/report/image/binary pins and paths.
