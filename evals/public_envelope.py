@@ -5,7 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
-from typing import Any, Literal
+from typing import TYPE_CHECKING, Any, Literal
 
 from pydantic import Field
 
@@ -14,6 +14,10 @@ from evals.heldout_comparison import ProtocolModel, Runtime
 from evals.heldout_guard import _read_regular
 from evals.real_run import TASKS_ROOT, TaskCategory, load_tasks
 from workspace.changes import snapshot
+
+if TYPE_CHECKING:
+    from evals.heldout_settings import ProtocolSettings
+
 
 PLAN_PATH = Path(__file__).parent / "public_envelope/plan.json"
 PLAN_SHA256 = "9e12feed16ea9a6ab63bf7802f99be89295daf23f58b529c5460a04a4a18939d"
@@ -123,3 +127,17 @@ def policy_settings_values() -> dict[str, Any]:
         coding_prompt_profile=plan.coding_prompt_profile, coding_toolset=plan.coding_toolset
     )
     return values
+
+
+def public_settings() -> ProtocolSettings:
+    """Construct the same init-only selected Settings for capture and execution checks."""
+    from evals.heldout_settings import ProtocolSettings
+
+    plan = validate_public_plan()
+    return ProtocolSettings(
+        _env_file=None,
+        default_provider="ollama",
+        ollama_host="http://127.0.0.1:11447",
+        ollama_model=plan.model,
+        **policy_settings_values(),
+    )

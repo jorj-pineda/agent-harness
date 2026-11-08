@@ -24,7 +24,6 @@ from evals.heldout_inputs import (
     check_runtime_selection,
 )
 from evals.heldout_settings import (
-    ProtocolSettings,
     SettingsPinnedProvider,
     check_settings,
     settings_bytes,
@@ -33,7 +32,7 @@ from evals.public_admission import PublicCellWorkspace
 from evals.public_envelope import (
     PLAN_SHA256,
     _tree_digest,
-    policy_settings_values,
+    public_settings,
     validate_public_plan,
 )
 from evals.public_workspaces import _destination, prepare_public_cell
@@ -93,13 +92,7 @@ async def capture_public_inputs(
     selected_env = _task_command_environment(command_env)
     if selected_env is None:
         raise ValueError("Select the public command replacement environment")
-    settings = ProtocolSettings(
-        _env_file=None,
-        default_provider="ollama",
-        ollama_host="http://127.0.0.1:11447",
-        ollama_model=plan.model,
-        **policy_settings_values(),
-    )
+    settings = public_settings()
     expected_settings = settings_bytes(settings)
     check_runtime_selection(runtime_inventory, runtime_sha256)
     check_dependency_selection(dependency_manifest, dependency_sha256)

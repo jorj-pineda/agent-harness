@@ -4,6 +4,17 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-07 — Public execution selection and read-only preflight:** a distinct
+strict public manifest and structural parent-receipt schema bind the exact public
+plan, runtime, capture, Settings/environment/report/image/binary pins and paths.
+Preflight revalidates schema and canonical nonoverlapping paths, checks six fresh
+cells and independently constructed shared Settings, reobserves selected runtime/
+dependency evidence and verifies image/executable pins without allocating output
+or constructing a provider. [Details](evals/public_envelope/EXECUTION.md). Receipt
+fields remain trusted-parent assertions, not authentication or launch authority.
+Single-use admission, owned execution, full rehearsal and concrete freeze/actual
+approval/fresh gates remain open; no model-quality claim follows.
+
 **2026-11-07 — Public first-input guard selection:** the separate public archive
 can supply an explicitly selected ordinal's normalized/native bytes to the existing
 evaluation-only pinned provider. Full archive verification brackets extraction;
