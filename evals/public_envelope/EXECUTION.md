@@ -93,3 +93,25 @@ creates no backend, task admission, retry, result or settlement evidence. The
 trusted caller still owns actual approval provenance and the full per-cell resource
 lifecycle. A serial public runner, full owned rehearsal and concrete freeze/receipt/
 fresh gates remain open. Mocked guard tests establish mechanics, not model quality.
+
+## Fixed serial schedule core
+
+`run_public_schedule` loads the reviewed six-cell public plan and exclusively
+creates a private start marker before invoking any callback. Its distinct public
+ledger retains all six cells in order, with unrun/started/recorded states. Start
+state must be persisted before execution; recorded state follows successful return
+from the trusted `execute_and_settle` callback. Re-entry through the same marker
+refuses. The scheduler passes deep copies to callbacks and persistence code.
+
+The callback must persist its coding result and settle owned resources before
+returning, raising for every protocol or settlement failure. Callback or persistence
+failure stops advancement and leaves later cells unrun. Final stopped-ledger
+recording is attempted without replacing a primary exception if recording also
+fails. The marker and all partial evidence remain. Finished means callbacks and
+persistence returned, not accepted patches or independently proven settlement.
+
+This is a serial orchestration core, not an owned executor or approval mechanism.
+The caller owns the evaluation directory, safe report writing, trusted admission,
+providers, lifecycle/settlement checks and results. Full public runner integration,
+owned mock rehearsal, concrete freeze and actual approval/fresh launch gates remain
+open. Scripted callback tests establish scheduling mechanics, not model quality.
