@@ -1,0 +1,87 @@
+{
+  "format": "public-pilot-execution-freeze-v1",
+  "proposal_only": true,
+  "inference_authorized": false,
+  "evidence_label": "public-development-task-envelope",
+  "runtime_commit": "1f819d41b2234c55ec2a25c6c3d6f739519957bf",
+  "trial_directory": "/Users/jorge/.local/share/agent-harness/trials/public-pilot-ptug24v7",
+  "manifest_sha256": "7b20eeee1338c3d976e987d3c5466a08e88fe6f94608f1094b5ec16c2e7a7141",
+  "operator_recipe_sha256": "ac1fd9a5a05187a4424f923c065f8be834658bbf6d6a5b6ea39114b4d3c49172",
+  "g0_sha256": "8b2a041ff6730e071af316996852fc6cb8dae94de27a5cdc2f6cb2476e9ff871",
+  "retained_evidence_index_sha256": "da265b8d4748614488243974360a6514aeb8c5431ef4e9b0cb4a2965a52db25b",
+  "retained_evidence_files": 112,
+  "native_evidence_index_sha256": "53ccc5aa6b19012d85844774828250f8a1a400c362dec4597a83dccb6b555330",
+  "native_evidence_files": 90,
+  "protocol_sha256": "929cd19549a78da6504e1d90e00f64b3c61f1e8d20bbe754613f195f4f714efb",
+  "plan_sha256": "9e12feed16ea9a6ab63bf7802f99be89295daf23f58b529c5460a04a4a18939d",
+  "capture_index_sha256": "6c608b973eb52c724e2f66ae5b3d1275bf02efcca0ced29452aefacf52e2fb92",
+  "settings_sha256": "a5c508834e94e98db714130f070c6a01083d45883b6717f0c614e269c1140d40",
+  "command_environment_sha256": "bc1b27085fcd380a8cd956d557de332bdff9e6400f82b4e348de1f508a2cf0b6",
+  "runtime_inventory_sha256": "de155d7b143857e6b767f4c134e7ac7be9b22ac0779e8845e54373a1727b4ce8",
+  "dependency_files_sha256": "525da933d972f8ebca58702f6377d305a4038384a727b234aa597287bf8deee2",
+  "image_receipt_sha256": "00bedd80f6448a4a98ef65d22433208a294d406eb26fddcbc7dd177ec2081e0a",
+  "binary_sha256": "6a192545eb254915b95979a298b02b08add43c99b1f9ac541deba066f02c00c4",
+  "model": "gemma4:12b",
+  "model_digest": "4eb23ef187e2c5462566d6a1d3bbbc2f1346d0b4327cbb66d58fffbcc9b2b05c",
+  "expected_ollama_version": "0.33.2",
+  "coding_prompt_profile": "direct",
+  "coding_toolset": "whole_file_check",
+  "keep_alive_seconds": 300,
+  "cells": [
+    {
+      "ordinal": 1,
+      "task_id": "divide_zero",
+      "mode": "harness",
+      "repeat": 1
+    },
+    {
+      "ordinal": 2,
+      "task_id": "paginate_items",
+      "mode": "harness",
+      "repeat": 1
+    },
+    {
+      "ordinal": 3,
+      "task_id": "extract_label_normalizer",
+      "mode": "harness",
+      "repeat": 1
+    },
+    {
+      "ordinal": 4,
+      "task_id": "divide_zero",
+      "mode": "harness",
+      "repeat": 2
+    },
+    {
+      "ordinal": 5,
+      "task_id": "paginate_items",
+      "mode": "harness",
+      "repeat": 2
+    },
+    {
+      "ordinal": 6,
+      "task_id": "extract_label_normalizer",
+      "mode": "harness",
+      "repeat": 2
+    }
+  ],
+  "retained_offline_tests": 3285,
+  "scripted_rehearsal_cells": 6,
+  "scripted_rehearsal_accepted": 6,
+  "refusal_probes": 26,
+  "historical_absent_groups": 7,
+  "independent_prepared_images": 8,
+  "candidate_cells_unadmitted": 6,
+  "actual_parent_approval_issued": false,
+  "continuous_residency_verified": false,
+  "import_closure_verified": false,
+  "atomic_isolation_verified": false,
+  "authenticated_model_identity": false,
+  "remaining_gates": [
+    "exact-head independent review",
+    "local and CI gates",
+    "merge",
+    "trusted actual parent receipt",
+    "fresh launch/resource and selected artifact checks"
+  ]
+}
