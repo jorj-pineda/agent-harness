@@ -4,6 +4,18 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-08 — Public task-envelope freeze proposal:** retained 1f819d4 prepares
+separate candidate/rehearsal six-cell bundles through the existing external Python
+without installs. Native image preparation and full mandatory-mock owned rehearsal
+pass, with six scripted accepted/completed rows, 18 mock requests, 26 refusals,
+a GET-only not_loaded point and seven clean historical groups. Eight prepared images
+have distinct inodes; six candidate cells stay unadmitted. Retained G0 passes 3,285
+and both 90-result scripted matrices; actual copied recipe check-only/refusals and 14 recipe
+contracts pass. The [proposal](evals/public_envelope/FREEZE_20261108.md) binds 112
+selected evidence files and 90 native/mock files. Exact-head review/local/CI/merge,
+actual parent receipt and fresh gates remain before generation. No model quality,
+causal/held-out/default/release claim follows; older cohorts stay closed.
+
 **2026-11-08 — Existing-interpreter public preparation:** one-shot offline
 preparation checks the selected clean retained runtime/external interpreter and
 selected executable/dependency/environment inputs, makes a verified image, captures
