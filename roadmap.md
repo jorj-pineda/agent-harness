@@ -8,6 +8,16 @@ For the concise current gate status and immediate queue, use the
 [release checklist](RELEASE_CHECKLIST.md). Criteria in this roadmap still govern;
 historical entries below retain their original evidence and limitations.
 
+**2026-11-10 — Fixed eight-cell feedback schedule:** a distinct ledger and
+exclusive marker enforce fixed ordinal/arm/repeat order, retained started/unrun
+states and no later dispatch after callback/cancellation/recording failure.
+Deep-copy callback data cannot rewrite the schedule. Eleven new and nine old
+scheduler tests pass, including same-marker competition. [Details](evals/public_feedback/SCHEDULE.md).
+Callbacks still own real result preservation and settlement; the seam authenticates
+no approval and starts no backend. Owned execution/report integration remains next,
+with full retained preparation/rehearsal and reviewed freeze/actual approval/fresh
+gates still required before inference. No model-quality or release claim follows.
+
 **2026-11-10 — Admitted feedback provider guards:** eight-cell first-input
 selection now brackets extraction with archive verification. A distinct factory
 composes shared Settings/native-input/response/owned-transport guards with explicit
