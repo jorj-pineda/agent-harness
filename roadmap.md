@@ -8,6 +8,18 @@ For the concise current gate status and immediate queue, use the
 [release checklist](RELEASE_CHECKLIST.md). Criteria in this roadmap still govern;
 historical entries below retain their original evidence and limitations.
 
+**2026-11-10 — Descriptive paired feedback reports:** feedback reports now add
+per-arm acceptance/completed-and-accepted counts and all four paired outcomes.
+Started results stay distinct from recorded settlement; missing outcomes and
+unknown/incomplete planned usage remain explicit. [Details](evals/public_feedback/REPORTING.md).
+The helper validates row/ledger correspondence without reading mutable inputs
+while preserving a stopped report. Historical native-mock report aggregation
+retains scripted labels and unchanged source bytes. Benefit assessment is not
+performed; independent regrades and intervention/regression review remain separate.
+Reusable owned rehearsal, retained candidate/probes and concrete freeze/operator
+binding remain queued, with actual approval/fresh gates before inference. No model-
+quality/default/release claim or G2–G5 closure follows.
+
 **2026-11-10 — Existing-interpreter feedback preparation:** one-shot offline
 preparation now verifies selected clean retained source/interpreter/dependency/
 environment inputs, makes a verified image, captures eight mandatory-mock cells,
