@@ -56,8 +56,9 @@ separate kinds of evidence.
    unchanged task/acceptance and per-cell budgets. Exact fixture validation, fresh
    shared-evaluator workspaces and [mandatory-mock capture/rehearsal](evals/public_feedback/REHEARSAL.md)
    are implemented. The recorded eight scripted reference successes prove mechanics,
-   not feedback benefit. Next scope is candidate preservation/staging, explicit live
-   admission and owned serial execution binding, followed by retained preparation,
+   not feedback benefit. [Capture verification/preservation and exact-path staging](evals/public_feedback/STAGING.md)
+   are implemented without live authority. Next scope is explicit execution selection,
+   preflight/admission and owned serial execution binding, followed by retained preparation,
    full owned rehearsal, concrete reviewed freeze, actual approval and fresh gates.
    This selects no application default and authorizes no inference.
 3. If that scope demonstrates repeatable usefulness, validate held-out/model
