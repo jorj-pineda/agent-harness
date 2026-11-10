@@ -8,6 +8,16 @@ For the concise current gate status and immediate queue, use the
 [release checklist](RELEASE_CHECKLIST.md). Criteria in this roadmap still govern;
 historical entries below retain their original evidence and limitations.
 
+**2026-11-10 — Admitted feedback provider guards:** eight-cell first-input
+selection now brackets extraction with archive verification. A distinct factory
+composes shared Settings/native-input/response/owned-transport guards with explicit
+transport and ownership checks; source/receipt/withdrawal, runtime and dependency
+drift refuse without retries. Twenty-six focused tests and retained eight-pair
+read-only extraction pass. [Details](evals/public_feedback/PROVIDER_GUARDS.md).
+Construction starts no backend or request and authenticates no approval. Fixed
+scheduling and owned execution integration remain next, with full retained
+preparation/rehearsal and reviewed freeze/actual approval/fresh gates before inference.
+
 **2026-11-10 — Explicit public-feedback execution admission:** a distinct manifest
 and structural parent receipt bind the eight-cell plan, runtime, inputs/environment,
 image/executable and paths. Read-only preflight reobserves source/dependency/image/
