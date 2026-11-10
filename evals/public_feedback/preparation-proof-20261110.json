@@ -1,0 +1,17 @@
+{
+  "runtime_commit": "dc897010cd07b3547ba80e78cfb32840ed6ce871",
+  "directory": "/Users/jorge/.local/share/agent-harness/trials/public-feedback-preparation-7_xt2dpk",
+  "manifest_sha256": "61ff284a6001f3070a9823e12c52a99c53b02deddc28eacb2c4dcf64ed62aaa6",
+  "preparation_receipt_sha256": "7ce4c5cafb46d50d0beeb32838bc77a97037995e8db606dbb265fc4d8561868b",
+  "capture_index_sha256": "0608bf39715ed5884f3e90c6d08f6a02fbb4d4e653d6c35db440a9a523883561",
+  "fresh_unadmitted_cells": 8,
+  "selected_dependency_files": 12,
+  "complete_import_closure_verified": false,
+  "existing_external_python": "/Users/jorge/Projects/agent-harness/.venv/bin/python",
+  "source_local_venv_absent": true,
+  "real_http_transport_forbidden": true,
+  "backend_started": false,
+  "execution_output_allocated": false,
+  "inference_ran": false,
+  "parent_approval_issued": false
+}
