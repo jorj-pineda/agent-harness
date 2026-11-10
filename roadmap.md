@@ -8,6 +8,19 @@ For the concise current gate status and immediate queue, use the
 [release checklist](RELEASE_CHECKLIST.md). Criteria in this roadmap still govern;
 historical entries below retain their original evidence and limitations.
 
+**2026-11-10 — Owned serial feedback execution:** admitted cells now use fresh
+per-cell images/backends, native/provider guards, arm-specific shared evaluation
+and result-before-cleanup persistence. Only verified settlement and final input
+checks permit the next cell; failures retain started/later-unrun states. Seven
+focused integration cases pass. A native mandatory-mock rehearsal completed eight
+scripted reference cells with 24 mock generation requests and eight clean,
+unforced settlements. [Details](evals/public_feedback/OWNED_EXECUTION.md).
+No generation reached a backend and no actual approval was issued. The retained
+proof is historical to its named clean source, not a current execution freeze or
+model-quality result. Fresh candidate preparation/rehearsal/probes, reviewed freeze/
+CI/merge, actual approval and fresh launch gates remain; release no-go and G2–G5
+are unchanged.
+
 **2026-11-10 — Fixed eight-cell feedback schedule:** a distinct ledger and
 exclusive marker enforce fixed ordinal/arm/repeat order, retained started/unrun
 states and no later dispatch after callback/cancellation/recording failure.

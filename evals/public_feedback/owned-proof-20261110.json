@@ -1,0 +1,105 @@
+{
+  "runtime_commit": "9098b634095e141641672702bc9b71dc69217324",
+  "directory": "/Users/jorge/.local/share/agent-harness/trials/public-feedback-mock-hc9md743",
+  "capture_index_sha256": "7f24a33f7e346a57544bda11650219e081577d4ba2c2887046640ce77c95250a",
+  "manifest_sha256": "1eb7498c3fc63c0a6f3dc12509e7a171a352834bfc42721a86ff2ecd56d770c4",
+  "report_sha256": "42f2f6f4ee82f6d06032deb7a0ea907764fecaca0f5f5e1bb34de649a2b2f51f",
+  "scripted_completed_and_accepted": 8,
+  "mock_generation_requests": 24,
+  "generation_forwarded_to_backend": 0,
+  "actual_owned_backends_settled": 8,
+  "forced_cleanups": 0,
+  "actual_parent_approval": false,
+  "inference_authorized": false,
+  "dependency_selection": "11 selected sources, not complete import closure",
+  "settlements": [
+    {
+      "ordinal": 1,
+      "cleanup": {
+        "settled": true,
+        "passed": true,
+        "forced": false,
+        "returncode": 0,
+        "errors": {}
+      },
+      "session_sha256": "52e30c0c8cef1e313a82aef9b86d2e1c656469014f6b1e7bb9a0277b0532840c"
+    },
+    {
+      "ordinal": 2,
+      "cleanup": {
+        "settled": true,
+        "passed": true,
+        "forced": false,
+        "returncode": 0,
+        "errors": {}
+      },
+      "session_sha256": "34975e096c1ecf8870b6cefb027b03208653e09fbf22a46e44211d93200ffcfd"
+    },
+    {
+      "ordinal": 3,
+      "cleanup": {
+        "settled": true,
+        "passed": true,
+        "forced": false,
+        "returncode": 0,
+        "errors": {}
+      },
+      "session_sha256": "9ffae558da03ecb5f49f0c699d5e3a0883846c46d726e7ea205f2e9a9664a75a"
+    },
+    {
+      "ordinal": 4,
+      "cleanup": {
+        "settled": true,
+        "passed": true,
+        "forced": false,
+        "returncode": 0,
+        "errors": {}
+      },
+      "session_sha256": "39a55f1e0082cfbc51703567d4d58a35a5071594cafc08475a381bce03645a29"
+    },
+    {
+      "ordinal": 5,
+      "cleanup": {
+        "settled": true,
+        "passed": true,
+        "forced": false,
+        "returncode": 0,
+        "errors": {}
+      },
+      "session_sha256": "e5995ae47aee2d851551cec051ca82f285523f2a775dfa610db9a881ce9e5316"
+    },
+    {
+      "ordinal": 6,
+      "cleanup": {
+        "settled": true,
+        "passed": true,
+        "forced": false,
+        "returncode": 0,
+        "errors": {}
+      },
+      "session_sha256": "2bc323fc2a863c3c152068f6505150b67f436eb8bbb7c0f0892a517f56825ee5"
+    },
+    {
+      "ordinal": 7,
+      "cleanup": {
+        "settled": true,
+        "passed": true,
+        "forced": false,
+        "returncode": 0,
+        "errors": {}
+      },
+      "session_sha256": "a54ac4abeeb6fb27213ddfb5c08267b1593e1c96792d9ada50da8fda0b9b81a6"
+    },
+    {
+      "ordinal": 8,
+      "cleanup": {
+        "settled": true,
+        "passed": true,
+        "forced": false,
+        "returncode": 0,
+        "errors": {}
+      },
+      "session_sha256": "466314d3ab14e2b8cff191371f84f24623721f1ecd8100fbf5af439ea82d07c8"
+    }
+  ]
+}
