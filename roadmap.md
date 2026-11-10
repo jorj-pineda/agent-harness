@@ -8,6 +8,17 @@ For the concise current gate status and immediate queue, use the
 [release checklist](RELEASE_CHECKLIST.md). Criteria in this roadmap still govern;
 historical entries below retain their original evidence and limitations.
 
+**2026-11-10 — Fresh visible-check evaluator workspaces:** eight fixed cells can
+prepare arm-specific original-implementation copies with exact selected visible
+tests and single-use admission. The shared evaluator checks task/repeat/policy,
+preserves original independent grading and latches source/policy drift. Initial
+treatment setup is excluded from agent changes; later visible-test edits are diffed
+against the selected initial test. Scripted real-file tests cover reference success,
+bool rejection, test weakening and pre/post-admission refusal. [Details](evals/public_feedback/WORKSPACES.md).
+This establishes mechanics, not model quality or launch authority. Mandatory-mock
+capture/rehearsal, owned execution and reviewed retained freeze/actual approval/fresh
+gates remain before inference; original targets/no-go and G2–G5 remain unchanged.
+
 **2026-11-10 — Public visible-check selection validated:** exact plan and
 treatment bytes/mode are checked against original task/catalog/budget pins before
 returning either visible test. Drift refuses without resources or provider
