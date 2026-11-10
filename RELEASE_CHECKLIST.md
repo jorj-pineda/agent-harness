@@ -59,8 +59,12 @@ separate kinds of evidence.
    not feedback benefit. [Capture verification/preservation and exact-path staging](evals/public_feedback/STAGING.md)
    and [execution selection/preflight/admission](evals/public_feedback/EXECUTION.md)
    are implemented without launching inference or authenticating approval assertions.
-   Next scope is admitted provider guards and owned serial execution, followed by retained preparation,
-   full owned rehearsal, concrete reviewed freeze, actual approval and fresh gates.
+   [Admitted provider guards](evals/public_feedback/PROVIDER_GUARDS.md), the fixed
+   schedule and [owned serial execution](evals/public_feedback/OWNED_EXECUTION.md)
+   are implemented. A native mandatory-mock owned rehearsal settled eight cells
+   cleanly; its scripted successes establish mechanics, not model quality.
+   Next is fresh candidate preparation/rehearsal/probes, concrete reviewed freeze,
+   CI/merge, actual approval and fresh launch gates.
    This selects no application default and authorizes no inference.
 3. If that scope demonstrates repeatable usefulness, validate held-out/model
    coverage and the real client/recovery workflow, then validate the distribution.
