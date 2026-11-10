@@ -57,8 +57,9 @@ separate kinds of evidence.
    shared-evaluator workspaces and [mandatory-mock capture/rehearsal](evals/public_feedback/REHEARSAL.md)
    are implemented. The recorded eight scripted reference successes prove mechanics,
    not feedback benefit. [Capture verification/preservation and exact-path staging](evals/public_feedback/STAGING.md)
-   are implemented without live authority. Next scope is explicit execution selection,
-   preflight/admission and owned serial execution binding, followed by retained preparation,
+   and [execution selection/preflight/admission](evals/public_feedback/EXECUTION.md)
+   are implemented without launching inference or authenticating approval assertions.
+   Next scope is admitted provider guards and owned serial execution, followed by retained preparation,
    full owned rehearsal, concrete reviewed freeze, actual approval and fresh gates.
    This selects no application default and authorizes no inference.
 3. If that scope demonstrates repeatable usefulness, validate held-out/model

@@ -1,0 +1,20 @@
+{
+  "runtime": {
+    "commit": "ef9e6f9a0a7ae45a1ab5d13f128644cc1fb765f2",
+    "dirty": false
+  },
+  "directory": "/Users/jorge/.local/share/agent-harness/trials/public-feedback-mock-_5l62piu",
+  "manifest_sha256": "cf26fb37ec140cdb46792075f40d299782bfe0235c85b0bd1b9d84e2633bb4b5",
+  "capture_index_sha256": "cfa4cddf87585b6421dcd8f749c60e4224be80acc40c8072c5e9ad22bbda058a",
+  "image_receipt_sha256": "465c10554d142977216eecf17084a69d32937126a9fc794351a8e5fcc145845e",
+  "binary_sha256": "6a192545eb254915b95979a298b02b08add43c99b1f9ac541deba066f02c00c4",
+  "fresh_unadmitted_cells": 8,
+  "output_allocated": false,
+  "preflight_provider_requests": 0,
+  "backend_started": false,
+  "actual_parent_approval": false,
+  "inference_authorized": false,
+  "prepared_image_and_binary_bytes_verified": true,
+  "complete_import_closure_verified": false,
+  "backend_version_or_ownership_verified": false
+}
