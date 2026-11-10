@@ -8,6 +8,16 @@ For the concise current gate status and immediate queue, use the
 [release checklist](RELEASE_CHECKLIST.md). Criteria in this roadmap still govern;
 historical entries below retain their original evidence and limitations.
 
+**2026-11-10 — Public visible-check comparison proposed:** a separate fixed
+eight-cell public protocol pairs four repeats of the original pagination visible
+test against coverage of the explicit bool restriction. Request, initial
+implementation, independent acceptance and per-cell limits remain unchanged;
+order is balanced and both test availability and check feedback are acknowledged.
+[Protocol](evals/public_feedback/PROTOCOL.md) and semantic plan select no default
+or inference authority. Exact treatment validation, fresh evaluator workspaces,
+mock capture/rehearsal and concrete retained freeze/approval/launch gates remain.
+Original cohorts, 8/10 target, no-go and G2–G5 are unchanged.
+
 **2026-11-10 — Public pagination diagnosis completed:** two disposable real-tool
 replays reproduce visible passes, identical duplicate writes and original-criteria
 rejections (2 failed/19 passed each). The bool restriction is present in both

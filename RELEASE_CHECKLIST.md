@@ -51,11 +51,12 @@ separate kinds of evidence.
    restriction, the visible check omits it, and both artifacts admit True. Exact
    duplicate writes explain stale verification but do not cause that rejection.
    Do not change verification rules or budgets to relabel these failures.
-2. Select the next controlled experiment or a clearly named narrower task envelope.
-   The diagnosis proposes testing visible feedback for the existing bool requirement
-   on fresh public fixtures; it selects no treatment or default. Any fresh live
-   comparison needs its own fixed inputs, independent acceptance, comparable budgets,
-   reviewed preparation and actual launch approval.
+2. The [public visible-check comparison proposal](evals/public_feedback/PROTOCOL.md)
+   selects eight fresh cells across original and bool-covering visible checks, with
+   unchanged task/acceptance and per-cell budgets. Implement exact fixture validation,
+   fresh shared-evaluator workspaces and mandatory-mock input capture/rehearsal next.
+   This selects no application default and authorizes no inference. Reviewed retained
+   preparation, concrete execution freeze, actual approval and fresh gates remain.
 3. If that scope demonstrates repeatable usefulness, validate held-out/model
    coverage and the real client/recovery workflow, then validate the distribution.
 
