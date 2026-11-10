@@ -67,7 +67,9 @@ separate kinds of evidence.
    is implemented and has native retained-source proof without backend or admission.
    [Paired reporting](evals/public_feedback/REPORTING.md) now retains arm/pair
    outcomes and unknown/stopped states without assessing benefit or regrading.
-   Next is reusable owned rehearsal, fresh retained candidate/rehearsal/probes,
+   A [reusable owned mandatory-mock rehearsal](evals/public_feedback/OWNED_REHEARSAL.md)
+   now creates its own bundle and retains clean native lifecycle evidence without
+   generation forwarding. Next is fresh retained candidate/rehearsal/probes,
    concrete reviewed freeze/operator binding, CI/merge, actual approval and fresh
    launch gates.
    This selects no application default and authorizes no inference.

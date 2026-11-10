@@ -1,0 +1,25 @@
+{
+  "runtime_commit": "3c769591a355ff9d77e04fabd614adbf738cae6d",
+  "directory": "/Users/jorge/.local/share/agent-harness/trials/public-feedback-owned-api-4p1779t5",
+  "owned_summary_sha256": "22dd4ad9a2fc1b7ae90c48639a55d9ce193447bbf0adc1489c0a69de0168fc4a",
+  "manifest_sha256": "29c73f6e1fe140cd58467dbfbdce4a0c4e9377a9c6c5f1be6ea3d92f6fa44faa",
+  "report_sha256": "c38ce1af669afba4c3cddd2c676e1532ee90463a21c3c5a9e3f561cdc4fc4aa0",
+  "mock_generation_requests": 24,
+  "generation_forwarded": 0,
+  "native_http_restricted_to_owned_get_metadata": true,
+  "metadata_transport_requests": 24,
+  "metadata_paths": [
+    "/api/ps",
+    "/api/tags",
+    "/api/version"
+  ],
+  "verified_clean_settlements": 8,
+  "historical_groups_absent_at_final_point": 8,
+  "forced_cleanups": 0,
+  "selected_dependency_files": 18,
+  "complete_import_closure_verified": false,
+  "existing_external_python": "/Users/jorge/Projects/agent-harness/.venv/bin/python",
+  "source_local_venv_absent": true,
+  "inference_ran": false,
+  "parent_approval_issued": false
+}
