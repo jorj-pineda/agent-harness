@@ -25,7 +25,8 @@ supervisor or automatic paid fallback. Hosted providers can incur charges.
 **Status: experimental.** The tools and recovery workflows have extensive offline
 checks, but reliable unattended coding is not established. Start with a disposable
 copy, give it a bounded task, and review its work. See the
-[current assessment](RELEASE_READINESS.md) for measured results and limitations.
+[current release checklist](RELEASE_CHECKLIST.md) for remaining gates and next work,
+and the [assessment](RELEASE_READINESS.md) for measured results and limitations.
 
 ## Local agent panel
 
@@ -146,6 +147,7 @@ and reversal require explicit actions and have scoped preservation checks.
 | Understand the actual model results | [Recorded evaluations](evals/BASELINES.md) |
 | Run real-task evaluations | [Evaluation guide](evals/real_tasks/README.md) |
 | See what's complete and what's next | [Roadmap](roadmap.md) |
+| Check the current release blockers | [Release checklist](RELEASE_CHECKLIST.md) |
 | Contribute code | [Development instructions](AGENTS.md) |
 
 The previous README is preserved in [old_README.md](old_README.md). It contains
