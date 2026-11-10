@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+from evals.public_feedback import PLAN_SHA256
 from evals.public_feedback_runner import FeedbackLedger
 
 if TYPE_CHECKING:
@@ -48,6 +49,14 @@ def feedback_summary(
             state.cell.repeat,
         ):
             raise ValueError("Feedback result identity differs from its ordinal/repeat")
+        preservation = result.runtime_config.get("public_feedback_preservation", {})
+        if (
+            preservation.get("format") != "public-feedback-preservation-v1"
+            or preservation.get("plan_sha256") != PLAN_SHA256
+            or type(preservation.get("ordinal")) is not int
+            or preservation.get("ordinal") != state.cell.ordinal
+        ):
+            raise ValueError("Feedback result preservation differs from its cell ordinal")
 
     rows = []
     for index, state in enumerate(cells):

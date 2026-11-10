@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from evals.public_feedback import validate_feedback_plan
+from evals.public_feedback import PLAN_SHA256, validate_feedback_plan
 from evals.public_feedback_runner import CellState, FeedbackLedger
 from evals.public_feedback_summary import feedback_summary
 from evals.real_run import load_tasks, run_task, write_report
@@ -57,6 +57,14 @@ def results(row, selected, count=8):
             prompt_tokens=10,
             completion_tokens=5,
             latency_ms=123.0,
+            runtime_config={
+                **row.runtime_config,
+                "public_feedback_preservation": {
+                    "format": "public-feedback-preservation-v1",
+                    "plan_sha256": PLAN_SHA256,
+                    "ordinal": state.cell.ordinal,
+                },
+            },
             tool_trace=[{"name": "run_project_check", "result": {"exit_code": 0}}],
         )
         for state in selected.cells[:count]
@@ -135,7 +143,8 @@ def test_planned_report_does_not_invent_failed_attempts_or_known_usage(monkeypat
 
 
 @pytest.mark.parametrize(
-    "fault", ["ordinal", "arm", "repeat", "gap", "finished", "row_identity", "missing_row"]
+    "fault",
+    ["ordinal", "arm", "repeat", "gap", "finished", "row_identity", "missing_row", "swapped_arms"],
 )
 async def test_mismatched_snapshots_refuse_instead_of_misassigning_pairs(row, fault):
     selected = ledger()
@@ -156,6 +165,8 @@ async def test_mismatched_snapshots_refuse_instead_of_misassigning_pairs(row, fa
         rows = rows[:1]
     elif fault == "row_identity":
         rows[0] = replace(rows[0], attempt=4)
+    elif fault == "swapped_arms":
+        rows[0], rows[1] = rows[1], rows[0]
     else:
         rows.pop()
     with pytest.raises(ValueError):

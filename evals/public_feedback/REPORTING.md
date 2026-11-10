@@ -20,7 +20,8 @@ prompt/completion usage. Separately named known-result totals are partial, not
 estimates of missing usage. Recorded latency is not hard end-to-end timing.
 
 The helper checks ordered distinct ordinals, paired arm/repeat identities, the
-recorded/started/unrun prefix and row identity/count correspondence. It reads no
+recorded/started/unrun prefix and row identity/count correspondence. Preserved
+plan/ordinal metadata prevents swapping two arms that share task/mode/repeat. It reads no
 source fixtures, checks or external artifacts while summarizing: report persistence
 must remain possible when an input guard has already stopped execution. It never
 resubmits cells, changes results or runs a grader. Invalid correspondence refuses
