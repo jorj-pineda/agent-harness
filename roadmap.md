@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-09 — Public task-envelope pilot closed:** the once-executed fixed cohort
+accepted and completed-and-accepted 4/6 artifacts: divide-zero 2/2, label refactor
+2/2, pagination 0/2. Both feature artifacts admit bool despite the explicit
+requirement and finish at the iteration cap with stale verification. Six copied
+original-criteria regrades match; 34 complete native responses have known usage
+and six recorded settlements are clean/unforced. [Results](evals/public_envelope/RESULTS_20261109.md)
+separate these public observations from historical scripted preparation. No retry,
+baseline/held-out gain, default adoption, reliable category envelope or release
+gate closure follows. Original 8/10 real-project target and no-go remain unchanged.
+
 **2026-11-08 — Public task-envelope freeze proposal:** retained 1f819d4 prepares
 separate candidate/rehearsal six-cell bundles through the existing external Python
 without installs. Native image preparation and full mandatory-mock owned rehearsal
