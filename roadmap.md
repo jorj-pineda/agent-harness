@@ -8,6 +8,17 @@ For the concise current gate status and immediate queue, use the
 [release checklist](RELEASE_CHECKLIST.md). Criteria in this roadmap still govern;
 historical entries below retain their original evidence and limitations.
 
+**2026-11-10 — Public-feedback preservation and exact-path staging:** verified
+mock captures can be preserved unchanged before eight fresh arm-specific fixtures
+are staged at their original absolute paths. Exclusive archive reservation and a
+receipt written last retain partial failures without reset; staged verification
+requires every cell unadmitted. Eleven focused tests pass. A separate fresh native
+mock preparation/staging run preserves all 218 files/modes and verifies eight fresh
+cells; the earlier rehearsal remains untouched. [Details](evals/public_feedback/STAGING.md).
+This grants no approval/isolation or inference. Execution selection/preflight/
+admission is next; owned execution/full rehearsal and reviewed retained freeze/
+actual approval/fresh gates remain before live requests. No release gate closes.
+
 **2026-11-10 — Read-only public-feedback archive verification:** the selected
 eight-cell mock capture can be checked for exact file maps/hashes/private modes,
 receipts, historical roots, first-input normalized/native agreement and internally
