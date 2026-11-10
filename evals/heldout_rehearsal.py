@@ -112,12 +112,15 @@ class CannedProvider:
 
 if TYPE_CHECKING:
     from evals.public_envelope import PublicEnvelopePlan
+    from evals.public_feedback import FeedbackPlan
 
 
 class CheckedProvider:
     """Evaluation boundary: latch failures before returning tool-bearing responses."""
 
-    def __init__(self, provider: ChatProvider, plan: ComparisonPlan | PublicEnvelopePlan) -> None:
+    def __init__(
+        self, provider: ChatProvider, plan: ComparisonPlan | PublicEnvelopePlan | FeedbackPlan
+    ) -> None:
         self.provider, self.plan = provider, plan
         self.name = provider.name
         self.stop_reason: str | None = None
