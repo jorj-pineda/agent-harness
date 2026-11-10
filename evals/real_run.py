@@ -26,6 +26,7 @@ from typing import TYPE_CHECKING, Any, Literal, TypedDict
 
 if TYPE_CHECKING:
     from evals.public_admission import PublicCellWorkspace
+    from evals.public_feedback_workspaces import FeedbackCellWorkspace
     from evals.public_runner import PublicLedger
 
 import yaml
@@ -546,12 +547,20 @@ async def validate_task(task: Task, *, command_env: Mapping[str, str] | None = N
         guard()
 
 
-def _diff(task: Task, copy: DisposableWorkspace, paths: tuple[str, ...]) -> str:
+def _diff(
+    task: Task,
+    copy: DisposableWorkspace,
+    paths: tuple[str, ...],
+    *,
+    initial_contents: dict[str, str] | None = None,
+) -> str:
     parts: list[str] = []
     for path in paths:
         original = task.fixture / path
         current = copy.workspace.root / path
         before = original.read_text(encoding="utf-8", errors="replace") if original.exists() else ""
+        if initial_contents is not None and path in initial_contents:
+            before = initial_contents[path]
         after = current.read_text(encoding="utf-8", errors="replace") if current.exists() else ""
         parts.extend(
             difflib.unified_diff(
@@ -573,6 +582,7 @@ async def run_task(
     attempt: int = 1,
     prepared_directory: Path | None = None,
     public_cell: PublicCellWorkspace | None = None,
+    feedback_cell: FeedbackCellWorkspace | None = None,
     command_env: Mapping[str, str] | None = None,
 ) -> RealTaskResult:
     selected_env = _task_command_environment(command_env)
@@ -583,18 +593,30 @@ async def run_task(
     profiles: list[ExecutionProfile] = []
     from evals.public_admission import PublicPilotDriftError, PublicTaskGuard
 
-    if prepared_directory is not None and public_cell is not None:
+    if sum(value is not None for value in (prepared_directory, public_cell, feedback_cell)) > 1:
         raise ValueError("Select only one prepared workspace policy")
     public_guard = (
         PublicTaskGuard(task, public_cell, mode=mode, attempt=attempt, settings=settings)
         if public_cell is not None
         else None
     )
+    if feedback_cell is not None:
+        from evals.public_feedback_workspaces import FeedbackTaskGuard
+
+        public_guard = FeedbackTaskGuard(
+            task, feedback_cell, mode=mode, attempt=attempt, settings=settings
+        )
     guard = _heldout_guard(task, execution=True)
     observed = ObservedProvider(
         provider, before_chat=public_guard if public_guard is not None else guard
     )
-    if public_cell is not None:
+    if feedback_cell is not None:
+        from evals.public_feedback_workspaces import admit_feedback_cell
+
+        workspace_context = admit_feedback_cell(
+            feedback_cell.directory, ordinal=feedback_cell.ordinal
+        )
+    elif public_cell is not None:
         from evals.public_workspaces import admit_public_cell
 
         workspace_context = admit_public_cell(public_cell.directory, ordinal=public_cell.ordinal)
@@ -607,6 +629,12 @@ async def run_task(
     else:
         workspace_context = disposable_workspace(task.fixture)
     with workspace_context as copy:
+        initial_contents = None
+        if feedback_cell is not None:
+            from evals.heldout_guard import _read_regular
+
+            initial_test, _ = _read_regular(copy.workspace.root / "test_visible.py", 16_000)
+            initial_contents = {"test_visible.py": initial_test.decode("utf-8")}
         if guard is not None:
             verify_fixture(task.fixture, copy.workspace.root)
             guard.evidence.checkpoints.append("fixture_copy")
@@ -685,8 +713,8 @@ async def run_task(
                 guard.check_at("after_grading")
             if public_guard is not None:
                 public_guard.check_at("after_grading")
-        except PublicPilotDriftError:
-            failure = "PublicPilotDriftError"
+        except PublicPilotDriftError as error:
+            failure = type(error).__name__
             criteria_before = criteria_after = None
             acceptance = (
                 graded
@@ -784,7 +812,7 @@ async def run_task(
             added=changes.added,
             modified=changes.modified,
             deleted=changes.deleted,
-            diff=_diff(task, copy, paths),
+            diff=_diff(task, copy, paths, initial_contents=initial_contents),
             acceptance_exit_code=acceptance.exit_code,
             acceptance_output=acceptance_output[:12_000],
             acceptance_output_truncated=(
@@ -807,17 +835,25 @@ async def run_task(
                 if selected_env is not None
                 else None,
                 **(
-                    {"public_pilot_preservation": public_guard.evidence()}
+                    {
+                        "public_feedback_preservation"
+                        if feedback_cell is not None
+                        else "public_pilot_preservation": public_guard.evidence()
+                    }
                     if public_guard is not None
                     else {}
                 ),
-                "workspace_policy": "prepared-public-pilot-single-use-v1"
+                "workspace_policy": "prepared-public-feedback-single-use-v1"
+                if feedback_cell is not None
+                else "prepared-public-pilot-single-use-v1"
                 if public_cell is not None
                 else "prepared-heldout-single-use-v1"
                 if prepared_directory is not None
                 else "disposable-v1",
                 "prepared_workspace_root": str(copy.workspace.root)
-                if prepared_directory is not None or public_cell is not None
+                if prepared_directory is not None
+                or public_cell is not None
+                or feedback_cell is not None
                 else None,
                 "inspection_only": question,
                 "coding_toolset": settings.coding_toolset,
