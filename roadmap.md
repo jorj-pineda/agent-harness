@@ -4,6 +4,10 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+For the concise current gate status and immediate queue, use the
+[release checklist](RELEASE_CHECKLIST.md). Criteria in this roadmap still govern;
+historical entries below retain their original evidence and limitations.
+
 **2026-11-09 — Public task-envelope pilot closed:** the once-executed fixed cohort
 accepted and completed-and-accepted 4/6 artifacts: divide-zero 2/2, label refactor
 2/2, pagination 0/2. Both feature artifacts admit bool despite the explicit

@@ -9,12 +9,16 @@ not yet ready to claim the roadmap's personal-use release targets.** Infrastruct
 is substantially implemented. Reliable coding performance and the complete real
 workflow are still unproven. PR/test counts are not a release-completion percentage.
 
-## Current disposition — 2026-10-23
+For the concise current gate status and next actions, see the
+[release checklist](RELEASE_CHECKLIST.md). The original audit and historical
+follow-ups remain below; they do not certify the current source revision.
+
+## Disposition and dated follow-ups
 
 **2026-11-09 public pilot follow-up:** the fixed six-cell
 [public-development pilot](evals/public_envelope/RESULTS_20261109.md) finished
 4/6 accepted and completed-and-accepted: both divide-zero bugfixes and both label
-refactors pass; both pagination features reject the explicit bool requirement and
+refactors pass; both pagination features miss the explicit bool restriction and
 end at the iteration cap with stale verification. Six copied original-criteria
 regrades match. This single-policy, one-model public cohort does not replace the
 original ten-task counts or close G2–G5. No retry or release approval follows.
