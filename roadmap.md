@@ -8,6 +8,18 @@ For the concise current gate status and immediate queue, use the
 [release checklist](RELEASE_CHECKLIST.md). Criteria in this roadmap still govern;
 historical entries below retain their original evidence and limitations.
 
+**2026-11-10 — Explicit public-feedback execution admission:** a distinct manifest
+and structural parent receipt bind the eight-cell plan, runtime, inputs/environment,
+image/executable and paths. Read-only preflight reobserves source/dependency/image/
+binary pins and eight fresh staged cells. Mandatory trusted-parent verification
+precedes exclusive output reservation; preservation/withdrawal checks bracket
+admission and failures retain partial evidence without retry. Fifty-seven focused
+regressions pass. Native clean-source preflight verifies a fresh image and actual
+binary with no backend, output, cell admission or actual receipt. [Details](evals/public_feedback/EXECUTION.md).
+This does not authenticate affirmative JSON or implement owned execution. Admitted
+provider guards/serial ownership, fresh retained preparation/full owned rehearsal,
+reviewed concrete freeze/actual approval/fresh gates remain before inference.
+
 **2026-11-10 — Public-feedback preservation and exact-path staging:** verified
 mock captures can be preserved unchanged before eight fresh arm-specific fixtures
 are staged at their original absolute paths. Exclusive archive reservation and a
