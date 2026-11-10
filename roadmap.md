@@ -8,6 +8,18 @@ For the concise current gate status and immediate queue, use the
 [release checklist](RELEASE_CHECKLIST.md). Criteria in this roadmap still govern;
 historical entries below retain their original evidence and limitations.
 
+**2026-11-10 — Public visible-check mandatory-mock rehearsal:** eight fresh
+arm-specific cells capture normalized/native first inputs through the production
+adapter with mandatory mock transport. Canned defect/check/reference workflows
+use real tools and original grading; source/Settings/environment/inventory/evidence
+checks bracket requests, partial failures retain results, and success index is last.
+A clean-source local run records eight scripted completed/accepted artifacts,
+32 mocked requests and 160 rechecked selected cell files. [Details](evals/public_feedback/REHEARSAL.md).
+No backend lifecycle or inference occurred; this is mechanics, not model recovery,
+quality or release evidence. The four preparation slices are complete; candidate
+preservation/staging, live admission/owned execution, retained preparation/full owned
+rehearsal and exact reviewed freeze/actual approval/fresh gates remain before inference.
+
 **2026-11-10 — Fresh visible-check evaluator workspaces:** eight fixed cells can
 prepare arm-specific original-implementation copies with exact selected visible
 tests and single-use admission. The shared evaluator checks task/repeat/policy,

@@ -1,0 +1,17 @@
+{
+  "runtime": {
+    "commit": "c010e1b0c03902e23318ffae587519833da07d31",
+    "dirty": false
+  },
+  "directory": "/Users/jorge/.local/share/agent-harness/trials/public-feedback-mock-n1ur_dq_",
+  "index_sha256": "813bfe23c10ae1826fe416f23aad8e5b39891c5bd42e88c54845ad736635647b",
+  "report_sha256": "1b7e333db36509a0f2b34c8e86bb991b99a88da0b2c32aa6e908b407a44ad1dc",
+  "cells": 8,
+  "scripted_completed_and_accepted": 8,
+  "mock_requests": 32,
+  "selected_cell_files_verified": 160,
+  "generation_forwarded": 0,
+  "inference_authorized": false,
+  "actual_owned_backend_rehearsal": false,
+  "dependency_selection": "11 selected source files, not complete import closure"
+}
