@@ -26,6 +26,7 @@ from typing import TYPE_CHECKING, Any, Literal, TypedDict
 
 if TYPE_CHECKING:
     from evals.public_admission import PublicCellWorkspace
+    from evals.public_feedback_runner import FeedbackLedger
     from evals.public_feedback_workspaces import FeedbackCellWorkspace
     from evals.public_runner import PublicLedger
 
@@ -1139,7 +1140,7 @@ def write_report(
     started: str,
     results: list[RealTaskResult],
     *,
-    cohort: CohortLedger | PublicLedger | None = None,
+    cohort: CohortLedger | PublicLedger | FeedbackLedger | None = None,
     scripted: bool = False,
 ) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
