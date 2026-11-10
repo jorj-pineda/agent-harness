@@ -63,8 +63,11 @@ separate kinds of evidence.
    schedule and [owned serial execution](evals/public_feedback/OWNED_EXECUTION.md)
    are implemented. A native mandatory-mock owned rehearsal settled eight cells
    cleanly; its scripted successes establish mechanics, not model quality.
-   Next is fresh candidate preparation/rehearsal/probes, concrete reviewed freeze,
-   CI/merge, actual approval and fresh launch gates.
+   [One-shot existing-interpreter preparation](evals/public_feedback/PREPARATION.md)
+   is implemented and has native retained-source proof without backend or admission.
+   Next is paired reporting, reusable owned rehearsal, fresh retained candidate/
+   rehearsal/probes, concrete reviewed freeze/operator binding, CI/merge, actual
+   approval and fresh launch gates.
    This selects no application default and authorizes no inference.
 3. If that scope demonstrates repeatable usefulness, validate held-out/model
    coverage and the real client/recovery workflow, then validate the distribution.

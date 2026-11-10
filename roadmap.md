@@ -8,6 +8,18 @@ For the concise current gate status and immediate queue, use the
 [release checklist](RELEASE_CHECKLIST.md). Criteria in this roadmap still govern;
 historical entries below retain their original evidence and limitations.
 
+**2026-11-10 — Existing-interpreter feedback preparation:** one-shot offline
+preparation now verifies selected clean retained source/interpreter/dependency/
+environment inputs, makes a verified image, captures eight mandatory-mock cells,
+preserves them and stages fresh arm-specific fixtures before preflighting a
+candidate manifest. Partial failures retain evidence and attempt withdrawal;
+occupied paths refuse. [Details](evals/public_feedback/PREPARATION.md).
+A native retained-source proof verifies actual image/executable bytes and eight
+fresh unadmitted cells with HTTP transport forbidden, no backend/output/approval
+or inference. Paired reporting, reusable owned rehearsal, retained candidate/probes
+and concrete freeze/operator binding remain in the next five-PR queue. Actual
+approval/fresh gates and release no-go/G2–G5 remain unchanged.
+
 **2026-11-10 — Owned serial feedback execution:** admitted cells now use fresh
 per-cell images/backends, native/provider guards, arm-specific shared evaluation
 and result-before-cleanup persistence. Only verified settlement and final input
