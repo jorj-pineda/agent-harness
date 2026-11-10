@@ -1144,6 +1144,13 @@ def write_report(
     scripted: bool = False,
 ) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
+    extra: dict[str, Any] = {}
+    if getattr(cohort, "format", None) == "public-feedback-ledger-v1":
+        from evals.public_feedback_runner import FeedbackLedger
+        from evals.public_feedback_summary import feedback_summary
+
+        feedback = FeedbackLedger.model_validate(cohort.model_dump())
+        extra["feedback_comparison"] = feedback_summary(feedback, results, scripted=scripted)
     content = json.dumps(
         {
             "mode": "scripted-real-tools-rehearsal" if scripted else "real-tools-trusted-fixtures",
@@ -1154,6 +1161,7 @@ def write_report(
             "summary": summarize(results),
             "results": [asdict(r) for r in results],
             "cohort": cohort.model_dump(mode="json") if cohort is not None else None,
+            **extra,
         },
         indent=2,
     )

@@ -65,9 +65,11 @@ separate kinds of evidence.
    cleanly; its scripted successes establish mechanics, not model quality.
    [One-shot existing-interpreter preparation](evals/public_feedback/PREPARATION.md)
    is implemented and has native retained-source proof without backend or admission.
-   Next is paired reporting, reusable owned rehearsal, fresh retained candidate/
-   rehearsal/probes, concrete reviewed freeze/operator binding, CI/merge, actual
-   approval and fresh launch gates.
+   [Paired reporting](evals/public_feedback/REPORTING.md) now retains arm/pair
+   outcomes and unknown/stopped states without assessing benefit or regrading.
+   Next is reusable owned rehearsal, fresh retained candidate/rehearsal/probes,
+   concrete reviewed freeze/operator binding, CI/merge, actual approval and fresh
+   launch gates.
    This selects no application default and authorizes no inference.
 3. If that scope demonstrates repeatable usefulness, validate held-out/model
    coverage and the real client/recovery workflow, then validate the distribution.
