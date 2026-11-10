@@ -1,6 +1,7 @@
 # Current release checklist
 
-Snapshot after [PR #390](https://github.com/jorj-pineda/agent-harness/pull/390).
+Snapshot after [PR #391](https://github.com/jorj-pineda/agent-harness/pull/391),
+including the [offline pagination diagnosis](evals/public_envelope/PAGINATION_DIAGNOSIS_20261110.md).
 This is the short operational view of the [roadmap](roadmap.md), which still
 governs scope and acceptance criteria. The [release audit](RELEASE_READINESS.md)
 retains historical findings and limitations. This checklist grants no execution
@@ -46,12 +47,15 @@ separate kinds of evidence.
 
 ## Immediate queue
 
-1. Investigate the retained pagination requirement/check gap using copied artifacts
-   and exact traces. Determine what tooling can actually remedy before changing
-   prompts, limits or defaults. No inference is needed for this diagnosis.
-2. Select the smallest evidence-supported remedy or a clearly named narrower
-   task envelope. Any fresh live comparison needs its own fixed inputs, independent
-   acceptance, comparable budgets, reviewed preparation and actual launch approval.
+1. The retained pagination diagnosis is complete: the request includes the bool
+   restriction, the visible check omits it, and both artifacts admit True. Exact
+   duplicate writes explain stale verification but do not cause that rejection.
+   Do not change verification rules or budgets to relabel these failures.
+2. Select the next controlled experiment or a clearly named narrower task envelope.
+   The diagnosis proposes testing visible feedback for the existing bool requirement
+   on fresh public fixtures; it selects no treatment or default. Any fresh live
+   comparison needs its own fixed inputs, independent acceptance, comparable budgets,
+   reviewed preparation and actual launch approval.
 3. If that scope demonstrates repeatable usefulness, validate held-out/model
    coverage and the real client/recovery workflow, then validate the distribution.
 

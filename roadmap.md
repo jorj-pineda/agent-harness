@@ -8,6 +8,17 @@ For the concise current gate status and immediate queue, use the
 [release checklist](RELEASE_CHECKLIST.md). Criteria in this roadmap still govern;
 historical entries below retain their original evidence and limitations.
 
+**2026-11-10 — Public pagination diagnosis completed:** two disposable real-tool
+replays reproduce visible passes, identical duplicate writes and original-criteria
+rejections (2 failed/19 passed each). The bool restriction is present in both
+inputs; independent probes show True admitted in both argument positions, while
+the unchanged reference rejects all eight boolean probes and passes 21 acceptance
+cases. Atomic replacement explains conservative stale verification, not the semantic
+failure. All 159 selected original hashes remain unchanged; 38 focused regressions
+pass. [Diagnosis](evals/public_envelope/PAGINATION_DIAGNOSIS_20261110.md) bounds a
+possible fresh visible-feedback experiment without selecting it, changing runtime,
+reopening cells, authorizing inference or closing release gates.
+
 **2026-11-09 — Public task-envelope pilot closed:** the once-executed fixed cohort
 accepted and completed-and-accepted 4/6 artifacts: divide-zero 2/2, label refactor
 2/2, pagination 0/2. Both feature artifacts admit bool despite the explicit
