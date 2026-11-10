@@ -1,0 +1,246 @@
+{
+  "evidence_label": "offline-real-tools-diagnosis",
+  "source_report_sha256": "c8f61d98ac58957eeb89a3565ac6bf19cb4e35a34aae6d25fe454ae5b03ad8e2",
+  "source_evidence_files_unchanged": 159,
+  "recipe_sha256": "6a8ad1af8e5cc3e59c1dfb6fa4f99740b520d8b0c0d9fba539ea56e8750d37e3",
+  "recipe_path": "/Users/jorge/.local/share/agent-harness/trials/public-pagination-diagnosis-9fkahjg6/recipe.py",
+  "source_files_sha256": {
+    "harness/runtime.py": "11905c07c7504c9a1fabb98a4dd4014313a869988fe44bd33a763a557a492b6f",
+    "harness/outcome.py": "f2836331e9b1b56bd89b4e6e9e12394bb43b8d0591ac4e5c1114161a86c4b152",
+    "tools/code.py": "c4b36875a4ce38b83b2e492e54273eb59559d0899e0d1d9ede3a5d33515ee79c",
+    "tools/process.py": "a6b0cfb1622ed210bd850899bd3cea749ec8049f95f96108c7214e59eb384860",
+    "tools/registry.py": "038881aa9196baacc2c11e81b658be03d30eea8f2476dea7e936e4ec649fbf03",
+    "evals/real_run.py": "f23f90a6750aa4eea40018a91c77f74fab4587efd53bd40ebe6604cb624a9007",
+    "evals/acceptance_runner.py": "67be1aa3212f6c5fa941fcf6dd84ac0dcdcb5def9abf400e648de13d091b7bd6",
+    "evals/real_tasks/tasks.yaml": "3e6da853e1e62127f9da390ee58c6a90efb059d47698079c77770f64d3ff4b71",
+    "evals/real_tasks/fixtures/paginate_items/test_visible.py": "ff0d24e178c69d5019eeb620dae4ddacca0462101a62fbd904dd7558b8045ca3",
+    "evals/real_tasks/acceptance/paginate_items/test_acceptance.py": "7ba05a7bf98f0fb3ba0c547b0dc39e7be4bd077466ba3aa68ffece2033622fa6",
+    "evals/real_tasks/reference/paginate_items/pagination.py": "c47cbd179b2fa30744e62d8a5b102802b63b248b0207a48c947309e0a4bcddb8"
+  },
+  "replays": [
+    {
+      "ordinal": 2,
+      "request_contains_bool_restriction": true,
+      "tool_order": [
+        "tree",
+        "read_file",
+        "read_file",
+        "write_file",
+        "run_project_check",
+        "write_file"
+      ],
+      "write_sha256": [
+        "47cb5d4233becf175e3ea1bdfbf24f403b8f963d13696c5e12e6785ddaec6f44",
+        "47cb5d4233becf175e3ea1bdfbf24f403b8f963d13696c5e12e6785ddaec6f44"
+      ],
+      "atomic_replacement_changed_inode": true,
+      "visible_exit_code": 0,
+      "final_verification": "stale",
+      "acceptance_exit_code": 1,
+      "acceptance_summary": "2 failed, 19 passed in 0.03s",
+      "boolean_probes": [
+        {
+          "empty": false,
+          "argument": "page",
+          "input": true,
+          "outcome": "returned",
+          "returned": "[1, 2]"
+        },
+        {
+          "empty": false,
+          "argument": "page",
+          "input": false,
+          "outcome": "ValueError",
+          "returned": null
+        },
+        {
+          "empty": false,
+          "argument": "page_size",
+          "input": true,
+          "outcome": "returned",
+          "returned": "[1]"
+        },
+        {
+          "empty": false,
+          "argument": "page_size",
+          "input": false,
+          "outcome": "ValueError",
+          "returned": null
+        },
+        {
+          "empty": true,
+          "argument": "page",
+          "input": true,
+          "outcome": "returned",
+          "returned": "[]"
+        },
+        {
+          "empty": true,
+          "argument": "page",
+          "input": false,
+          "outcome": "ValueError",
+          "returned": null
+        },
+        {
+          "empty": true,
+          "argument": "page_size",
+          "input": true,
+          "outcome": "returned",
+          "returned": "[]"
+        },
+        {
+          "empty": true,
+          "argument": "page_size",
+          "input": false,
+          "outcome": "ValueError",
+          "returned": null
+        }
+      ]
+    },
+    {
+      "ordinal": 5,
+      "request_contains_bool_restriction": true,
+      "tool_order": [
+        "tree",
+        "read_file",
+        "read_file",
+        "write_file",
+        "run_project_check",
+        "write_file"
+      ],
+      "write_sha256": [
+        "47cb5d4233becf175e3ea1bdfbf24f403b8f963d13696c5e12e6785ddaec6f44",
+        "47cb5d4233becf175e3ea1bdfbf24f403b8f963d13696c5e12e6785ddaec6f44"
+      ],
+      "atomic_replacement_changed_inode": true,
+      "visible_exit_code": 0,
+      "final_verification": "stale",
+      "acceptance_exit_code": 1,
+      "acceptance_summary": "2 failed, 19 passed in 0.03s",
+      "boolean_probes": [
+        {
+          "empty": false,
+          "argument": "page",
+          "input": true,
+          "outcome": "returned",
+          "returned": "[1, 2]"
+        },
+        {
+          "empty": false,
+          "argument": "page",
+          "input": false,
+          "outcome": "ValueError",
+          "returned": null
+        },
+        {
+          "empty": false,
+          "argument": "page_size",
+          "input": true,
+          "outcome": "returned",
+          "returned": "[1]"
+        },
+        {
+          "empty": false,
+          "argument": "page_size",
+          "input": false,
+          "outcome": "ValueError",
+          "returned": null
+        },
+        {
+          "empty": true,
+          "argument": "page",
+          "input": true,
+          "outcome": "returned",
+          "returned": "[]"
+        },
+        {
+          "empty": true,
+          "argument": "page",
+          "input": false,
+          "outcome": "ValueError",
+          "returned": null
+        },
+        {
+          "empty": true,
+          "argument": "page_size",
+          "input": true,
+          "outcome": "returned",
+          "returned": "[]"
+        },
+        {
+          "empty": true,
+          "argument": "page_size",
+          "input": false,
+          "outcome": "ValueError",
+          "returned": null
+        }
+      ]
+    }
+  ],
+  "reference": {
+    "visible_exit_code": 0,
+    "acceptance_exit_code": 0,
+    "acceptance_summary": "21 passed in 0.02s",
+    "boolean_probes": [
+      {
+        "empty": false,
+        "argument": "page",
+        "input": true,
+        "outcome": "ValueError",
+        "returned": null
+      },
+      {
+        "empty": false,
+        "argument": "page",
+        "input": false,
+        "outcome": "ValueError",
+        "returned": null
+      },
+      {
+        "empty": false,
+        "argument": "page_size",
+        "input": true,
+        "outcome": "ValueError",
+        "returned": null
+      },
+      {
+        "empty": false,
+        "argument": "page_size",
+        "input": false,
+        "outcome": "ValueError",
+        "returned": null
+      },
+      {
+        "empty": true,
+        "argument": "page",
+        "input": true,
+        "outcome": "ValueError",
+        "returned": null
+      },
+      {
+        "empty": true,
+        "argument": "page",
+        "input": false,
+        "outcome": "ValueError",
+        "returned": null
+      },
+      {
+        "empty": true,
+        "argument": "page_size",
+        "input": true,
+        "outcome": "ValueError",
+        "returned": null
+      },
+      {
+        "empty": true,
+        "argument": "page_size",
+        "input": false,
+        "outcome": "ValueError",
+        "returned": null
+      }
+    ]
+  },
+  "inference_requests": 0,
+  "original_artifacts_modified": false,
+  "acceptance_changed": false
+}
