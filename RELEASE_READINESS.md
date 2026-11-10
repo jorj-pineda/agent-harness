@@ -11,6 +11,14 @@ workflow are still unproven. PR/test counts are not a release-completion percent
 
 ## Current disposition — 2026-10-23
 
+**2026-11-09 public pilot follow-up:** the fixed six-cell
+[public-development pilot](evals/public_envelope/RESULTS_20261109.md) finished
+4/6 accepted and completed-and-accepted: both divide-zero bugfixes and both label
+refactors pass; both pagination features reject the explicit bool requirement and
+end at the iteration cap with stale verification. Six copied original-criteria
+regrades match. This single-policy, one-model public cohort does not replace the
+original ten-task counts or close G2–G5. No retry or release approval follows.
+
 **2026-11-02 held-out follow-up:** the [authorized frozen cohort](evals/heldout_comparison/RESULTS_20261102.md)
 stopped after one unchanged rejected harness artifact. A wall-limit cancellation
 left aggregate usage unknown; fifteen cells remain unrun and no minimal comparison
