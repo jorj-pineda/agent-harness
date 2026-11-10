@@ -8,6 +8,17 @@ For the concise current gate status and immediate queue, use the
 [release checklist](RELEASE_CHECKLIST.md). Criteria in this roadmap still govern;
 historical entries below retain their original evidence and limitations.
 
+**2026-11-10 — Read-only public-feedback archive verification:** the selected
+eight-cell mock capture can be checked for exact file maps/hashes/private modes,
+receipts, historical roots, first-input normalized/native agreement and internally
+consistent runtime/report/native usage evidence without allocation or providers.
+Historical executable/dependency paths are not reobserved. Twenty-six focused
+regressions and read-only verification of the retained 160-file capture pass.
+[Details](evals/public_feedback/ARCHIVE.md). Preservation/exact-path staging and
+execution selection/admission remain next; owned execution, retained preparation/
+full owned rehearsal and reviewed freeze/actual approval/fresh gates still precede
+inference. This is mechanics evidence, not model quality or release gate closure.
+
 **2026-11-10 — Public visible-check mandatory-mock rehearsal:** eight fresh
 arm-specific cells capture normalized/native first inputs through the production
 adapter with mandatory mock transport. Canned defect/check/reference workflows
