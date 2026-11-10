@@ -8,6 +8,16 @@ For the concise current gate status and immediate queue, use the
 [release checklist](RELEASE_CHECKLIST.md). Criteria in this roadmap still govern;
 historical entries below retain their original evidence and limitations.
 
+**2026-11-10 — Public visible-check selection validated:** exact plan and
+treatment bytes/mode are checked against original task/catalog/budget pins before
+returning either visible test. Drift refuses without resources or provider
+construction. Real-file synthetic regressions and separate actual copied-artifact
+probes discriminate the observed bool defect; the unchanged reference passes
+treatment and original acceptance. Original artifacts/criteria stay unchanged.
+[Details](evals/public_feedback/VALIDATION.md). This proves test discrimination,
+not model recovery or quality. Fresh shared-evaluator workspaces, capture/rehearsal,
+owned execution and reviewed retained freeze/approval/fresh gates remain open.
+
 **2026-11-10 — Public visible-check comparison proposed:** a separate fixed
 eight-cell public protocol pairs four repeats of the original pagination visible
 test against coverage of the explicit bool restriction. Request, initial
