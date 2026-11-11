@@ -78,9 +78,11 @@ separate kinds of evidence.
    launch gates remain. [Pinned copied-workspace regrades](evals/public_feedback/REGRADES.md)
    are implemented without changing original outcomes or assessing benefit;
    the [intervention/regression review protocol](evals/public_feedback/REVIEW_PROTOCOL.md)
-   now specifies all-cell evidence coverage and paired regressions. Its offline
-   join and retained scripted exercise remain next; actual review and comparison
-   evidence remain required.
+   now specifies all-cell evidence coverage and paired regressions. The
+   [offline join](evals/public_feedback/REVIEW_JOIN.md) is implemented and a
+   [retained scripted exercise](evals/public_feedback/REVIEW_EVIDENCE.md) preserves
+   all eight review ordinals as unknown, without benefit eligibility. Full offline
+   validation is pending; actual review and comparison evidence remain required.
    This selects no application default and authorizes no inference.
 3. If that scope demonstrates repeatable usefulness, validate held-out/model
    coverage and the real client/recovery workflow, then validate the distribution.
