@@ -22,6 +22,17 @@
       "provider_constructed": false,
       "backend_started": false,
       "scope": "Preview namespace before completion of restarted G0; final selected probes remain pending."
+    },
+    "environmental_failure": {
+      "passed": 3538,
+      "failed": 1,
+      "failure": "uv missing from retained G0 PATH",
+      "failed_pytest_log_sha256": "bf3a6fdceb441858ecf3f5f09fb6027015003a6437dafef078d2f18b830488f3",
+      "failed_recipe_sha256": "78abdef213cc6e8d4150d28ae7c62788c5b424fe9549a682e101a6e07b29ae4a",
+      "corrected_recipe_sha256": "3f0ca2dd2fb7c363b877495dcbbcf0d80bb67505da6e1eb77ae1ee721f994095",
+      "focused_wheel_recheck_passed": 1,
+      "focused_wheel_log_sha256": "1c0b73bdb565615818ad7b13c3a18f2e55cbb16429fe20deba35229758ebc168",
+      "fresh_full_gate_status": "running"
     }
   },
   "actual_parent_approval": false,
