@@ -8,6 +8,19 @@ For the concise current gate status and immediate queue, use the
 [release checklist](RELEASE_CHECKLIST.md). Criteria in this roadmap still govern;
 historical entries below retain their original evidence and limitations.
 
+**2026-11-10 — Reusable owned mandatory-mock rehearsal:** an internal API creates
+its own fresh feedback bundle and runs the owned executor with fixed in-memory
+reference/check/completion responses. Its synthetic parent fixture uses zero
+freeze IDs and is not actual authority. Success is written last after fixed mock
+counts/closure, completed/accepted results, clean settlement and bounded private
+native inventories. [Details](evals/public_feedback/OWNED_REHEARSAL.md).
+Six tests and a native retained-source run pass: 24 owned-phase mock requests,
+24 owned GET metadata requests, eight clean/unforced settlements, zero generation
+forwarded and eight groups absent at the final point. Preparation's 32 mock
+requests are a separate phase. No model-quality or actual approval claim follows.
+Retained candidate/rehearsal/probes and concrete freeze/operator binding remain,
+with actual approval/fresh gates before inference; release no-go/G2–G5 are unchanged.
+
 **2026-11-10 — Descriptive paired feedback reports:** feedback reports now add
 per-arm acceptance/completed-and-accepted counts and all four paired outcomes.
 Started results stay distinct from recorded settlement; missing outcomes and
