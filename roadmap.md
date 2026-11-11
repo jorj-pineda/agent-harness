@@ -8,6 +8,17 @@ For the concise current gate status and immediate queue, use the
 [release checklist](RELEASE_CHECKLIST.md). Criteria in this roadmap still govern;
 historical entries below retain their original evidence and limitations.
 
+**2026-11-11 — Pinned copied-artifact feedback regrades:** an offline API selects
+manifest/report bytes and independent artifact snapshot pins, requires matching
+original criterion/grader and interpreter/environment/dependency observations,
+then grades bounded copies. Original outcomes and unrun/started states stay
+separate; partial failure/cancellation retains evidence without success publication.
+[Details](evals/public_feedback/REGRADES.md). Sixteen focused cases pass; eight
+retained scripted artifacts pass copied regrades against indexed source pins,
+with matching source/report checkpoints. No inference, benefit assessment,
+completion/settlement promotion or isolation claim follows. Actual approval/fresh
+launch gates and intervention/regression review remain; release no-go/G2–G5 stay open.
+
 **2026-11-11 — Concrete feedback execution freeze proposal:** selected retained
 `bb51d22` candidate, gate, evidence indices and copied operator are bound in a
 review proposal. Sixteen scripted recipe contracts and actual check-only/mode

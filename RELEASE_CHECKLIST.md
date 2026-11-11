@@ -75,7 +75,9 @@ separate kinds of evidence.
    The [concrete freeze/operator proposal](evals/public_feedback/FREEZE_20261111.md)
    now binds the retained selection and requires explicit mode and exact reviewed
    merge/receipt arguments. Exact-head checks/review/merge, actual approval and fresh
-   launch gates remain. Copied-workspace regrades/review precede any benefit claim.
+   launch gates remain. [Pinned copied-workspace regrades](evals/public_feedback/REGRADES.md)
+   are implemented without changing original outcomes or assessing benefit;
+   intervention/regression review and actual comparison evidence remain required.
    This selects no application default and authorizes no inference.
 3. If that scope demonstrates repeatable usefulness, validate held-out/model
    coverage and the real client/recovery workflow, then validate the distribution.

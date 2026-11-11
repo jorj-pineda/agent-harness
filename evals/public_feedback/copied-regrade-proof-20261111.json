@@ -1,0 +1,38 @@
+{
+  "format": "public-feedback-copied-regrade-proof-v1",
+  "directory": "/Users/jorge/.local/share/agent-harness/trials/public-feedback-candidate-20261110-mpb3k36k/copied-regrade-final-proof",
+  "grader_revision": {
+    "commit": "92062c9da4dbaa151faff1c5267ceb7d8aacde91",
+    "dirty": false
+  },
+  "manifest_sha256": "57d2a1267086b27eded7f9d640e9677494ab994d9b5c7617d95aabaaec6fa04f",
+  "report_sha256": "041fc677529873bd2737f80aa44aab82c1a2608b6c4cb003d739445458d064ef",
+  "regrades_sha256": "e8941e99b716d89b664ada14223ec225f1067e6b548e8c57540c952c1ca9a61c",
+  "artifact_pins": {
+    "1": "2c7aa85655cfbe2a5cd97986beb9bd5c0d016e9888e60af391ac9a142386b03b",
+    "2": "5ddfbe1c7c8f7e778c261734f873c7dc94a688d7465ac13282d52c0f8fd821f2",
+    "3": "5ddfbe1c7c8f7e778c261734f873c7dc94a688d7465ac13282d52c0f8fd821f2",
+    "4": "2c7aa85655cfbe2a5cd97986beb9bd5c0d016e9888e60af391ac9a142386b03b",
+    "5": "2c7aa85655cfbe2a5cd97986beb9bd5c0d016e9888e60af391ac9a142386b03b",
+    "6": "5ddfbe1c7c8f7e778c261734f873c7dc94a688d7465ac13282d52c0f8fd821f2",
+    "7": "5ddfbe1c7c8f7e778c261734f873c7dc94a688d7465ac13282d52c0f8fd821f2",
+    "8": "2c7aa85655cfbe2a5cd97986beb9bd5c0d016e9888e60af391ac9a142386b03b"
+  },
+  "graded_scripted_artifacts": 8,
+  "acceptance_exit_codes": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "original_report_unchanged": true,
+  "source_report_mode": "scripted-real-tools-rehearsal",
+  "scoped_source_snapshots_match": true,
+  "inference_ran": false,
+  "benefit_assessment": "not_assessed",
+  "process_isolation": false
+}
