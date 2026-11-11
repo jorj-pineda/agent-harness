@@ -77,7 +77,10 @@ separate kinds of evidence.
    merge/receipt arguments. Exact-head checks/review/merge, actual approval and fresh
    launch gates remain. [Pinned copied-workspace regrades](evals/public_feedback/REGRADES.md)
    are implemented without changing original outcomes or assessing benefit;
-   intervention/regression review and actual comparison evidence remain required.
+   the [intervention/regression review protocol](evals/public_feedback/REVIEW_PROTOCOL.md)
+   now specifies all-cell evidence coverage and paired regressions. Its offline
+   join and retained scripted exercise remain next; actual review and comparison
+   evidence remain required.
    This selects no application default and authorizes no inference.
 3. If that scope demonstrates repeatable usefulness, validate held-out/model
    coverage and the real client/recovery workflow, then validate the distribution.
