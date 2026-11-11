@@ -8,6 +8,16 @@ For the concise current gate status and immediate queue, use the
 [release checklist](RELEASE_CHECKLIST.md). Criteria in this roadmap still govern;
 historical entries below retain their original evidence and limitations.
 
+**2026-11-11 — Concrete feedback execution freeze proposal:** selected retained
+`bb51d22` candidate, gate, evidence indices and copied operator are bound in a
+review proposal. Sixteen scripted recipe contracts and actual check-only/mode
+refusals pass. The recipe requires explicit mode and parent-selected receipt/hash/
+reviewed merge arguments, validates exact Git/hash consistency and admits before
+constructing transport. [Proposal](evals/public_feedback/FREEZE_20261111.md).
+This authenticates no authority and issues no receipt or inference approval.
+Exact-head local/CI/review/merge, actual approval and fresh launch gates remain;
+copied-artifact regrades/review precede benefit claims. Release no-go/G2–G5 stay open.
+
 **2026-11-11 — Retained feedback candidate and mechanics evidence:** clean
 `bb51d22` prepares separate candidate/rehearsal bundles through the existing external
 Python. Retained G0 passes 3,539 tests and both scripted matrices; an interrupted
