@@ -72,8 +72,10 @@ separate kinds of evidence.
    generation forwarding. [Retained preparation and probes](evals/public_feedback/RETAINED_PREPARATION_20261111.md)
    now bind the passing selected gate, separate rehearsal and eight unadmitted
    candidate cells, retaining interrupted/environment-failed histories separately.
-   Next is concrete reviewed freeze/operator binding, CI/merge, actual approval and
-   fresh launch gates. Copied-workspace acceptance regrades remain before benefit claims.
+   The [concrete freeze/operator proposal](evals/public_feedback/FREEZE_20261111.md)
+   now binds the retained selection and requires explicit mode and exact reviewed
+   merge/receipt arguments. Exact-head checks/review/merge, actual approval and fresh
+   launch gates remain. Copied-workspace regrades/review precede any benefit claim.
    This selects no application default and authorizes no inference.
 3. If that scope demonstrates repeatable usefulness, validate held-out/model
    coverage and the real client/recovery workflow, then validate the distribution.
