@@ -1,0 +1,83 @@
+{
+  "format": "public-feedback-retained-preparation-v1",
+  "runtime_commit": "bb51d22ca5df73401cb6c5b14ab3e332bcb24fbe",
+  "directory": "/Users/jorge/.local/share/agent-harness/trials/public-feedback-candidate-20261110-mpb3k36k",
+  "candidate_manifest_sha256": "01dc468e4724bab041fef56282eb92f234d48c70e9a7215a3f21cde39690359b",
+  "capture_index_sha256": "ee14eedcac43ff4358ce7609960a54415f87dcd50dd02b3d88b73e1845fcb61e",
+  "plan_sha256": "9ba6c0b94c1ec9865d7fda15626d5361426ce368adfe209857b0c74b21fef852",
+  "fresh_unadmitted_candidate_cells": 8,
+  "selected_dependency_files": 26,
+  "complete_import_closure_verified": false,
+  "validation": {
+    "status": "retained_evidence_complete_pending_freeze",
+    "interrupted_run_reason": "T3 server restart",
+    "interrupted_log_sha256": "ce8ef07ae1b6f364ce320270858ed52f8580ac29140da263483f332b3f95d47a",
+    "interrupted_record_sha256": "59f20f2550cc06fe9cd7aa5d8ef0cab8cba02903793ddabe625abc7dcb33e985",
+    "selected_passing_gate": {
+      "runtime_commit": "bb51d22ca5df73401cb6c5b14ab3e332bcb24fbe",
+      "python": "/Users/jorge/Projects/agent-harness/.venv/bin/python",
+      "pytest_passed": 3539,
+      "pytest_failed": 0,
+      "live_deselected": 5,
+      "ruff": true,
+      "format": true,
+      "mypy": true,
+      "coding_matrix": 90,
+      "support_matrix": 90,
+      "source_clean": true,
+      "source_local_venv_absent": true,
+      "sha256": "075066d3a4c4231713085766333eb172790fcf0c8c93a30d94a6dc2986259ed3"
+    },
+    "pre_gate_refusal_preview": {
+      "passed": 32,
+      "first_input_pairs": 8,
+      "result_sha256": "c43e2184dd1a7d794ce574817353c709b44b2221b4aa79762b5de733b6f1d631",
+      "candidate_manifest_unchanged": true,
+      "provider_constructed": false,
+      "backend_started": false,
+      "scope": "Preview namespace before completion of restarted G0; final selected probes remain pending."
+    },
+    "environmental_failure": {
+      "passed": 3538,
+      "failed": 1,
+      "failure": "uv missing from retained G0 PATH",
+      "failed_pytest_log_sha256": "bf3a6fdceb441858ecf3f5f09fb6027015003a6437dafef078d2f18b830488f3",
+      "failed_recipe_sha256": "78abdef213cc6e8d4150d28ae7c62788c5b424fe9549a682e101a6e07b29ae4a",
+      "corrected_recipe_sha256": "3f0ca2dd2fb7c363b877495dcbbcf0d80bb67505da6e1eb77ae1ee721f994095",
+      "focused_wheel_recheck_passed": 1,
+      "focused_wheel_log_sha256": "1c0b73bdb565615818ad7b13c3a18f2e55cbb16429fe20deba35229758ebc168",
+      "fresh_full_gate_status": "passed"
+    }
+  },
+  "actual_parent_approval": false,
+  "inference_authorized": false,
+  "generation_forwarded": 0,
+  "evidence": {
+    "selected_artifacts": 329,
+    "evidence_index_sha256": "5e23ae5fe10096ab311cb651e72c6f8b5aca427f8d82356b5a8befd95121638a",
+    "scripted_native_files": 264,
+    "native_evidence_index_sha256": "b51cffcf9d5ba120023d993ad8839bdf70fe7851eea3f3c4d86abd3a250da957",
+    "rehearsal_result_sha256": "6976051ca00d5be3bf5b09988278a489501448258446c106b1dd88d862889650",
+    "refusal_result_sha256": "c43e2184dd1a7d794ce574817353c709b44b2221b4aa79762b5de733b6f1d631",
+    "resource_audit_sha256": "1f0577ab12a5eef1a07d3f9961055a3013fa7cbbd6fd2d6bb1bff687b973b3d6",
+    "scripted_completed_and_accepted": 8,
+    "owned_mock_requests": 24,
+    "candidate_capture_mock_requests": 32,
+    "rehearsal_capture_mock_requests": 32,
+    "final_refusals_passed": 32,
+    "final_read_only_input_pairs": 8,
+    "historical_groups_absent": 9,
+    "distinct_prepared_images": 10,
+    "get_only_observation": {
+      "state": "not_loaded",
+      "continuous_residency_verified": false,
+      "settled": true,
+      "point_sha256": "d4b62a91ddd501de6382a399d2e350c61c3d2f65c19c273d737e14139e76b1dd"
+    },
+    "owned_metadata_get_requests": 24,
+    "observation_metadata_get_requests": 4,
+    "all_indexed_hashes_modes_sizes_verified": true,
+    "all_images_freshly_rehashed_by_resource_audit": false,
+    "candidate_preflight_rechecked_image_bytes": true
+  }
+}

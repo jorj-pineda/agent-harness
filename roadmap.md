@@ -8,6 +8,18 @@ For the concise current gate status and immediate queue, use the
 [release checklist](RELEASE_CHECKLIST.md). Criteria in this roadmap still govern;
 historical entries below retain their original evidence and limitations.
 
+**2026-11-11 — Retained feedback candidate and mechanics evidence:** clean
+`bb51d22` prepares separate candidate/rehearsal bundles through the existing external
+Python. Retained G0 passes 3,539 tests and both scripted matrices; an interrupted
+run and a missing-uv PATH failure remain separately preserved, followed by a focused
+wheel recheck and fresh full pass. Eight scripted reference cells, 32 final refusals,
+a GET-only not_loaded point and nine clean historical groups pass; ten images have
+distinct inodes and eight candidate cells remain unadmitted. Selected indices bind
+329 artifacts and 264 scripted native files, all hashes/modes/sizes rechecked.
+[Details](evals/public_feedback/RETAINED_PREPARATION_20261111.md). No actual receipt
+or model inference; concrete reviewed freeze/operator binding and fresh gates
+remain. Scripted counts do not establish model quality; release no-go/G2–G5 stay open.
+
 **2026-11-10 — Reusable owned mandatory-mock rehearsal:** an internal API creates
 its own fresh feedback bundle and runs the owned executor with fixed in-memory
 reference/check/completion responses. Its synthetic parent fixture uses zero
