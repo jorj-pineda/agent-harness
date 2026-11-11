@@ -1,0 +1,21 @@
+{
+  "format": "public-feedback-retained-preparation-v1",
+  "runtime_commit": "bb51d22ca5df73401cb6c5b14ab3e332bcb24fbe",
+  "directory": "/Users/jorge/.local/share/agent-harness/trials/public-feedback-candidate-20261110-mpb3k36k",
+  "candidate_manifest_sha256": "01dc468e4724bab041fef56282eb92f234d48c70e9a7215a3f21cde39690359b",
+  "capture_index_sha256": "ee14eedcac43ff4358ce7609960a54415f87dcd50dd02b3d88b73e1845fcb61e",
+  "plan_sha256": "9ba6c0b94c1ec9865d7fda15626d5361426ce368adfe209857b0c74b21fef852",
+  "fresh_unadmitted_candidate_cells": 8,
+  "selected_dependency_files": 26,
+  "complete_import_closure_verified": false,
+  "validation": {
+    "status": "incomplete",
+    "interrupted_run_reason": "T3 server restart",
+    "interrupted_log_sha256": "ce8ef07ae1b6f364ce320270858ed52f8580ac29140da263483f332b3f95d47a",
+    "interrupted_record_sha256": "59f20f2550cc06fe9cd7aa5d8ef0cab8cba02903793ddabe625abc7dcb33e985",
+    "selected_passing_gate": null
+  },
+  "actual_parent_approval": false,
+  "inference_authorized": false,
+  "generation_forwarded": 0
+}
