@@ -9,11 +9,25 @@
   "selected_dependency_files": 26,
   "complete_import_closure_verified": false,
   "validation": {
-    "status": "incomplete",
+    "status": "offline_gate_passed_remaining_evidence_pending",
     "interrupted_run_reason": "T3 server restart",
     "interrupted_log_sha256": "ce8ef07ae1b6f364ce320270858ed52f8580ac29140da263483f332b3f95d47a",
     "interrupted_record_sha256": "59f20f2550cc06fe9cd7aa5d8ef0cab8cba02903793ddabe625abc7dcb33e985",
-    "selected_passing_gate": null,
+    "selected_passing_gate": {
+      "runtime_commit": "bb51d22ca5df73401cb6c5b14ab3e332bcb24fbe",
+      "python": "/Users/jorge/Projects/agent-harness/.venv/bin/python",
+      "pytest_passed": 3539,
+      "pytest_failed": 0,
+      "live_deselected": 5,
+      "ruff": true,
+      "format": true,
+      "mypy": true,
+      "coding_matrix": 90,
+      "support_matrix": 90,
+      "source_clean": true,
+      "source_local_venv_absent": true,
+      "sha256": "075066d3a4c4231713085766333eb172790fcf0c8c93a30d94a6dc2986259ed3"
+    },
     "pre_gate_refusal_preview": {
       "passed": 32,
       "first_input_pairs": 8,
@@ -32,7 +46,7 @@
       "corrected_recipe_sha256": "3f0ca2dd2fb7c363b877495dcbbcf0d80bb67505da6e1eb77ae1ee721f994095",
       "focused_wheel_recheck_passed": 1,
       "focused_wheel_log_sha256": "1c0b73bdb565615818ad7b13c3a18f2e55cbb16429fe20deba35229758ebc168",
-      "fresh_full_gate_status": "running"
+      "fresh_full_gate_status": "passed"
     }
   },
   "actual_parent_approval": false,
