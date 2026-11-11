@@ -196,3 +196,30 @@ async def test_stale_regrade_bytes_binding_refuses(row):
     review["regrades_sha256"] = "f" * 64
     with pytest.raises(ValueError, match="bindings"):
         join(report, grades, review, bind=False)
+
+
+async def test_join_never_reads_filesystem(row, monkeypatch):
+    from pathlib import Path
+
+    data = inputs(row)
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("Pure join attempted filesystem access")
+
+    with monkeypatch.context() as guard:
+        guard.setattr("builtins.open", forbidden)
+        guard.setattr("io.open", forbidden)
+        guard.setattr(Path, "read_bytes", forbidden)
+        guard.setattr(Path, "read_text", forbidden)
+        assert join(*data)["public_followup_rule_eligible_for_human_review"]
+
+
+async def test_join_refuses_consistently_reordered_arms(row):
+    report, grades, review = inputs(row)
+    for index in (0, 1):
+        arm = "bool_check" if index == 0 else "control"
+        report["cohort"]["cells"][index]["cell"]["arm"] = arm
+        grades["cells"][index]["cell"]["arm"] = arm
+        review["cells"][index]["cell"]["arm"] = arm
+    with pytest.raises(ValueError, match="schedule differs"):
+        join(report, grades, review)

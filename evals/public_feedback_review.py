@@ -9,7 +9,7 @@ from typing import Any, Literal
 from pydantic import Field, TypeAdapter
 
 from evals.heldout_execution_manifest import Digest, FrozenModel
-from evals.public_feedback import FeedbackCell, validate_feedback_plan
+from evals.public_feedback import FeedbackCell
 from evals.public_feedback_regrade import FeedbackRegrades
 from evals.public_feedback_runner import FeedbackLedger
 from evals.public_feedback_summary import feedback_summary
@@ -85,8 +85,23 @@ def review_feedback_run(
         for row in raw["results"]
     ]
     summary = feedback_summary(ledger, results, scripted=mode == "scripted-real-tools-rehearsal")
-    plan = validate_feedback_plan()
-    if [state.cell for state in ledger.cells] != plan.cells:
+    # This v1 join reviews the fixed protocol, independent of mutable repo files.
+    expected_arms = (
+        "control",
+        "bool_check",
+        "bool_check",
+        "control",
+        "control",
+        "bool_check",
+        "bool_check",
+        "control",
+    )
+    if any(
+        state.cell.ordinal != index + 1
+        or state.cell.repeat != index // 2 + 1
+        or state.cell.arm != expected_arms[index]
+        for index, state in enumerate(ledger.cells)
+    ):
         raise ValueError("Feedback review schedule differs")
     clean = True
     disagreements = []
