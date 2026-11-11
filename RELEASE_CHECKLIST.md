@@ -69,9 +69,11 @@ separate kinds of evidence.
    outcomes and unknown/stopped states without assessing benefit or regrading.
    A [reusable owned mandatory-mock rehearsal](evals/public_feedback/OWNED_REHEARSAL.md)
    now creates its own bundle and retains clean native lifecycle evidence without
-   generation forwarding. Next is fresh retained candidate/rehearsal/probes,
-   concrete reviewed freeze/operator binding, CI/merge, actual approval and fresh
-   launch gates.
+   generation forwarding. [Retained preparation and probes](evals/public_feedback/RETAINED_PREPARATION_20261111.md)
+   now bind the passing selected gate, separate rehearsal and eight unadmitted
+   candidate cells, retaining interrupted/environment-failed histories separately.
+   Next is concrete reviewed freeze/operator binding, CI/merge, actual approval and
+   fresh launch gates. Copied-workspace acceptance regrades remain before benefit claims.
    This selects no application default and authorizes no inference.
 3. If that scope demonstrates repeatable usefulness, validate held-out/model
    coverage and the real client/recovery workflow, then validate the distribution.
