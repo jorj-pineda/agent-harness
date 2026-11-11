@@ -82,7 +82,7 @@ separate kinds of evidence.
    [offline join](evals/public_feedback/REVIEW_JOIN.md) is implemented and a
    [retained scripted exercise](evals/public_feedback/REVIEW_EVIDENCE.md) preserves
    all eight review ordinals as unknown, without benefit eligibility. Full offline
-   validation is pending; actual review and comparison evidence remain required.
+   validation passes 3,594 tests; actual review and comparison evidence remain required.
    This selects no application default and authorizes no inference.
 3. If that scope demonstrates repeatable usefulness, validate held-out/model
    coverage and the real client/recovery workflow, then validate the distribution.
