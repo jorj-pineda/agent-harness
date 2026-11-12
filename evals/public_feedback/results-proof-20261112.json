@@ -1,0 +1,103 @@
+{
+  "format": "public-feedback-live-results-proof-v1",
+  "directory": "/Users/jorge/.local/share/agent-harness/trials/public-feedback-candidate-20261110-mpb3k36k",
+  "runtime_commit": "bb51d22ca5df73401cb6c5b14ab3e332bcb24fbe",
+  "analysis_revision": "64c240272030e2b72b7f5cccfabfe6ac3276c1df",
+  "freeze_reviewed_head": "c5b4e292e3c488f87c3263ce14485e4121664bdf",
+  "freeze_merge_commit": "741839c3d333c83f6dd44e560aaa434b5d0d30cc",
+  "manifest_sha256": "01dc468e4724bab041fef56282eb92f234d48c70e9a7215a3f21cde39690359b",
+  "approval_sha256": "796ffd864734b58c670928027aad24620f9c7c87ffeef50e47d4df03e0323f68",
+  "report_sha256": "1fef2958f17e828db18d2d1000d00bb9e8e1ab922042463dc9366bd762adaec8",
+  "regrades_sha256": "737e211869fa8cae0c23b1dc65f3ba0c72a26603234da3f00e180b38d233a569",
+  "review_sha256": "8884969037168ce9361b9b39f268bd3e975fe8437599fb123821d4883bd36821",
+  "review_summary_sha256": "44adb07955c8f7ae24b7fb0dc378688f26f396b480034c1935c95b03886b9906",
+  "post_run_evidence_index_sha256": "897a95cb67615146abd2453b7fdbc16982216c353b13a7993705a8180e61d02d",
+  "final_evidence_index_sha256": "4b73125e46b8fec26d3c7e15f9654b20e83cf468e211b41057d3ca8b2817b098",
+  "selected_evidence_files": 279,
+  "cohort_status": "closed",
+  "cells_recorded": 8,
+  "clean_unforced_settlements": 8,
+  "native_responses": 48,
+  "prompt_tokens": 87976,
+  "completion_tokens": 4235,
+  "arms": {
+    "control": {
+      "planned": 4,
+      "results_present": 4,
+      "recorded_cells": 4,
+      "missing_results": 0,
+      "accepted": 0,
+      "completed_and_accepted": 0,
+      "unknown_usage_results": 0,
+      "prompt_tokens": 43068,
+      "completion_tokens": 1755,
+      "known_result_prompt_tokens": 43068,
+      "known_result_completion_tokens": 1755
+    },
+    "bool_check": {
+      "planned": 4,
+      "results_present": 4,
+      "recorded_cells": 4,
+      "missing_results": 0,
+      "accepted": 4,
+      "completed_and_accepted": 4,
+      "unknown_usage_results": 0,
+      "prompt_tokens": 44908,
+      "completion_tokens": 2480,
+      "known_result_prompt_tokens": 44908,
+      "known_result_completion_tokens": 2480
+    }
+  },
+  "copied_regrade_exit_codes": [
+    1,
+    0,
+    0,
+    1,
+    1,
+    0,
+    0,
+    1
+  ],
+  "pairs": [
+    {
+      "repeat": 1,
+      "control_ordinal": 1,
+      "bool_check_ordinal": 2,
+      "control_regrade_exit_code": 1,
+      "bool_check_regrade_exit_code": 0,
+      "acceptance_regression": false
+    },
+    {
+      "repeat": 2,
+      "control_ordinal": 4,
+      "bool_check_ordinal": 3,
+      "control_regrade_exit_code": 1,
+      "bool_check_regrade_exit_code": 0,
+      "acceptance_regression": false
+    },
+    {
+      "repeat": 3,
+      "control_ordinal": 5,
+      "bool_check_ordinal": 6,
+      "control_regrade_exit_code": 1,
+      "bool_check_regrade_exit_code": 0,
+      "acceptance_regression": false
+    },
+    {
+      "repeat": 4,
+      "control_ordinal": 8,
+      "bool_check_ordinal": 7,
+      "control_regrade_exit_code": 1,
+      "bool_check_regrade_exit_code": 0,
+      "acceptance_regression": false
+    }
+  ],
+  "unknown_review_ordinals": [],
+  "regrade_disagreement_ordinals": [],
+  "public_followup_rule_eligible_for_human_review": true,
+  "benefit_assessment": "not_assessed",
+  "scope_review": "No rescue, test weakening, tool misuse or additional regression observed in retained scoped evidence; parent performed no repair. No continuous host attribution.",
+  "inference_ran": true,
+  "retry_authorized": false,
+  "release_decision": "no_go"
+}

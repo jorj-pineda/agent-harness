@@ -4,6 +4,28 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-12 — Closed public visible-check comparison:** the authorized fixed
+eight-cell Gemma comparison records control 0/4 versus bool_check 4/4 accepted and
+completed-and-accepted, all four pairs favoring treatment. Eight copied original-
+criteria grades match, 48 native responses have known usage and eight settlements
+are clean/unforced. Scoped review observes no rescue, weakening or misuse; the join
+is eligible for human review, with benefit still `not_assessed`.
+[Results](evals/public_feedback/RESULTS_20261112.md). Treatment writes the correct bool
+guard before its first check, so this is test-availability development evidence,
+not demonstrated check-feedback recovery or held-out/general improvement. Cohort
+closed, no retries/further inference. Original targets, release no-go and G2–G5
+remain; separately selected held-out/model coverage and client/recovery acceptance
+are needed before release/default decisions.
+
+**2026-11-11 — Offline feedback review join exercised:** a pure selected-byte join
+now binds the fixed eight-cell report, copied regrades and explicit review records,
+preserving unknowns, paired regressions and outcome disagreements without IO or
+authority. Twenty-three focused tests, 3,594 offline tests, static checks and both
+scripted matrices pass. The [retained scripted exercise](evals/public_feedback/REVIEW_EVIDENCE.md)
+retains all eight review dimensions as unknown, no regrade disagreements and no
+benefit eligibility. Actual approval/fresh launch gates, live comparison and genuine
+intervention/regression review remain. No inference or release gate closure follows.
+
 **2026-11-11 — Feedback review specification:** the
 [intervention/regression protocol](evals/public_feedback/REVIEW_PROTOCOL.md) defines
 all-eight-cell evidence coverage, explicit unknowns, original/regrade reconciliation
