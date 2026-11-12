@@ -97,6 +97,12 @@ separate kinds of evidence.
    limits. Review this known-task evidence, then separately select held-out/model
    coverage and real client/recovery acceptance before distribution validation.
    No additional inference, retries or default adoption is authorized by this page.
+4. The [fresh public task proposal](evals/fresh_visible_tasks/README.md) authors
+   three explicit development tasks with weak/stronger checks and independent
+   acceptance controls. It proposes twelve same-model cells without inference
+   approval. Review/merge the selection, implement the minimal shared workspace
+   seam, retain mandatory-mock/owned rehearsal and bind a passing concrete freeze
+   before requesting approval. This is not held-out or second-model coverage.
 
 Do not add a premium supervisor, agents, semantic search or a larger prompt merely
 to fill the queue. Do not promise an unattended release from public pilot success.
