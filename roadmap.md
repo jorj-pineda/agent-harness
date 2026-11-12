@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-12 — Fresh visible-check workspace binding:** an explicit pinned twelve-
+cell selection prepares fresh weak/stronger fixtures and single-use workspace
+markers. The shared evaluator binds task/mode/repeat and policy, records later
+test weakening against the selected initial test and latches source/policy drift
+before provider calls and around unchanged independent grading.
+[Details](evals/fresh_visible_tasks/WORKSPACES.md). This allocates no backend or
+execution authority and makes no model-quality claim. Mandatory-mock input capture,
+owned lifecycle rehearsal and concrete freeze/approval/fresh launch gates remain;
+release no-go and G2–G5 stay open.
+
 **2026-11-12 — Fresh public visible-check task authoring:** a separate explicit
 development catalog adds three bounded bugfix/feature/refactor tasks with weak and
 stronger visible checks, unchanged per-task external acceptance, references and

@@ -100,8 +100,8 @@ separate kinds of evidence.
 4. The [fresh public task proposal](evals/fresh_visible_tasks/README.md) authors
    three explicit development tasks with weak/stronger checks and independent
    acceptance controls. It proposes twelve same-model cells without inference
-   approval. Review/merge the selection, implement the minimal shared workspace
-   seam, retain mandatory-mock/owned rehearsal and bind a passing concrete freeze
+   approval. The [pinned shared workspace seam](evals/fresh_visible_tasks/WORKSPACES.md)
+   is implemented; review/merge it, retain mandatory-mock/owned rehearsal and bind a passing concrete freeze
    before requesting approval. This is not held-out or second-model coverage.
 
 Do not add a premium supervisor, agents, semantic search or a larger prompt merely

@@ -1,0 +1,102 @@
+{
+  "format": "fresh-visible-selection-v1",
+  "inference_authorized": false,
+  "catalog_sha256": "a3989563cfd490b82245b693eb75f1f6c7b9f55d92200df5d5478361073af6af",
+  "tasks": [
+    {
+      "task_id": "fv_lookup_option",
+      "fixture_sha256": "ea00169e6b84bede8377c43a4b62a99ccac1b02f83dae818b3e2cd4e7b441738",
+      "acceptance_sha256": "aadc93d38562cc3551688a4ede682831d86c2d64a5f611aab3d3a4b5cdc419a1",
+      "reference_sha256": "23f84432c37b29ccccb68743ebbf930e4bafe42b7d2a413d55a328bd4d97623c",
+      "stronger_sha256": "c32d447036dda2e6298c6cb50e19939fb94b8b050ff23adcaa8d76cd7a8de028"
+    },
+    {
+      "task_id": "fv_merge_windows",
+      "fixture_sha256": "bd2fae52fd3ebd7fbafab7dfea25e02723c22e254dfa0e989a20b650122dc9b3",
+      "acceptance_sha256": "575709944b0b43eaa74cb15de14368a2c9c02a048738a3a12c11f14dc9f5cf3e",
+      "reference_sha256": "63dfa6c5d7b93ed9e2340f408ac3c40922bdeb6def134c03d8d5069118aa9e35",
+      "stronger_sha256": "bc13e32038345cad91c2be0a11c39a0c92d1bb418d756022dd0777847b773c58"
+    },
+    {
+      "task_id": "fv_header_pair",
+      "fixture_sha256": "8a797362dec16d8ac26444539eff45e9fd05998be1c6ad7b14dcb35a20e3a8b8",
+      "acceptance_sha256": "c621fe1ee29b419669ab491ce653602d32376f199844dae9a2fcd922f2700b22",
+      "reference_sha256": "ab2fc6f6f223749822c8fda7923cd3b1c8d95671769f0b15cacfae275684748c",
+      "stronger_sha256": "9139d8cfd93176e65e41fc2c0a9a05dd9b6d46949a0cbbfe4cc73c91a7639378"
+    }
+  ],
+  "cells": [
+    {
+      "ordinal": 1,
+      "task_id": "fv_lookup_option",
+      "arm": "weak",
+      "repeat": 1
+    },
+    {
+      "ordinal": 2,
+      "task_id": "fv_lookup_option",
+      "arm": "stronger",
+      "repeat": 1
+    },
+    {
+      "ordinal": 3,
+      "task_id": "fv_merge_windows",
+      "arm": "stronger",
+      "repeat": 1
+    },
+    {
+      "ordinal": 4,
+      "task_id": "fv_merge_windows",
+      "arm": "weak",
+      "repeat": 1
+    },
+    {
+      "ordinal": 5,
+      "task_id": "fv_header_pair",
+      "arm": "weak",
+      "repeat": 1
+    },
+    {
+      "ordinal": 6,
+      "task_id": "fv_header_pair",
+      "arm": "stronger",
+      "repeat": 1
+    },
+    {
+      "ordinal": 7,
+      "task_id": "fv_lookup_option",
+      "arm": "stronger",
+      "repeat": 2
+    },
+    {
+      "ordinal": 8,
+      "task_id": "fv_lookup_option",
+      "arm": "weak",
+      "repeat": 2
+    },
+    {
+      "ordinal": 9,
+      "task_id": "fv_merge_windows",
+      "arm": "weak",
+      "repeat": 2
+    },
+    {
+      "ordinal": 10,
+      "task_id": "fv_merge_windows",
+      "arm": "stronger",
+      "repeat": 2
+    },
+    {
+      "ordinal": 11,
+      "task_id": "fv_header_pair",
+      "arm": "stronger",
+      "repeat": 2
+    },
+    {
+      "ordinal": 12,
+      "task_id": "fv_header_pair",
+      "arm": "weak",
+      "repeat": 2
+    }
+  ]
+}
