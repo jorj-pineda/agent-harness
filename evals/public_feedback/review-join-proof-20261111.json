@@ -1,0 +1,31 @@
+{
+  "format": "public-feedback-review-join-proof-v1",
+  "directory": "/Users/jorge/.local/share/agent-harness/trials/public-feedback-candidate-20261110-mpb3k36k/review-join-proof-20261111",
+  "join_revision": "68b3b75",
+  "selection_sha256": "6b7099d83fa24570cae9048af2558374c037b5cd4d8c28f612cc3505dc95197a",
+  "report_sha256": "041fc677529873bd2737f80aa44aab82c1a2608b6c4cb003d739445458d064ef",
+  "regrades_sha256": "e8941e99b716d89b664ada14223ec225f1067e6b548e8c57540c952c1ca9a61c",
+  "review_sha256": "bee12e1ae6dca335fa2141940bb879a60dd7ec19f95dd6fea01f67b3293b79fd",
+  "summary_sha256": "408839dd0c8b7d1cd514e8eb1e9fcae42c52352523039245e2092b7476e9a582",
+  "recipe_sha256": "d52ab55b478fdaddcda16867728a247bcd13e1cd449527b46cbd65ee986bfd0c",
+  "evidence_label": "scripted-real-tools-rehearsal",
+  "unknown_review_ordinals": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "regrade_disagreement_ordinals": [],
+  "scripted_pairs_without_acceptance_regression": 4,
+  "public_followup_rule_eligible_for_human_review": false,
+  "benefit_assessment": "not_assessed",
+  "original_report_and_regrades_unchanged": true,
+  "external_evidence_references_verified": false,
+  "reviewer_assertions_authenticated": false,
+  "actual_intervention_review_performed": false,
+  "inference_ran": false
+}
