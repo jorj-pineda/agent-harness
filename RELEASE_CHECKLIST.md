@@ -1,7 +1,7 @@
 # Current release checklist
 
-Snapshot after [PR #391](https://github.com/jorj-pineda/agent-harness/pull/391),
-including the [offline pagination diagnosis](evals/public_envelope/PAGINATION_DIAGNOSIS_20261110.md).
+Snapshot including the [closed visible-check comparison](evals/public_feedback/RESULTS_20261112.md)
+on 2026-11-12 and the earlier public/project cohorts.
 This is the short operational view of the [roadmap](roadmap.md), which still
 governs scope and acceptance criteria. The [release audit](RELEASE_READINESS.md)
 retains historical findings and limitations. This checklist grants no execution
@@ -29,6 +29,13 @@ These are scoped mechanics/workflow claims, not universal semantic correctness.
 Passing a configured project check does not prove independent task acceptance.
 
 ## Latest observations
+
+- The [visible-check comparison](evals/public_feedback/RESULTS_20261112.md) records
+  control 0/4 and bool_check 4/4 accepted/completed-and-accepted on one known task
+  and one model. All copied grades match and eight settlements are clean/unforced.
+  Treatment fixes bool before its first check; no corrective-feedback recovery is
+  demonstrated. The limited rule is eligible for human review, benefit remains
+  `not_assessed`, and this closes no release gate or original unmet target.
 
 - The [original-project timeout follow-up](evals/projects/duodoro/PROVIDER_WAIT_TEN_TASK_RESULTS.md)
   accepted and completed-and-accepted 2/10 artifacts. Its original criteria and
@@ -84,8 +91,12 @@ separate kinds of evidence.
    all eight review ordinals as unknown, without benefit eligibility. Full offline
    validation passes 3,594 tests; actual review and comparison evidence remain required.
    This selects no application default and authorizes no inference.
-3. If that scope demonstrates repeatable usefulness, validate held-out/model
-   coverage and the real client/recovery workflow, then validate the distribution.
+3. The authorized eight-cell comparison is now closed with control 0/4 versus
+   bool_check 4/4, matching copied grades and scoped intervention review; see the
+   results above. Earlier preparation/proposal descriptions retain their historical
+   limits. Review this known-task evidence, then separately select held-out/model
+   coverage and real client/recovery acceptance before distribution validation.
+   No additional inference, retries or default adoption is authorized by this page.
 
 Do not add a premium supervisor, agents, semantic search or a larger prompt merely
 to fill the queue. Do not promise an unattended release from public pilot success.
