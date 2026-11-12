@@ -1,0 +1,33 @@
+format: task-catalog-v1
+id: fresh-visible-development-v1
+partition: development
+tasks:
+  - id: fv_lookup_option
+    fixture: fv_lookup_option
+    category: bugfix
+    request: >-
+      Fix lookup.option(options, key, default). For a dictionary options and a string
+      key, return the stored value whenever the key exists, including None, False,
+      zero and empty strings or containers. Only a missing key returns default.
+      Do not mutate options or default; preserve returned object identity. Other
+      input validation is outside scope. Run visible checks and report the outcome.
+  - id: fv_merge_windows
+    fixture: fv_merge_windows
+    category: feature
+    request: >-
+      Implement windows.merge_windows(intervals). Input is a list of integer pairs
+      (start, end) with start < end. Return sorted tuples representing their union,
+      merging overlapping or touching pairs, including nested and duplicate pairs.
+      Empty input returns []. Do not mutate the input or its pairs. Invalid input
+      validation is outside scope. Run visible checks and report the outcome.
+  - id: fv_header_pair
+    fixture: fv_header_pair
+    category: refactor
+    request: >-
+      Refactor headers.parse_header(text) to return an immutable tuple-subclass
+      HeaderPair(name, value), exposing name and value attributes. Preserve its
+      existing first-colon split and strip behavior for string inputs, including
+      additional colons in values, spaces, empty names and empty values. Missing
+      colon still raises ValueError. Preserve tuple equality, indexing, unpacking,
+      length and hash behavior; attribute assignment must fail. No new validation
+      or normalization. Run visible checks and report the outcome.

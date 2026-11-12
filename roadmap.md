@@ -4,6 +4,17 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-12 — Fresh public visible-check task authoring:** a separate explicit
+development catalog adds three bounded bugfix/feature/refactor tasks with weak and
+stronger visible checks, unchanged per-task external acceptance, references and
+partial-patch discrimination controls. Ten focused checks pass through the shared
+grader; no runtime behavior or default catalog changes. The
+[bounded proposal](evals/fresh_visible_tasks/README.md) specifies twelve cells and
+requires shared workspace/selection integration, mandatory-mock/owned rehearsal,
+reviewed byte pins, candidate gates and explicit approval before inference.
+These are public authored tasks, not held-out/contamination-attested evidence.
+No new model attempt, quality/default claim or release gate closure follows.
+
 **2026-11-12 — Closed public visible-check comparison:** the authorized fixed
 eight-cell Gemma comparison records control 0/4 versus bool_check 4/4 accepted and
 completed-and-accepted, all four pairs favoring treatment. Eight copied original-
