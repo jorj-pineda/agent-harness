@@ -4,6 +4,14 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-11 — Feedback review specification:** the
+[intervention/regression protocol](evals/public_feedback/REVIEW_PROTOCOL.md) defines
+all-eight-cell evidence coverage, explicit unknowns, original/regrade reconciliation
+and paired acceptance regressions. It changes no existing comparison criteria or
+execution authority. A pure offline join and retained scripted exercise are next;
+actual approval, fresh launch gates and real comparison/review remain outstanding.
+Release no-go and G2–G5 remain unchanged.
+
 For the concise current gate status and immediate queue, use the
 [release checklist](RELEASE_CHECKLIST.md). Criteria in this roadmap still govern;
 historical entries below retain their original evidence and limitations.
