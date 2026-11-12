@@ -25,6 +25,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal, TypedDict
 
 if TYPE_CHECKING:
+    from evals.fresh_visible_workspaces import FreshCellWorkspace
     from evals.public_admission import PublicCellWorkspace
     from evals.public_feedback_runner import FeedbackLedger
     from evals.public_feedback_workspaces import FeedbackCellWorkspace
@@ -584,6 +585,7 @@ async def run_task(
     prepared_directory: Path | None = None,
     public_cell: PublicCellWorkspace | None = None,
     feedback_cell: FeedbackCellWorkspace | None = None,
+    fresh_cell: FreshCellWorkspace | None = None,
     command_env: Mapping[str, str] | None = None,
 ) -> RealTaskResult:
     selected_env = _task_command_environment(command_env)
@@ -594,7 +596,13 @@ async def run_task(
     profiles: list[ExecutionProfile] = []
     from evals.public_admission import PublicPilotDriftError, PublicTaskGuard
 
-    if sum(value is not None for value in (prepared_directory, public_cell, feedback_cell)) > 1:
+    if (
+        sum(
+            value is not None
+            for value in (prepared_directory, public_cell, feedback_cell, fresh_cell)
+        )
+        > 1
+    ):
         raise ValueError("Select only one prepared workspace policy")
     public_guard = (
         PublicTaskGuard(task, public_cell, mode=mode, attempt=attempt, settings=settings)
@@ -607,11 +615,21 @@ async def run_task(
         public_guard = FeedbackTaskGuard(
             task, feedback_cell, mode=mode, attempt=attempt, settings=settings
         )
+    if fresh_cell is not None:
+        from evals.fresh_visible_workspaces import FreshTaskGuard
+
+        public_guard = FreshTaskGuard(
+            task, fresh_cell, mode=mode, attempt=attempt, settings=settings
+        )
     guard = _heldout_guard(task, execution=True)
     observed = ObservedProvider(
         provider, before_chat=public_guard if public_guard is not None else guard
     )
-    if feedback_cell is not None:
+    if fresh_cell is not None:
+        from evals.fresh_visible_workspaces import admit_fresh_cell
+
+        workspace_context = admit_fresh_cell(fresh_cell.directory, ordinal=fresh_cell.ordinal)
+    elif feedback_cell is not None:
         from evals.public_feedback_workspaces import admit_feedback_cell
 
         workspace_context = admit_feedback_cell(
@@ -631,7 +649,7 @@ async def run_task(
         workspace_context = disposable_workspace(task.fixture)
     with workspace_context as copy:
         initial_contents = None
-        if feedback_cell is not None:
+        if feedback_cell is not None or fresh_cell is not None:
             from evals.heldout_guard import _read_regular
 
             initial_test, _ = _read_regular(copy.workspace.root / "test_visible.py", 16_000)
@@ -724,7 +742,9 @@ async def run_task(
                     argv=[],
                     exit_code=1,
                     stdout=(
-                        "Independent acceptance not certified: public pilot preservation failed.\n"
+                        "Independent acceptance not certified: "
+                        + ("fresh visible" if fresh_cell is not None else "public pilot")
+                        + " preservation failed.\n"
                     ),
                     stderr="",
                     stdout_truncated=False,
@@ -837,14 +857,18 @@ async def run_task(
                 else None,
                 **(
                     {
-                        "public_feedback_preservation"
+                        "fresh_visible_preservation"
+                        if fresh_cell is not None
+                        else "public_feedback_preservation"
                         if feedback_cell is not None
                         else "public_pilot_preservation": public_guard.evidence()
                     }
                     if public_guard is not None
                     else {}
                 ),
-                "workspace_policy": "prepared-public-feedback-single-use-v1"
+                "workspace_policy": "prepared-fresh-visible-single-use-v1"
+                if fresh_cell is not None
+                else "prepared-public-feedback-single-use-v1"
                 if feedback_cell is not None
                 else "prepared-public-pilot-single-use-v1"
                 if public_cell is not None
@@ -855,6 +879,7 @@ async def run_task(
                 if prepared_directory is not None
                 or public_cell is not None
                 or feedback_cell is not None
+                or fresh_cell is not None
                 else None,
                 "inspection_only": question,
                 "coding_toolset": settings.coding_toolset,
