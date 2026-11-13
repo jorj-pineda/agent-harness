@@ -4,6 +4,19 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-13 — Retained fresh preparation and native mock proof:** clean reviewed
+`3d0d676` uses the existing external interpreter without a local environment.
+Its G0 passes 3,677 offline tests, static checks and both scripted matrices.
+Actual owned rehearsal retains twelve clean/unforced settlements, 36 mocked
+generation requests and 36 real metadata-only GETs, with zero generation forwarded.
+Thirteen images are rehashed and have distinct inodes; twelve separate unused
+fixtures remain unadmitted. Twelve normalized/native pairs and 341 selected evidence
+files are bound in the [retained proof](evals/fresh_visible_tasks/RETAINED_PREPARATION_20261113.md).
+First inputs are not bound to unused fixture paths and no live execution manifest
+or approval exists. Fresh execution selection/admission/guarded ownership and a
+concrete freeze/actual approval/fresh gates remain before inference. No quality,
+held-out/default claim or release gate closure follows.
+
 **2026-11-13 — Fresh owned mandatory-mock rehearsal:** a synchronous internal API
 now brackets each of the twelve shared capture/evaluation cells with a separately
 prepared image and the existing owned metadata-only backend lifecycle. Results

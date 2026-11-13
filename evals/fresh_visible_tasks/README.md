@@ -105,7 +105,8 @@ replace the original project 8/10 target or close any release gate.
 2. The [pinned shared-evaluator workspace seam](WORKSPACES.md) is implemented for
    these task/arm fixtures without changing the pagination-specific executor.
    [Mandatory-mock capture](CAPTURE.md) and [owned lifecycle rehearsal](OWNED_REHEARSAL.md)
-   are implemented; retain actual clean-source native lifecycle proof next.
+   are implemented. [Retained clean-source proof](RETAINED_PREPARATION_20261113.md)
+   verifies native lifecycle, the offline gate and separate unused fixtures/images.
 3. Bind a concrete clean candidate, settings/dependencies/image/model pins, passing
    exact-candidate offline/install gates, retained evidence and fresh launch checks.
    Obtain explicit approval for that exact comparison before admission/generation.
