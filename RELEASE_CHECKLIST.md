@@ -104,9 +104,12 @@ separate kinds of evidence.
    is implemented. [Mandatory-mock input capture](evals/fresh_visible_tasks/CAPTURE.md)
    now records all twelve cells through shared evaluation and native serialization.
    [Owned-lifecycle rehearsal](evals/fresh_visible_tasks/OWNED_REHEARSAL.md) is
-   implemented with mandatory-mock generation; native retained proof/preparation
-   remain before a passing concrete freeze
-   before requesting approval. This is not held-out or second-model coverage.
+   implemented with mandatory-mock generation. [Retained preparation/native proof](evals/fresh_visible_tasks/RETAINED_PREPARATION_20261113.md)
+   now binds a passing selected G0, twelve actual clean settlements, thirteen
+   verified images and twelve separate unadmitted fixtures. The captured first
+   inputs are not bound to those unused fixture paths; live execution manifest/
+   admission/guarded serial ownership and a concrete reviewed freeze remain before
+   requesting approval. This is not held-out or second-model coverage.
 
 Do not add a premium supervisor, agents, semantic search or a larger prompt merely
 to fill the queue. Do not promise an unattended release from public pilot success.
