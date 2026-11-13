@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-13 — Fresh owned mandatory-mock rehearsal:** a synchronous internal API
+now brackets each of the twelve shared capture/evaluation cells with a separately
+prepared image and the existing owned metadata-only backend lifecycle. Results
+precede settlement; clean unforced cleanup and retained prior evidence precede
+later dispatch, with failure states preserved and success written last.
+[Details](evals/fresh_visible_tasks/OWNED_REHEARSAL.md). Generation remains internal
+mock responses, with no execution receipt or inference authority. Native retained
+proof/preparation and a concrete freeze/actual approval/fresh launch gates remain.
+No model quality, held-out/default or release gate closure is claimed.
+
 **2026-11-13 — Fresh mandatory-mock input capture:** twelve fresh arm-specific
 cells now use shared evaluation and production-adapter serialization with internal
 write/check/final mock responses. Normalized/native input evidence, selected
