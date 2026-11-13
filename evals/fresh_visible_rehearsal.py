@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 import stat
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from dataclasses import asdict
 from itertools import islice
 from pathlib import Path
@@ -121,181 +121,216 @@ class _ReferenceTransport(httpx.MockTransport):
         await super().aclose()
 
 
-async def rehearse_fresh_inputs(
-    directory: Path,
-    *,
-    command_env: Mapping[str, str],
-    runtime_inventory: Path,
-    runtime_sha256: str,
-    dependency_manifest: Path,
-    dependency_sha256: str,
-) -> FreshRehearsal:
-    """Consume twelve newly prepared cells, save evidence privately, publish index last."""
-    cells = [selected_cell(ordinal)[0] for ordinal in range(1, 13)]
-    observed = _harness_revision()
-    runtime = PublicRuntime.model_validate(observed)
-    environment = _task_command_environment(command_env)
-    if environment is None:
-        raise ValueError("Select a replacement command environment")
-    settings = public_settings()
-    expected_settings = settings_bytes(settings)
-    check_runtime_selection(runtime_inventory, runtime_sha256)
-    check_dependency_selection(dependency_manifest, dependency_sha256)
-    destination = _destination(directory)
-    destination.mkdir(mode=0o700, exist_ok=False)
-    saved: dict[str, str] = {}
-    outer: set[str] = set()
+class _FreshCapture:
+    """Private serial capture driver shared by offline and owned-mock entry points."""
 
-    def save(name: str, raw: bytes) -> str:
-        digest = _save(destination / name, raw)
-        saved[name] = digest
-        outer.add(Path(name).parts[0])
-        return digest
-
-    def retain(name: str, expected: str | None = None) -> str:
-        raw, mode = _read_regular(destination / name, 2_000_000)
-        if mode != 0o600 or (expected is not None and _digest(raw) != expected):
-            raise ValueError("Fresh rehearsal evidence bytes/mode changed")
-        saved[name] = _digest(raw)
-        return saved[name]
-
-    def check() -> None:
-        if (
-            destination.is_symlink()
-            or _destination(directory) != destination
-            or stat.S_IMODE(destination.stat().st_mode) != 0o700
-            or _harness_revision() != observed
-        ):
-            raise ValueError("Fresh rehearsal container/runtime changed")
-        check_settings(settings, expected_settings)
+    def __init__(
+        self,
+        directory: Path,
+        *,
+        command_env: Mapping[str, str],
+        runtime_inventory: Path,
+        runtime_sha256: str,
+        dependency_manifest: Path,
+        dependency_sha256: str,
+    ) -> None:
+        self.cells = [selected_cell(ordinal)[0] for ordinal in range(1, 13)]
+        self.observed = _harness_revision()
+        self.runtime = PublicRuntime.model_validate(self.observed)
+        self.environment = _task_command_environment(command_env)
+        if self.environment is None:
+            raise ValueError("Select a replacement command environment")
+        self.settings = public_settings()
+        self.expected_settings = settings_bytes(self.settings)
+        self.runtime_inventory, self.runtime_sha256 = runtime_inventory, runtime_sha256
+        self.dependency_manifest, self.dependency_sha256 = dependency_manifest, dependency_sha256
         check_runtime_selection(runtime_inventory, runtime_sha256)
         check_dependency_selection(dependency_manifest, dependency_sha256)
-        for name, expected in saved.items():
-            raw, mode = _read_regular(destination / name, 2_000_000)
+        self.directory = directory
+        self.destination = _destination(directory)
+        self.destination.mkdir(mode=0o700, exist_ok=False)
+        self.saved: dict[str, str] = {}
+        self.outer: set[str] = set()
+        self.rows: list[CapturedFreshCell] = []
+        self.results: list[dict] = []
+        try:
+            self.settings_sha = self.save("settings.json", self.expected_settings)
+            self.environment_sha = self.save(
+                "command-environment.json", environment_bytes(self.environment)
+            )
+            for source, expected, name in (
+                (runtime_inventory, runtime_sha256, "runtime-inventory.json"),
+                (dependency_manifest, dependency_sha256, "dependency-files.json"),
+            ):
+                raw, mode = _read_regular(source, 2_000_000)
+                if mode != 0o600 or _digest(raw) != expected:
+                    raise ValueError("Fresh rehearsal selected host inventory changed")
+                self.save(name, raw)
+        except BaseException as error:
+            self.fail(error)
+            raise
+
+    def save(self, name: str, raw: bytes) -> str:
+        digest = _save(self.destination / name, raw)
+        self.saved[name] = digest
+        self.outer.add(Path(name).parts[0])
+        return digest
+
+    def retain(self, name: str, expected: str | None = None) -> str:
+        raw, mode = _read_regular(self.destination / name, 2_000_000)
+        if mode != 0o600 or (expected is not None and _digest(raw) != expected):
+            raise ValueError("Fresh rehearsal evidence bytes/mode changed")
+        self.saved[name] = _digest(raw)
+        return self.saved[name]
+
+    def check(self) -> None:
+        if (
+            self.destination.is_symlink()
+            or _destination(self.directory) != self.destination
+            or stat.S_IMODE(self.destination.stat().st_mode) != 0o700
+            or _harness_revision() != self.observed
+        ):
+            raise ValueError("Fresh rehearsal container/runtime changed")
+        check_settings(self.settings, self.expected_settings)
+        check_runtime_selection(self.runtime_inventory, self.runtime_sha256)
+        check_dependency_selection(self.dependency_manifest, self.dependency_sha256)
+        for name, expected in self.saved.items():
+            raw, mode = _read_regular(self.destination / name, 2_000_000)
             if mode != 0o600 or _digest(raw) != expected:
                 raise ValueError("Fresh rehearsal preserved evidence changed")
-        if {p.name for p in islice(destination.iterdir(), len(outer) + 1)} != outer:
+        if {p.name for p in islice(self.destination.iterdir(), len(self.outer) + 1)} != self.outer:
             raise ValueError("Fresh rehearsal inventory changed")
 
-    try:
-        settings_sha = save("settings.json", expected_settings)
-        environment_sha = save("command-environment.json", environment_bytes(environment))
-        for source, expected, name in (
-            (runtime_inventory, runtime_sha256, "runtime-inventory.json"),
-            (dependency_manifest, dependency_sha256, "dependency-files.json"),
-        ):
-            raw, mode = _read_regular(source, 2_000_000)
-            if mode != 0o600 or _digest(raw) != expected:
-                raise ValueError("Fresh rehearsal selected host inventory changed")
-            save(name, raw)
-        rows, results = [], []
-        for cell in cells:
-            check()
-            _, task, _, _ = selected_cell(cell.ordinal)
-            prefix = f"{cell.ordinal:02d}"
-            container = destination / f"cell-{prefix}"
-            receipt = prepare_fresh_cell(cell.ordinal, container)
-            outer.add(container.name)
-            files: dict[str, str] = {}
-            initial, _ = _read_regular(container / "workspace/test_visible.py", 16_000)
-            files[f"{prefix}-initial-visible.py"] = save(f"{prefix}-initial-visible.py", initial)
-            module = MODULES[cell.task_id]
-            reference, _ = _read_regular(task.reference / module, 64_000)
-            transport = _ReferenceTransport(settings.ollama_model, module, reference.decode())
-            native_dir = destination / f"native-{prefix}"
-            outer.add(native_dir.name)
-            native = NativeEvidenceTransport(transport, native_dir)
-            adapter = OllamaProvider(
-                host=settings.ollama_host,
-                model=settings.ollama_model,
-                embed_model="unused",
-                timeout_seconds=settings.request_timeout_seconds,
-                num_ctx=settings.ollama_num_ctx,
-                think=settings.ollama_think,
-                transport=native,
+    async def capture_cell(
+        self, cell: FreshCell, *, check_owned: Callable[[], None] | None = None
+    ) -> None:
+        if len(self.rows) >= 12 or cell != self.cells[len(self.rows)]:
+            raise ValueError("Fresh capture cell differs from fixed serial prefix")
+
+        def check() -> None:
+            self.check()
+            if check_owned is not None:
+                check_owned()
+
+        destination, settings, environment = self.destination, self.settings, self.environment
+        save, retain, outer, rows, results = (
+            self.save,
+            self.retain,
+            self.outer,
+            self.rows,
+            self.results,
+        )
+        check()
+        _, task, _, _ = selected_cell(cell.ordinal)
+        prefix = f"{cell.ordinal:02d}"
+        container = destination / f"cell-{prefix}"
+        receipt = prepare_fresh_cell(cell.ordinal, container)
+        outer.add(container.name)
+        files: dict[str, str] = {}
+        initial, _ = _read_regular(container / "workspace/test_visible.py", 16_000)
+        files[f"{prefix}-initial-visible.py"] = save(f"{prefix}-initial-visible.py", initial)
+        module = MODULES[cell.task_id]
+        reference, _ = _read_regular(task.reference / module, 64_000)
+        transport = _ReferenceTransport(settings.ollama_model, module, reference.decode())
+        native_dir = destination / f"native-{prefix}"
+        outer.add(native_dir.name)
+        native = NativeEvidenceTransport(transport, native_dir)
+        adapter = OllamaProvider(
+            host=settings.ollama_host,
+            model=settings.ollama_model,
+            embed_model="unused",
+            timeout_seconds=settings.request_timeout_seconds,
+            num_ctx=settings.ollama_num_ctx,
+            think=settings.ollama_think,
+            transport=native,
+        )
+
+        def capture(raw: bytes, label: str = prefix, pins: dict[str, str] = files) -> None:
+            name = f"{label}-normalized.json"
+            pins[name] = save(name, raw)
+
+        primary = None
+        try:
+            result = await run_task(
+                task,
+                provider=_CapturedProvider(adapter, check, capture),
+                settings=settings,
+                mode="harness",
+                attempt=cell.repeat,
+                fresh_cell=FreshCellWorkspace(ordinal=cell.ordinal, directory=container),
+                command_env=environment,
             )
-
-            def capture(raw: bytes, label: str = prefix, pins: dict[str, str] = files) -> None:
-                name = f"{label}-normalized.json"
-                pins[name] = save(name, raw)
-
-            primary = None
+            native_failed = native.failed
+        except BaseException as error:
+            primary = error
+            raise
+        finally:
             try:
-                result = await run_task(
-                    task,
-                    provider=_CapturedProvider(adapter, check, capture),
-                    settings=settings,
-                    mode="harness",
-                    attempt=cell.repeat,
-                    fresh_cell=FreshCellWorkspace(ordinal=cell.ordinal, directory=container),
-                    command_env=environment,
+                await adapter.aclose()
+            except BaseException as cleanup_error:
+                if primary is None:
+                    raise
+                primary.add_note(
+                    f"Fresh rehearsal transport cleanup also failed: {type(cleanup_error).__name__}"
                 )
-                native_failed = native.failed
-            except BaseException as error:
-                primary = error
-                raise
-            finally:
-                try:
-                    await adapter.aclose()
-                except BaseException as cleanup_error:
-                    if primary is None:
-                        raise
-                    primary.add_note(
-                        "Fresh rehearsal transport cleanup also failed: "
-                        f"{type(cleanup_error).__name__}"
-                    )
-            name = f"{prefix}-result.json"
-            files[name] = save(name, json.dumps(asdict(result), sort_keys=True).encode())
-            check()
+        name = f"{prefix}-result.json"
+        files[name] = save(name, json.dumps(asdict(result), sort_keys=True).encode())
+        check()
+        if (
+            transport.requests != 3
+            or not transport.closed
+            or native.requests != 3
+            or native_failed
+            or not native.closed
+            or not result.passed
+            or result.completion_status != "completed"
+            or result.verification_status != "passed"
+            or result.runtime_config["fresh_visible_preservation"]["status"] != "checks_passed"
+        ):
+            raise ValueError("Fresh mandatory-mock reference rehearsal incomplete")
+        final, _ = _read_regular(container / "workspace/test_visible.py", 16_000)
+        implementation, _ = _read_regular(container / "workspace" / module, 64_000)
+        if final != initial or implementation != reference or receipt.cell != cell:
+            raise ValueError("Fresh rehearsal final bytes/identity differ")
+        for label, raw in (
+            ("final-visible.py", final),
+            ("final-implementation.py", implementation),
+            ("runtime-config.json", json.dumps(result.runtime_config, sort_keys=True).encode()),
+        ):
+            name = f"{prefix}-{label}"
+            files[name] = save(name, raw)
+        if {p.name for p in islice(container.iterdir(), 4)} != {
+            "workspace",
+            "prepared.json",
+            "admitted.json",
+        }:
+            raise ValueError("Fresh rehearsal cell inventory changed")
+        for label in ("prepared.json", "admitted.json"):
+            name = f"{container.name}/{label}"
             if (
-                transport.requests != 3
-                or not transport.closed
-                or native.requests != 3
-                or native_failed
-                or not native.closed
-                or not result.passed
-                or result.completion_status != "completed"
-                or result.verification_status != "passed"
-                or result.runtime_config["fresh_visible_preservation"]["status"] != "checks_passed"
+                FreshFixture.model_validate_json(_read_regular(destination / name, 4096)[0])
+                != receipt
             ):
-                raise ValueError("Fresh mandatory-mock reference rehearsal incomplete")
-            final, _ = _read_regular(container / "workspace/test_visible.py", 16_000)
-            implementation, _ = _read_regular(container / "workspace" / module, 64_000)
-            if final != initial or implementation != reference or receipt.cell != cell:
-                raise ValueError("Fresh rehearsal final bytes/identity differ")
-            for label, raw in (
-                ("final-visible.py", final),
-                ("final-implementation.py", implementation),
-                ("runtime-config.json", json.dumps(result.runtime_config, sort_keys=True).encode()),
-            ):
-                name = f"{prefix}-{label}"
-                files[name] = save(name, raw)
-            if {p.name for p in islice(container.iterdir(), 4)} != {
-                "workspace",
-                "prepared.json",
-                "admitted.json",
-            }:
-                raise ValueError("Fresh rehearsal cell inventory changed")
-            for label in ("prepared.json", "admitted.json"):
-                name = f"{container.name}/{label}"
-                if (
-                    FreshFixture.model_validate_json(_read_regular(destination / name, 4096)[0])
-                    != receipt
-                ):
-                    raise ValueError("Fresh rehearsal cell receipt changed")
-                files[name] = retain(name)
-            names = set(transport.native_pins) | {f"request-{n:02d}.json" for n in range(1, 4)}
-            if {p.name for p in islice(native_dir.iterdir(), 10)} != names:
-                raise ValueError("Fresh native evidence inventory changed")
-            for name in sorted(names):
-                relative = str((native_dir / name).relative_to(destination))
-                files[relative] = retain(relative, transport.native_pins.get(name))
-            rows.append(
-                CapturedFreshCell(
-                    cell=cell, workspace_root=str(container / "workspace"), files=files
-                )
-            )
-            results.append(asdict(result))
+                raise ValueError("Fresh rehearsal cell receipt changed")
+            files[name] = retain(name)
+        names = set(transport.native_pins) | {f"request-{n:02d}.json" for n in range(1, 4)}
+        if {p.name for p in islice(native_dir.iterdir(), 10)} != names:
+            raise ValueError("Fresh native evidence inventory changed")
+        for name in sorted(names):
+            relative = str((native_dir / name).relative_to(destination))
+            files[relative] = retain(relative, transport.native_pins.get(name))
+        rows.append(
+            CapturedFreshCell(cell=cell, workspace_root=str(container / "workspace"), files=files)
+        )
+        results.append(asdict(result))
+
+    def finish(self) -> FreshRehearsal:
+        if len(self.rows) != 12:
+            raise ValueError("Fresh capture requires all twelve cells before success")
+        check, save, results, rows = self.check, self.save, self.results, self.rows
+        runtime = self.runtime
+        settings_sha, environment_sha = self.settings_sha, self.environment_sha
+        runtime_sha256, dependency_sha256 = self.runtime_sha256, self.dependency_sha256
         check()
         report_sha = save(
             "report.json",
@@ -316,10 +351,11 @@ async def rehearse_fresh_inputs(
         check()
         save("index.json", summary.model_dump_json(indent=2).encode())
         return summary
-    except BaseException as error:
+
+    def fail(self, error: BaseException) -> None:
         try:
             _save(
-                destination / "failure.json",
+                self.destination / "failure.json",
                 json.dumps(
                     {
                         "status": "failed",
@@ -333,4 +369,30 @@ async def rehearse_fresh_inputs(
             error.add_note(
                 f"Fresh rehearsal failure recording also failed: {type(secondary).__name__}"
             )
+
+
+async def rehearse_fresh_inputs(
+    directory: Path,
+    *,
+    command_env: Mapping[str, str],
+    runtime_inventory: Path,
+    runtime_sha256: str,
+    dependency_manifest: Path,
+    dependency_sha256: str,
+) -> FreshRehearsal:
+    """Consume twelve newly prepared cells, save evidence privately, publish index last."""
+    capture = _FreshCapture(
+        directory,
+        command_env=command_env,
+        runtime_inventory=runtime_inventory,
+        runtime_sha256=runtime_sha256,
+        dependency_manifest=dependency_manifest,
+        dependency_sha256=dependency_sha256,
+    )
+    try:
+        for cell in capture.cells:
+            await capture.capture_cell(cell)
+        return capture.finish()
+    except BaseException as error:
+        capture.fail(error)
         raise
