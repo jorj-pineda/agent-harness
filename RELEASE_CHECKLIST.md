@@ -103,7 +103,9 @@ separate kinds of evidence.
    approval. The [pinned shared workspace seam](evals/fresh_visible_tasks/WORKSPACES.md)
    is implemented. [Mandatory-mock input capture](evals/fresh_visible_tasks/CAPTURE.md)
    now records all twelve cells through shared evaluation and native serialization.
-   Owned-lifecycle rehearsal and retained preparation remain before a passing concrete freeze
+   [Owned-lifecycle rehearsal](evals/fresh_visible_tasks/OWNED_REHEARSAL.md) is
+   implemented with mandatory-mock generation; native retained proof/preparation
+   remain before a passing concrete freeze
    before requesting approval. This is not held-out or second-model coverage.
 
 Do not add a premium supervisor, agents, semantic search or a larger prompt merely
