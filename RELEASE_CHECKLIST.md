@@ -101,7 +101,9 @@ separate kinds of evidence.
    three explicit development tasks with weak/stronger checks and independent
    acceptance controls. It proposes twelve same-model cells without inference
    approval. The [pinned shared workspace seam](evals/fresh_visible_tasks/WORKSPACES.md)
-   is implemented; review/merge it, retain mandatory-mock/owned rehearsal and bind a passing concrete freeze
+   is implemented. [Mandatory-mock input capture](evals/fresh_visible_tasks/CAPTURE.md)
+   now records all twelve cells through shared evaluation and native serialization.
+   Owned-lifecycle rehearsal and retained preparation remain before a passing concrete freeze
    before requesting approval. This is not held-out or second-model coverage.
 
 Do not add a premium supervisor, agents, semantic search or a larger prompt merely

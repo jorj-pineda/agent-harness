@@ -104,7 +104,8 @@ replace the original project 8/10 target or close any release gate.
    separately labelled task version, never a regrade of the old cohort.
 2. The [pinned shared-evaluator workspace seam](WORKSPACES.md) is implemented for
    these task/arm fixtures without changing the pagination-specific executor.
-   Validate mandatory-mock capture and owned lifecycle with this schedule next.
+   [Mandatory-mock capture](CAPTURE.md) is implemented; validate owned lifecycle
+   with this schedule next.
 3. Bind a concrete clean candidate, settings/dependencies/image/model pins, passing
    exact-candidate offline/install gates, retained evidence and fresh launch checks.
    Obtain explicit approval for that exact comparison before admission/generation.

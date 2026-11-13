@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-13 — Fresh mandatory-mock input capture:** twelve fresh arm-specific
+cells now use shared evaluation and production-adapter serialization with internal
+write/check/final mock responses. Normalized/native input evidence, selected
+inventories, private artifacts and results are retained, with failure/cancellation
+stopping later cells and the success index written last.
+[Details](evals/fresh_visible_tasks/CAPTURE.md). Nine focused cases pass, including
+all twelve serialization pairs. These are scripted mechanics only; owned metadata-
+only lifecycle rehearsal and retained preparation are next. No model inference,
+actual approval, held-out/default claim or release gate closure follows.
+
 **2026-11-12 — Fresh visible-check workspace binding:** an explicit pinned twelve-
 cell selection prepares fresh weak/stronger fixtures and single-use workspace
 markers. The shared evaluator binds task/mode/repeat and policy, records later
