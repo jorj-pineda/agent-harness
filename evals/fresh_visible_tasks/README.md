@@ -107,9 +107,10 @@ replace the original project 8/10 target or close any release gate.
    [Mandatory-mock capture](CAPTURE.md) and [owned lifecycle rehearsal](OWNED_REHEARSAL.md)
    are implemented. [Retained clean-source proof](RETAINED_PREPARATION_20261113.md)
    verifies native lifecycle, the offline gate and separate unused fixtures/images.
-3. [Capture preservation/exact-path staging](STAGING.md) is implemented. Bind a
-   distinct execution manifest/admission and guarded serial owned provider before
-   a concrete clean candidate, settings/dependencies/image/model pins, passing
+3. [Capture preservation/exact-path staging](STAGING.md) and
+   [distinct execution selection/admission](EXECUTION.md) are implemented. Bind a
+   guarded serial owned provider, then select a concrete clean candidate,
+   settings/dependencies/image/model pins, passing
    exact-candidate offline/install gates, retained evidence and fresh launch checks.
    Obtain explicit approval for that exact comparison before admission/generation.
 
