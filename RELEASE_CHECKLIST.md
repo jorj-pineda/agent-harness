@@ -114,6 +114,10 @@ separate kinds of evidence.
    now bind verified archived inputs to fresh unadmitted fixtures without resetting
    captured artifacts. Distinct execution admission/ownership and actual approval
    remain before generation; this does not retrospectively change retained history.
+   [Execution selection/preflight/admission](evals/fresh_visible_tasks/EXECUTION.md)
+   now bind a distinct manifest and require trusted-parent verification before
+   exclusive output reservation. This issues no authority or model request;
+   guarded serial execution and concrete freeze/actual approval remain.
 
 Do not add a premium supervisor, agents, semantic search or a larger prompt merely
 to fill the queue. Do not promise an unattended release from public pilot success.
