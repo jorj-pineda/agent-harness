@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-14 — Guarded fresh serial execution:** an explicit-transport internal API
+now binds admitted twelve-cell inputs to production-adapter/native-response guards,
+shared evaluation and separate owned lifecycles. Durable results precede cleanup;
+only clean agreeing settlement advances the fixed schedule, with stopped prefixes
+and earlier evidence retained. [Details](evals/fresh_visible_tasks/GUARDED_EXECUTION.md).
+This adds no launch recipe or authority. Native mock proof, full candidate gates,
+concrete freeze, actual approval and fresh launch checks remain; no model-quality
+claim or release gate closes.
+
 **2026-11-14 — Fresh execution selection and admission:** a distinct twelve-cell
 manifest and structural parent receipt now bind the selected runtime, exact-path
 inputs/environment, image/executable and paths. Read-only selection/preflight checks

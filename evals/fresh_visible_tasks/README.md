@@ -108,8 +108,9 @@ replace the original project 8/10 target or close any release gate.
    are implemented. [Retained clean-source proof](RETAINED_PREPARATION_20261113.md)
    verifies native lifecycle, the offline gate and separate unused fixtures/images.
 3. [Capture preservation/exact-path staging](STAGING.md) and
-   [distinct execution selection/admission](EXECUTION.md) are implemented. Bind a
-   guarded serial owned provider, then select a concrete clean candidate,
+   [distinct execution selection/admission](EXECUTION.md) and
+   [guarded serial owned execution](GUARDED_EXECUTION.md) are implemented. Select a
+   concrete clean candidate,
    settings/dependencies/image/model pins, passing
    exact-candidate offline/install gates, retained evidence and fresh launch checks.
    Obtain explicit approval for that exact comparison before admission/generation.
