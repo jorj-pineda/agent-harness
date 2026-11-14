@@ -25,6 +25,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal, TypedDict
 
 if TYPE_CHECKING:
+    from evals.fresh_visible_runner import FreshLedger
     from evals.fresh_visible_workspaces import FreshCellWorkspace
     from evals.public_admission import PublicCellWorkspace
     from evals.public_feedback_runner import FeedbackLedger
@@ -1165,7 +1166,7 @@ def write_report(
     started: str,
     results: list[RealTaskResult],
     *,
-    cohort: CohortLedger | PublicLedger | FeedbackLedger | None = None,
+    cohort: CohortLedger | PublicLedger | FeedbackLedger | FreshLedger | None = None,
     scripted: bool = False,
 ) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
