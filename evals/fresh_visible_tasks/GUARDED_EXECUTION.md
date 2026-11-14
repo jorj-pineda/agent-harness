@@ -37,9 +37,30 @@ not continuous residency or ownership. Setup, image checks, grading and cleanup
 remain outside the existing per-task dispatch budget.
 
 Focused tests use mock generation and explicit fake image/backend seams for
-orchestration. Native retained proof must separately exercise actual image/backend
-ownership with generation blocked from real HTTP before merge. Neither kind of
+orchestration. The retained native proof below separately exercises actual image/backend
+ownership with generation blocked from real HTTP. Neither kind of
 scripted evidence measures model quality or grants actual inference authority.
 The concrete retained freeze, full candidate gates, actual approval and fresh
 launch checks remain before any real comparison. These public development tasks
 are not held-out evidence; release no-go remains.
+
+
+## Retained native mandatory-mock proof
+
+Clean detached `fefd6edecaeb945f33edd1c226a7dd49756e4069` completed the
+[retained proof](guarded-proof-20261114.json). Twelve independently graded scripted
+reference patches completed and passed; twelve actual owned backend sessions
+settled cleanly/unforced. There were 36 admitted mock requests, 36 preceding capture
+mock requests and 36 real GETs limited to owned version/tags/ps metadata. Zero
+generation was forwarded. The synthetic parent receipt accepts only this fixture
+behind the real HTTP prohibition; it is not actual user approval or a real freeze.
+
+Read-only verification rechecked the capture index, manifest/report bindings, all
+36 image/session/cleanup hashes and private modes, all 36 execution native
+request/response/metadata triplets and twelve first-request correspondences to the
+preserved capture. The recipe remains at `recipe.py` under the proof's external
+retained directory; no server log, backend key or raw model blob was selected.
+The four external package files are selected observations, not complete dependency
+closure. These successful reference trajectories establish mechanics only. The
+full offline gate and CI remain required before merge; a concrete frozen candidate,
+its full gates and actual approval remain before any real inference.

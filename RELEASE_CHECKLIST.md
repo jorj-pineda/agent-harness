@@ -119,7 +119,8 @@ separate kinds of evidence.
    exclusive output reservation. This issues no authority or model request;
    [Guarded serial owned execution](evals/fresh_visible_tasks/GUARDED_EXECUTION.md)
    now binds first-input/provider guards and result-before-cleanup scheduling.
-   Native mock proof, concrete freeze/candidate gates and actual approval remain.
+   Its retained native mock proof has twelve clean/unforced settlements and zero
+   generation forwarded. Concrete freeze/candidate gates and actual approval remain.
 
 Do not add a premium supervisor, agents, semantic search or a larger prompt merely
 to fill the queue. Do not promise an unattended release from public pilot success.
