@@ -4,6 +4,17 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-14 — Fresh execution selection and admission:** a distinct twelve-cell
+manifest and structural parent receipt now bind the selected runtime, exact-path
+inputs/environment, image/executable and paths. Read-only selection/preflight checks
+fresh pins, including the exact selected Python entrypoint. Mandatory trusted-parent
+verification precedes exclusive output reservation; source/preserved byte pins and
+withdrawal bracket admission, retaining partial failures without retry.
+[Details](evals/fresh_visible_tasks/EXECUTION.md). This authenticates no affirmative
+JSON or actual approval and starts no backend/provider. Guarded serial ownership,
+concrete freeze/actual approval/fresh launch checks remain. No inference, quality
+or release gate closure follows.
+
 **2026-11-14 — Fresh capture preservation and exact-path staging:** read-only
 verification now checks selected twelve-cell mock evidence and native/normalized
 input correspondence. A new archive preserves the complete consumed tree before
