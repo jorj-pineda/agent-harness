@@ -110,6 +110,10 @@ separate kinds of evidence.
    inputs are not bound to those unused fixture paths; live execution manifest/
    admission/guarded serial ownership and a concrete reviewed freeze remain before
    requesting approval. This is not held-out or second-model coverage.
+   [Capture preservation and exact-path staging](evals/fresh_visible_tasks/STAGING.md)
+   now bind verified archived inputs to fresh unadmitted fixtures without resetting
+   captured artifacts. Distinct execution admission/ownership and actual approval
+   remain before generation; this does not retrospectively change retained history.
 
 Do not add a premium supervisor, agents, semantic search or a larger prompt merely
 to fill the queue. Do not promise an unattended release from public pilot success.

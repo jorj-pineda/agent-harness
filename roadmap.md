@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-14 — Fresh capture preservation and exact-path staging:** read-only
+verification now checks selected twelve-cell mock evidence and native/normalized
+input correspondence. A new archive preserves the complete consumed tree before
+fresh unadmitted arm-specific fixtures are prepared at the captured absolute roots;
+failure retains partial state without reset and the success receipt is written last.
+[Details](evals/fresh_visible_tasks/STAGING.md). This binds future workspace paths,
+not execution authority. A fresh execution manifest/admission, guarded ownership/
+provider binding and concrete freeze/actual approval/fresh gates remain. No inference,
+model-quality/default claim or release gate closes.
+
 **2026-11-13 — Retained fresh preparation and native mock proof:** clean reviewed
 `3d0d676` uses the existing external interpreter without a local environment.
 Its G0 passes 3,677 offline tests, static checks and both scripted matrices.
