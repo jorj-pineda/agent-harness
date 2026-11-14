@@ -51,8 +51,8 @@ fresh captures/staging use the shared evaluator; host image/source seams are
 explicitly synthetic where patched. Affirmative fixture receipts are never actual
 authority. No model request or real execution approval occurs in these tests.
 
-Next: compose admitted source/first-input/native-response/owned-transport guards
-and a fixed twelve-cell serial owned runner. A concrete retained freeze with full
+The [guarded serial runner](GUARDED_EXECUTION.md) now composes admitted source,
+first-input, native-response and owned-transport checks. A concrete retained freeze with full
 candidate checks, actual approval and fresh launch gates still precedes generation.
 This code changes no default, grading criterion, prior cohort, model-quality claim
 or release gate. It is not an executable launch recipe.
