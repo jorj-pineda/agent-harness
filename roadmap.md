@@ -4,6 +4,14 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-15 — Fresh descriptive paired reporting:** a pure summary now binds the
+fixed twelve-cell schedule to raw result ordinals and retains task/arm counts and
+all six pairs. Started/missing outcomes, completion versus acceptance and unknown
+usage stay explicit, without source IO, regrading or a benefit decision.
+[Details](evals/fresh_visible_tasks/REPORTING.md). Reusable admitted mock rehearsal,
+concrete candidate freeze/gates and actual approval/fresh launch checks remain.
+No model-quality claim, default or release gate closure follows.
+
 **2026-11-15 — One-shot fresh candidate preparation:** an existing-interpreter API
 now preserves fresh mandatory-mock inputs, stages twelve exact-path unadmitted
 cells and selects the verified image/executable/environment in a distinct manifest.

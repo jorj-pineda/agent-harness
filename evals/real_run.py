@@ -1177,6 +1177,12 @@ def write_report(
 
         feedback = FeedbackLedger.model_validate(cohort.model_dump())
         extra["feedback_comparison"] = feedback_summary(feedback, results, scripted=scripted)
+    if getattr(cohort, "format", None) == "fresh-visible-ledger-v1":
+        from evals.fresh_visible_runner import FreshLedger
+        from evals.fresh_visible_summary import fresh_summary
+
+        fresh = FreshLedger.model_validate(cohort.model_dump())
+        extra["fresh_comparison"] = fresh_summary(fresh, results, scripted=scripted)
     content = json.dumps(
         {
             "mode": "scripted-real-tools-rehearsal" if scripted else "real-tools-trusted-fixtures",
