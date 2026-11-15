@@ -123,8 +123,10 @@ separate kinds of evidence.
    generation forwarded. [One-shot candidate preparation](evals/fresh_visible_tasks/PREPARATION.md)
    now preserves twelve unused exact-path cells and the manifest without admission.
    [Pure paired reporting](evals/fresh_visible_tasks/REPORTING.md) now retains
-   six pairs and task/arm outcomes without assessing benefit. Admitted mock
-   rehearsal, concrete freeze/candidate gates and
+   six pairs and task/arm outcomes without assessing benefit. The
+   [reusable admitted mock rehearsal](evals/fresh_visible_tasks/ADMITTED_REHEARSAL.md)
+   creates and consumes a separate new bundle with internal generation only.
+   Native retained proof, concrete freeze/candidate gates and
    actual approval remain.
 
 Do not add a premium supervisor, agents, semantic search or a larger prompt merely

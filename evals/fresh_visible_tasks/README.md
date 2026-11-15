@@ -120,3 +120,8 @@ proposal or prior pagination approval. Do not infer improvements from offline
 controls. A second intended model, held-out tasks, real-project/client recovery
 acceptance and distribution validation remain separate scope decisions. The
 original 2/10 project and 4/6 public results, release no-go and G2–G5 stay open.
+
+Preparation helpers now include [descriptive six-pair reporting](REPORTING.md) and
+[a reusable admitted mandatory-mock rehearsal](ADMITTED_REHEARSAL.md). Run rehearsal
+in its own new bundle; never consume a future comparison candidate as rehearsal.
+Neither scripted success nor an affirmative synthetic receipt is actual authority.
