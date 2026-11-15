@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-15 — One-shot fresh candidate preparation:** an existing-interpreter API
+now preserves fresh mandatory-mock inputs, stages twelve exact-path unadmitted
+cells and selects the verified image/executable/environment in a distinct manifest.
+Read-only preflight and final source checks precede success; failure withdraws
+partial output without reset. [Details](evals/fresh_visible_tasks/PREPARATION.md).
+This starts no backend and issues no approval. Pure paired reporting, reusable
+admitted mock rehearsal and a concrete retained freeze/candidate gates remain
+before actual approval and fresh launch checks. No inference, model-quality claim
+or release gate closure follows.
+
 **2026-11-14 — Guarded fresh serial execution:** an explicit-transport internal API
 now binds admitted twelve-cell inputs to production-adapter/native-response guards,
 shared evaluation and separate owned lifecycles. Durable results precede cleanup;

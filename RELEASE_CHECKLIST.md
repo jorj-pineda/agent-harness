@@ -120,7 +120,10 @@ separate kinds of evidence.
    [Guarded serial owned execution](evals/fresh_visible_tasks/GUARDED_EXECUTION.md)
    now binds first-input/provider guards and result-before-cleanup scheduling.
    Its retained native mock proof has twelve clean/unforced settlements and zero
-   generation forwarded. Concrete freeze/candidate gates and actual approval remain.
+   generation forwarded. [One-shot candidate preparation](evals/fresh_visible_tasks/PREPARATION.md)
+   now preserves twelve unused exact-path cells and the manifest without admission.
+   Paired reporting, admitted mock rehearsal, concrete freeze/candidate gates and
+   actual approval remain.
 
 Do not add a premium supervisor, agents, semantic search or a larger prompt merely
 to fill the queue. Do not promise an unattended release from public pilot success.

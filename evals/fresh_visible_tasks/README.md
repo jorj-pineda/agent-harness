@@ -110,7 +110,7 @@ replace the original project 8/10 target or close any release gate.
 3. [Capture preservation/exact-path staging](STAGING.md) and
    [distinct execution selection/admission](EXECUTION.md) and
    [guarded serial owned execution](GUARDED_EXECUTION.md) are implemented. Select a
-   concrete clean candidate,
+   concrete clean candidate with [one-shot preparation](PREPARATION.md),
    settings/dependencies/image/model pins, passing
    exact-candidate offline/install gates, retained evidence and fresh launch checks.
    Obtain explicit approval for that exact comparison before admission/generation.
