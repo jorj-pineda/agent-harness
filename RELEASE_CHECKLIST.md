@@ -126,7 +126,8 @@ separate kinds of evidence.
    six pairs and task/arm outcomes without assessing benefit. The
    [reusable admitted mock rehearsal](evals/fresh_visible_tasks/ADMITTED_REHEARSAL.md)
    creates and consumes a separate new bundle with internal generation only.
-   Native retained proof, concrete freeze/candidate gates and
+   Retained native proof has twelve clean/unforced settlements and zero generation
+   forwarded. Concrete freeze/candidate gates and
    actual approval remain.
 
 Do not add a premium supervisor, agents, semantic search or a larger prompt merely

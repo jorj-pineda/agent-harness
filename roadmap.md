@@ -9,8 +9,10 @@ uses one-shot preparation, an exact-bound synthetic receipt and shared guarded
 execution with internal task-specific reference responses only. Finished results,
 closed transports, private native payload correspondence and clean/unforced owned
 settlement precede the success summary. [Details](evals/fresh_visible_tasks/ADMITTED_REHEARSAL.md).
-It consumes no existing candidate and grants no actual approval. Native retained
-proof, concrete candidate freeze/gates and actual approval/fresh launch checks
+It consumes no existing candidate and grants no actual approval. Retained clean
+`bcd7f61` native proof has twelve clean/unforced settlements, 36 admitted mocked
+requests and zero generation forwarded. Concrete candidate freeze/gates and
+actual approval/fresh launch checks
 remain; no inference, quality claim or release gate closure follows.
 
 **2026-11-15 — Fresh descriptive paired reporting:** a pure summary now binds the
