@@ -133,7 +133,10 @@ separate kinds of evidence.
    now binds passing retained G0, separate scripted rehearsal and twelve unused
    candidate cells. A [concrete freeze/operator proposal](evals/fresh_visible_tasks/FREEZE_20261116.md)
    now binds them with explicit check/execute modes; it issues no authority.
-   Exact-head review/CI/merge, actual approval and fresh launch gates remain.
+   The [fresh review specification](evals/fresh_visible_tasks/REVIEW_PROTOCOL.md)
+   now covers all twelve cells, three original criteria and six pairs without
+   changing the frozen decision rule. A pure join/scripted exercise and actual
+   approval/fresh launch gates remain.
 
 Do not add a premium supervisor, agents, semantic search or a larger prompt merely
 to fill the queue. Do not promise an unattended release from public pilot success.
