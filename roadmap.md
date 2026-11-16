@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-16 — Fresh intervention/regression review specification:** all twelve
+cells, three original criterion bindings, six paired outcomes and per-task counts
+now have an [offline review protocol](evals/fresh_visible_tasks/REVIEW_PROTOCOL.md).
+Missing coverage remains unknown and eligibility preserves the frozen proposal's
+per-task/paired constraints without assessing benefit. A pure selected-byte join
+and retained scripted exercise are the next slices. This changes no frozen
+criteria, budgets or authority; actual approval/fresh launch checks remain before
+inference, and release no-go stays open.
+
 **2026-11-16 — Concrete fresh freeze proposal:** the retained unused twelve-cell
 candidate, exact runtime/manifest/gate/indices and copied explicit-mode operator
 are now bound in a [review proposal](evals/fresh_visible_tasks/FREEZE_20261116.md).
