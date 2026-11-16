@@ -31,3 +31,16 @@ This API launches no provider and issues no approval. Scripted regrade controls
 measure mechanics only; benefit stays `not_assessed`, with no recovery, held-out,
 default or release conclusion. A concrete frozen candidate, passing candidate
 gates, actual approval and fresh launch checks still precede real comparison.
+
+
+## Retained scripted exercise
+
+Clean grader `2095c6b570c7e18e3165d7d7a571a65a593e35f6` regraded twelve retained
+scripted artifacts from the earlier admitted mock bundle. Independently selected
+snapshots first matched each original reference and selected visible bytes/modes.
+All twelve copied grades exited zero and matched recorded exits, with the original
+report/source snapshots preserved. The [proof](copied-regrade-proof-20261116.json)
+binds manifest, report, recipe, artifact snapshots, three distinct criteria and
+copied summary bytes. Execution runtime and grader revision remain separate.
+These are reference artifacts, not measured model improvement or actual approval.
+Full offline validation and CI remain required before merge.
