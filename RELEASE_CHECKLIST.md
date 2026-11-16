@@ -135,8 +135,9 @@ separate kinds of evidence.
    now binds them with explicit check/execute modes; it issues no authority.
    The [fresh review specification](evals/fresh_visible_tasks/REVIEW_PROTOCOL.md)
    now covers all twelve cells, three original criteria and six pairs without
-   changing the frozen decision rule. A pure join/scripted exercise and actual
-   approval/fresh launch gates remain.
+   changing the frozen decision rule. The [pure fresh join](evals/fresh_visible_tasks/REVIEW_JOIN.md)
+   now binds selected bytes without IO or grading; a retained scripted exercise is
+   next. This batch remains offline; actual approval/fresh launch gates remain.
 
 Do not add a premium supervisor, agents, semantic search or a larger prompt merely
 to fill the queue. Do not promise an unattended release from public pilot success.
