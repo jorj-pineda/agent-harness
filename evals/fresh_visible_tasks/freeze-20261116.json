@@ -1,0 +1,100 @@
+{
+  "format": "fresh-visible-execution-freeze-proposal-v1",
+  "runtime_commit": "0ab044a6be70c21e5924fae69a38d4456e71d322",
+  "directory": "/Users/jorge/.local/share/agent-harness/trials/fresh-visible-candidate-20261116-yupxiv0h",
+  "python": "/Users/jorge/Projects/agent-harness/.venv/bin/python",
+  "manifest_sha256": "2f4b2a9a23a6275731416f562cba0ad89c6e1da76492430daedf8c8778f4cb70",
+  "selection_sha256": "5208deb02901c0909598525b7458502b64f74b8c1aa6622471f73eb417b3bbd4",
+  "operator_recipe_sha256": "9b1b31b401c17f793943d81d750a52fb2f249ce216dd358f442bac129dd0d4b0",
+  "g0_sha256": "69d58d908a33443a85f9af69ca39793dcd673d0fe11834ed6ac1a97c0a9672fe",
+  "evidence_index_sha256": "0cbb1f74a1ea378b5f31876d76a5ac1063f2c477157ece3bc77bab320e04fd4e",
+  "native_evidence_index_sha256": "1eafe3e6c9573c9bc5f767b4aab3629ca467077c88067e6ba0a08839d2d4a45e",
+  "selected_evidence_files": 781,
+  "scripted_native_files": 324,
+  "cells": [
+    {
+      "ordinal": 1,
+      "task_id": "fv_lookup_option",
+      "arm": "weak",
+      "repeat": 1
+    },
+    {
+      "ordinal": 2,
+      "task_id": "fv_lookup_option",
+      "arm": "stronger",
+      "repeat": 1
+    },
+    {
+      "ordinal": 3,
+      "task_id": "fv_merge_windows",
+      "arm": "stronger",
+      "repeat": 1
+    },
+    {
+      "ordinal": 4,
+      "task_id": "fv_merge_windows",
+      "arm": "weak",
+      "repeat": 1
+    },
+    {
+      "ordinal": 5,
+      "task_id": "fv_header_pair",
+      "arm": "weak",
+      "repeat": 1
+    },
+    {
+      "ordinal": 6,
+      "task_id": "fv_header_pair",
+      "arm": "stronger",
+      "repeat": 1
+    },
+    {
+      "ordinal": 7,
+      "task_id": "fv_lookup_option",
+      "arm": "stronger",
+      "repeat": 2
+    },
+    {
+      "ordinal": 8,
+      "task_id": "fv_lookup_option",
+      "arm": "weak",
+      "repeat": 2
+    },
+    {
+      "ordinal": 9,
+      "task_id": "fv_merge_windows",
+      "arm": "weak",
+      "repeat": 2
+    },
+    {
+      "ordinal": 10,
+      "task_id": "fv_merge_windows",
+      "arm": "stronger",
+      "repeat": 2
+    },
+    {
+      "ordinal": 11,
+      "task_id": "fv_header_pair",
+      "arm": "stronger",
+      "repeat": 2
+    },
+    {
+      "ordinal": 12,
+      "task_id": "fv_header_pair",
+      "arm": "weak",
+      "repeat": 2
+    }
+  ],
+  "coding_prompt_profile": "direct",
+  "coding_toolset": "whole_file_check",
+  "keep_alive_seconds": 300,
+  "inference_authorized": false,
+  "candidate_state": "twelve_unadmitted_cells_no_output_no_actual_parent_receipt",
+  "review_and_actual_authority": "not_granted_by_this_proposal",
+  "historical_probe_files": {
+    "operator-check.log": "dd71fd5ba2aa68c2c937f1e286695155a017686396df9e7821e286af75a34543",
+    "check_operator.py": "f29e5f4f0ab3818865149c7e643b02c8bdda35f74481b7ebeaa3a2891527afbd",
+    "operator-mode-probes.json": "b894604c3f9765fa2738e4d044d5cc0c80e86f991f40b513c9cfa025c602e178",
+    "probe_operator_modes.py": "f9241dddf1c2fcbddfdf4196dcddacc3ab2aaa646caebdb7ba36f675ad1e0d54"
+  }
+}

@@ -4,6 +4,14 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-16 — Concrete fresh freeze proposal:** the retained unused twelve-cell
+candidate, exact runtime/manifest/gate/indices and copied explicit-mode operator
+are now bound in a [review proposal](evals/fresh_visible_tasks/FREEZE_20261116.md).
+Sixteen scripted recipe contracts and actual check-only/mode refusal probes pass,
+with admission preceding transport. Local consistency does not authenticate parent
+provenance. Exact-head review/CI/merge, actual approval and fresh launch checks
+remain; no execution, quality/default claim or release gate closure follows.
+
 **2026-11-16 — Concrete retained fresh candidate:** clean merged `0ab044a` now has
 an unused twelve-cell exact-path candidate and a separate consumed owned mock
 rehearsal. Retained G0 passes 3,840 offline tests, static checks and both scripted
