@@ -131,8 +131,9 @@ separate kinds of evidence.
    now bind all three original criteria on bounded copies without promoting outcomes.
    The [concrete retained candidate](evals/fresh_visible_tasks/RETAINED_CANDIDATE_20261116.md)
    now binds passing retained G0, separate scripted rehearsal and twelve unused
-   candidate cells. Exact freeze/operator review, actual approval and fresh launch
-   gates remain.
+   candidate cells. A [concrete freeze/operator proposal](evals/fresh_visible_tasks/FREEZE_20261116.md)
+   now binds them with explicit check/execute modes; it issues no authority.
+   Exact-head review/CI/merge, actual approval and fresh launch gates remain.
 
 Do not add a premium supervisor, agents, semantic search or a larger prompt merely
 to fill the queue. Do not promise an unattended release from public pilot success.
