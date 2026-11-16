@@ -1,0 +1,50 @@
+{
+  "format": "fresh-visible-copied-regrade-proof-v1",
+  "directory": "/Users/jorge/.local/share/agent-harness/trials/fresh-copied-regrades-20261116-bb61eurf",
+  "source_bundle": "/Users/jorge/.local/share/agent-harness/trials/fresh-admitted-rehearsal-20261115-mhs_53rh/bundle",
+  "manifest_sha256": "707baa082502ed328ac48e6d796a3a06ba8126a65593cd7824978693a750704f",
+  "report_sha256": "e5dd5afe4ea2389e229e731dbb6ac9965d82cca7acb564375690d26075c4ec6a",
+  "regrade_summary_sha256": "c2142bf12d8e09399538b4ee90d2f7ce98c86dc1f396fcab8beae38287e44cbf",
+  "artifact_pins": {
+    "1": "8efe60ce33db6d5f52f5af82dc1fa40c519e3a316b3c3184258cbc692d39513d",
+    "2": "9e0761b29f0bce36373d121875007665769a8b422b44d8dfd10baeeaa07c8fef",
+    "3": "2cd6aea02e2f9ce857dc0bed0f5b9501953499d75f1990037d0d3fe83245a53d",
+    "4": "94ab22b55e5a269a67312ed05f4a38b69ca762355cee33cfdaf81febf31ae4f4",
+    "5": "0984b5ea0ab33f2a7f33d4b7ad4c9d31b4a80c0a3674993716804a4709a00c17",
+    "6": "b1a7fc6af22264699b258be8551220aa1a5680a83d333951238784955b3f417c",
+    "7": "9e0761b29f0bce36373d121875007665769a8b422b44d8dfd10baeeaa07c8fef",
+    "8": "8efe60ce33db6d5f52f5af82dc1fa40c519e3a316b3c3184258cbc692d39513d",
+    "9": "94ab22b55e5a269a67312ed05f4a38b69ca762355cee33cfdaf81febf31ae4f4",
+    "10": "2cd6aea02e2f9ce857dc0bed0f5b9501953499d75f1990037d0d3fe83245a53d",
+    "11": "b1a7fc6af22264699b258be8551220aa1a5680a83d333951238784955b3f417c",
+    "12": "0984b5ea0ab33f2a7f33d4b7ad4c9d31b4a80c0a3674993716804a4709a00c17"
+  },
+  "grader_revision": {
+    "commit": "2095c6b570c7e18e3165d7d7a571a65a593e35f6",
+    "dirty": false
+  },
+  "source_report_mode": "scripted-real-tools-rehearsal",
+  "copied_exit_codes": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "criteria_sha256": {
+    "fv_lookup_option": "ae0231d8763a4d79982b29f6485db4e531a96d42bb81ad531a68744aaeb80172",
+    "fv_merge_windows": "d421bef63bca6449e5c25d7290d85365c94837246cbf43d61b9b398c3fe6b16b",
+    "fv_header_pair": "5c2e457a45ff5207b22c12e8f6038c0bf332171f4c0adb30a2f683659ef90b5b"
+  },
+  "original_outcomes_unchanged": true,
+  "inference_ran": false,
+  "benefit_assessment": "not_assessed",
+  "recipe_sha256": "27aa993161777db91b427c2ee9a23302a28e953d8f6d09841fcba68dd30528bf"
+}
