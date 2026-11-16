@@ -4,6 +4,14 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-16 — Pure fresh review join:** selected bounded report/regrade/review
+bytes now bind all twelve cells and three original criterion identities without
+IO or grading. Six-pair regressions, task-level completion losses, disagreements
+and unknown coverage remain explicit; eligibility only permits human review and
+benefit stays `not_assessed`. [Details](evals/fresh_visible_tasks/REVIEW_JOIN.md).
+A retained scripted exercise is next. The batch is explicitly offline, with no
+candidate admission, inference or release gate closure.
+
 **2026-11-16 — Fresh intervention/regression review specification:** all twelve
 cells, three original criterion bindings, six paired outcomes and per-task counts
 now have an [offline review protocol](evals/fresh_visible_tasks/REVIEW_PROTOCOL.md).
