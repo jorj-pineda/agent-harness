@@ -1,0 +1,69 @@
+{
+  "format": "fresh-visible-retained-preparation-v1",
+  "directory": "/Users/jorge/.local/share/agent-harness/trials/fresh-visible-candidate-20261116-yupxiv0h",
+  "runtime": {
+    "commit": "0ab044a6be70c21e5924fae69a38d4456e71d322",
+    "dirty": false
+  },
+  "manifest_sha256": "2f4b2a9a23a6275731416f562cba0ad89c6e1da76492430daedf8c8778f4cb70",
+  "preparation_sha256": "57a46780ab6a7f8f7b4ad7e63c29f75e149ed59bb57ed90680f163f7ad04093b",
+  "capture_index_sha256": "46a17be4270f7c0e3d80d2893cc1f067bf4d6f2afb6fbb8c1b5c6cafd06fa9c4",
+  "rehearsal_summary_sha256": "86e175a36f750ff0f586548064341e6c92d000cb1160f979c5fab7b1a60e4096",
+  "rehearsal_report_sha256": "40ab4fd431749cb834f65b4a9e62665d64cb0d6a5abfc212416dccdd66497816",
+  "candidate_unadmitted_cells": 12,
+  "scripted_rehearsal_completed_and_accepted": 12,
+  "candidate_capture_mock_requests": 36,
+  "rehearsal_capture_mock_requests": 36,
+  "rehearsal_execution_mock_requests": 36,
+  "real_metadata_gets": 36,
+  "generation_forwarded": 0,
+  "actual_parent_approval": false,
+  "inference_authorized": false,
+  "selected_source_files": 19,
+  "selected_external_package_files": 6,
+  "complete_dependency_closure": false,
+  "evidence_index_sha256": "0cbb1f74a1ea378b5f31876d76a5ac1063f2c477157ece3bc77bab320e04fd4e",
+  "native_evidence_index_sha256": "1eafe3e6c9573c9bc5f767b4aab3629ca467077c88067e6ba0a08839d2d4a45e",
+  "selected_evidence_files": 781,
+  "scripted_native_files": 324,
+  "excluded": [
+    "backend home/key files",
+    "server logs",
+    "model blob bytes"
+  ],
+  "gate": {
+    "runtime_commit": "0ab044a6be70c21e5924fae69a38d4456e71d322",
+    "python": "/Users/jorge/Projects/agent-harness/.venv/bin/python",
+    "all_commands_passed": true,
+    "source_clean": true,
+    "source_local_venv_absent": true,
+    "inference_ran": false,
+    "scripted_matrices_are_model_quality": false,
+    "pytest_passed": 3840,
+    "live_deselected": 5,
+    "existing_warning": "ChromaDB asyncio.iscoroutinefunction deprecation",
+    "coding_scripted_results": 90,
+    "support_scripted_results": 90
+  },
+  "g0_sha256": "69d58d908a33443a85f9af69ca39793dcd673d0fe11834ed6ac1a97c0a9672fe",
+  "selection_sha256": "e6bbd2099d263fd06de68a62b3ff72e60e01f47b73d37888c61489ed23f8a47d",
+  "history": [
+    {
+      "status": "preallocation_script_failure",
+      "evidence": "preparation-failed-optional-sdk.log",
+      "reason": "optional Ollama SDK unavailable; project uses its own adapter; no installation or candidate allocation"
+    },
+    {
+      "status": "preallocation_mode_refusal",
+      "evidence": "preparation-failed-clone-modes.log",
+      "reason": "restrictive clone umask produced0600 task files, differing from reviewed0644 pins"
+    },
+    {
+      "status": "interrupted_not_passing",
+      "evidence": "g0-interrupted-clone-modes",
+      "reason": "owned gate stopped; clone modes restored from Git index, contents unchanged; fresh gate passed separately"
+    }
+  ],
+  "operator_and_actual_approval": "not_granted",
+  "release": "no_go"
+}
