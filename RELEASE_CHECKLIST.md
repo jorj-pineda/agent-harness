@@ -127,7 +127,9 @@ separate kinds of evidence.
    [reusable admitted mock rehearsal](evals/fresh_visible_tasks/ADMITTED_REHEARSAL.md)
    creates and consumes a separate new bundle with internal generation only.
    Retained native proof has twelve clean/unforced settlements and zero generation
-   forwarded. Concrete freeze/candidate gates and
+   forwarded. [Copied fresh acceptance regrades](evals/fresh_visible_tasks/REGRADES.md)
+   now bind all three original criteria on bounded copies without promoting outcomes.
+   Concrete freeze/candidate gates and
    actual approval remain.
 
 Do not add a premium supervisor, agents, semantic search or a larger prompt merely

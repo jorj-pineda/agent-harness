@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-16 — Pinned fresh copied-artifact regrades:** a bounded offline API now
+binds twelve-cell report/manifest bytes and independently supplied artifact pins,
+then grades copies against each task's separately pinned original criterion.
+Original outcomes and started/missing states remain distinct; failures preserve
+partial evidence without promoting results. [Details](evals/fresh_visible_tasks/REGRADES.md).
+Seventeen focused mechanics cases pass, including all twelve cells/three criteria.
+Concrete retained candidate gates/freeze and actual approval/fresh launch checks
+remain. No inference, benefit or release gate closure follows.
+
 **2026-11-15 — Reusable admitted fresh mock rehearsal:** a separate new bundle now
 uses one-shot preparation, an exact-bound synthetic receipt and shared guarded
 execution with internal task-specific reference responses only. Finished results,
