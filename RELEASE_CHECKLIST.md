@@ -129,8 +129,10 @@ separate kinds of evidence.
    Retained native proof has twelve clean/unforced settlements and zero generation
    forwarded. [Copied fresh acceptance regrades](evals/fresh_visible_tasks/REGRADES.md)
    now bind all three original criteria on bounded copies without promoting outcomes.
-   Concrete freeze/candidate gates and
-   actual approval remain.
+   The [concrete retained candidate](evals/fresh_visible_tasks/RETAINED_CANDIDATE_20261116.md)
+   now binds passing retained G0, separate scripted rehearsal and twelve unused
+   candidate cells. Exact freeze/operator review, actual approval and fresh launch
+   gates remain.
 
 Do not add a premium supervisor, agents, semantic search or a larger prompt merely
 to fill the queue. Do not promise an unattended release from public pilot success.

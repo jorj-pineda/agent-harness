@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-16 — Concrete retained fresh candidate:** clean merged `0ab044a` now has
+an unused twelve-cell exact-path candidate and a separate consumed owned mock
+rehearsal. Retained G0 passes 3,840 offline tests, static checks and both scripted
+matrices; twelve settlements are clean/unforced and zero generation is forwarded.
+The [retained record](evals/fresh_visible_tasks/RETAINED_CANDIDATE_20261116.md)
+binds 781 selected artifacts including324 native files, preserving failed setup
+and interrupted gate history separately. Freeze/operator review, actual approval
+and fresh launch gates remain. No quality claim or release gate closure follows.
+
 **2026-11-16 — Pinned fresh copied-artifact regrades:** a bounded offline API now
 binds twelve-cell report/manifest bytes and independently supplied artifact pins,
 then grades copies against each task's separately pinned original criterion.
