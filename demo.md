@@ -118,6 +118,9 @@ it does not establish answer correctness, current workspace state or permission 
 `workspace-review` rejects unsupported review/mode states and inconsistent path
 counts or truncation. Busy, unavailable and unrecorded evidence remain distinct.
 The comparison remains scoped and non-atomic, including separate ignored-entry limits.
+`configuration-review` accepts only supported review and nested state labels and
+rejects responses claiming resume support. Context numbers remain estimates;
+matching configuration and estimated fit do not grant continuation permission.
 Checkpoint/reversal controls and CLI commands are documented
 in [the technical reference](old_README.md). Never reset a dirty repository to recover a run.
 

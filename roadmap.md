@@ -4,6 +4,13 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-17 — CLI configuration review states:** unsupported envelope and nested
+comparison/transcript/context states, non-read-only responses and claimed resume
+support are rejected before display. Valid estimates, optional evidence and
+busy/unavailable states remain unchanged. Offline CLI/API/restart/recovery tests
+pass. This validates state labels, not all nested evidence, identity, context-fit
+accuracy or continuation permission; G2 remains open.
+
 **2026-11-17 — CLI workspace review consistency:** supported review states and
 mode-coverage labels, read-only semantics, bounded path lists and count/truncation
 consistency are checked before display. Busy/unavailable and legacy mode evidence
