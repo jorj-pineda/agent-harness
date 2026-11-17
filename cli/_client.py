@@ -62,6 +62,20 @@ class _ToolProgressIdentity(BaseModel):
     read_only: Literal[True] = True
 
 
+class _TranscriptIssue(BaseModel):
+    message_index: int = Field(ge=0, strict=True)
+    code: str = Field(min_length=1, strict=True)
+
+
+class _TranscriptReview(BaseModel):
+    status: Literal["valid", "invalid"]
+    message_count: int = Field(ge=0, strict=True)
+    issue_count: int = Field(ge=0, strict=True)
+    issues: list[_TranscriptIssue]
+    issues_truncated: bool = Field(strict=True)
+    read_only: bool = Field(default=True, strict=True)
+
+
 @dataclass
 class TurnSummary:
     """Flattened view of the TurnResponse envelope for CLI display."""
@@ -1199,7 +1213,23 @@ class AgentClient:
             timeout=30,
         )
         resp.raise_for_status()
-        return dict(resp.json())
+        record = resp.json()
+        if not isinstance(record, dict):
+            raise ValueError("Unsupported transcript review response")
+        try:
+            review = _TranscriptReview.model_validate(record)
+        except ValueError as exc:
+            raise ValueError("Unsupported transcript review response") from exc
+        if (
+            not review.read_only
+            or (review.status == "valid") != (review.issue_count == 0)
+            or review.issue_count < len(review.issues)
+            or review.issues_truncated != (review.issue_count > len(review.issues))
+            or len(review.issues) > max_issues
+            or any(issue.message_index >= review.message_count for issue in review.issues)
+        ):
+            raise ValueError("Contradictory transcript review response")
+        return record
 
     def workspace_review(
         self, user_id: str, session_id: str, *, max_paths: int = 100
