@@ -100,7 +100,10 @@ Replace `RUN_ID` with an actual printed ID. Saved history stays read-only. Expli
 continuation forks require fresh scoped workspace/configuration/transcript/context
 checks and acknowledgment of uncaptured state; older/changed/unknown profiles may
 require a fresh session. Explicit reversal is single-file, hash/mode guarded and
-preserves other paths. Checkpoint/reversal controls and CLI commands are documented
+preserves other paths. `revert-status` checks the requested owner and submission
+key before showing a saved journal record. Its status is historical, not a fresh
+check of current file bytes, and lookup never replays the action.
+Checkpoint/reversal controls and CLI commands are documented
 in [the technical reference](old_README.md). Never reset a dirty repository to recover a run.
 
 ## Keep evaluation evidence separate
