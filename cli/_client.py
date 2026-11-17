@@ -24,6 +24,18 @@ class _CancellationAcknowledgment(BaseModel):
     detail: str = Field(min_length=1, pattern=r"\S", strict=True)
 
 
+class _SavedRunRequestIdentity(BaseModel):
+    user_id: str = Field(min_length=1, strict=True)
+    session_id: str = Field(min_length=1, strict=True)
+    request_id: str = Field(min_length=1, strict=True)
+
+
+class _SavedRunIdentity(BaseModel):
+    run_id: str = Field(min_length=1, strict=True)
+    status: Literal["running", "finished", "cancelled", "failed", "interrupted"]
+    request: _SavedRunRequestIdentity
+
+
 @dataclass
 class TurnSummary:
     """Flattened view of the TurnResponse envelope for CLI display."""
@@ -431,6 +443,31 @@ class AgentClient:
             raise ValueError("Mismatched memory detail response; inspect memory.")
         return record
 
+    @staticmethod
+    def _validate_run_lookup(
+        record: Any,
+        user_id: str,
+        *,
+        run_id: str | None = None,
+        session_id: str | None = None,
+        request_id: str | None = None,
+    ) -> dict[str, Any]:
+        if not isinstance(record, dict):
+            raise ValueError("Unsupported saved run lookup response")
+        try:
+            identity = _SavedRunIdentity.model_validate(record)
+        except ValueError as exc:
+            raise ValueError("Unsupported saved run lookup response") from exc
+        if (
+            identity.request.user_id != user_id
+            or (run_id is not None and identity.run_id != run_id)
+            or (session_id is not None and identity.request.session_id != session_id)
+            or (request_id is not None and identity.request.request_id != request_id)
+        ):
+            raise ValueError("Mismatched saved run lookup response")
+        # Identity validation must not rewrite historical/optional evidence.
+        return record
+
     def runs(
         self,
         user_id: str,
@@ -447,12 +484,18 @@ class AgentClient:
             params["request_id"] = request_id
         resp = httpx.get(f"{self._base}/runs", params=params, timeout=30)
         resp.raise_for_status()
-        return list(resp.json())
+        records = resp.json()
+        if not isinstance(records, list):
+            raise ValueError("Unsupported saved run list response")
+        return [
+            self._validate_run_lookup(record, user_id, session_id=session_id, request_id=request_id)
+            for record in records
+        ]
 
     def run(self, user_id: str, run_id: str) -> dict[str, Any]:
         resp = httpx.get(f"{self._base}/runs/{run_id}", params={"user_id": user_id}, timeout=30)
         resp.raise_for_status()
-        return dict(resp.json())
+        return self._validate_run_lookup(resp.json(), user_id, run_id=run_id)
 
     def recovery_review(self, user_id: str, run_id: str) -> dict[str, Any]:
         resp = httpx.get(
