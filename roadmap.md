@@ -4,6 +4,14 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-17 — CLI executable restart review proof:** an offline regression now
+runs the installed CLI as separate processes against the actual loopback API,
+then restarts that API over the same stores. Saved record/diff/history agree;
+review makes zero scripted-provider calls and preserves user bytes and modes.
+The owned API settles and closes stores. This adds process-level mechanics
+evidence; it does not establish actual signal cancellation, guarded continuation,
+model quality or closure of G2. No target-model inference runs.
+
 **2026-11-17 — Terminal-safe remaining CLI review views:** tool progress,
 workspace, transcript and configuration reviews now escape terminal controls on
 presentation copies using the existing display helper. Unicode, linefeeds and tabs
