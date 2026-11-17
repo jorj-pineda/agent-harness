@@ -1130,6 +1130,7 @@ def tool_progress(
     if raw:
         typer.echo(json.dumps(progress, indent=2))
         return
+    progress = _terminal_record(progress)
     typer.echo(
         f"run={progress['run_id']} coverage={progress['coverage']} "
         f"observed_events={progress['observed_events']}"
@@ -1378,6 +1379,7 @@ def workspace_review(
     except Exception as exc:
         typer.echo(f"Workspace review failed: {exc}", err=True)
         raise typer.Exit(code=1) from exc
+    review = _terminal_record(review)
     typer.echo(f"workspace={review['status']} baseline_turn={review.get('turn_id')}")
     for kind in ("added", "modified", "deleted"):
         typer.echo(f"{kind}: {review.get(kind, [])} (total {review.get(kind + '_count', 0)})")
@@ -1404,6 +1406,7 @@ def transcript_review(
     except Exception as exc:
         typer.echo(f"Transcript review failed: {exc}", err=True)
         raise typer.Exit(code=1) from exc
+    review = _terminal_record(review)
     typer.echo(
         f"transcript={review['status']} messages={review['message_count']} "
         f"issues={review['issue_count']}"
@@ -1434,6 +1437,7 @@ def configuration_review(
             err=True,
         )
         raise typer.Exit(code=1) from exc
+    review = _terminal_record(review)
     typer.echo(f"review={review['status']} provider={review.get('provider')}")
     show_profile_selection(review.get("current_model_profile"))
     show_repository_instructions(review.get("repository_instructions"))

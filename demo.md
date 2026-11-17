@@ -121,6 +121,8 @@ The comparison remains scoped and non-atomic, including separate ignored-entry l
 `configuration-review` accepts only supported review and nested state labels and
 rejects responses claiming resume support. Context numbers remain estimates;
 matching configuration and estimated fit do not grant continuation permission.
+These four review views also render terminal controls as literal escapes while
+preserving Unicode, line feeds and tabs. Raw `tool-progress --json` stays unchanged.
 Checkpoint/reversal controls and CLI commands are documented
 in [the technical reference](old_README.md). Never reset a dirty repository to recover a run.
 

@@ -4,6 +4,13 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-17 — Terminal-safe remaining CLI review views:** tool progress,
+workspace, transcript and configuration reviews now escape terminal controls on
+presentation copies using the existing display helper. Unicode, linefeeds and tabs
+remain readable; raw progress JSON and original records remain unchanged. Offline
+control-emission/API/recovery regressions pass. No inference, extra submissions,
+evidence authentication or G2 closure follows.
+
 **2026-11-17 — CLI configuration review states:** unsupported envelope and nested
 comparison/transcript/context states, non-read-only responses and claimed resume
 support are rejected before display. Valid estimates, optional evidence and
