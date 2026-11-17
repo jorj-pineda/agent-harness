@@ -65,6 +65,11 @@ read/tool heuristic and cannot establish answer or patch correctness. Unavailabl
 stale, failed, not-run and missing evidence stay distinct. Compare the artifact
 against the requested behavior, including cases beyond the visible fixture test.
 
+Saved `run` lookups check the requested run and owner; `runs` also checks any
+session/submission-key filters before showing results. An inconsistent response
+is a lookup failure, not missing evidence or permission to resubmit. These identity
+checks preserve optional historical evidence and do not grant resume permission.
+
 The CLI prints the session ID and submission key. `/check` inspects a pending
 submission; `/retry` repeats only its exact retained input/key. New messages are
 blocked after an uncertain outcome. Type `/quit` to exit. The separate
