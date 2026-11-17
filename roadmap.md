@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-16 — Retained scripted fresh review exercise:** a pinned offline join
+of twelve original scripted rows, three-criterion copied grades and explicit
+unknown reviews now [recomputes exactly](evals/fresh_visible_tasks/REVIEW_EVIDENCE.md).
+All six paired outcomes stay visible, with no original/regrade disagreement;
+all twelve reviews remain unknown/incomplete and eligibility is false. Inputs
+are unchanged; no grading, candidate admission or inference ran. Actual approval,
+fresh launch gates and genuine live evidence/review remain; benefit stays
+`not_assessed` and no release gate closes.
+
 **2026-11-16 — Pure fresh review join:** selected bounded report/regrade/review
 bytes now bind all twelve cells and three original criterion identities without
 IO or grading. Six-pair regressions, task-level completion losses, disagreements

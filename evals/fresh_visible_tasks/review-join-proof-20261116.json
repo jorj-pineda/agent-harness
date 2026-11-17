@@ -1,0 +1,44 @@
+{
+  "format": "fresh-visible-scripted-review-exercise-v1",
+  "directory": "/Users/jorge/.local/share/agent-harness/trials/fresh-review-exercise-20261116-xr8e3zd2",
+  "join_revision": {
+    "commit": "b0a9a1624e8e5ec6ea5ba4e4ea95e942a343ec22",
+    "dirty": false
+  },
+  "selection_record_sha256": "b3973c8bab042da09eaba757d91fb37455eab9018bc8be9031a03a25e5d2b14c",
+  "source_report": "/Users/jorge/.local/share/agent-harness/trials/fresh-admitted-rehearsal-20261115-mhs_53rh/bundle/run/report.json",
+  "source_regrades": "/Users/jorge/.local/share/agent-harness/trials/fresh-copied-regrades-20261116-bb61eurf/grades/regrades.json",
+  "source_manifest": "/Users/jorge/.local/share/agent-harness/trials/fresh-admitted-rehearsal-20261115-mhs_53rh/bundle/manifest-candidate.json",
+  "files": {
+    "manifest.json": "707baa082502ed328ac48e6d796a3a06ba8126a65593cd7824978693a750704f",
+    "recipe.py": "d4bd981347c9a00f213bf93e5c26239b96d406d43b2f5ff6ab9675fb06968edf",
+    "regrades.json": "c2142bf12d8e09399538b4ee90d2f7ce98c86dc1f396fcab8beae38287e44cbf",
+    "report.json": "e5dd5afe4ea2389e229e731dbb6ac9965d82cca7acb564375690d26075c4ec6a",
+    "review.json": "6e256059096f93d76c57a5edb6708336d05766e02a58b93632fe5e5b0e4877fe",
+    "summary.json": "e22dcb47370b31741b917d904148631bac82dc7bbe2f433f8f69e425306b16b8"
+  },
+  "unknown_review_ordinals": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+  ],
+  "paired_outcomes": 6,
+  "regrade_disagreements": [],
+  "public_followup_rule_eligible_for_human_review": false,
+  "benefit_assessment": "not_assessed",
+  "evidence_label": "scripted-real-tools-rehearsal",
+  "inference_ran": false,
+  "regrading_ran": false,
+  "candidate_admitted": false,
+  "original_inputs_unchanged": true,
+  "release_decision": "no_go"
+}
