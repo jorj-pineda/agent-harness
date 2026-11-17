@@ -4,6 +4,14 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-17 — Actual CLI SIGINT proof:** an offline regression signals the real
+CLI while its HTTP request waits after a scripted edit. The saved turn settles as
+cancelled with unknown usage and both checkpoint references; exactly one run and
+two scripted provider requests are observed. API restart and fresh CLI review
+preserve the record, partial edit, file mode and unrelated user work. Owned CLI/API
+children are reaped. This adds signal/lifecycle mechanics evidence, not actual
+model recovery, active-server shutdown proof or closure of G2.
+
 **2026-11-17 — CLI executable restart review proof:** an offline regression now
 runs the installed CLI as separate processes against the actual loopback API,
 then restarts that API over the same stores. Saved record/diff/history agree;
