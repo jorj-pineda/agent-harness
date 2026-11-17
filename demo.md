@@ -103,6 +103,9 @@ require a fresh session. Explicit reversal is single-file, hash/mode guarded and
 preserves other paths. `revert-status` checks the requested owner and submission
 key before showing a saved journal record. Its status is historical, not a fresh
 check of current file bytes, and lookup never replays the action.
+Checkpoint metadata commands check the requested session and selected checkpoint
+before display. If a capture response cannot be confirmed, its outcome stays
+unknown; inspect saved metadata before deciding whether to submit another capture.
 Checkpoint/reversal controls and CLI commands are documented
 in [the technical reference](old_README.md). Never reset a dirty repository to recover a run.
 

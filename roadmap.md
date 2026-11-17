@@ -4,6 +4,13 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-17 — CLI checkpoint metadata binding:** capture/list/detail responses
+now require the requested session, and detail also requires the selected checkpoint.
+Complete lists are validated before display; valid historical metadata is preserved.
+An unconfirmed capture remains uncertain without retry. Offline regressions cover
+restart inspection and user-file preservation. This is client identity validation,
+not evidence authentication, restore authority or G2 closure.
+
 **2026-11-17 — Keyed CLI revert journal binding:** read-only revert lookup now
 checks owner/submission key and supported journal identity/state before display.
 All five saved states and missing records remain read-only; valid JSON evidence
