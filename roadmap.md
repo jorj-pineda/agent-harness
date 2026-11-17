@@ -4,6 +4,12 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-17 — CLI tool-progress lookup binding:** the client rejects unrelated
+run IDs, unsupported coverage and explicit non-read-only responses before display.
+Valid recorded/not-recorded metadata and optional JSON evidence remain unchanged.
+Offline progress/persistence/recovery regressions pass; this does not authenticate
+event contents, establish patch acceptance or close G2.
+
 **2026-11-17 — Terminal-safe saved CLI displays:** run/history, checkpoint and
 revert views now render terminal control characters as literal escapes. Normal
 Unicode, line feeds and tabs remain readable in answers/diffs; `--json` and saved

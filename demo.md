@@ -109,6 +109,9 @@ unknown; inspect saved metadata before deciding whether to submit another captur
 Saved run/history, checkpoint and revert displays show terminal control characters
 as literal escapes, keeping line feeds, tabs and normal Unicode readable. `--json`
 preserves the original saved values.
+`tool-progress` binds metadata to the requested run and supported read-only coverage.
+Observed tool events remain metadata, not proof of dispatch, acceptance or permission
+to resume; missing events do not establish that no edits occurred.
 Checkpoint/reversal controls and CLI commands are documented
 in [the technical reference](old_README.md). Never reset a dirty repository to recover a run.
 
