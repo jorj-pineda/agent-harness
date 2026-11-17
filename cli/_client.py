@@ -51,6 +51,11 @@ class _RevertJournalIdentity(BaseModel):
     reason: str | None = Field(default=None, strict=True)
 
 
+class _CheckpointIdentity(BaseModel):
+    checkpoint_id: str = Field(min_length=1, strict=True)
+    session_id: str = Field(min_length=1, strict=True)
+
+
 @dataclass
 class TurnSummary:
     """Flattened view of the TurnResponse envelope for CLI display."""
@@ -916,6 +921,22 @@ class AgentClient:
         resp.raise_for_status()
         return dict(resp.json())
 
+    @staticmethod
+    def _validate_checkpoint_lookup(
+        record: Any, session_id: str, checkpoint_id: str | None = None
+    ) -> dict[str, Any]:
+        if not isinstance(record, dict):
+            raise ValueError("Unsupported checkpoint metadata response")
+        try:
+            identity = _CheckpointIdentity.model_validate(record)
+        except ValueError as exc:
+            raise ValueError("Unsupported checkpoint metadata response") from exc
+        if identity.session_id != session_id or (
+            checkpoint_id is not None and identity.checkpoint_id != checkpoint_id
+        ):
+            raise ValueError("Mismatched checkpoint metadata response")
+        return record
+
     def create_checkpoint(self, user_id: str, session_id: str) -> dict[str, Any]:
         resp = httpx.post(
             f"{self._base}/sessions/{session_id}/checkpoints",
@@ -923,7 +944,7 @@ class AgentClient:
             timeout=120,
         )
         resp.raise_for_status()
-        return dict(resp.json())
+        return self._validate_checkpoint_lookup(resp.json(), session_id)
 
     def checkpoints(
         self, user_id: str, session_id: str, *, limit: int = 50, offset: int = 0
@@ -934,7 +955,10 @@ class AgentClient:
             timeout=30,
         )
         resp.raise_for_status()
-        return list(resp.json())
+        records = resp.json()
+        if not isinstance(records, list):
+            raise ValueError("Unsupported checkpoint list response")
+        return [self._validate_checkpoint_lookup(record, session_id) for record in records]
 
     def checkpoint(self, user_id: str, session_id: str, checkpoint_id: str) -> dict[str, Any]:
         resp = httpx.get(
@@ -943,7 +967,7 @@ class AgentClient:
             timeout=30,
         )
         resp.raise_for_status()
-        return dict(resp.json())
+        return self._validate_checkpoint_lookup(resp.json(), session_id, checkpoint_id)
 
     def checkpoint_span(
         self,
