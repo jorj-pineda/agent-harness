@@ -38,7 +38,9 @@ def serve(
     """Start the FastAPI server (uvicorn wrapper)."""
     import uvicorn  # late import so --help works without spinning up uvicorn
 
-    uvicorn.run("api.server:app", host=host, port=port, reload=reload)
+    # Open requests can await app-owned work. Bound HTTP draining so lifespan
+    # shutdown can request cancellation and await its review/storage settlement.
+    uvicorn.run("api.server:app", host=host, port=port, reload=reload, timeout_graceful_shutdown=5)
 
 
 def _cancellation_failure(exc: Exception) -> str:
