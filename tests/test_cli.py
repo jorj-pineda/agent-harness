@@ -300,7 +300,11 @@ def test_agent_client_chat_wait_boundaries_and_owner_action_timeout(seconds: int
         client.chat("dev", "s1", "fix", request_id="retained")
         assert post.call_args.kwargs["timeout"].read == seconds
         assert post.call_args.kwargs["json"]["request_id"] == "retained"
-        post.return_value = _ok_response({"detail": "Requested"})
+        post.return_value = httpx.Response(
+            202,
+            json={"status": "requested", "detail": "Requested"},
+            request=httpx.Request("POST", "http://server/cancel"),
+        )
         client.cancel("dev", "s1")
         assert post.call_args.kwargs["timeout"] == 30
 
@@ -421,7 +425,12 @@ def test_cancel_command_and_ctrl_c_request_explicit_cancellation() -> None:
 
 
 def test_client_cancel_uses_owner_scoped_endpoint() -> None:
-    with patch("httpx.post", return_value=_ok_response({"detail": "Requested"})) as post:
+    response = httpx.Response(
+        202,
+        json={"status": "requested", "detail": "Requested"},
+        request=httpx.Request("POST", "http://server/cancel"),
+    )
+    with patch("httpx.post", return_value=response) as post:
         assert AgentClient().cancel("dev", "s1") == "Requested"
     assert post.call_args.args[0] == "http://localhost:8000/sessions/s1/cancel"
     assert post.call_args.kwargs["json"] == {"user_id": "dev"}

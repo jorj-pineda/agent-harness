@@ -4,6 +4,13 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-17 — Truthful CLI cancellation acknowledgment:** the client now requires
+HTTP202/requested rather than treating an arbitrary detail as confirmation.
+Standalone and Ctrl-C failures preserve uncertainty without exception payloads or
+automatic retry. Offline CLI→API cancellation/restart review preserves user bytes
+and makes one scripted provider call. This improves client recovery mechanics,
+not model quality or G2 closure; broader workflow acceptance remains open.
+
 **2026-11-16 — Retained scripted fresh review exercise:** a pinned offline join
 of twelve original scripted rows, three-criterion copied grades and explicit
 unknown reviews now [recomputes exactly](evals/fresh_visible_tasks/REVIEW_EVIDENCE.md).

@@ -41,6 +41,14 @@ def serve(
     uvicorn.run("api.server:app", host=host, port=port, reload=reload)
 
 
+def _cancellation_failure(exc: Exception) -> str:
+    return (
+        f"Cancellation not confirmed ({type(exc).__name__}). Outcome may be unknown; "
+        "owned work may still be running or settling. Inspect saved run/session evidence "
+        "before new work. No automatic retry was made."
+    )
+
+
 @app.command()
 def cancel(
     session_id: str = typer.Argument(..., help="Session with an active turn."),
@@ -51,7 +59,7 @@ def cancel(
     try:
         detail = AgentClient(base_url).cancel(user_id, session_id)
     except Exception as exc:
-        typer.echo(f"Cancellation failed: {exc}", err=True)
+        typer.echo(_cancellation_failure(exc), err=True)
         raise typer.Exit(code=1) from exc
     typer.echo(detail)
 
@@ -165,7 +173,7 @@ def chat(
             try:
                 typer.echo(client.cancel(user_id, session_id))
             except Exception as exc:
-                typer.echo(f"Cancellation not confirmed: {exc}", err=True)
+                typer.echo(_cancellation_failure(exc), err=True)
             typer.echo("Inspect saved session review after cleanup. Bye.")
             break
         except Exception as exc:
