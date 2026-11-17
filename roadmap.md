@@ -4,6 +4,13 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-17 — Keyed CLI revert journal binding:** read-only revert lookup now
+checks owner/submission key and supported journal identity/state before display.
+All five saved states and missing records remain read-only; valid JSON evidence
+is unchanged. Offline reversal/later-user-edit and complete client recovery
+regressions preserve user work. Submission/runtime behavior stays unchanged;
+this improves review reliability without authenticating all evidence or closing G2.
+
 **2026-11-17 — Saved CLI run identity binding:** run detail and filtered history
 now reject unrelated owner/run/session/submission-key responses before display.
 Identity-only validation preserves valid historical/optional evidence and empty
