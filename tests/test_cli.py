@@ -442,7 +442,7 @@ def _saved_run(status="finished", response=None):
         "status": status,
         "provider": "ollama",
         "configured_model": "local",
-        "request": {"session_id": "s1", "request_id": "key1", "message": "Fix"},
+        "request": {"user_id": "dev", "session_id": "s1", "request_id": "key1", "message": "Fix"},
         "response": response,
         "error": "Workspace edits may exist" if status == "interrupted" else None,
     }

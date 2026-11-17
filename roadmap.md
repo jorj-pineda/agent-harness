@@ -4,6 +4,13 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-17 — Saved CLI run identity binding:** run detail and filtered history
+now reject unrelated owner/run/session/submission-key responses before display.
+Identity-only validation preserves valid historical/optional evidence and empty
+lookups, without execution or automatic retries. Offline client regressions include
+partial-edit cancellation/restart/fork/reversal and inspection-only review. This
+improves review reliability; it is not full evidence authentication or G2 closure.
+
 **2026-11-17 — Truthful CLI cancellation acknowledgment:** the client now requires
 HTTP202/requested rather than treating an arbitrary detail as confirmation.
 Standalone and Ctrl-C failures preserve uncertainty without exception payloads or
