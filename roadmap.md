@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-17 — Real CLI guarded continuation proof:** separate executable/API
+processes now cover bounded-profile continuation after restart, exact-key replay
+after another restart with zero new provider calls, and drift refusal before
+provider execution. Submission acknowledgment is distinct from the terminal
+guard result. Source archive/run, user bytes and file modes stay preserved;
+successful scripted forks remain separate sessions. Initial fixture assumptions
+about synchronous refusal and unbounded context were corrected, not product bugs.
+No actual-model recovery or G2 closure is established.
+
 **2026-11-17 — Active HTTP shutdown reaches owned cancellation:** the installed
 `serve` wrapper now gives Uvicorn a five-second HTTP drain window before lifespan
 cleanup. A real active-request process probe previously required forced teardown;
