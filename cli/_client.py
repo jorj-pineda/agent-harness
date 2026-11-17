@@ -36,6 +36,21 @@ class _SavedRunIdentity(BaseModel):
     request: _SavedRunRequestIdentity
 
 
+class _RevertRequestIdentity(BaseModel):
+    user_id: str = Field(min_length=1, strict=True)
+    run_id: str = Field(min_length=1, strict=True)
+    path: str = Field(min_length=1, strict=True)
+    request_id: str = Field(min_length=1, strict=True)
+
+
+class _RevertJournalIdentity(BaseModel):
+    revert_id: str = Field(min_length=1, strict=True)
+    status: Literal["pending", "applied", "rejected", "uncertain", "interrupted"]
+    request: _RevertRequestIdentity
+    scope_note: str = Field(min_length=1, strict=True)
+    reason: str | None = Field(default=None, strict=True)
+
+
 @dataclass
 class TurnSummary:
     """Flattened view of the TurnResponse envelope for CLI display."""
@@ -1077,7 +1092,17 @@ class AgentClient:
         )
         resp.raise_for_status()
         data = resp.json()
-        return dict(data) if data is not None else None
+        if data is None:
+            return None
+        if not isinstance(data, dict):
+            raise ValueError("Unsupported revert journal lookup response")
+        try:
+            identity = _RevertJournalIdentity.model_validate(data)
+        except ValueError as exc:
+            raise ValueError("Unsupported revert journal lookup response") from exc
+        if identity.request.user_id != user_id or identity.request.request_id != request_id:
+            raise ValueError("Mismatched revert journal lookup response")
+        return data
 
     def check_suggestions(self, user_id: str, session_id: str) -> dict[str, Any]:
         resp = httpx.get(
