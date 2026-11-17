@@ -69,7 +69,11 @@ The CLI prints the session ID and submission key. `/check` inspects a pending
 submission; `/retry` repeats only its exact retained input/key. New messages are
 blocked after an uncertain outcome. Type `/quit` to exit. The separate
 `uv run agent-harness cancel SESSION_ID --user-id demo-user` command requests
-cancellation and returns before final settlement. The server waits for owned
+cancellation and returns before final settlement. The CLI accepts only the
+server's HTTP202 `requested` acknowledgment. A lost or invalid response is
+unconfirmed: inspect saved run/session evidence before new work; cancellation
+may still be running or settling. Neither CLI cancellation path automatically
+retries or prints a transport exception payload. The server waits for owned
 cleanup before final reporting; it cannot promise remote inference/billing or
 synchronous workers stop immediately.
 
