@@ -89,6 +89,27 @@ class _WorkspaceReview(BaseModel):
     paths_truncated: bool = Field(default=False, strict=True)
 
 
+class _ConfigurationComparisonState(BaseModel):
+    status: Literal["matching", "changed", "unknown", "not_recorded", "unavailable"]
+
+
+class _ContextReviewState(BaseModel):
+    status: Literal["estimated_fit", "blocked", "unbounded_context", "not_checked"]
+
+
+class _TranscriptReviewState(BaseModel):
+    status: Literal["valid", "invalid"]
+
+
+class _ConfigurationReviewState(BaseModel):
+    status: Literal["reviewed", "busy", "unavailable"]
+    read_only: bool = Field(default=True, strict=True)
+    resume_supported: bool = Field(default=False, strict=True)
+    configuration: _ConfigurationComparisonState | None = None
+    context: _ContextReviewState | None = None
+    transcript: _TranscriptReviewState | None = None
+
+
 @dataclass
 class TurnSummary:
     """Flattened view of the TurnResponse envelope for CLI display."""
@@ -1215,7 +1236,16 @@ class AgentClient:
             timeout=30,
         )
         resp.raise_for_status()
-        return dict(resp.json())
+        record = resp.json()
+        if not isinstance(record, dict):
+            raise ValueError("Unsupported configuration review response")
+        try:
+            review = _ConfigurationReviewState.model_validate(record)
+        except ValueError as exc:
+            raise ValueError("Unsupported configuration review response") from exc
+        if not review.read_only or review.resume_supported:
+            raise ValueError("Contradictory configuration review response")
+        return record
 
     def transcript_review(
         self, user_id: str, session_id: str, *, max_issues: int = 100
