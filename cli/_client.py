@@ -13,9 +13,15 @@ import math
 import re
 import uuid
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Literal
 
 import httpx
+from pydantic import BaseModel, Field
+
+
+class _CancellationAcknowledgment(BaseModel):
+    status: Literal["requested"]
+    detail: str = Field(min_length=1, pattern=r"\S", strict=True)
 
 
 @dataclass
@@ -296,7 +302,9 @@ class AgentClient:
             timeout=30,
         )
         resp.raise_for_status()
-        return str(resp.json()["detail"])
+        if resp.status_code != 202:
+            raise ValueError("Cancellation requires an HTTP202 requested acknowledgment")
+        return _CancellationAcknowledgment.model_validate(resp.json()).detail
 
     def chat(
         self,
