@@ -56,6 +56,12 @@ class _CheckpointIdentity(BaseModel):
     session_id: str = Field(min_length=1, strict=True)
 
 
+class _ToolProgressIdentity(BaseModel):
+    run_id: str = Field(min_length=1, strict=True)
+    coverage: Literal["recorded", "not_recorded"]
+    read_only: Literal[True] = True
+
+
 @dataclass
 class TurnSummary:
     """Flattened view of the TurnResponse envelope for CLI display."""
@@ -919,7 +925,16 @@ class AgentClient:
             timeout=30,
         )
         resp.raise_for_status()
-        return dict(resp.json())
+        record = resp.json()
+        if not isinstance(record, dict):
+            raise ValueError("Unsupported tool progress response")
+        try:
+            identity = _ToolProgressIdentity.model_validate(record)
+        except ValueError as exc:
+            raise ValueError("Unsupported tool progress response") from exc
+        if identity.run_id != run_id:
+            raise ValueError("Mismatched tool progress response")
+        return record
 
     @staticmethod
     def _validate_checkpoint_lookup(
