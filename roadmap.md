@@ -4,6 +4,13 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-17 — Terminal-safe saved CLI displays:** run/history, checkpoint and
+revert views now render terminal control characters as literal escapes. Normal
+Unicode, line feeds and tabs remain readable in answers/diffs; `--json` and saved
+records are unchanged. Offline regressions reproduce control emission before the
+fix and cover read-only recovery. This is display reliability, not model-quality
+evidence or G2 closure.
+
 **2026-11-17 — CLI checkpoint metadata binding:** capture/list/detail responses
 now require the requested session, and detail also requires the selected checkpoint.
 Complete lists are validated before display; valid historical metadata is preserved.

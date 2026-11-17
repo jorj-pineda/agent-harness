@@ -396,7 +396,24 @@ def show_context_limits(context: dict[str, Any]) -> None:
     )
 
 
+def _terminal_record(value: Any) -> Any:
+    """Copy saved display data, escaping terminal controls except line feeds and tabs."""
+    if isinstance(value, str):
+        return "".join(
+            json.dumps(char)[1:-1]
+            if (ord(char) < 32 and char not in "\n\t") or 127 <= ord(char) <= 159
+            else char
+            for char in value
+        )
+    if isinstance(value, dict):
+        return {_terminal_record(key): _terminal_record(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_terminal_record(item) for item in value]
+    return value
+
+
 def show_run(record: dict) -> None:
+    record = _terminal_record(record)
     typer.echo(f"run_id={record['run_id']} status={record['status']}")
     if record.get("before_checkpoint_id") or record.get("after_checkpoint_id"):
         typer.echo(
@@ -815,6 +832,7 @@ def runs(
         typer.echo(f"Run lookup failed: {exc}", err=True)
         raise typer.Exit(code=1) from exc
     for record in records:
+        record = _terminal_record(record)
         response = record.get("response") or {}
         typer.echo(
             f"{record['run_id']} {record['status']} "
@@ -1128,6 +1146,7 @@ def tool_progress(
 
 
 def show_checkpoint(record: dict[str, Any]) -> None:
+    record = _terminal_record(record)
     typer.echo(
         f"checkpoint={record['checkpoint_id']} session={record['session_id']} "
         f"files={record['file_count']} bytes={record['byte_count']} "
@@ -1453,6 +1472,7 @@ def configuration_review(
 
 
 def show_revert(record: dict[str, Any]) -> None:
+    record = _terminal_record(record)
     typer.echo(
         f"revert={record['revert_id']} status={record['status']} "
         f"run={record['request']['run_id']} path={record['request']['path']} "
