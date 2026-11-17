@@ -112,6 +112,9 @@ preserves the original saved values.
 `tool-progress` binds metadata to the requested run and supported read-only coverage.
 Observed tool events remain metadata, not proof of dispatch, acceptance or permission
 to resume; missing events do not establish that no edits occurred.
+`transcript-review` rejects unsupported or contradictory structure diagnostics
+before display. A valid result covers normalized tool-call/result structure only;
+it does not establish answer correctness, current workspace state or permission to resume.
 Checkpoint/reversal controls and CLI commands are documented
 in [the technical reference](old_README.md). Never reset a dirty repository to recover a run.
 

@@ -4,6 +4,13 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-17 — CLI transcript review consistency:** unsupported states,
+non-read-only responses, contradictory issue counts/truncation and out-of-range
+diagnostic indices now fail before displaying a structure result. Valid bounded
+diagnostics and optional evidence remain unchanged. Offline CLI/API/recovery
+regressions pass. The response carries no session identity; this is structural
+review validation, not transcript authenticity, repair authority or G2 closure.
+
 **2026-11-17 — CLI tool-progress lookup binding:** the client rejects unrelated
 run IDs, unsupported coverage and explicit non-read-only responses before display.
 Valid recorded/not-recorded metadata and optional JSON evidence remain unchanged.
