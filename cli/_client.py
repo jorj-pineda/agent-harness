@@ -76,6 +76,19 @@ class _TranscriptReview(BaseModel):
     read_only: bool = Field(default=True, strict=True)
 
 
+class _WorkspaceReview(BaseModel):
+    status: Literal["unchanged", "changed", "unavailable", "busy", "not_recorded", "not_tracked"]
+    read_only: bool = Field(default=True, strict=True)
+    mode_coverage: Literal["compared", "not_recorded", "not_checked"] = "not_recorded"
+    added: list[str] = Field(default_factory=list, strict=True)
+    modified: list[str] = Field(default_factory=list, strict=True)
+    deleted: list[str] = Field(default_factory=list, strict=True)
+    added_count: int = Field(default=0, ge=0, strict=True)
+    modified_count: int = Field(default=0, ge=0, strict=True)
+    deleted_count: int = Field(default=0, ge=0, strict=True)
+    paths_truncated: bool = Field(default=False, strict=True)
+
+
 @dataclass
 class TurnSummary:
     """Flattened view of the TurnResponse envelope for CLI display."""
@@ -1240,7 +1253,23 @@ class AgentClient:
             timeout=120,
         )
         resp.raise_for_status()
-        return dict(resp.json())
+        record = resp.json()
+        if not isinstance(record, dict):
+            raise ValueError("Unsupported workspace review response")
+        try:
+            review = _WorkspaceReview.model_validate(record)
+        except ValueError as exc:
+            raise ValueError("Unsupported workspace review response") from exc
+        paths = (review.added, review.modified, review.deleted)
+        counts = (review.added_count, review.modified_count, review.deleted_count)
+        if (
+            not review.read_only
+            or any(count < len(entries) for count, entries in zip(counts, paths, strict=True))
+            or sum(map(len, paths)) > max_paths
+            or review.paths_truncated != (sum(counts) > sum(map(len, paths)))
+        ):
+            raise ValueError("Contradictory workspace review response")
+        return record
 
 
 def summarize(data: dict[str, Any]) -> TurnSummary:

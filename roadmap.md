@@ -4,6 +4,13 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-17 — CLI workspace review consistency:** supported review states and
+mode-coverage labels, read-only semantics, bounded path lists and count/truncation
+consistency are checked before display. Busy/unavailable and legacy mode evidence
+remain explicit; valid responses are preserved. Offline workspace/API/recovery
+regressions pass. No session identity or atomic file-state guarantee is added;
+ignored-entry evidence remains separate, and G2 remains open.
+
 **2026-11-17 — CLI transcript review consistency:** unsupported states,
 non-read-only responses, contradictory issue counts/truncation and out-of-range
 diagnostic indices now fail before displaying a structure result. Valid bounded
