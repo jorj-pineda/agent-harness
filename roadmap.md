@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-18 — Owned API crash recovery proof:** SIGKILL during a scripted
+partial edit leaves no graceful-settlement claim. Restart marks the saved run
+interrupted, preserves the before-checkpoint, tool-event and budget prefixes
+(including pending-request unknown usage), and does not invent a final response
+or after-checkpoint. Fresh CLI review and a second restart preserve that evidence
+without dispatch or workspace changes. An initial test assumption that budget
+evidence was absent was corrected. This is process-crash evidence, not power-loss
+durability, actual-model recovery or closure of G2.
+
 **2026-11-18 — Competing CLI workspace proof:** real CLI processes covering
 identical, child and symlink-alias roots record blocked competing tasks without
 provider dispatch, tool calls or checkpoint capture. After cancelling the owner,
