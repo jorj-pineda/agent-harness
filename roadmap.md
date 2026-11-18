@@ -4,6 +4,14 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-18 — CLI cancellation of command descendants:** a real process probe
+starts a configured pytest check and a same-group descendant that ignores SIGTERM.
+Explicit CLI cancellation leaves both non-running before test fallback cleanup,
+retains cancelled evidence/checkpoints, and preserves partial edits and user files
+across API restart. Host-reaped orphan zombies are distinguished from running
+code; this does not claim arbitrary detached-process isolation or model quality.
+No runtime defect was inferred; G2 remains open.
+
 **2026-11-18 — Real CLI timeout recovery proof:** one-second client read timeouts
 leave the five-second API-owned turn active. New input is refused while uncertain;
 explicit `/check` and `/retry` recover the settled original key/result without an
