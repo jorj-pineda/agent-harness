@@ -4,6 +4,14 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-18 — Competing CLI workspace proof:** real CLI processes covering
+identical, child and symlink-alias roots record blocked competing tasks without
+provider dispatch, tool calls or checkpoint capture. After cancelling the owner,
+fresh tasks can use the released workspace; restart review preserves all records
+and user files/mode. This proves one API process's admission policy, not
+cross-process locking or process isolation. No runtime defect or G2 closure is
+inferred from these offline scripted cases.
+
 **2026-11-18 — CLI cancellation of command descendants:** a real process probe
 starts a configured pytest check and a same-group descendant that ignores SIGTERM.
 Explicit CLI cancellation leaves both non-running before test fallback cleanup,
