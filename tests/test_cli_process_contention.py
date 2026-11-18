@@ -98,6 +98,9 @@ def test_real_cli_workspace_contention_blocks_then_releases_without_dispatch(tmp
             assert cancelled.returncode == 0, cancelled.stderr
             stdout, stderr = process.communicate(timeout=10)
             assert process.returncode == 0, stdout + stderr
+            settled = api.get(f"/runs/{source['run_id']}", params={"user_id": "cli-user"}).json()
+            assert settled["status"] == "cancelled"
+            assert settled["response"]["completion_status"] == "cancelled"
             accepted = cli(
                 url, ["chat", "--workspace", str(competing_root)], input="Explain only\n/quit\n"
             )
