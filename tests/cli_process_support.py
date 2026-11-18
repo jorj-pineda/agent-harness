@@ -38,7 +38,7 @@ def cli(url, arguments, *, input=None):
 
 
 @contextmanager
-def server(directory, stores, responses, *, use_cli_server=False):
+def server(directory, stores, responses, *, use_cli_server=False, overrides=None):
     directory.mkdir(mode=0o700)
     stores.mkdir(exist_ok=True)
     settings = {
@@ -48,6 +48,7 @@ def server(directory, stores, responses, *, use_cli_server=False):
         "session_db_path": str(stores / "sessions.sqlite"),
         "coding_toolset": "whole_file",
         "max_tool_iterations": 4,
+        **(overrides or {}),
     }
     config = directory / "configuration.json"
     config.write_text(
