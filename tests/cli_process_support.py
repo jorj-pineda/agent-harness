@@ -38,7 +38,9 @@ def cli(url, arguments, *, input=None):
 
 
 @contextmanager
-def server(directory, stores, responses, *, use_cli_server=False, overrides=None):
+def server(
+    directory, stores, responses, *, use_cli_server=False, overrides=None, expected_crash=False
+):
     directory.mkdir(mode=0o700)
     stores.mkdir(exist_ok=True)
     settings = {
@@ -99,10 +101,14 @@ def server(directory, stores, responses, *, use_cli_server=False, overrides=None
                 os.killpg(process.pid, signal.SIGKILL)
                 process.wait(timeout=5)
                 raise AssertionError("Owned scripted API failed graceful shutdown") from None
-    assert process.returncode == 0
-    saved = json.loads(trace.read_text())
-    assert saved["closing"] and saved["stores_closed"] and saved["unfinished_tasks"] == 0
-    assert saved["inference_ran"] is False
+    if expected_crash:
+        assert process.returncode == -signal.SIGKILL
+        assert not trace.exists(), "An intentional crash must not claim graceful settlement"
+    else:
+        assert process.returncode == 0
+        saved = json.loads(trace.read_text())
+        assert saved["closing"] and saved["stores_closed"] and saved["unfinished_tasks"] == 0
+        assert saved["inference_ran"] is False
     try:
         os.killpg(process.pid, 0)
     except ProcessLookupError:
