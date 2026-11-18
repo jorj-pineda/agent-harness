@@ -4,6 +4,14 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-18 — Abrupt CLI disconnect proof:** real CLI termination during a
+scripted partial edit leaves the API-owned run active. Separate cases settle via
+explicit cancellation or the existing wall budget, preserving unknown usage,
+checkpoint references, partial bytes/mode and unrelated work. Restart review
+recovers the identical saved record without provider calls or another run.
+This is offline lifecycle evidence, not a new execution policy, model-quality
+gain or closure of G2. No runtime defect was inferred from the passing probe.
+
 **2026-11-17 — Real CLI guarded reversal proof:** separate CLI/API processes
 cover reverse-order fork/source reversal after restart, stale-target rejection,
 durable journal lookup and exact-key replay after later user edits. User bytes,
