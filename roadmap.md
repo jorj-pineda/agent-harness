@@ -4,6 +4,14 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-17 — Real CLI guarded reversal proof:** separate CLI/API processes
+cover reverse-order fork/source reversal after restart, stale-target rejection,
+durable journal lookup and exact-key replay after later user edits. User bytes,
+mode, unrelated work and staged Git index bytes remain preserved; original run
+and source archive evidence remain unchanged. Review/reversal phases make zero
+scripted-provider calls. This is offline single-file mechanics evidence, not
+atomic multi-file restore, actual-model recovery or closure of G2.
+
 **2026-11-17 — Real CLI guarded continuation proof:** separate executable/API
 processes now cover bounded-profile continuation after restart, exact-key replay
 after another restart with zero new provider calls, and drift refusal before
