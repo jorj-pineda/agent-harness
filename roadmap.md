@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-18 — Merge enforcement and scripted report gate prepared:** CI now
+requests explicit escalation-gold/matrix-coverage checks and retains separate
+coding/support reports on contract failure. Reports identify their source without
+claiming coding acceptance. A reviewable main-branch protection policy requires
+both GitHub Actions checks, a current PR and resolved conversations, including for
+admins, without a self-approval requirement. GitHub application/readback remains
+pending; committing the policy alone does not enforce it. No deployment, target
+inference, model-quality gain or release-gate closure is added.
+
 **2026-11-18 — Owned API crash recovery proof:** SIGKILL during a scripted
 partial edit leaves no graceful-settlement claim. Restart marks the saved run
 interrupted, preserves the before-checkpoint, tool-event and budget prefixes
