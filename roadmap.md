@@ -4,6 +4,13 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-18 — Real CLI timeout recovery proof:** one-second client read timeouts
+leave the five-second API-owned turn active. New input is refused while uncertain;
+explicit `/check` and `/retry` recover the settled original key/result without an
+additional run or provider request. Restart preserves the same record and partial
+user workspace. Offline process evidence only; no execution-policy change,
+model-quality result or closure of G2.
+
 **2026-11-18 — Abrupt CLI disconnect proof:** real CLI termination during a
 scripted partial edit leaves the API-owned run active. Separate cases settle via
 explicit cancellation or the existing wall budget, preserving unknown usage,
