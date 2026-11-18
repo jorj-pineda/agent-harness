@@ -4,6 +4,15 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-17 — Active HTTP shutdown reaches owned cancellation:** the installed
+`serve` wrapper now gives Uvicorn a five-second HTTP drain window before lifespan
+cleanup. A real active-request process probe previously required forced teardown;
+it now settles the cancelled partial turn/checkpoints, closes stores and preserves
+user work across restart. The existing application cancellation/storage settlement
+still runs to completion; five seconds is not a total shutdown or worker deadline.
+The fixture's default launch remains unchanged. Offline signal/restart/API tests
+pass; no inference or G2 closure follows.
+
 **2026-11-17 — Actual CLI SIGINT proof:** an offline regression signals the real
 CLI while its HTTP request waits after a scripted edit. The saved turn settles as
 cancelled with unknown usage and both checkpoint references; exactly one run and

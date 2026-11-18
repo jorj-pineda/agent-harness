@@ -982,6 +982,12 @@ evidence; saved run identity and committed tool metadata record progress without
 rerunning it. Event replay, automatic
 reconnection/polling, and safe resume remain open.
 
+`agent-harness serve` allows five seconds for active HTTP requests to drain before
+entering application shutdown. An interrupted HTTP wait can therefore report an
+unknown outcome while the application cancels and settles its owned work. This is
+not a five-second total cleanup deadline; independent Uvicorn launch commands must
+choose their own HTTP drain policy.
+
 ### Inspect durable tool progress
 
 ```sh

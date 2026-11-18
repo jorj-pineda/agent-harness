@@ -30,19 +30,25 @@ def test_serve_invokes_uvicorn_defaults() -> None:
     with patch("uvicorn.run") as mock_run:
         result = runner.invoke(app, ["serve"])
     assert result.exit_code == 0, result.output
-    mock_run.assert_called_once_with("api.server:app", host="127.0.0.1", port=8000, reload=False)
+    mock_run.assert_called_once_with(
+        "api.server:app", host="127.0.0.1", port=8000, reload=False, timeout_graceful_shutdown=5
+    )
 
 
 def test_serve_custom_host_port() -> None:
     with patch("uvicorn.run") as mock_run:
         runner.invoke(app, ["serve", "--host", "0.0.0.0", "--port", "9000"])
-    mock_run.assert_called_once_with("api.server:app", host="0.0.0.0", port=9000, reload=False)
+    mock_run.assert_called_once_with(
+        "api.server:app", host="0.0.0.0", port=9000, reload=False, timeout_graceful_shutdown=5
+    )
 
 
 def test_serve_reload_flag() -> None:
     with patch("uvicorn.run") as mock_run:
         runner.invoke(app, ["serve", "--reload"])
-    mock_run.assert_called_once_with("api.server:app", host="127.0.0.1", port=8000, reload=True)
+    mock_run.assert_called_once_with(
+        "api.server:app", host="127.0.0.1", port=8000, reload=True, timeout_graceful_shutdown=5
+    )
 
 
 # ---------------------------------------------------------------------------

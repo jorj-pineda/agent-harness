@@ -38,7 +38,7 @@ def cli(url, arguments, *, input=None):
 
 
 @contextmanager
-def server(directory, stores, responses):
+def server(directory, stores, responses, *, use_cli_server=False):
     directory.mkdir(mode=0o700)
     stores.mkdir(exist_ok=True)
     settings = {
@@ -50,7 +50,9 @@ def server(directory, stores, responses):
         "max_tool_iterations": 4,
     }
     config = directory / "configuration.json"
-    config.write_text(json.dumps({"settings": settings, "responses": responses}))
+    config.write_text(
+        json.dumps({"settings": settings, "responses": responses, "use_cli_server": use_cli_server})
+    )
     config.chmod(0o600)
     trace = directory / "trace.json"
     with socket.socket() as reserved:

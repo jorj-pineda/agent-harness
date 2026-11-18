@@ -74,7 +74,20 @@ def main() -> None:
     # Uvicorn restores/re-raises captured SIGTERM after graceful lifespan shutdown.
     # Keep that final notification harmless so the owned fixture reports exit zero.
     signal.signal(signal.SIGTERM, lambda *_: None)
-    uvicorn.run(app, host="127.0.0.1", port=port, log_level="error", access_log=False)
+    if configuration.get("use_cli_server", False):
+        from unittest.mock import patch
+
+        from cli.main import serve
+
+        run = uvicorn.run
+
+        def scripted_app(_target, **options):
+            run(app, **options, log_level="error", access_log=False)
+
+        with patch("uvicorn.run", side_effect=scripted_app):
+            serve(host="127.0.0.1", port=port, reload=False)
+    else:
+        uvicorn.run(app, host="127.0.0.1", port=port, log_level="error", access_log=False)
     components = app.state.components
     closed = []
     for connection in (components.fact_store._conn, components.session_store._conn):
