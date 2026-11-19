@@ -25,30 +25,15 @@ are canned. Keep this distinct from both in-process API tests and actual-model
 coding evidence. Neither successful scripted responses nor a configured check
 substitutes for independent acceptance of a real coding artifact.
 
-## Next offline acceptance case
+## Next offline acceptance sequence
 
-Prioritize **permission-only stale-state refusal after restart** for executable
-CLI continuation and reversal. The concrete failure to guard against is restoring
-an old mode, or dispatching a continuation, after the user changes a file's mode
-without changing its bytes. Current guards explicitly compare captured modes;
-existing process tests exercise byte drift and unchanged modes instead.
-
-Extend those existing process cases rather than add another provider or workflow:
-
-1. Record a scripted source edit and its checkpoints; stop the owned API.
-2. Change only the selected file's mode, retaining identical bytes.
-3. Restart over the same stores and submit the explicit continuation or reversal.
-4. Require the saved continuation to be blocked before provider dispatch and
-   checkpoint capture, or the reversal journal to be rejected. A successful CLI
-   exit/HTTP acknowledgment alone is insufficient.
-5. Preserve user bytes/mode, unrelated work and source records; for reversal,
-   preserve the already-staged Git index and prove journal replay after another
-   restart cannot mutate subsequent user work.
-
-This is a bounded preservation gap in executable evidence, not an observed runtime
-bug. Fix runtime behavior only if the case demonstrates a defect. A pass closes
-these cases only. Scope excludes cross-process admission, detached processes,
-atomic multi-file restore, model comparisons and new browser acceptance.
+The [bounded executable sequence](OFFLINE_RECOVERY_ACCEPTANCE.md) specifies a
+cancelled partial source edit, restart/review, guarded continuation with a real
+configured check, reverse-order restoration and durable read-only inspection.
+A separate adverse case changes user bytes after successful review to demonstrate
+that review is not a lease. Existing individual process cases do not establish
+this full composition; the combined CLI test currently uses an in-process HTTP
+bridge. Keep scripted mechanics separate from actual-model/browser acceptance.
 
 ## Offline follow-up — 2026-11-19
 
