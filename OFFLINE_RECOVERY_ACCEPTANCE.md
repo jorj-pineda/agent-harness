@@ -77,5 +77,18 @@ completed/passed fork, two applied reversals and exact saved records after resta
 Provider calls are two for the cancelled source, three for the fork and zero
 for review/reversal/final inspection. Target bytes/mode, later unrelated work,
 visible-check bytes and staged index are preserved. No runtime change was needed.
-The adverse stale-review sequence remains outstanding. Full offline/CI validation
-remains required before merge; no model-quality or G2 closure follows.
+The adverse stale-review sequence is recorded separately below. Full offline/CI
+validation remains required before merge; no model-quality or G2 closure follows.
+
+## Stale-review sequence — observed 2026-11-19
+
+The same executable test now has a separate adverse branch. After unchanged
+workspace, valid transcript and matching configuration reviews, a user byte edit
+makes continuation block before checkpoint capture or provider dispatch. Source
+reversal also rejects. After another restart, the continuation key returns the
+same blocked record and reversal lookup/replay returns the same rejected journal;
+later user bytes and a newly chosen mode600 survive with unrelated work and Git
+index unchanged. Source records remain exact and no extra run is created.
+Both successful/adverse focused cases passed in 17.59s. Ruff/format/mypy and diff
+checks pass; the full offline suite and CI remain pending. These passing guards
+required no runtime fix and establish no actual-model quality or G2 closure.
