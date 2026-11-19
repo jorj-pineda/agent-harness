@@ -83,10 +83,10 @@ separate kinds of evidence.
    process and historical actual-model observations. The permission-only stale-state
    cases now pass through real CLI/API processes with scripted providers; broader
    candidate-specific CLI/panel workflow acceptance remains open.
-2. Reconcile the bounded process cases with the remaining agreed CLI/panel
-   acceptance sequence before selecting another workflow probe. Permission-only
-   continuation/reversal refusal required no runtime change; it closes those
-   cases, not the entire workflow or coding-quality gate.
+2. Implement the [bounded executable recovery sequence](OFFLINE_RECOVERY_ACCEPTANCE.md):
+   cancellation of a partial edit, restart/review, checked continuation and
+   reverse-order restoration, followed separately by stale-review refusal.
+   Permission-only refusal required no runtime change; broader G2 stays open.
 3. Keep the fresh twelve-cell comparison unadmitted while offline work is selected.
    Any future generation needs actual approval of the exact freeze and fresh
    launch checks. Even a successful fresh development-task comparison would not
