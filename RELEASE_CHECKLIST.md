@@ -79,10 +79,10 @@ separate kinds of evidence.
 
 ## Immediate queue
 
-1. Map G2's CLI/panel submission, review, cancellation, restart, guarded continuation
-   and reversal requirements to existing evidence. Separate scripted contracts,
-   real process/browser observations and actual-model workflow evidence. Identify
-   concrete missing acceptance cases without treating test counts as completion.
+1. The [G2 evidence map](WORKFLOW_ACCEPTANCE.md) separates existing scripted,
+   process and historical actual-model observations. Permission-only stale-state
+   refusal after restart is the next bounded offline CLI acceptance case; broader
+   candidate-specific CLI/panel workflow acceptance remains open.
 2. Exercise the highest-priority remaining offline workflow case with the real
    application and disposable user state, preserving bytes, modes and Git state.
    Fix runtime behavior only if the probe demonstrates a defect. Passing a new
