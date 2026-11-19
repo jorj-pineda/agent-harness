@@ -15,6 +15,7 @@ import argparse
 import asyncio
 import logging
 import tempfile
+from collections import Counter
 from collections.abc import Iterable
 from dataclasses import dataclass, field, replace
 from pathlib import Path
@@ -508,17 +509,21 @@ def render_report(
     *,
     escalation_threshold: float,
     live: bool = False,
+    scenario_source: str | None = None,
 ) -> str:
     lines: list[str] = []
     lines.append("# Eval Report")
     lines.append("")
     mode = LIVE_SIMULATED_MODE if live else SCRIPTED_MODE
     lines.append(
-        f"Coding-agent scenario matrix ({len(results)} results) against "
+        f"Scenario matrix ({len(results)} results) against "
         f"{len(providers)} providers ({mode}), escalation threshold = "
         f"{escalation_threshold:.2f}."
     )
     lines.append("")
+    if scenario_source is not None:
+        lines.append(f"Scenario source: `{scenario_source}`.")
+        lines.append("")
     if live:
         lines.append(
             "Live-model simulated-tool smoke test: real inference with the shared "
@@ -534,7 +539,7 @@ def render_report(
     else:
         lines.append(
             "Offline run: every provider replays the same `responses:` "
-            "script from `scenarios.yaml`, so per-provider rows match by "
+            "script from the selected scenario file, so per-provider rows match by "
             "construction. This tests the low-level loop contract, without application "
             "prompt injection or scope policy. `--live` adds real inference but still "
             "simulates code tools; neither mode measures real coding success."
@@ -617,6 +622,34 @@ def _parse_providers(raw: str) -> list[str]:
     return [p.strip() for p in raw.split(",") if p.strip()]
 
 
+def scripted_contract_failures(
+    scenarios: list[dict[str, Any]], providers: list[str], results: list[ScenarioResult]
+) -> list[str]:
+    """Explicit scripted gold and matrix coverage only, never coding-quality scores."""
+    failures = []
+    if not scenarios or len({scenario["id"] for scenario in scenarios}) != len(scenarios):
+        failures.append("Scenario selection must be nonempty with unique IDs.")
+    if not providers or len(set(providers)) != len(providers):
+        failures.append("Provider selection must be nonempty with unique names.")
+    expected = Counter(
+        (scenario["id"], provider) for scenario in scenarios for provider in providers
+    )
+    actual = Counter((result.scenario_id, result.provider) for result in results)
+    if actual != expected:
+        failures.append(
+            "Matrix coverage mismatch: each selected scenario/provider needs one result."
+        )
+    for scenario in scenarios:
+        if type((scenario.get("expected") or {}).get("should_escalate")) is not bool:
+            failures.append(f"Missing boolean escalation expectation: {scenario['id']}.")
+    for result in results:
+        if result.evaluation_mode != SCRIPTED_MODE:
+            failures.append(f"Non-scripted result: {result.scenario_id}/{result.provider}.")
+        if result.escalation_correct is not True:
+            failures.append(f"Escalation mismatch: {result.scenario_id}/{result.provider}.")
+    return failures
+
+
 def _parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         prog="python -m evals.run",
@@ -644,6 +677,11 @@ def _parse_args(argv: list[str] | None) -> argparse.Namespace:
         help="Override confidence threshold (default: 0.50 offline; application setting live).",
     )
     parser.add_argument(
+        "--check",
+        action="store_true",
+        help="Fail on scripted escalation or matrix-coverage errors; offline only.",
+    )
+    parser.add_argument(
         "--live",
         action="store_true",
         help=(
@@ -651,7 +689,10 @@ def _parse_args(argv: list[str] | None) -> argparse.Namespace:
             "Uses the application runtime but canned code-tool results, not real edits/tests."
         ),
     )
-    return parser.parse_args(argv)
+    args = parser.parse_args(argv)
+    if args.check and args.live:
+        parser.error("--check is a scripted contract gate and cannot be used with --live")
+    return args
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -695,13 +736,24 @@ def main(argv: list[str] | None = None) -> int:
         providers,
         escalation_threshold=threshold,
         live=args.live,
+        scenario_source=Path(args.scenarios).name,
     )
+    failures = scripted_contract_failures(scenarios, providers, results) if args.check else []
+    if args.check:
+        status = "FAIL" if failures else "PASS"
+        report += f"\n## Scripted contract check: {status}\n\n"
+        report += "Checks escalation gold and matrix coverage only, not patch acceptance.\n"
+        report += "".join(f"\n- {failure}" for failure in failures) + "\n"
     report_path.write_text(report, encoding="utf-8")
 
     total = len(results)
     esc_ok = sum(1 for r in results if r.escalation_correct)
     print(f"Wrote {report_path} ({total} results, {esc_ok}/{total} escalation decisions correct)")
-    return 0
+    if args.check:
+        print(f"Scripted contract check: {'FAIL' if failures else 'PASS'}")
+        for failure in failures:
+            print(failure)
+    return 1 if failures else 0
 
 
 if __name__ == "__main__":

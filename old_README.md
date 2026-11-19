@@ -1683,21 +1683,30 @@ or refresh it via the recipe in [docs/README.md](docs/README.md)._
 ## Reviewer checklist
 
 CI runs the same offline gate on every push/PR ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)): pytest, ruff, mypy, coding eval matrix, and support scenario regression — no live providers.
+The matrices use `--check` and retain separate Markdown artifacts, including
+failed contract checks. [Merge discipline](.github/MERGE_DISCIPLINE.md) documents
+the desired GitHub protection, its explicit application, and the limits of Sol
+review and scripted scores. There is no deployment stage.
 
 ```bash
 uv sync --extra dev
-pytest -m "not live"                    # unit + eval integration
-ruff check .
-mypy
-python -m evals.run --providers ollama,anthropic,openai
+uv run pytest -m "not live"             # unit + eval integration
+uv run ruff check .
+uv run ruff format --check .
+uv run mypy
+report_dir="$(mktemp -d /tmp/agent-harness-contracts.XXXXXX)"
+uv run python -m evals.run --providers ollama,anthropic,openai \
+  --check --report "$report_dir/coding.md"
+uv run python -m evals.run --scenarios evals/scenarios_support.yaml \
+  --providers ollama,anthropic,openai --check --report "$report_dir/support.md"
 docker compose up --build -d            # optional smoke; see demo.md
 ```
 
-1. **Tests** — `pytest -m "not live"` should pass (381 tests; 5 live tests deselected in CI).
-2. **Lint/types** — `ruff check .` and `mypy` on core layers.
-3. **Offline evals** — matrix completes; README table matches report summary.
+1. **Tests** — the full offline suite passes; tests marked `live` remain excluded.
+2. **Lint/types** — lint, formatting and configured Mypy checks pass.
+3. **Offline evals** — both scripted contract checks pass; inspect source labels and limitations.
 4. **Coding demo** — `demo.md` curl flow returns envelope with `tool_calls`, citations, confidence.
-5. **Support regression (optional)** — `ENABLE_SUPPORT_TOOLS=true` + `evals/scenarios_support.yaml`.
+5. **Merge** — latest-commit checks pass, the branch is current, and review findings are resolved.
 
 ## What's deferred (and why)
 
