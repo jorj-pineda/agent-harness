@@ -31,9 +31,11 @@ The [bounded executable sequence](OFFLINE_RECOVERY_ACCEPTANCE.md) specifies a
 cancelled partial source edit, restart/review, guarded continuation with a real
 configured check, reverse-order restoration and durable read-only inspection.
 A separate adverse case changes user bytes after successful review to demonstrate
-that review is not a lease. Existing individual process cases do not establish
-this full composition; the combined CLI test currently uses an in-process HTTP
-bridge. Keep scripted mechanics separate from actual-model/browser acceptance.
+that review is not a lease. The successful full composition now has an
+[executable process case](tests/test_cli_process_recovery_sequence.py); stale-review
+refusal in that sequence remains outstanding. The earlier combined CLI test uses
+an in-process HTTP bridge. Keep scripted mechanics separate from actual-model/
+browser acceptance.
 
 ## Offline follow-up — 2026-11-19
 
