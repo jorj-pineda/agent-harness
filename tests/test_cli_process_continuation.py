@@ -29,7 +29,7 @@ def replies(content, *, call_id):
     ]
 
 
-@pytest.mark.parametrize("drift", [False, True])
+@pytest.mark.parametrize("drift", [None, "content", "mode"])
 def test_process_continuation_after_restart_replays_key_or_refuses_drift(tmp_path, drift):
     repo = tmp_path / "repo"
     repo.mkdir()
@@ -67,8 +67,12 @@ def test_process_continuation_after_restart_replays_key_or_refuses_drift(tmp_pat
         "--acknowledge-uncaptured-state",
         "--json",
     ]
-    if drift:
+    if drift == "content":
         target.write_text(source_content + "later_user_edit = 4\n")
+    elif drift == "mode":
+        target.chmod(0o600)
+        assert target.read_text() == source_content
+    expected_mode = 0o600 if drift == "mode" else 0o640
     expected = target.read_bytes()
     with server(
         tmp_path / "fork",
@@ -90,9 +94,11 @@ def test_process_continuation_after_restart_replays_key_or_refuses_drift(tmp_pat
         assert completed["status"] == "finished"
         if drift:
             assert completed["response"]["completion_status"] == "blocked"
+            assert "content/modes or root changed" in completed["response"]["completion_reason"]
             assert completed["execution_profile"] is None
             assert completed["before_checkpoint_id"] is None
             assert target.read_bytes() == expected
+            assert stat.S_IMODE(target.stat().st_mode) == expected_mode
             assert api.get("/__preflight").json()["calls"] == 0
         else:
             assert completed["response"]["completion_status"] == "completed", completed["response"][
@@ -113,5 +119,5 @@ def test_process_continuation_after_restart_replays_key_or_refuses_drift(tmp_pat
             assert len(api.get("/runs", params={"user_id": "cli-user"}).json()) == 2
             assert api.get("/__preflight").json()["calls"] == 0
             assert target.read_text() == fork_content
-    assert stat.S_IMODE(target.stat().st_mode) == 0o640
+    assert stat.S_IMODE(target.stat().st_mode) == expected_mode
     assert sentinel.read_text() == "unrelated user work\n"
