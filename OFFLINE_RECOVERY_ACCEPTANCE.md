@@ -67,3 +67,15 @@ original limitations. Current rendered-panel and actual-model acceptance remain
 separate. G2 still needs agreed candidate-specific workflow acceptance; G3's
 8/10 original target, G4's repeated/held-out/two-model measurements and G5 remain
 open. This sequence authorizes no generation or release.
+
+## Successful executable sequence — observed 2026-11-19
+
+The [process test](tests/test_cli_process_recovery_sequence.py) now exercises
+steps1–6 with actual CLI/API subprocesses and the configured pytest command.
+Its focused run passed one case in 9.25s: cancelled source with unknown totals,
+completed/passed fork, two applied reversals and exact saved records after restart.
+Provider calls are two for the cancelled source, three for the fork and zero
+for review/reversal/final inspection. Target bytes/mode, later unrelated work,
+visible-check bytes and staged index are preserved. No runtime change was needed.
+The adverse stale-review sequence remains outstanding. Full offline/CI validation
+remains required before merge; no model-quality or G2 closure follows.
