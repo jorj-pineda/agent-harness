@@ -6,7 +6,7 @@ Updated: 2026-10-27
 
 **2026-11-19 — Stale CLI recovery review is not a lease:** the composed process
 sequence now changes user bytes after successful review and observes blocked
-continuation without checkpoint/provider work, rejected reversal, and durable
+continuation before checkpoint binding or provider dispatch, rejected reversal, and durable
 keyed replay preserving later user bytes/mode, unrelated work, source records and
 Git index. Two focused cases pass with static gates; full offline and CI remain
 pending. No runtime fix, model-quality gain or broader G2–G5 closure follows.

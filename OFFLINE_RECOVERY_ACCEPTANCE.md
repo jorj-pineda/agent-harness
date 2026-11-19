@@ -47,7 +47,7 @@ application runtime; do not add a new runtime or model supervisor.
 
 After step3's successful review, change the target's bytes without changing
 settings or source records. Submit the same explicit continuation. Require a
-saved blocked result before checkpoint capture or provider dispatch. Explicit
+saved blocked result before checkpoint binding or provider dispatch. Explicit
 source reversal must reject the changed target too. Another restart and keyed
 lookup/replay must retain those outcomes and preserve later user bytes/mode,
 unrelated work and the original index. No automatic retry or manual patch rescue
@@ -84,8 +84,9 @@ validation remains required before merge; no model-quality or G2 closure follows
 
 The same executable test now has a separate adverse branch. After unchanged
 workspace, valid transcript and matching configuration reviews, a user byte edit
-makes continuation block before checkpoint capture or provider dispatch. Source
-reversal also rejects. After another restart, the continuation key returns the
+makes continuation block before checkpoint binding or provider dispatch.
+Current workspace evidence may be captured during validation.
+Source reversal also rejects. After another restart, the continuation key returns the
 same blocked record and reversal lookup/replay returns the same rejected journal;
 later user bytes and a newly chosen mode600 survive with unrelated work and Git
 index unchanged. Source records remain exact and no extra run is created.
