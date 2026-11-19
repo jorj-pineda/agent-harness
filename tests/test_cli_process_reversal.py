@@ -12,7 +12,7 @@ from tests.test_cli_process_continuation import replies
 from tests.test_cli_process_sigint import wait_for
 
 
-@pytest.mark.parametrize("drift", [False, True])
+@pytest.mark.parametrize("drift", [None, "content", "mode"])
 def test_process_reversal_after_restart_preserves_index_and_later_edits(tmp_path, drift):
     repo = tmp_path / "repo"
     repo.mkdir()
@@ -75,8 +75,12 @@ def test_process_reversal_after_restart_preserves_index_and_later_edits(tmp_path
         fork = wait_for(finished)
         assert fork["response"]["completion_status"] == "completed"
         assert target.read_text() == fork_content
-    if drift:
+    if drift == "content":
         target.write_text(fork_content + "later_user_edit = 4\n")
+    elif drift == "mode":
+        target.chmod(0o600)
+        assert target.read_text() == fork_content
+    expected_mode = 0o600 if drift == "mode" else 0o640
     expected = target.read_bytes()
     with server(tmp_path / "reverse", stores, [], overrides=settings) as (url, api):
         args = ["revert-file", rid, "a.py", "--request-id", "reverse-fork", "--json"]
@@ -84,7 +88,9 @@ def test_process_reversal_after_restart_preserves_index_and_later_edits(tmp_path
         journal = json.loads(result.stdout)
         if drift:
             assert result.returncode == 1 and journal["status"] == "rejected"
+            assert "Current content or mode differs" in journal["reason"]
             assert target.read_bytes() == expected
+            assert stat.S_IMODE(target.stat().st_mode) == expected_mode
         else:
             assert result.returncode == 0 and journal["status"] == "applied"
             assert target.read_text() == source_content
@@ -114,5 +120,5 @@ def test_process_reversal_after_restart_preserves_index_and_later_edits(tmp_path
         assert target.read_bytes() == later
         assert api.get("/__preflight").json()["calls"] == 0
     assert sentinel.read_text() == "unrelated user work\n"
-    assert stat.S_IMODE(target.stat().st_mode) == 0o640
+    assert stat.S_IMODE(target.stat().st_mode) == expected_mode
     assert (repo / ".git/index").read_bytes() == index
