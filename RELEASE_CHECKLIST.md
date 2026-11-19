@@ -1,7 +1,7 @@
 # Current release checklist
 
-Snapshot including the [closed visible-check comparison](evals/public_feedback/RESULTS_20261112.md)
-on 2026-11-12 and the earlier public/project cohorts.
+Snapshot reconciled on 2026-11-19, including the merged merge-discipline change,
+scripted CLI process evidence and the retained, unapproved fresh comparison.
 This is the short operational view of the [roadmap](roadmap.md), which still
 governs scope and acceptance criteria. The [release audit](RELEASE_READINESS.md)
 retains historical findings and limitations. This checklist grants no execution
@@ -52,93 +52,48 @@ All these cohorts are closed. Unrun/stopped cells in older cohorts are not retry
 slots. Recorded preparation, scripted rehearsal and live coding results remain
 separate kinds of evidence.
 
+## Completed preparation and current boundaries
+
+- The [closed visible-check comparison](evals/public_feedback/RESULTS_20261112.md)
+  supersedes its earlier preparation queue. Its control 0/4 versus bool_check 4/4
+  result remains bounded known-task evidence, with benefit `not_assessed`.
+- The [fresh retained candidate](evals/fresh_visible_tasks/RETAINED_CANDIDATE_20261116.md),
+  [merged freeze/operator](evals/fresh_visible_tasks/FREEZE_20261116.md), and
+  [scripted review exercise](evals/fresh_visible_tasks/REVIEW_EVIDENCE.md) complete
+  preparation for twelve selected cells. The retained candidate's 3,840-test G0 is
+  historical evidence for its selected runtime, not today's checkout. All twelve
+  scripted reviews are unknown/incomplete; no model-quality benefit is established.
+  Jorge selected offline work. Actual approval and fresh launch/resource checks
+  remain required before generation; this page grants neither.
+- Real CLI/API process tests now cover restart review, SIGINT, shutdown, guarded
+  continuation/reversal, disconnect, timeout recovery, command descendants,
+  contention and crash recovery. The [roadmap](roadmap.md) records their individual
+  limits. These use a scripted provider and do not close broader G2 or G3–G5.
+- [Merge discipline](.github/MERGE_DISCIPLINE.md) is implemented in merged PR #450
+  (`f417a3e`). Main protection was applied and read back on 2026-11-18. Both required
+  Actions checks passed on PR head `01d9896`; downloaded coding/support reports
+  identify their respective sources and report contract PASS. Local validation
+  passed 4,027 offline tests (five live deselected), static checks and both scripted
+  matrices. These results are revision-specific mechanics evidence, not a fresh
+  G0 for the retained candidate or a release decision. No deployment was added.
+
 ## Immediate queue
 
-1. The retained pagination diagnosis is complete: the request includes the bool
-   restriction, the visible check omits it, and both artifacts admit True. Exact
-   duplicate writes explain stale verification but do not cause that rejection.
-   Do not change verification rules or budgets to relabel these failures.
-2. The [public visible-check comparison proposal](evals/public_feedback/PROTOCOL.md)
-   selects eight fresh cells across original and bool-covering visible checks, with
-   unchanged task/acceptance and per-cell budgets. Exact fixture validation, fresh
-   shared-evaluator workspaces and [mandatory-mock capture/rehearsal](evals/public_feedback/REHEARSAL.md)
-   are implemented. The recorded eight scripted reference successes prove mechanics,
-   not feedback benefit. [Capture verification/preservation and exact-path staging](evals/public_feedback/STAGING.md)
-   and [execution selection/preflight/admission](evals/public_feedback/EXECUTION.md)
-   are implemented without launching inference or authenticating approval assertions.
-   [Admitted provider guards](evals/public_feedback/PROVIDER_GUARDS.md), the fixed
-   schedule and [owned serial execution](evals/public_feedback/OWNED_EXECUTION.md)
-   are implemented. A native mandatory-mock owned rehearsal settled eight cells
-   cleanly; its scripted successes establish mechanics, not model quality.
-   [One-shot existing-interpreter preparation](evals/public_feedback/PREPARATION.md)
-   is implemented and has native retained-source proof without backend or admission.
-   [Paired reporting](evals/public_feedback/REPORTING.md) now retains arm/pair
-   outcomes and unknown/stopped states without assessing benefit or regrading.
-   A [reusable owned mandatory-mock rehearsal](evals/public_feedback/OWNED_REHEARSAL.md)
-   now creates its own bundle and retains clean native lifecycle evidence without
-   generation forwarding. [Retained preparation and probes](evals/public_feedback/RETAINED_PREPARATION_20261111.md)
-   now bind the passing selected gate, separate rehearsal and eight unadmitted
-   candidate cells, retaining interrupted/environment-failed histories separately.
-   The [concrete freeze/operator proposal](evals/public_feedback/FREEZE_20261111.md)
-   now binds the retained selection and requires explicit mode and exact reviewed
-   merge/receipt arguments. Exact-head checks/review/merge, actual approval and fresh
-   launch gates remain. [Pinned copied-workspace regrades](evals/public_feedback/REGRADES.md)
-   are implemented without changing original outcomes or assessing benefit;
-   the [intervention/regression review protocol](evals/public_feedback/REVIEW_PROTOCOL.md)
-   now specifies all-cell evidence coverage and paired regressions. The
-   [offline join](evals/public_feedback/REVIEW_JOIN.md) is implemented and a
-   [retained scripted exercise](evals/public_feedback/REVIEW_EVIDENCE.md) preserves
-   all eight review ordinals as unknown, without benefit eligibility. Full offline
-   validation passes 3,594 tests; actual review and comparison evidence remain required.
-   This selects no application default and authorizes no inference.
-3. The authorized eight-cell comparison is now closed with control 0/4 versus
-   bool_check 4/4, matching copied grades and scoped intervention review; see the
-   results above. Earlier preparation/proposal descriptions retain their historical
-   limits. Review this known-task evidence, then separately select held-out/model
-   coverage and real client/recovery acceptance before distribution validation.
-   No additional inference, retries or default adoption is authorized by this page.
-4. The [fresh public task proposal](evals/fresh_visible_tasks/README.md) authors
-   three explicit development tasks with weak/stronger checks and independent
-   acceptance controls. It proposes twelve same-model cells without inference
-   approval. The [pinned shared workspace seam](evals/fresh_visible_tasks/WORKSPACES.md)
-   is implemented. [Mandatory-mock input capture](evals/fresh_visible_tasks/CAPTURE.md)
-   now records all twelve cells through shared evaluation and native serialization.
-   [Owned-lifecycle rehearsal](evals/fresh_visible_tasks/OWNED_REHEARSAL.md) is
-   implemented with mandatory-mock generation. [Retained preparation/native proof](evals/fresh_visible_tasks/RETAINED_PREPARATION_20261113.md)
-   now binds a passing selected G0, twelve actual clean settlements, thirteen
-   verified images and twelve separate unadmitted fixtures. The captured first
-   inputs are not bound to those unused fixture paths; live execution manifest/
-   admission/guarded serial ownership and a concrete reviewed freeze remain before
-   requesting approval. This is not held-out or second-model coverage.
-   [Capture preservation and exact-path staging](evals/fresh_visible_tasks/STAGING.md)
-   now bind verified archived inputs to fresh unadmitted fixtures without resetting
-   captured artifacts. Distinct execution admission/ownership and actual approval
-   remain before generation; this does not retrospectively change retained history.
-   [Execution selection/preflight/admission](evals/fresh_visible_tasks/EXECUTION.md)
-   now bind a distinct manifest and require trusted-parent verification before
-   exclusive output reservation. This issues no authority or model request;
-   [Guarded serial owned execution](evals/fresh_visible_tasks/GUARDED_EXECUTION.md)
-   now binds first-input/provider guards and result-before-cleanup scheduling.
-   Its retained native mock proof has twelve clean/unforced settlements and zero
-   generation forwarded. [One-shot candidate preparation](evals/fresh_visible_tasks/PREPARATION.md)
-   now preserves twelve unused exact-path cells and the manifest without admission.
-   [Pure paired reporting](evals/fresh_visible_tasks/REPORTING.md) now retains
-   six pairs and task/arm outcomes without assessing benefit. The
-   [reusable admitted mock rehearsal](evals/fresh_visible_tasks/ADMITTED_REHEARSAL.md)
-   creates and consumes a separate new bundle with internal generation only.
-   Retained native proof has twelve clean/unforced settlements and zero generation
-   forwarded. [Copied fresh acceptance regrades](evals/fresh_visible_tasks/REGRADES.md)
-   now bind all three original criteria on bounded copies without promoting outcomes.
-   The [concrete retained candidate](evals/fresh_visible_tasks/RETAINED_CANDIDATE_20261116.md)
-   now binds passing retained G0, separate scripted rehearsal and twelve unused
-   candidate cells. A [concrete freeze/operator proposal](evals/fresh_visible_tasks/FREEZE_20261116.md)
-   now binds them with explicit check/execute modes; it issues no authority.
-   The [fresh review specification](evals/fresh_visible_tasks/REVIEW_PROTOCOL.md)
-   now covers all twelve cells, three original criteria and six pairs without
-   changing the frozen decision rule. The [pure fresh join](evals/fresh_visible_tasks/REVIEW_JOIN.md)
-   binds selected bytes without IO or grading. The [retained scripted exercise](evals/fresh_visible_tasks/REVIEW_EVIDENCE.md)
-   now recomputes exactly with all twelve reviews unknown/incomplete and no benefit
-   eligibility. This batch remains offline; actual approval/fresh launch gates remain.
+1. Map G2's CLI/panel submission, review, cancellation, restart, guarded continuation
+   and reversal requirements to existing evidence. Separate scripted contracts,
+   real process/browser observations and actual-model workflow evidence. Identify
+   concrete missing acceptance cases without treating test counts as completion.
+2. Exercise the highest-priority remaining offline workflow case with the real
+   application and disposable user state, preserving bytes, modes and Git state.
+   Fix runtime behavior only if the probe demonstrates a defect. Passing a new
+   scripted case closes that case, not the entire workflow or coding-quality gate.
+3. Keep the fresh twelve-cell comparison unadmitted while offline work is selected.
+   Any future generation needs actual approval of the exact freeze and fresh
+   launch checks. Even a successful fresh development-task comparison would not
+   replace the original 8/10 target, held-out or second-model measurements.
+4. Revisit distribution/onboarding validation after the workflow and coding-quality
+   evidence supports a release decision. No automated deployment is required for
+   this offline batch.
 
 Do not add a premium supervisor, agents, semantic search or a larger prompt merely
 to fill the queue. Do not promise an unattended release from public pilot success.
