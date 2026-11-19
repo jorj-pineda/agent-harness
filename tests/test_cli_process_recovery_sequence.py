@@ -8,6 +8,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 from providers.base import ToolCall
 from tests.api.conftest import make_response
 from tests.cli_process_support import ROOT, cli, environment, server
@@ -28,7 +30,8 @@ def checked_cli(url, arguments, *, raw=False):
     return json.loads(result.stdout) if raw else result.stdout
 
 
-def test_cancelled_edit_restart_checked_fork_and_reverse_order_restoration(tmp_path):
+@pytest.mark.parametrize("stale_review", [False, True])
+def test_cancelled_edit_restart_checked_fork_and_reverse_order_restoration(tmp_path, stale_review):
     root = tmp_path / "repo"
     root.mkdir()
     target = root / "a.py"
@@ -125,7 +128,9 @@ def test_cancelled_edit_restart_checked_fork_and_reverse_order_restoration(tmp_p
             completion_tokens=20,
         ).model_dump(mode="json"),
     ]
-    with server(tmp_path / "continue", stores, responses, overrides=settings) as (url, api):
+    with server(
+        tmp_path / "continue", stores, [] if stale_review else responses, overrides=settings
+    ) as (url, api):
         assert "workspace=unchanged" in checked_cli(url, ["workspace-review", sid])
         assert "transcript=valid" in checked_cli(url, ["transcript-review", sid])
         assert "configuration=matching" in checked_cli(
@@ -133,21 +138,21 @@ def test_cancelled_edit_restart_checked_fork_and_reverse_order_restoration(tmp_p
         )
         assert api.get("/__preflight").json()["calls"] == 0
         assert target.read_text() == partial
-        submitted = checked_cli(
-            url,
-            [
-                "continue-session",
-                sid,
-                "Continue the same task",
-                "--expected-turn-id",
-                archive["session"]["turns"][-1]["turn_id"],
-                "--request-id",
-                "checked-fork",
-                "--acknowledge-uncaptured-state",
-                "--json",
-            ],
-            raw=True,
-        )
+        if stale_review:
+            target.write_text(partial + "# user edit after successful review\n")
+        reviewed_bytes = target.read_bytes()
+        continuation = [
+            "continue-session",
+            sid,
+            "Continue the same task",
+            "--expected-turn-id",
+            archive["session"]["turns"][-1]["turn_id"],
+            "--request-id",
+            "checked-fork",
+            "--acknowledge-uncaptured-state",
+            "--json",
+        ]
+        submitted = checked_cli(url, continuation, raw=True)
         rid = submitted["run_id"]
 
         def finished():
@@ -156,16 +161,57 @@ def test_cancelled_edit_restart_checked_fork_and_reverse_order_restoration(tmp_p
 
         fork = wait_for(finished)
         assert fork["request"]["session_id"] != sid
-        assert fork["response"]["completion_status"] == "completed", fork
-        assert fork["response"]["verification_status"] == "passed"
-        assert fork["response"]["check_attempts"][0]["exit_code"] == 0
-        assert fork["execution_profile"] == source["execution_profile"]
-        assert fork["before_checkpoint_id"] != source["before_checkpoint_id"]
-        assert target.read_text() == final
-        assert api.get("/__preflight").json()["calls"] == 3
+        if stale_review:
+            assert fork["response"]["completion_status"] == "blocked"
+            assert "content/modes or root changed" in fork["response"]["completion_reason"]
+            assert fork["before_checkpoint_id"] is None
+            assert fork["execution_profile"] is None
+            assert target.read_bytes() == reviewed_bytes
+            assert api.get("/__preflight").json()["calls"] == 0
+        else:
+            assert fork["response"]["completion_status"] == "completed", fork
+            assert fork["response"]["verification_status"] == "passed"
+            assert fork["response"]["check_attempts"][0]["exit_code"] == 0
+            assert fork["execution_profile"] == source["execution_profile"]
+            assert fork["before_checkpoint_id"] != source["before_checkpoint_id"]
+            assert target.read_text() == final
+            assert api.get("/__preflight").json()["calls"] == 3
         assert checked_cli(url, ["run", source["run_id"], "--json"], raw=True) == source
         assert api.get(f"/sessions/{sid}", params={"user_id": "cli-user"}).json() == archive
     sentinel.write_text("pre-existing unrelated work\nlater user edit\n")
+    if stale_review:
+        reversal = ["revert-file", source["run_id"], "a.py", "--request-id", "stale-undo", "--json"]
+        with server(tmp_path / "reject", stores, [], overrides=settings) as (url, api):
+            result = cli(url, reversal)
+            assert result.returncode == 1, result.stdout + result.stderr
+            journal = json.loads(result.stdout)
+            assert journal["status"] == "rejected"
+            assert "Current content or mode differs" in journal["reason"]
+            assert target.read_bytes() == reviewed_bytes
+            assert api.get("/__preflight").json()["calls"] == 0
+        target.write_text("# later user bytes after rejected recovery\n")
+        target.chmod(0o600)
+        later_bytes = target.read_bytes()
+        with server(tmp_path / "replay", stores, [], overrides=settings) as (url, api):
+            assert checked_cli(url, continuation, raw=True) == fork
+            assert (
+                checked_cli(
+                    url, ["revert-status", "--request-id", "stale-undo", "--json"], raw=True
+                )
+                == journal
+            )
+            replay = cli(url, reversal)
+            assert replay.returncode == 1 and json.loads(replay.stdout) == journal
+            assert checked_cli(url, ["run", source["run_id"], "--json"], raw=True) == source
+            assert api.get(f"/sessions/{sid}", params={"user_id": "cli-user"}).json() == archive
+            assert len(api.get("/runs", params={"user_id": "cli-user"}).json()) == 2
+            assert api.get("/__preflight").json()["calls"] == 0
+        assert target.read_bytes() == later_bytes
+        assert stat.S_IMODE(target.stat().st_mode) == 0o600
+        assert sentinel.read_text() == "pre-existing unrelated work\nlater user edit\n"
+        assert check.read_bytes() == check_bytes
+        assert (root / ".git/index").read_bytes() == index
+        return
     journals = []
     with server(tmp_path / "reverse", stores, [], overrides=settings) as (url, api):
         for number, record in enumerate((fork, source)):
