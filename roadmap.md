@@ -4,6 +4,14 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-19 — Permission-only CLI recovery preservation:** restarted executable
+CLI/API cases now cover user mode changes without byte changes before guarded
+continuation and single-file reversal. Six focused cases pass; blocked/rejected
+saved outcomes preserve user state, source evidence and reversal Git index/journal
+replay. Static checks pass; full offline and CI completion remain required before
+merge. No runtime defect was found. Scripted provider responses establish these
+mechanics only; G2–G5 and release no-go remain unchanged.
+
 **2026-11-19 — Release checklist reconciled:** the short operational checklist now
 separates completed public/fresh preparation and scripted CLI process evidence
 from the remaining workflow, coding-quality and distribution gates. PR #450's

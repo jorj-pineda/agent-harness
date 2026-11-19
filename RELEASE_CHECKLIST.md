@@ -80,13 +80,13 @@ separate kinds of evidence.
 ## Immediate queue
 
 1. The [G2 evidence map](WORKFLOW_ACCEPTANCE.md) separates existing scripted,
-   process and historical actual-model observations. Permission-only stale-state
-   refusal after restart is the next bounded offline CLI acceptance case; broader
+   process and historical actual-model observations. The permission-only stale-state
+   cases now pass through real CLI/API processes with scripted providers; broader
    candidate-specific CLI/panel workflow acceptance remains open.
-2. Exercise the highest-priority remaining offline workflow case with the real
-   application and disposable user state, preserving bytes, modes and Git state.
-   Fix runtime behavior only if the probe demonstrates a defect. Passing a new
-   scripted case closes that case, not the entire workflow or coding-quality gate.
+2. Reconcile the bounded process cases with the remaining agreed CLI/panel
+   acceptance sequence before selecting another workflow probe. Permission-only
+   continuation/reversal refusal required no runtime change; it closes those
+   cases, not the entire workflow or coding-quality gate.
 3. Keep the fresh twelve-cell comparison unadmitted while offline work is selected.
    Any future generation needs actual approval of the exact freeze and fresh
    launch checks. Even a successful fresh development-task comparison would not

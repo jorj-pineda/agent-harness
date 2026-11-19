@@ -14,8 +14,8 @@ flow on this revision.
 | Explicit cancellation and owned cleanup | [Actual SIGINT](tests/test_cli_process_sigint.py), [serve shutdown](tests/test_cli_process_shutdown.py), [command descendants](tests/test_cli_process_command_cancel.py) | Owned process-group cases do not prove termination of arbitrary detached children, remote inference or billing. |
 | Disconnect and timeout recovery | [SIGTERM/disconnect](tests/test_cli_process_disconnect.py), [keyed timeout recovery](tests/test_cli_process_timeout.py) | Scripted real-process cases cover selected settlement/recovery paths, not every transport failure. |
 | Workspace admission and crashed API | [Competing CLI roots](tests/test_cli_process_contention.py), [SIGKILL recovery](tests/test_cli_process_crash.py) | Admission is within one API process. SIGKILL evidence is not power-loss durability; interrupted evidence is not a completed run. |
-| Guarded CLI continuation | [Restart, content drift and keyed replay](tests/test_cli_process_continuation.py), [API guard failures](tests/api/test_continuation.py) | Existing executable cases do not change only a captured file's permissions between source and continuation. |
-| Guarded CLI reversal | [Restart, stale bytes, reverse order and journal replay](tests/test_cli_process_reversal.py), [API failure contracts](tests/api/test_file_revert.py) | Existing executable cases do not exercise permission-only stale targets. Single-file restoration is not atomic multi-file restore. |
+| Guarded CLI continuation | [Restart, content drift and keyed replay](tests/test_cli_process_continuation.py), [API guard failures](tests/api/test_continuation.py) | Permission-only refusal is now exercised by the offline follow-up below; broader candidate/model acceptance remains open. |
+| Guarded CLI reversal | [Restart, stale bytes, reverse order and journal replay](tests/test_cli_process_reversal.py), [API failure contracts](tests/api/test_file_revert.py) | Permission-only stale targets are now covered by the offline follow-up below. Single-file restoration is not atomic multi-file restore. |
 | Panel recovery controls | [Actual scripts with a simulated DOM and API-derived records](tests/test_panel_guarded_recovery.py), [draft controls](tests/test_panel_recovery_draft.py) | Node/VM execution is not a rendered browser, layout/accessibility check or full browser-to-server network proof. |
 | Actual-model CLI/panel recovery | Historical [CLI sequence](evals/projects/duodoro/RECOVERY_RESULTS.md) and [rendered-panel sequence](evals/projects/duodoro/PANEL_RECOVERY_RESULTS.md) | Selected one-task observations at their original runtimes are not a current repeated workflow acceptance run. They retain unknown usage and other documented limits. |
 
@@ -49,6 +49,19 @@ This is a bounded preservation gap in executable evidence, not an observed runti
 bug. Fix runtime behavior only if the case demonstrates a defect. A pass closes
 these cases only. Scope excludes cross-process admission, detached processes,
 atomic multi-file restore, model comparisons and new browser acceptance.
+
+## Offline follow-up — 2026-11-19
+
+The two executable test modules now each include no drift, content drift and
+mode-only drift. All six focused cases passed. The mode-only cases keep bytes
+identical before submission, then assert the saved blocked/rejected outcome and
+the user's mode. Continuation makes zero provider calls and captures no new before
+checkpoint; reversal preserves the staged index and source records, then replays
+the rejection after another restart without overwriting later user bytes/mode.
+No runtime defect was found and no application behavior changed. Ruff, formatting
+and mypy passed; full offline/PR CI completion remains required before merge.
+These are scripted-provider, real-process observations, not model-quality or
+full G2 acceptance evidence.
 
 ## Remaining release work
 
