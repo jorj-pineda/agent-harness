@@ -30,16 +30,18 @@ def checked_cli(url, arguments, *, raw=False):
     return json.loads(result.stdout) if raw else result.stdout
 
 
-@pytest.mark.parametrize("scenario", ["passed", "stale_review", "failed_check"])
+@pytest.mark.parametrize("scenario", ["passed", "stale_review", "failed_check", "stale_check"])
 def test_cancelled_edit_restart_checked_fork_and_reverse_order_restoration(tmp_path, scenario):
     stale_review = scenario == "stale_review"
     failed_check = scenario == "failed_check"
+    stale_check = scenario == "stale_check"
     root = tmp_path / "repo"
     root.mkdir()
     target = root / "a.py"
     before = "value = -1\n# pre-existing user line\n"
     partial = before.replace("-1", "0")
     final = before.replace("-1", "2" if failed_check else "1")
+    last_edit = before.replace("-1", "2") if stale_check else final
     target.write_text(before)
     target.chmod(0o640)
     sentinel = root / "notes.txt"
@@ -58,7 +60,7 @@ def test_cancelled_edit_restart_checked_fork_and_reverse_order_restoration(tmp_p
         "max_context_tokens": 16384,
         "ollama_num_ctx": 16384,
         "require_verification_before_finish": True,
-        "max_tool_iterations": 3,
+        "max_tool_iterations": 4 if stale_check else 3,
         "project_check_argv": ["python", "-m", "pytest", "-q", "test_visible.py"],
     }
     edit = reply("write_file", {"path": "a.py", "content": partial})
@@ -131,6 +133,8 @@ def test_cancelled_edit_restart_checked_fork_and_reverse_order_restoration(tmp_p
             completion_tokens=20,
         ).model_dump(mode="json"),
     ]
+    if stale_check:
+        responses.insert(2, reply("write_file", {"path": "a.py", "content": last_edit}))
     with server(
         tmp_path / "continue", stores, [] if stale_review else responses, overrides=settings
     ) as (url, api):
@@ -173,18 +177,19 @@ def test_cancelled_edit_restart_checked_fork_and_reverse_order_restoration(tmp_p
             assert api.get("/__preflight").json()["calls"] == 0
         else:
             assert fork["response"]["completion_status"] == (
-                "incomplete" if failed_check else "completed"
+                "incomplete" if failed_check or stale_check else "completed"
             ), fork
             assert fork["response"]["verification_status"] == (
-                "failed" if failed_check else "passed"
+                "failed" if failed_check else "stale" if stale_check else "passed"
             )
             assert fork["response"]["check_attempts"][0]["exit_code"] == (1 if failed_check else 0)
-            if failed_check:
-                assert "not verified (failed)" in fork["response"]["completion_reason"]
+            if failed_check or stale_check:
+                expected_check = "failed" if failed_check else "stale"
+                assert f"not verified ({expected_check})" in fork["response"]["completion_reason"]
             assert fork["execution_profile"] == source["execution_profile"]
             assert fork["before_checkpoint_id"] != source["before_checkpoint_id"]
-            assert target.read_text() == final
-            assert api.get("/__preflight").json()["calls"] == 3
+            assert target.read_text() == last_edit
+            assert api.get("/__preflight").json()["calls"] == (4 if stale_check else 3)
         assert checked_cli(url, ["run", source["run_id"], "--json"], raw=True) == source
         assert api.get(f"/sessions/{sid}", params={"user_id": "cli-user"}).json() == archive
     sentinel.write_text("pre-existing unrelated work\nlater user edit\n")
@@ -250,9 +255,10 @@ def test_cancelled_edit_restart_checked_fork_and_reverse_order_restoration(tmp_p
             )
         for record in (source, fork):
             assert checked_cli(url, ["run", record["run_id"], "--json"], raw=True) == record
-        if failed_check:
+        if failed_check or stale_check:
             human = checked_cli(url, ["run", fork["run_id"]])
-            assert "status=incomplete checks=failed" in human
+            expected_check = "failed" if failed_check else "stale"
+            assert f"status=incomplete checks={expected_check}" in human
         assert api.get(f"/sessions/{sid}", params={"user_id": "cli-user"}).json() == archive
         assert api.get("/__preflight").json()["calls"] == 0
     assert target.read_text() == before
