@@ -4,6 +4,14 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-20 — Panel lost-response recovery over HTTP:** discarding one native
+fetch acknowledgment before client delivery leaves exact intent retained and
+unconfirmed, with no automatic retry. After API/script restart an explicit exact
+POST replay recovers the existing fork without provider work; explicit Check is
+read-only. Four focused panel contracts and static gates pass, with source/user/
+index preservation. Full offline/CI remains required; injected delivery loss and
+simulated DOM/storage are not actual browser/network-failure or G2–G5 evidence.
+
 **2026-11-20 — Actual panel submission scripts over loopback HTTP:** one explicit
 recovery POST and a post-restart Check GET now traverse the owned API process
 using native fetch. Actual configured pytest and shared execution settle the
