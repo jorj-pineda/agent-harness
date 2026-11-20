@@ -84,9 +84,11 @@ separate kinds of evidence.
    cases now pass through real CLI/API processes with scripted providers; broader
    candidate-specific CLI/panel workflow acceptance remains open.
 2. The [bounded executable recovery sequence](OFFLINE_RECOVERY_ACCEPTANCE.md)
-   and stale-review refusal are implemented. Next verify the
-   [failed/stale configured-check cases](WORKFLOW_ACCEPTANCE.md#next-offline-verification-cases)
-   through the same real CLI/API process sequence. Broader G2 stays open.
+   and stale-review refusal are implemented. The
+   [failed/stale configured-check cases](WORKFLOW_ACCEPTANCE.md#offline-verification-cases)
+   now pass focused real CLI/API process checks. Reconcile these bounded CLI
+   observations with remaining candidate-specific panel/actual-model acceptance;
+   broader G2 stays open.
 3. Keep the fresh twelve-cell comparison unadmitted while offline work is selected.
    Any future generation needs actual approval of the exact freeze and fresh
    launch checks. Even a successful fresh development-task comparison would not

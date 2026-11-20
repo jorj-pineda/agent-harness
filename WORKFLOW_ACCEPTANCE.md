@@ -61,11 +61,11 @@ Fresh actual-model workflow execution needs separate approval. G3's original
 and Jorge's release decision remain open. The fresh twelve-cell development
 comparison remains unadmitted under the offline selection.
 
-## Next offline verification cases
+## Offline verification cases
 
-The composed sequence now tests passed and failed configured checks plus a
-blocked stale-workspace submission. A successful check followed by another edit
-remains the next separate case. Keep independent acceptance and actual-model
+The composed sequence now tests passed/failed configured checks, a blocked
+stale-workspace submission and a post-check edit causing stale verification.
+All four focused cases pass. Keep independent acceptance and actual-model
 evidence separate.
 
 - **Failed check:** script an incorrect fork artifact, run the configured pytest
@@ -77,7 +77,8 @@ evidence separate.
 - **Stale check:** script a correct artifact and passing configured check, then
   write a different artifact and attempt to finish without rechecking. Require
   `incomplete`/`stale` while retaining the earlier exit0 check as historical evidence.
-  Restart must not promote the run to completed/passed. Reverse the actual final
+  This executable case now passes. Restart must not promote the run to
+  completed/passed. Reverse the actual final
   artifact, not an imagined checked artifact.
 
 Use scripted providers, the existing real CLI/API fixture and disposable stores.

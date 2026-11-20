@@ -4,6 +4,14 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-19 — Post-check edits remain stale in executable recovery:** the fork
+passes its actual configured pytest, writes a different artifact, and finishes
+incomplete/stale while retaining the historical exit0 check. Restarted JSON/human
+review and reverse-order restoration preserve the actual final bytes, source
+records and user content/mode/index. Four focused cases and static gates pass;
+full offline/CI remains required. No runtime change, model-quality improvement
+or G2–G5/release closure is inferred from these scripted-provider process cases.
+
 **2026-11-19 — Failed-check executable recovery:** a cancelled source forks after
 restart/review, writes an incorrect artifact and runs the actual configured pytest.
 A canned finish claim cannot override the saved incomplete/failed result and
