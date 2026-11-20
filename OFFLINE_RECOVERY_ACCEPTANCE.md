@@ -77,8 +77,9 @@ completed/passed fork, two applied reversals and exact saved records after resta
 Provider calls are two for the cancelled source, three for the fork and zero
 for review/reversal/final inspection. Target bytes/mode, later unrelated work,
 visible-check bytes and staged index are preserved. No runtime change was needed.
-The adverse stale-review sequence is recorded separately below. Full offline/CI
-validation remains required before merge; no model-quality or G2 closure follows.
+The adverse stale-review sequence is recorded separately below. PRs #454–#456
+merged after required CI. The successful sequence local gate passed 4,030 tests
+at its tested revision; no model-quality or G2 closure follows.
 
 ## Stale-review sequence — observed 2026-11-19
 
@@ -91,5 +92,6 @@ same blocked record and reversal lookup/replay returns the same rejected journal
 later user bytes and a newly chosen mode600 survive with unrelated work and Git
 index unchanged. Source records remain exact and no extra run is created.
 Both successful/adverse focused cases passed in 17.59s. Ruff/format/mypy and diff
-checks pass; the full offline suite and CI remain pending. These passing guards
+checks passed; the local gate passed 4,031 tests (five live deselected), and both
+required checks passed on `0581ce0` before merge `df961b5`. These passing guards
 required no runtime fix and establish no actual-model quality or G2 closure.

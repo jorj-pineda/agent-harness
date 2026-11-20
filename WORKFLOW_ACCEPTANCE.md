@@ -25,7 +25,7 @@ are canned. Keep this distinct from both in-process API tests and actual-model
 coding evidence. Neither successful scripted responses nor a configured check
 substitutes for independent acceptance of a real coding artifact.
 
-## Next offline acceptance sequence
+## Completed offline acceptance sequence
 
 The [bounded executable sequence](OFFLINE_RECOVERY_ACCEPTANCE.md) specifies a
 cancelled partial source edit, restart/review, guarded continuation with a real
@@ -42,11 +42,12 @@ browser acceptance.
 The two executable test modules now each include no drift, content drift and
 mode-only drift. All six focused cases passed. The mode-only cases keep bytes
 identical before submission, then assert the saved blocked/rejected outcome and
-the user's mode. Continuation makes zero provider calls and captures no new before
+the user's mode. Continuation makes zero provider calls and binds no new before
 checkpoint; reversal preserves the staged index and source records, then replays
 the rejection after another restart without overwriting later user bytes/mode.
 No runtime defect was found and no application behavior changed. Ruff, formatting
-and mypy passed; full offline/PR CI completion remains required before merge.
+and mypy passed. PRs #451–#453 merged after required CI; the final local gate
+passed 4,029 tests at the original tested revision.
 These are scripted-provider, real-process observations, not model-quality or
 full G2 acceptance evidence.
 
@@ -59,3 +60,28 @@ Fresh actual-model workflow execution needs separate approval. G3's original
 8/10 target, G4's repeated/held-out/two-model measurements and G5's distribution
 and Jorge's release decision remain open. The fresh twelve-cell development
 comparison remains unadmitted under the offline selection.
+
+## Next offline verification cases
+
+The composed sequence currently tests a passed configured check and a blocked
+stale-workspace submission. It does not exercise a fork whose actual configured
+check fails, or whose successful check is followed by another edit. Add those
+separately to the existing executable sequence, keeping independent acceptance
+and actual-model evidence separate.
+
+- **Failed check:** script an incorrect fork artifact, run the configured pytest
+  command, then attempt to finish. Bound the iteration allowance so finish returns
+  a saved `incomplete` result with verification `failed` and a nonzero check exit.
+  The answer text must not substitute for the structured outcome. Restart review
+  must retain it; guarded reversal must still preserve source and user state.
+- **Stale check:** script a correct artifact and passing configured check, then
+  write a different artifact and attempt to finish without rechecking. Require
+  `incomplete`/`stale` while retaining the earlier exit0 check as historical evidence.
+  Restart must not promote the run to completed/passed. Reverse the actual final
+  artifact, not an imagined checked artifact.
+
+Use scripted providers, the existing real CLI/API fixture and disposable stores.
+Keep source/fork settings identical within each sequence. Preserve configured
+check bytes, source records, file mode, unrelated work and staged Git index.
+These are missing executable composition cases, not asserted runtime defects.
+No generation, paid call, browser run or release approval follows.
