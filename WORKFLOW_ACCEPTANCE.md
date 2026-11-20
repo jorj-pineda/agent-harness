@@ -102,8 +102,8 @@ The source and reviewed draft are seeded in process; selection is injected at th
 existing reviewed-candidate seam. DOM and storage are simulated, so this is not
 rendered-browser, real browser-storage, full draft-control or browser network
 policy acceptance. Three focused HTTP/existing panel contracts pass with static
-gates; full offline/CI remains required before merge. Lost-response recovery and
-panel-driven cancellation are the next separate HTTP cases. No target inference,
+gates; full offline/CI remains required before merge. Separate lost-response and
+cancellation cases are recorded below. No target inference,
 model-quality result or G2–G5 closure follows.
 
 ## Panel response delivery loss — 2026-11-20
@@ -118,4 +118,22 @@ recovers the existing completed run and leaves exactly source+fork records with
 zero provider calls. A further explicit Check makes one GET and preserves intent,
 source/user state and Git index. Four focused HTTP/existing panel contracts and
 static checks pass; full offline/CI remains required before merge. Cancellation
-is still a separate pending HTTP case; browser/G2/model-quality limits remain.
+is recorded separately below; browser/G2/model-quality limits remain.
+
+## Panel cancellation over HTTP — 2026-11-20
+
+The third HTTP case holds the recovery provider after a real partial file edit.
+A new script process restores intent without sending a request, explicitly checks
+the running fork, then posts cancellation to that validated fork's session. The
+production UI reports acknowledgment with settlement still uncertain and refuses
+a repeated cancel click. The test separately observes saved cancelled/not-run
+state, no check attempts and unknown aggregate token usage. Two mock provider
+requests are recorded; there is no generation backend.
+
+After API/script restart, one explicit Check GET validates and displays the saved
+cancelled outcome with zero provider calls. Retained intent, source records,
+partial target bytes/mode, later unrelated user edits, configured test bytes and
+staged index remain preserved. Five focused HTTP/existing panel contracts and
+static gates pass; combined local offline/CI success remains required before
+merge. Source/draft seeding and DOM/storage remain simulated. This closes these
+bounded HTTP cases only, not rendered-browser, model quality or G2–G5 acceptance.

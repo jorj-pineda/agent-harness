@@ -4,6 +4,16 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-20 — Panel cancellation and restarted HTTP review:** actual client
+scripts explicitly check a running partial recovery, cancel its validated fork
+and prevent resending the acknowledged cancellation. The saved outcome settles
+cancelled/not-run with unknown total usage; a new API/script lifecycle displays
+that outcome via explicit GET without provider work. Partial bytes/mode, later
+unrelated user edits, source records, check bytes and staged index survive.
+Five focused panel contracts and static gates pass; full offline/CI remains
+required. Simulated DOM/storage and in-process source/draft selection remain;
+no rendered-browser/model-quality result or G2–G5 closure follows.
+
 **2026-11-20 — Panel lost-response recovery over HTTP:** discarding one native
 fetch acknowledgment before client delivery leaves exact intent retained and
 unconfirmed, with no automatic retry. After API/script restart an explicit exact
