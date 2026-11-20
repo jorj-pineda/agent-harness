@@ -49,6 +49,9 @@ const context = vm.createContext({
     assert(storage.has(key), 'exact intent must be retained before network');
     const url = new URL(path, data.url);
     assert.equal(url.origin, new URL(data.url).origin, 'only owned loopback API allowed');
+    if (options.method === 'POST' && path.endsWith('/recover')) {
+      assert.deepEqual(JSON.parse(options.body), JSON.parse(storage.get(key)).body);
+    }
     calls.push({ path, method: options.method ?? 'GET', body: options.body ?? null });
     return fetch(url, options);
   },
