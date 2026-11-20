@@ -101,17 +101,45 @@ for (const name of ['app.js', 'recovery.js', 'recovery-submit.js']) {
     await get('preview-recovery').fire('click');
     assert.equal(calls.length, 2);
     assert.match(get('recovery-draft-results').textContent, /Context: estimated_fit; configuration: matching/);
-    const reviewed = context.recoveryDraftPanel.reviewed();
+    let reviewed = context.recoveryDraftPanel.reviewed();
     assert(reviewed);
     assert(!storage.has(key));
     assert(get('submit-recovery').disabled);
-    for (const name of ['state', 'context', 'budget']) get('recovery-ack-' + name).checked = true;
-    context.recoverySubmitPanel.refresh();
-    assert(!get('submit-recovery').disabled);
+    const acknowledgements = ['state', 'context', 'budget'].map(name => get('recovery-ack-' + name));
+    async function acknowledge() {
+      for (const checkbox of acknowledgements) {
+        checkbox.checked = true;
+        await checkbox.fire('change');
+      }
+      assert(!get('submit-recovery').disabled);
+    }
+    await acknowledge();
+    if (data.scenario === 'edited_proposal') {
+      const previousHash = reviewed.draft.messages_sha256;
+      get('recovery-message').value += ' Keep the staged user file intact.';
+      await get('recovery-message').fire('input');
+      assert.equal(context.recoveryDraftPanel.reviewed(), null);
+      assert.equal(get('recovery-draft-results').textContent, '');
+      assert(acknowledgements.every(checkbox => !checkbox.checked));
+      assert(get('submit-recovery').disabled);
+      await get('submit-recovery').fire('click');
+      assert.equal(calls.length, 2);
+      assert(!storage.has(key));
+      await get('preview-recovery').fire('click');
+      assert.equal(calls.length, 3);
+      reviewed = context.recoveryDraftPanel.reviewed();
+      assert(reviewed);
+      assert.notEqual(reviewed.draft.messages_sha256, previousHash);
+      assert(get('submit-recovery').disabled);
+      assert(acknowledgements.every(checkbox => !checkbox.checked));
+      await acknowledge();
+    }
     await get('submit-recovery').fire('click');
-    assert.equal(calls.length, 3);
-    assert.equal(calls[2].method, 'POST');
-    const sent = JSON.parse(calls[2].body);
+    assert.equal(calls.length, data.scenario === 'edited_proposal' ? 4 : 3);
+    const dispatch = calls.at(-1);
+    assert.equal(dispatch.method, 'POST');
+    const sent = JSON.parse(dispatch.body);
+    assert.equal(sent.message, reviewed.input.message);
     assert.equal(sent.expected_messages_sha256, reviewed.draft.messages_sha256);
     assert.equal(sent.expected_tool_specs_sha256, reviewed.draft.tool_specs_sha256);
     assert.match(get('recovery-submit-status').textContent,
