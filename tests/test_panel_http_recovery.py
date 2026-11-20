@@ -19,7 +19,7 @@ def panel(tmp_path, data, url, action):
         json.dumps(
             {
                 "url": url,
-                "candidate": data.get("candidate"),
+                "proposal": {k: data["approval"][k] for k in ("spans", "message")},
                 "scenario": data.get("scenario"),
                 "source": data["record"],
             }
@@ -75,15 +75,6 @@ def test_panel_posts_once_and_checks_saved_recovery_after_api_restart(tmp_path, 
     data = source(tmp_path)  # In-process seed; submission/restart lookup use actual HTTP below.
     data["scenario"] = scenario
     cancelled = scenario == "cancelled"
-    data["candidate"] = {
-        "source_run_id": data["rid"],
-        "source_session_id": data["sid"],
-        "draft": data["draft"],
-        "input": {
-            key: data["approval"][key]
-            for key in ("user_id", "expected_record_sha256", "spans", "message")
-        },
-    }
     visible = (data["root"] / "test_a.py").read_bytes()
     settings = saved_source_settings(tmp_path)
     replies = [
@@ -110,9 +101,20 @@ def test_panel_posts_once_and_checks_saved_recovery_after_api_restart(tmp_path, 
     stores = tmp_path / "stores"
     with server(tmp_path / "execute", stores, replies, overrides=settings) as (url, api):
         submitted = panel(tmp_path, data, url, "submit")
-        assert submitted["calls"][0]["path"] == f"/runs/{data['rid']}/recover"
+        review, draft, dispatch = submitted["calls"]
+        prefix = f"/runs/{data['rid']}"
+        assert (review["method"], review["path"]) == (
+            "GET",
+            f"{prefix}/recovery-review?user_id=dev",
+        )
+        assert (draft["method"], draft["path"]) == ("POST", f"{prefix}/recovery-draft")
+        assert json.loads(draft["body"]) == {
+            k: data["approval"][k]
+            for k in ("user_id", "expected_record_sha256", "spans", "message")
+        }
+        assert dispatch["path"] == f"{prefix}/recover"
         retained = json.loads(submitted["retained"])
-        assert json.loads(submitted["calls"][0]["body"]) == retained["body"]
+        assert json.loads(dispatch["body"]) == retained["body"]
 
         def finished():
             rows = api.get(
@@ -163,7 +165,7 @@ def test_panel_posts_once_and_checks_saved_recovery_after_api_restart(tmp_path, 
         if scenario == "lost_response":
             replayed = panel(tmp_path, data, url, "retry")
             assert replayed["retained"] == submitted["retained"]
-            assert replayed["calls"] == submitted["calls"]
+            assert replayed["calls"] == [dispatch]
             assert len(api.get("/runs", params={"user_id": "dev"}).json()) == 2
             assert api.get("/__preflight").json()["calls"] == 0
         reviewed = panel(tmp_path, data, url, "check")
