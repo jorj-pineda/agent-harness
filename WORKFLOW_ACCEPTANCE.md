@@ -63,16 +63,16 @@ comparison remains unadmitted under the offline selection.
 
 ## Next offline verification cases
 
-The composed sequence currently tests a passed configured check and a blocked
-stale-workspace submission. It does not exercise a fork whose actual configured
-check fails, or whose successful check is followed by another edit. Add those
-separately to the existing executable sequence, keeping independent acceptance
-and actual-model evidence separate.
+The composed sequence now tests passed and failed configured checks plus a
+blocked stale-workspace submission. A successful check followed by another edit
+remains the next separate case. Keep independent acceptance and actual-model
+evidence separate.
 
 - **Failed check:** script an incorrect fork artifact, run the configured pytest
   command, then attempt to finish. Bound the iteration allowance so finish returns
   a saved `incomplete` result with verification `failed` and a nonzero check exit.
-  The answer text must not substitute for the structured outcome. Restart review
+  This executable case now passes. The answer text must not substitute for the
+  structured outcome. Restart review
   must retain it; guarded reversal must still preserve source and user state.
 - **Stale check:** script a correct artifact and passing configured check, then
   write a different artifact and attempt to finish without rechecking. Require
