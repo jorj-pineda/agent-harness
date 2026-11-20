@@ -32,8 +32,8 @@ cancelled partial source edit, restart/review, guarded continuation with a real
 configured check, reverse-order restoration and durable read-only inspection.
 A separate adverse case changes user bytes after successful review to demonstrate
 that review is not a lease. The successful full composition now has an
-[executable process case](tests/test_cli_process_recovery_sequence.py); stale-review
-refusal in that sequence remains outstanding. The earlier combined CLI test uses
+[executable process case](tests/test_cli_process_recovery_sequence.py), including
+stale-review refusal and durable blocked/rejected replay. The earlier combined CLI test uses
 an in-process HTTP bridge. Keep scripted mechanics separate from actual-model/
 browser acceptance.
 

@@ -4,13 +4,20 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-19 — Stale CLI recovery review is not a lease:** the composed process
+sequence now changes user bytes after successful review and observes blocked
+continuation before checkpoint binding or provider dispatch, rejected reversal, and durable
+keyed replay preserving later user bytes/mode, unrelated work, source records and
+Git index. Two focused cases pass with static gates; full offline and CI remain
+pending. No runtime fix, model-quality gain or broader G2–G5 closure follows.
+
 **2026-11-19 — Composed executable cancelled-edit recovery:** one scripted-provider
 CLI/API process case now cancels a partial edit, restarts for read-only review,
 continues through a real configured pytest check, then restarts for reverse-order
 single-file restoration and durable inspection. The focused case passes with
 unchanged source records, user mode, later unrelated work and staged Git index.
 No runtime fix or actual-model improvement is claimed; full offline/CI validation
-and the separately specified stale-review case remain. G2–G5 stay open.
+remains required; the stale-review case is recorded above. G2–G5 stay open.
 
 **2026-11-19 — Permission-only CLI recovery preservation:** restarted executable
 CLI/API cases now cover user mode changes without byte changes before guarded
