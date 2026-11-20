@@ -46,7 +46,9 @@ const context = vm.createContext({
   crypto: { subtle: webcrypto.subtle, randomUUID: () => '11111111-1111-4111-8111-111111111111' },
   TextEncoder, AbortController, URLSearchParams, setTimeout, clearTimeout, window: {},
   fetch: async (path, options = {}) => {
-    if (action !== 'review') assert(storage.has(key), 'exact intent must be retained before network');
+    if (action !== 'review' && !path.includes('/recovery-review?') && !path.endsWith('/recovery-draft')) {
+      assert(storage.has(key), 'exact intent must be retained before execution or outcome lookup');
+    }
     const url = new URL(path, data.url);
     assert.equal(url.origin, new URL(data.url).origin, 'only owned loopback API allowed');
     if (options.method === 'POST' && path.endsWith('/recover')) {
@@ -64,8 +66,6 @@ const context = vm.createContext({
 for (const name of ['app.js', 'recovery.js', 'recovery-submit.js']) {
   vm.runInContext(fs.readFileSync(root + '/' + name, 'utf8'), context);
 }
-// Deliberate selection seam: draft rendering is outside this submission test.
-if (action !== 'review') context.recoveryDraftPanel.reviewed = () => data.candidate;
 (async () => {
   assert.equal(calls.length, 0, 'loading/restoring scripts must send nothing');
   if (action === 'review') {
@@ -84,12 +84,36 @@ if (action !== 'review') context.recoveryDraftPanel.reviewed = () => data.candid
     return;
   }
   if (action === 'submit') {
+    context.recoveryDraftPanel.select(data.source);
+    await get('load-recovery').fire('click');
+    get('recovery-message').value = data.proposal.message;
+    await get('recovery-message').fire('input');
+    for (const span of data.proposal.spans) {
+      await get('add-recovery-range').fire('click');
+      const row = get('recovery-ranges').children.at(-1);
+      const values = [span.path, span.expected_sha256, span.start_line, span.end_line];
+      for (const [index, label] of row.children.filter(child => child.tag === 'label').entries()) {
+        label.children[0].value = String(values[index]);
+        await label.children[0].fire('input');
+      }
+    }
+    assert(!get('preview-recovery').disabled);
+    await get('preview-recovery').fire('click');
+    assert.equal(calls.length, 2);
+    assert.match(get('recovery-draft-results').textContent, /Context: estimated_fit; configuration: matching/);
+    const reviewed = context.recoveryDraftPanel.reviewed();
+    assert(reviewed);
+    assert(!storage.has(key));
+    assert(get('submit-recovery').disabled);
     for (const name of ['state', 'context', 'budget']) get('recovery-ack-' + name).checked = true;
     context.recoverySubmitPanel.refresh();
     assert(!get('submit-recovery').disabled);
     await get('submit-recovery').fire('click');
-    assert.equal(calls.length, 1);
-    assert.equal(calls[0].method, 'POST');
+    assert.equal(calls.length, 3);
+    assert.equal(calls[2].method, 'POST');
+    const sent = JSON.parse(calls[2].body);
+    assert.equal(sent.expected_messages_sha256, reviewed.draft.messages_sha256);
+    assert.equal(sent.expected_tool_specs_sha256, reviewed.draft.tool_specs_sha256);
     assert.match(get('recovery-submit-status').textContent,
       data.scenario === 'lost_response' ? /outcome is unconfirmed/ : /identity confirmed/);
   } else if (action === 'retry') {
