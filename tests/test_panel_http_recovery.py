@@ -70,7 +70,7 @@ def test_panel_loads_saved_source_evidence_without_executing(tmp_path):
 
 
 @pytest.mark.skipif(shutil.which("node") is None, reason="Node needed for panel HTTP contract")
-@pytest.mark.parametrize("scenario", ["confirmed", "lost_response", "cancelled"])
+@pytest.mark.parametrize("scenario", ["confirmed", "lost_response", "cancelled", "edited_proposal"])
 def test_panel_posts_once_and_checks_saved_recovery_after_api_restart(tmp_path, scenario):
     data = source(tmp_path)  # In-process seed; submission/restart lookup use actual HTTP below.
     data["scenario"] = scenario
@@ -101,7 +101,7 @@ def test_panel_posts_once_and_checks_saved_recovery_after_api_restart(tmp_path, 
     stores = tmp_path / "stores"
     with server(tmp_path / "execute", stores, replies, overrides=settings) as (url, api):
         submitted = panel(tmp_path, data, url, "submit")
-        review, draft, dispatch = submitted["calls"]
+        review, draft, *additional, dispatch = submitted["calls"]
         prefix = f"/runs/{data['rid']}"
         assert (review["method"], review["path"]) == (
             "GET",
@@ -112,6 +112,16 @@ def test_panel_posts_once_and_checks_saved_recovery_after_api_restart(tmp_path, 
             k: data["approval"][k]
             for k in ("user_id", "expected_record_sha256", "spans", "message")
         }
+        if scenario == "edited_proposal":
+            (revised,) = additional
+            assert (revised["method"], revised["path"]) == ("POST", f"{prefix}/recovery-draft")
+            assert json.loads(revised["body"]) == {
+                **json.loads(draft["body"]),
+                "message": data["approval"]["message"] + " Keep the staged user file intact.",
+            }
+            assert json.loads(dispatch["body"])["message"] == json.loads(revised["body"])["message"]
+        else:
+            assert not additional
         assert dispatch["path"] == f"{prefix}/recover"
         retained = json.loads(submitted["retained"])
         assert json.loads(dispatch["body"]) == retained["body"]
