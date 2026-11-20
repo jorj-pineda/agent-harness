@@ -137,3 +137,17 @@ staged index remain preserved. Five focused HTTP/existing panel contracts and
 static gates pass; combined local offline/CI success remains required before
 merge. Source/draft seeding and DOM/storage remain simulated. This closes these
 bounded HTTP cases only, not rendered-browser, model quality or G2–G5 acceptance.
+
+
+## Panel draft and approval over HTTP
+
+The [panel HTTP tests](tests/test_panel_http_recovery.py) now drive source selection,
+explicit Load, proposal and saved-span entry, Preview and Submit through the
+production scripts. Submission carries the hashes of the draft returned by the
+loopback API. Editing an approved proposal clears its draft and acknowledgements.
+An attempted submit sends nothing until a fresh preview and new acknowledgements
+enable submission for the revised message.
+
+The fixture seeds its source in process and runs the panel scripts with simulated
+DOM and storage. Recovery uses a scripted provider. Seven focused tests passed.
+Rendered browser and candidate-specific release acceptance remain open.
