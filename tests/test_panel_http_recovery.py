@@ -16,7 +16,14 @@ from tests.test_cli_process_sigint import wait_for
 def panel(tmp_path, data, url, action):
     packet = tmp_path / "panel-packet.json"
     packet.write_text(
-        json.dumps({"url": url, "candidate": data["candidate"], "scenario": data["scenario"]})
+        json.dumps(
+            {
+                "url": url,
+                "candidate": data.get("candidate"),
+                "scenario": data.get("scenario"),
+                "source": data["record"],
+            }
+        )
     )
     result = subprocess.run(
         [
@@ -35,6 +42,33 @@ def panel(tmp_path, data, url, action):
     return json.loads(result.stdout)
 
 
+def saved_source_settings(tmp_path):
+    return {
+        **SETTINGS,
+        "coding_toolset": "full",
+        "memory_db_path": str(tmp_path / "memory.db"),
+        "session_db_path": str(tmp_path / "sessions.db"),
+    }
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="Node needed for panel HTTP contract")
+def test_panel_loads_saved_source_evidence_without_executing(tmp_path):
+    data = source(tmp_path)
+    target = data["root"] / "a.py"
+    original = target.read_bytes()
+    with server(
+        tmp_path / "review", tmp_path / "stores", [], overrides=saved_source_settings(tmp_path)
+    ) as (url, api):
+        panel(tmp_path, data, url, "review")
+        assert api.get("/runs", params={"user_id": "dev"}).json() == [data["record"]]
+        assert (
+            api.get(f"/sessions/{data['sid']}", params={"user_id": "dev"}).json() == data["archive"]
+        )
+        assert api.get("/__preflight").json()["calls"] == 0
+    assert target.read_bytes() == original
+    assert (data["root"] / ".git/index").read_bytes() == data["index"]
+
+
 @pytest.mark.skipif(shutil.which("node") is None, reason="Node needed for panel HTTP contract")
 @pytest.mark.parametrize("scenario", ["confirmed", "lost_response", "cancelled"])
 def test_panel_posts_once_and_checks_saved_recovery_after_api_restart(tmp_path, scenario):
@@ -51,12 +85,7 @@ def test_panel_posts_once_and_checks_saved_recovery_after_api_restart(tmp_path, 
         },
     }
     visible = (data["root"] / "test_a.py").read_bytes()
-    settings = {
-        **SETTINGS,
-        "coding_toolset": "full",
-        "memory_db_path": str(tmp_path / "memory.db"),
-        "session_db_path": str(tmp_path / "sessions.db"),
-    }
+    settings = saved_source_settings(tmp_path)
     replies = [
         observed_response(
             tool_calls=[
