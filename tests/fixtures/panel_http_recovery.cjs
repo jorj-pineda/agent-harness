@@ -54,7 +54,7 @@ const context = vm.createContext({
     }
     calls.push({ path, method: options.method ?? 'GET', body: options.body ?? null });
     const response = await fetch(url, options);
-    if (data.delivery === 'lost_response' && action === 'submit' && path.endsWith('/recover')) {
+    if (data.scenario === 'lost_response' && action === 'submit' && path.endsWith('/recover')) {
       await response.text(); // Server acknowledged; hide only this delivery from the client.
       throw Error('fixture response delivery loss');
     }
@@ -76,20 +76,35 @@ context.recoveryDraftPanel.reviewed = () => data.candidate;
     assert.equal(calls.length, 1);
     assert.equal(calls[0].method, 'POST');
     assert.match(get('recovery-submit-status').textContent,
-      data.delivery === 'lost_response' ? /outcome is unconfirmed/ : /identity confirmed/);
+      data.scenario === 'lost_response' ? /outcome is unconfirmed/ : /identity confirmed/);
   } else if (action === 'retry') {
     assert(context.recoverySubmitPanel.blocksWork());
     await get('retry-recovery').fire('click');
     assert.equal(calls.length, 1);
     assert.equal(calls[0].method, 'POST');
     assert.match(get('recovery-submit-results').textContent, /Completion: completed; checks: passed/);
+  } else if (action === 'cancel') {
+    assert(context.recoverySubmitPanel.blocksWork());
+    await get('check-recovery').fire('click');
+    assert.equal(calls.length, 1);
+    assert.equal(calls[0].method, 'GET');
+    assert.match(get('recovery-submit-results').textContent, /lifecycle: running/);
+    assert(!get('cancel-recovery').disabled);
+    await get('cancel-recovery').fire('click');
+    assert.equal(calls.length, 2);
+    assert.equal(calls[1].method, 'POST');
+    assert.match(get('recovery-submit-status').textContent, /Cancellation requested; owned work may still be settling/);
+    await get('cancel-recovery').fire('click');
+    assert.equal(calls.length, 2, 'acknowledged cancellation must not be resent');
   } else if (action === 'check') {
     assert(context.recoverySubmitPanel.blocksWork());
     assert.match(get('recovery-submit-status').textContent, /Reload sent nothing/);
     await get('check-recovery').fire('click');
     assert.equal(calls.length, 1);
     assert.equal(calls[0].method, 'GET');
-    assert.match(get('recovery-submit-results').textContent, /Completion: completed; checks: passed/);
+    assert.match(get('recovery-submit-results').textContent, data.scenario === 'cancelled'
+      ? /Completion: cancelled; checks: not_run; lifecycle: cancelled/
+      : /Completion: completed; checks: passed/);
   } else throw Error('unknown fixture action');
   assert(context.recoverySubmitPanel.blocksWork(), 'saved review must not enable new edits');
   assert(get('new-session').disabled);

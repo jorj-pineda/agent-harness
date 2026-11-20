@@ -16,7 +16,7 @@ from tests.test_cli_process_sigint import wait_for
 def panel(tmp_path, data, url, action):
     packet = tmp_path / "panel-packet.json"
     packet.write_text(
-        json.dumps({"url": url, "candidate": data["candidate"], "delivery": data["delivery"]})
+        json.dumps({"url": url, "candidate": data["candidate"], "scenario": data["scenario"]})
     )
     result = subprocess.run(
         [
@@ -36,10 +36,11 @@ def panel(tmp_path, data, url, action):
 
 
 @pytest.mark.skipif(shutil.which("node") is None, reason="Node needed for panel HTTP contract")
-@pytest.mark.parametrize("delivery", ["confirmed", "lost_response"])
-def test_panel_posts_once_and_checks_saved_recovery_after_api_restart(tmp_path, delivery):
+@pytest.mark.parametrize("scenario", ["confirmed", "lost_response", "cancelled"])
+def test_panel_posts_once_and_checks_saved_recovery_after_api_restart(tmp_path, scenario):
     data = source(tmp_path)  # In-process seed; submission/restart lookup use actual HTTP below.
-    data["delivery"] = delivery
+    data["scenario"] = scenario
+    cancelled = scenario == "cancelled"
     data["candidate"] = {
         "source_run_id": data["rid"],
         "source_session_id": data["sid"],
@@ -75,6 +76,8 @@ def test_panel_posts_once_and_checks_saved_recovery_after_api_restart(tmp_path, 
         ).model_dump(mode="json"),
         observed_response(content="Scripted HTTP recovery, no inference.").model_dump(mode="json"),
     ]
+    if cancelled:
+        replies = [replies[0], {"hang": True}]
     stores = tmp_path / "stores"
     with server(tmp_path / "execute", stores, replies, overrides=settings) as (url, api):
         submitted = panel(tmp_path, data, url, "submit")
@@ -89,14 +92,46 @@ def test_panel_posts_once_and_checks_saved_recovery_after_api_restart(tmp_path, 
             assert len(rows) == 1
             return rows[0] if rows[0]["status"] != "running" else None
 
+        if cancelled:
+            wait_for(
+                lambda: (
+                    api.get("/__preflight").json()["calls"] == 2
+                    and (data["root"] / "a.py").read_text() == RECOVERED
+                )
+            )
+            running = api.get(
+                "/runs", params={"user_id": "dev", "request_id": retained["body"]["request_id"]}
+            ).json()[0]
+            assert running["status"] == "running"
+            cancellation = panel(tmp_path, data, url, "cancel")
+            assert cancellation["retained"] == submitted["retained"]
+            assert cancellation["calls"][0]["method"] == "GET"
+            assert cancellation["calls"][1]["path"] == (
+                f"/sessions/{running['request']['session_id']}/cancel"
+            )
+            assert json.loads(cancellation["calls"][1]["body"]) == {"user_id": "dev"}
         record = wait_for(finished)
-        assert record["response"]["completion_status"] == "completed", record
-        assert record["response"]["verification_status"] == "passed"
-        assert record["response"]["check_attempts"][0]["exit_code"] == 0
+        assert record["response"]["completion_status"] == (
+            "cancelled" if cancelled else "completed"
+        ), record
+        assert record["response"]["verification_status"] == ("not_run" if cancelled else "passed")
+        if cancelled:
+            assert record["status"] == "cancelled"
+            assert record["response"]["check_attempts"] == []
+            assert record["response"]["token_usage"] == {
+                "prompt_tokens": None,
+                "completion_tokens": None,
+            }
+        else:
+            assert record["response"]["check_attempts"][0]["exit_code"] == 0
         assert record["request"]["session_id"] != data["sid"]
-        assert api.get("/__preflight").json()["calls"] == 3
+        assert api.get("/__preflight").json()["calls"] == (2 if cancelled else 3)
+    expected_user = "pre-existing staged user work\n"
+    if cancelled:
+        expected_user += "later unrelated user edit\n"
+        (data["root"] / "user.txt").write_text(expected_user)
     with server(tmp_path / "restart", stores, [], overrides=settings) as (url, api):
-        if delivery == "lost_response":
+        if scenario == "lost_response":
             replayed = panel(tmp_path, data, url, "retry")
             assert replayed["retained"] == submitted["retained"]
             assert replayed["calls"] == submitted["calls"]
@@ -116,6 +151,6 @@ def test_panel_posts_once_and_checks_saved_recovery_after_api_restart(tmp_path, 
         assert api.get("/__preflight").json()["calls"] == 0
     assert (data["root"] / "a.py").read_text() == RECOVERED
     assert stat.S_IMODE((data["root"] / "a.py").stat().st_mode) == 0o640
-    assert (data["root"] / "user.txt").read_text() == "pre-existing staged user work\n"
+    assert (data["root"] / "user.txt").read_text() == expected_user
     assert (data["root"] / "test_a.py").read_bytes() == visible
     assert (data["root"] / ".git/index").read_bytes() == data["index"]
