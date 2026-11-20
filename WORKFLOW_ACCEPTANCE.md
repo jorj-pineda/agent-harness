@@ -86,3 +86,22 @@ Keep source/fork settings identical within each sequence. Preserve configured
 check bytes, source records, file mode, unrelated work and staged Git index.
 These are missing executable composition cases, not asserted runtime defects.
 No generation, paid call, browser run or release approval follows.
+
+## Panel submission over HTTP — 2026-11-20
+
+The [HTTP contract](tests/test_panel_http_recovery.py) now runs actual app,
+recovery and submission JavaScript with native Node fetch against an owned
+loopback API process. One explicit submit POST is bound to the already-retained
+body; after API restart a separate script process restores the same local intent,
+sends nothing at load and makes one GET only on explicit Check. The actual
+configured pytest completes in the shared runtime and the saved identity is
+validated by the production client code. Source records, file/check bytes, mode,
+unrelated user work and staged index remain preserved.
+
+The source and reviewed draft are seeded in process; selection is injected at the
+existing reviewed-candidate seam. DOM and storage are simulated, so this is not
+rendered-browser, real browser-storage, full draft-control or browser network
+policy acceptance. Three focused HTTP/existing panel contracts pass with static
+gates; full offline/CI remains required before merge. Lost-response recovery and
+panel-driven cancellation are the next separate HTTP cases. No target inference,
+model-quality result or G2–G5 closure follows.

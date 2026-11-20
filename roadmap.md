@@ -4,6 +4,14 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-20 — Actual panel submission scripts over loopback HTTP:** one explicit
+recovery POST and a post-restart Check GET now traverse the owned API process
+using native fetch. Actual configured pytest and shared execution settle the
+scripted fork; client identity checks and source/user/index preservation pass.
+Three focused panel contracts and static gates pass; full offline/CI remains
+required. Source/draft seeding, DOM and storage remain simulated/in-process;
+this is not rendered-browser or model-quality/G2–G5 acceptance.
+
 **2026-11-19 — Post-check edits remain stale in executable recovery:** the fork
 passes its actual configured pytest, writes a different artifact, and finishes
 incomplete/stale while retaining the historical exit0 check. Restarted JSON/human
