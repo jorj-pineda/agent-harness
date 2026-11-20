@@ -108,5 +108,18 @@ failure, while fork/source reversal restores the actual files and preserves user
 mode, source evidence, unrelated work and staged index. Source and fork use the
 same settings within each case. All three focused cases passed in 26.10s; static
 gates pass. Full offline/CI success remains required before merge. No runtime
-fix, inference or model-quality/G2 closure follows. The stale-check case remains
-separate future work.
+fix, inference or model-quality/G2 closure follows. The stale-check case is recorded below.
+
+## Post-check edit — observed 2026-11-19
+
+A fourth executable case writes the correct value1 artifact, runs the configured
+pytest successfully, then writes value2 before attempting to finish at its selected
+four-iteration cap. The saved check retains exit0 as historical evidence, while
+completion is `incomplete`, verification is `stale` and the reason names the
+unverified final edit. Four provider calls are observed; no recheck is scripted.
+After restart, JSON equality and human incomplete/stale review preserve that
+outcome. Reversal restores the actual final artifact through fork/source order,
+with source records, user mode, later unrelated work and staged index unchanged.
+All four focused cases passed in 35.26s with static gates. The combined local
+full offline gate and CI remain required before merge. No runtime fix or
+model-quality/release conclusion follows.
