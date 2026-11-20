@@ -46,7 +46,7 @@ const context = vm.createContext({
   crypto: { subtle: webcrypto.subtle, randomUUID: () => '11111111-1111-4111-8111-111111111111' },
   TextEncoder, AbortController, URLSearchParams, setTimeout, clearTimeout, window: {},
   fetch: async (path, options = {}) => {
-    assert(storage.has(key), 'exact intent must be retained before network');
+    if (action !== 'review') assert(storage.has(key), 'exact intent must be retained before network');
     const url = new URL(path, data.url);
     assert.equal(url.origin, new URL(data.url).origin, 'only owned loopback API allowed');
     if (options.method === 'POST' && path.endsWith('/recover')) {
@@ -65,9 +65,24 @@ for (const name of ['app.js', 'recovery.js', 'recovery-submit.js']) {
   vm.runInContext(fs.readFileSync(root + '/' + name, 'utf8'), context);
 }
 // Deliberate selection seam: draft rendering is outside this submission test.
-context.recoveryDraftPanel.reviewed = () => data.candidate;
+if (action !== 'review') context.recoveryDraftPanel.reviewed = () => data.candidate;
 (async () => {
   assert.equal(calls.length, 0, 'loading/restoring scripts must send nothing');
+  if (action === 'review') {
+    context.recoveryDraftPanel.select(data.source);
+    assert.equal(calls.length, 0, 'selection alone sends nothing');
+    assert(get('preview-recovery').disabled);
+    await get('load-recovery').fire('click');
+    assert.deepEqual(calls, [{
+      path: `/runs/${data.source.run_id}/recovery-review?user_id=dev`, method: 'GET', body: null,
+    }]);
+    const evidence = get('recovery-evidence').textContent;
+    assert.match(evidence, /Source completion: incomplete; checks: not_run/);
+    assert(get('submit-recovery').disabled);
+    assert(!storage.has(key));
+    console.log(JSON.stringify({ calls, text: evidence }));
+    return;
+  }
   if (action === 'submit') {
     for (const name of ['state', 'context', 'budget']) get('recovery-ack-' + name).checked = true;
     context.recoverySubmitPanel.refresh();
