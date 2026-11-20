@@ -95,3 +95,18 @@ Both successful/adverse focused cases passed in 17.59s. Ruff/format/mypy and dif
 checks passed; the local gate passed 4,031 tests (five live deselected), and both
 required checks passed on `0581ce0` before merge `df961b5`. These passing guards
 required no runtime fix and establish no actual-model quality or G2 closure.
+
+## Failed configured check — observed 2026-11-19
+
+The executable sequence now has a third case: its fork writes value2 against the
+unchanged value1 pytest criterion, executes the actual check, then attempts to
+finish at the selected three-iteration cap. Saved completion is `incomplete`,
+verification is `failed`, check exit is1 and the reason records the unverified
+edit. The canned answer's claim of a passed check does not override those fields.
+After restart, JSON equality and human `incomplete`/`failed` review retain the
+failure, while fork/source reversal restores the actual files and preserves user
+mode, source evidence, unrelated work and staged index. Source and fork use the
+same settings within each case. All three focused cases passed in 26.10s; static
+gates pass. Full offline/CI success remains required before merge. No runtime
+fix, inference or model-quality/G2 closure follows. The stale-check case remains
+separate future work.

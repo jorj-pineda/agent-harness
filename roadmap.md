@@ -4,6 +4,14 @@ Updated: 2026-10-27
 
 ## Current release decision
 
+**2026-11-19 — Failed-check executable recovery:** a cancelled source forks after
+restart/review, writes an incorrect artifact and runs the actual configured pytest.
+A canned finish claim cannot override the saved incomplete/failed result and
+exit1 check. Restarted JSON/human review and reverse-order restoration preserve
+source records and user content/mode/index. Three focused cases and static gates
+pass; full offline/CI remains required. No runtime defect, target inference or
+model-quality/G2–G5 closure is claimed.
+
 **2026-11-19 — Stale CLI recovery review is not a lease:** the composed process
 sequence now changes user bytes after successful review and observes blocked
 continuation before checkpoint binding or provider dispatch, rejected reversal, and durable
