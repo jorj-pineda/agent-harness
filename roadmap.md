@@ -8,23 +8,24 @@ Updated: 2026-10-27
 sequence now changes user bytes after successful review and observes blocked
 continuation before checkpoint binding or provider dispatch, rejected reversal, and durable
 keyed replay preserving later user bytes/mode, unrelated work, source records and
-Git index. Two focused cases pass with static gates; full offline and CI remain
-pending. No runtime fix, model-quality gain or broader G2–G5 closure follows.
+Git index. Two focused cases passed with static gates and 4,031 offline tests;
+both required checks passed on `0581ce0` before PR #456 merged as `df961b5`. No runtime fix, model-quality gain or broader G2–G5 closure follows.
 
 **2026-11-19 — Composed executable cancelled-edit recovery:** one scripted-provider
 CLI/API process case now cancels a partial edit, restarts for read-only review,
 continues through a real configured pytest check, then restarts for reverse-order
 single-file restoration and durable inspection. The focused case passes with
 unchanged source records, user mode, later unrelated work and staged Git index.
-No runtime fix or actual-model improvement is claimed; full offline/CI validation
-remains required; the stale-review case is recorded above. G2–G5 stay open.
+No runtime fix or actual-model improvement is claimed. PR #455 merged as
+`c6c5341` after required CI; its local gate passed 4,030 tests. The stale-review
+case is recorded above. G2–G5 stay open.
 
 **2026-11-19 — Permission-only CLI recovery preservation:** restarted executable
 CLI/API cases now cover user mode changes without byte changes before guarded
 continuation and single-file reversal. Six focused cases pass; blocked/rejected
 saved outcomes preserve user state, source evidence and reversal Git index/journal
-replay. Static checks pass; full offline and CI completion remain required before
-merge. No runtime defect was found. Scripted provider responses establish these
+replay. Static checks passed; PR #453 merged as `862ce68` after required CI and
+4,029 local offline tests. No runtime defect was found. Scripted provider responses establish these
 mechanics only; G2–G5 and release no-go remain unchanged.
 
 **2026-11-19 — Release checklist reconciled:** the short operational checklist now
