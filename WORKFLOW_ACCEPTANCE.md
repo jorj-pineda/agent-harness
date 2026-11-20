@@ -105,3 +105,17 @@ policy acceptance. Three focused HTTP/existing panel contracts pass with static
 gates; full offline/CI remains required before merge. Lost-response recovery and
 panel-driven cancellation are the next separate HTTP cases. No target inference,
 model-quality result or G2–G5 closure follows.
+
+## Panel response delivery loss — 2026-11-20
+
+The HTTP fixture now has confirmed and lost-response modes. Lost delivery is
+injected after native fetch receives the server acknowledgment: the wrapper
+consumes that response and throws before the client sees it. This is not a real
+socket-disconnect or browser-network test. The production script keeps its exact
+intent, reports an unconfirmed outcome and sends no automatic second request.
+After API/script restart an explicit Retry posts the identical retained body,
+recovers the existing completed run and leaves exactly source+fork records with
+zero provider calls. A further explicit Check makes one GET and preserves intent,
+source/user state and Git index. Four focused HTTP/existing panel contracts and
+static checks pass; full offline/CI remains required before merge. Cancellation
+is still a separate pending HTTP case; browser/G2/model-quality limits remain.

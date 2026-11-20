@@ -15,7 +15,9 @@ from tests.test_cli_process_sigint import wait_for
 
 def panel(tmp_path, data, url, action):
     packet = tmp_path / "panel-packet.json"
-    packet.write_text(json.dumps({"url": url, "candidate": data["candidate"]}))
+    packet.write_text(
+        json.dumps({"url": url, "candidate": data["candidate"], "delivery": data["delivery"]})
+    )
     result = subprocess.run(
         [
             "node",
@@ -34,8 +36,10 @@ def panel(tmp_path, data, url, action):
 
 
 @pytest.mark.skipif(shutil.which("node") is None, reason="Node needed for panel HTTP contract")
-def test_panel_posts_once_and_checks_saved_recovery_after_api_restart(tmp_path):
+@pytest.mark.parametrize("delivery", ["confirmed", "lost_response"])
+def test_panel_posts_once_and_checks_saved_recovery_after_api_restart(tmp_path, delivery):
     data = source(tmp_path)  # In-process seed; submission/restart lookup use actual HTTP below.
+    data["delivery"] = delivery
     data["candidate"] = {
         "source_run_id": data["rid"],
         "source_session_id": data["sid"],
@@ -92,6 +96,12 @@ def test_panel_posts_once_and_checks_saved_recovery_after_api_restart(tmp_path):
         assert record["request"]["session_id"] != data["sid"]
         assert api.get("/__preflight").json()["calls"] == 3
     with server(tmp_path / "restart", stores, [], overrides=settings) as (url, api):
+        if delivery == "lost_response":
+            replayed = panel(tmp_path, data, url, "retry")
+            assert replayed["retained"] == submitted["retained"]
+            assert replayed["calls"] == submitted["calls"]
+            assert len(api.get("/runs", params={"user_id": "dev"}).json()) == 2
+            assert api.get("/__preflight").json()["calls"] == 0
         reviewed = panel(tmp_path, data, url, "check")
         assert reviewed["retained"] == submitted["retained"]
         assert f"request_id={retained['body']['request_id']}" in reviewed["calls"][0]["path"]

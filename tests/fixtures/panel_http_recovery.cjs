@@ -53,7 +53,12 @@ const context = vm.createContext({
       assert.deepEqual(JSON.parse(options.body), JSON.parse(storage.get(key)).body);
     }
     calls.push({ path, method: options.method ?? 'GET', body: options.body ?? null });
-    return fetch(url, options);
+    const response = await fetch(url, options);
+    if (data.delivery === 'lost_response' && action === 'submit' && path.endsWith('/recover')) {
+      await response.text(); // Server acknowledged; hide only this delivery from the client.
+      throw Error('fixture response delivery loss');
+    }
+    return response;
   },
 });
 for (const name of ['app.js', 'recovery.js', 'recovery-submit.js']) {
@@ -70,7 +75,14 @@ context.recoveryDraftPanel.reviewed = () => data.candidate;
     await get('submit-recovery').fire('click');
     assert.equal(calls.length, 1);
     assert.equal(calls[0].method, 'POST');
-    assert.match(get('recovery-submit-status').textContent, /identity confirmed/);
+    assert.match(get('recovery-submit-status').textContent,
+      data.delivery === 'lost_response' ? /outcome is unconfirmed/ : /identity confirmed/);
+  } else if (action === 'retry') {
+    assert(context.recoverySubmitPanel.blocksWork());
+    await get('retry-recovery').fire('click');
+    assert.equal(calls.length, 1);
+    assert.equal(calls[0].method, 'POST');
+    assert.match(get('recovery-submit-results').textContent, /Completion: completed; checks: passed/);
   } else if (action === 'check') {
     assert(context.recoverySubmitPanel.blocksWork());
     assert.match(get('recovery-submit-status').textContent, /Reload sent nothing/);
