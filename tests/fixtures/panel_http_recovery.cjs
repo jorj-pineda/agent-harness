@@ -8,6 +8,7 @@ const data = JSON.parse(fs.readFileSync(packetPath, 'utf8'));
 const storage = new Map(fs.existsSync(statePath)
   ? JSON.parse(fs.readFileSync(statePath, 'utf8')) : [['panel_user_id', 'dev']]);
 const key = 'panel_pending_recovery_v1';
+const reversalKey = 'panel_pending_reversal';
 class Node {
   constructor(tag) {
     this.tag = tag; this.children = []; this.events = {}; this.value = ''; this._text = '';
@@ -46,7 +47,13 @@ const context = vm.createContext({
   crypto: { subtle: webcrypto.subtle, randomUUID: () => '11111111-1111-4111-8111-111111111111' },
   TextEncoder, AbortController, URLSearchParams, setTimeout, clearTimeout, window: {},
   fetch: async (path, options = {}) => {
-    if (action !== 'review' && !path.includes('/recovery-review?') && !path.endsWith('/recovery-draft')) {
+    if (action.startsWith('reverse')) {
+      if (path.endsWith('/revert-file')) {
+        const { run_id, ...body } = JSON.parse(storage.get(reversalKey));
+        assert.equal(path, `/runs/${run_id}/revert-file`);
+        assert.deepEqual(JSON.parse(options.body), body);
+      }
+    } else if (action !== 'review' && !path.includes('/recovery-review?') && !path.endsWith('/recovery-draft')) {
       assert(storage.has(key), 'exact intent must be retained before execution or outcome lookup');
     }
     const url = new URL(path, data.url);
@@ -68,6 +75,31 @@ for (const name of ['app.js', 'recovery.js', 'recovery-submit.js']) {
 }
 (async () => {
   assert.equal(calls.length, 0, 'loading/restoring scripts must send nothing');
+  if (action === 'reverse') {
+    await vm.runInContext(`inspectRun(${JSON.stringify(data.source.run_id)})`, context);
+    assert.equal(calls.length, 1);
+    assert.equal(calls[0].method, 'GET');
+    assert.equal(calls[0].path, `/runs/${data.source.run_id}?user_id=dev`);
+    get('reversal-path').value = 'a.py';
+    await get('reversal-path').fire('input');
+    assert(get('submit-reversal').disabled);
+    get('reversal-ack').checked = true;
+    await get('reversal-ack').fire('change');
+    assert(!get('submit-reversal').disabled);
+    await get('submit-reversal').fire('click');
+    const deadline = Date.now() + 5000;
+    while (vm.runInContext('busy', context) && Date.now() < deadline) {
+      await new Promise(resolve => setTimeout(resolve, 10));
+    }
+    assert.equal(vm.runInContext('busy', context), false);
+    assert.equal(calls.length, 2);
+    assert.equal(calls[1].method, 'POST');
+    assert.match(get('reversal-results').textContent, /Saved reversal: applied/);
+    assert(get('submit-reversal').disabled);
+    assert(get('new-session').disabled);
+    console.log(JSON.stringify({ calls, retained: storage.get(reversalKey) }));
+    return;
+  }
   if (action === 'review') {
     context.recoveryDraftPanel.select(data.source);
     assert.equal(calls.length, 0, 'selection alone sends nothing');
