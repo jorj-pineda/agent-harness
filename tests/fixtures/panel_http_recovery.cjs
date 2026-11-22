@@ -83,9 +83,14 @@ for (const name of ['app.js', 'recovery.js', 'recovery-submit.js']) {
     get('reversal-path').value = 'a.py';
     await get('reversal-path').fire('input');
     assert(get('submit-reversal').disabled);
+    await get('submit-reversal').fire('click');
+    assert.equal(calls.length, 1, 'unacknowledged submission sends nothing');
+    assert(!storage.has(reversalKey));
     get('reversal-ack').checked = true;
     await get('reversal-ack').fire('change');
     assert(!get('submit-reversal').disabled);
+    assert.equal(calls.length, 1, 'acknowledgement alone sends nothing');
+    assert(!storage.has(reversalKey));
     await get('submit-reversal').fire('click');
     const deadline = Date.now() + 5000;
     while (vm.runInContext('busy', context) && Date.now() < deadline) {
