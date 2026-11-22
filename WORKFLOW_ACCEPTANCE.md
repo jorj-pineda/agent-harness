@@ -151,3 +151,16 @@ enable submission for the revised message.
 The fixture seeds its source in process and runs the panel scripts with simulated
 DOM and storage. Recovery uses a scripted provider. Seven focused tests passed.
 Rendered browser and candidate-specific release acceptance remain open.
+
+## Panel file reversal over HTTP
+
+The [panel HTTP tests](tests/test_panel_http_recovery.py) exercise saved-run
+lookup and acknowledged single-file reversal through the production panel
+scripts. A successful reversal restores the selected file and mode. A change to
+the target after review results in a saved rejection and preserves the user's
+edit. After API and panel process restarts, explicit Check retrieves either
+stored outcome with one GET and leaves later edits and the Git index intact.
+
+The fixture uses real loopback HTTP, a simulated DOM and storage, and a
+scripted provider. Eleven focused panel HTTP and API reversal tests passed.
+Rendered browser and release candidate acceptance remain open.

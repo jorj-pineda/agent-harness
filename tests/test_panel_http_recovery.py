@@ -231,3 +231,31 @@ def test_panel_reverses_one_saved_file_over_http(tmp_path, scenario):
     assert stat.S_IMODE(target.stat().st_mode) == (0o600 if stale else 0o640)
     assert user.read_text() == "later unrelated user edit\n"
     assert (root / ".git/index").read_bytes() == data["index"]
+
+    target.write_text("user edit after reversal settled\n")
+    target.chmod(0o604)
+    target_bytes = target.read_bytes()
+    user_bytes = user.read_bytes()
+    with server(
+        tmp_path / "reverse-restart",
+        tmp_path / "stores",
+        [],
+        overrides=saved_source_settings(tmp_path),
+    ) as (url, api):
+        checked = panel(tmp_path, data, url, "reverse-check")
+        assert checked["retained"] == result["retained"]
+        assert (
+            api.get(
+                "/file-reverts", params={"user_id": "dev", "request_id": retained["request_id"]}
+            ).json()
+            == saved
+        )
+        assert api.get("/runs", params={"user_id": "dev"}).json() == [data["record"]]
+        assert (
+            api.get(f"/sessions/{data['sid']}", params={"user_id": "dev"}).json() == data["archive"]
+        )
+        assert api.get("/__preflight").json()["calls"] == 0
+    assert target.read_bytes() == target_bytes
+    assert stat.S_IMODE(target.stat().st_mode) == 0o604
+    assert user.read_bytes() == user_bytes
+    assert (root / ".git/index").read_bytes() == data["index"]
