@@ -75,6 +75,23 @@ for (const name of ['app.js', 'recovery.js', 'recovery-submit.js']) {
 }
 (async () => {
   assert.equal(calls.length, 0, 'loading/restoring scripts must send nothing');
+  if (action === 'reverse-check') {
+    const retained = storage.get(reversalKey);
+    const { request_id, user_id } = JSON.parse(retained);
+    assert(get('new-session').disabled);
+    assert(!get('check-reversal').disabled);
+    await get('check-reversal').fire('click');
+    assert.deepEqual(calls, [{
+      path: `/file-reverts?${new URLSearchParams({ user_id, request_id })}`,
+      method: 'GET', body: null,
+    }]);
+    const status = data.scenario === 'stale_reversal' ? 'rejected' : 'applied';
+    assert.match(get('reversal-results').textContent, new RegExp(`Saved reversal: ${status}`));
+    assert(get('retry-reversal').disabled);
+    assert.equal(storage.get(reversalKey), retained);
+    console.log(JSON.stringify({ calls, retained }));
+    return;
+  }
   if (action === 'reverse') {
     await vm.runInContext(`inspectRun(${JSON.stringify(data.source.run_id)})`, context);
     assert.equal(calls.length, 1);
@@ -112,6 +129,7 @@ for (const name of ['app.js', 'recovery.js', 'recovery-submit.js']) {
     }
     assert(get('submit-reversal').disabled);
     assert(get('new-session').disabled);
+    fs.writeFileSync(statePath, JSON.stringify([...storage]));
     console.log(JSON.stringify({ calls, retained: storage.get(reversalKey) }));
     return;
   }
