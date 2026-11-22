@@ -22,6 +22,7 @@ def panel(tmp_path, data, url, action):
                 "proposal": {k: data["approval"][k] for k in ("spans", "message")},
                 "scenario": data.get("scenario"),
                 "source": data["record"],
+                "target": str(data["root"] / "a.py"),
             }
         )
     )
@@ -198,8 +199,11 @@ def test_panel_posts_once_and_checks_saved_recovery_after_api_restart(tmp_path, 
 
 
 @pytest.mark.skipif(shutil.which("node") is None, reason="Node needed for panel HTTP contract")
-def test_panel_reverses_one_saved_file_over_http(tmp_path):
+@pytest.mark.parametrize("scenario", ["applied", "stale_reversal"])
+def test_panel_reverses_one_saved_file_over_http(tmp_path, scenario):
     data = source(tmp_path)
+    data["scenario"] = scenario
+    stale = scenario == "stale_reversal"
     root = data["root"]
     user = root / "user.txt"
     user.write_text("later unrelated user edit\n")
@@ -214,13 +218,16 @@ def test_panel_reverses_one_saved_file_over_http(tmp_path):
             "/file-reverts", params={"user_id": "dev", "request_id": retained["request_id"]}
         ).json()
         assert saved["request"] == retained
-        assert saved["status"] == "applied"
+        assert saved["status"] == ("rejected" if stale else "applied")
         assert api.get("/runs", params={"user_id": "dev"}).json() == [data["record"]]
         assert (
             api.get(f"/sessions/{data['sid']}", params={"user_id": "dev"}).json() == data["archive"]
         )
         assert api.get("/__preflight").json()["calls"] == 0
-    assert (root / "a.py").read_text() == "user = 1\n"
-    assert stat.S_IMODE((root / "a.py").stat().st_mode) == 0o640
+    target = root / "a.py"
+    assert target.read_text() == (
+        "later user edit to the reversal target\n" if stale else "user = 1\n"
+    )
+    assert stat.S_IMODE(target.stat().st_mode) == (0o600 if stale else 0o640)
     assert user.read_text() == "later unrelated user edit\n"
     assert (root / ".git/index").read_bytes() == data["index"]

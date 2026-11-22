@@ -91,6 +91,10 @@ for (const name of ['app.js', 'recovery.js', 'recovery-submit.js']) {
     assert(!get('submit-reversal').disabled);
     assert.equal(calls.length, 1, 'acknowledgement alone sends nothing');
     assert(!storage.has(reversalKey));
+    if (data.scenario === 'stale_reversal') {
+      fs.writeFileSync(data.target, 'later user edit to the reversal target\n');
+      fs.chmodSync(data.target, 0o600);
+    }
     await get('submit-reversal').fire('click');
     const deadline = Date.now() + 5000;
     while (vm.runInContext('busy', context) && Date.now() < deadline) {
@@ -99,7 +103,13 @@ for (const name of ['app.js', 'recovery.js', 'recovery-submit.js']) {
     assert.equal(vm.runInContext('busy', context), false);
     assert.equal(calls.length, 2);
     assert.equal(calls[1].method, 'POST');
-    assert.match(get('reversal-results').textContent, /Saved reversal: applied/);
+    const result = get('reversal-results').textContent;
+    if (data.scenario === 'stale_reversal') {
+      assert.match(result, /Saved reversal: rejected/);
+      assert.match(result, /no reversal was applied/);
+    } else {
+      assert.match(result, /Saved reversal: applied/);
+    }
     assert(get('submit-reversal').disabled);
     assert(get('new-session').disabled);
     console.log(JSON.stringify({ calls, retained: storage.get(reversalKey) }));
