@@ -195,3 +195,32 @@ def test_panel_posts_once_and_checks_saved_recovery_after_api_restart(tmp_path, 
     assert (data["root"] / "user.txt").read_text() == expected_user
     assert (data["root"] / "test_a.py").read_bytes() == visible
     assert (data["root"] / ".git/index").read_bytes() == data["index"]
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="Node needed for panel HTTP contract")
+def test_panel_reverses_one_saved_file_over_http(tmp_path):
+    data = source(tmp_path)
+    root = data["root"]
+    user = root / "user.txt"
+    user.write_text("later unrelated user edit\n")
+    with server(
+        tmp_path / "reverse", tmp_path / "stores", [], overrides=saved_source_settings(tmp_path)
+    ) as (url, api):
+        result = panel(tmp_path, data, url, "reverse")
+        retained = json.loads(result["retained"])
+        assert retained["run_id"] == data["rid"]
+        assert retained["path"] == "a.py"
+        saved = api.get(
+            "/file-reverts", params={"user_id": "dev", "request_id": retained["request_id"]}
+        ).json()
+        assert saved["request"] == retained
+        assert saved["status"] == "applied"
+        assert api.get("/runs", params={"user_id": "dev"}).json() == [data["record"]]
+        assert (
+            api.get(f"/sessions/{data['sid']}", params={"user_id": "dev"}).json() == data["archive"]
+        )
+        assert api.get("/__preflight").json()["calls"] == 0
+    assert (root / "a.py").read_text() == "user = 1\n"
+    assert stat.S_IMODE((root / "a.py").stat().st_mode) == 0o640
+    assert user.read_text() == "later unrelated user edit\n"
+    assert (root / ".git/index").read_bytes() == data["index"]
