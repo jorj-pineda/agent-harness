@@ -21,6 +21,7 @@ def panel(tmp_path, data, url, action):
                 "url": url,
                 "proposal": {k: data["approval"][k] for k in ("spans", "message")},
                 "scenario": data.get("scenario"),
+                "revert_id": data.get("revert_id"),
                 "source": data["record"],
                 "target": str(data["root"] / "a.py"),
             }
@@ -199,8 +200,16 @@ def test_panel_posts_once_and_checks_saved_recovery_after_api_restart(tmp_path, 
 
 
 @pytest.mark.skipif(shutil.which("node") is None, reason="Node needed for panel HTTP contract")
-@pytest.mark.parametrize("scenario", ["applied", "stale_reversal", "lost_reversal_response"])
-def test_panel_reverses_one_saved_file_over_http(tmp_path, scenario):
+@pytest.mark.parametrize(
+    ("scenario", "retry"),
+    [
+        ("applied", False),
+        ("stale_reversal", False),
+        ("lost_reversal_response", False),
+        pytest.param("lost_reversal_response", True, id="lost_response_explicit_retry"),
+    ],
+)
+def test_panel_reverses_one_saved_file_over_http(tmp_path, scenario, retry):
     data = source(tmp_path)
     data["scenario"] = scenario
     stale = scenario == "stale_reversal"
@@ -242,6 +251,13 @@ def test_panel_reverses_one_saved_file_over_http(tmp_path, scenario):
         [],
         overrides=saved_source_settings(tmp_path),
     ) as (url, api):
+        if retry:
+            data["revert_id"] = saved["revert_id"]
+            replayed = panel(tmp_path, data, url, "reverse-retry")
+            assert replayed["retained"] == result["retained"]
+            assert replayed["calls"] == [result["calls"][1]]
+            assert target.read_bytes() == target_bytes
+            assert stat.S_IMODE(target.stat().st_mode) == 0o604
         checked = panel(tmp_path, data, url, "reverse-check")
         assert checked["retained"] == result["retained"]
         assert (

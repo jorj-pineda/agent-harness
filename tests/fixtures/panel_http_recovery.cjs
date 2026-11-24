@@ -79,8 +79,33 @@ const context = vm.createContext({
 for (const name of ['app.js', 'recovery.js', 'recovery-submit.js']) {
   vm.runInContext(fs.readFileSync(root + '/' + name, 'utf8'), context);
 }
+async function waitForPanelIdle() {
+  const deadline = Date.now() + 5000;
+  while (vm.runInContext('busy', context) && Date.now() < deadline) {
+    await new Promise(resolve => setTimeout(resolve, 10));
+  }
+  assert.equal(vm.runInContext('busy', context), false);
+}
 (async () => {
   assert.equal(calls.length, 0, 'loading/restoring scripts must send nothing');
+  if (action === 'reverse-retry') {
+    const retained = storage.get(reversalKey);
+    assert(get('new-session').disabled);
+    assert(!get('retry-reversal').disabled);
+    await get('retry-reversal').fire('click');
+    await waitForPanelIdle();
+    assert.equal(calls.length, 1);
+    assert.equal(calls[0].method, 'POST');
+    const result = get('reversal-results').textContent;
+    assert.match(result, /Saved reversal: applied/);
+    assert(result.includes(`Journal: ${data.revert_id};`));
+    assert(get('retry-reversal').disabled);
+    await get('retry-reversal').fire('click');
+    assert.equal(calls.length, 1, 'resolved outcome prevents another POST');
+    assert.equal(storage.get(reversalKey), retained);
+    console.log(JSON.stringify({ calls, retained }));
+    return;
+  }
   if (action === 'reverse-check') {
     const retained = storage.get(reversalKey);
     const { request_id, user_id } = JSON.parse(retained);
@@ -119,11 +144,7 @@ for (const name of ['app.js', 'recovery.js', 'recovery-submit.js']) {
       fs.chmodSync(data.target, 0o600);
     }
     await get('submit-reversal').fire('click');
-    const deadline = Date.now() + 5000;
-    while (vm.runInContext('busy', context) && Date.now() < deadline) {
-      await new Promise(resolve => setTimeout(resolve, 10));
-    }
-    assert.equal(vm.runInContext('busy', context), false);
+    await waitForPanelIdle();
     assert.equal(calls.length, 2);
     assert.equal(calls[1].method, 'POST');
     const result = get('reversal-results').textContent;
