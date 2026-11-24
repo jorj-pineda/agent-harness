@@ -79,3 +79,19 @@ def test_cli_detail_timeout_and_invalid_id_never_retry():
         assert "No automatic retry" in result.output and get.call_count == 1
         assert runner.invoke(app, ["memory-note", "0"]).exit_code != 0
         assert get.call_count == 1
+
+
+@pytest.mark.parametrize(
+    "field,value", [("id", True), ("id", 1.0), ("fact_bytes", True), ("fact_bytes", 1.0)]
+)
+def test_cli_memory_detail_requires_integer_metadata(field, value):
+    note = {"id": 1, "fact_bytes": 1, "fact_sha256": hashlib.sha256(b"x").hexdigest()}
+    note[field] = value
+    response = httpx.Response(
+        200, json={"note": note, "text": "x"}, request=httpx.Request("GET", "http://test")
+    )
+    with patch("httpx.get", return_value=response) as looked:
+        result = runner.invoke(app, ["memory-note", "1", "--json"])
+    assert result.exit_code == 1
+    assert '"text"' not in result.output
+    looked.assert_called_once()
