@@ -164,3 +164,7 @@ stored outcome with one GET and leaves later edits and the Git index intact.
 The fixture uses real loopback HTTP, a simulated DOM and storage, and a
 scripted provider. Eleven focused panel HTTP and API reversal tests passed.
 Rendered browser and release candidate acceptance remain open.
+
+If the panel loses the successful reversal response, it retains the request and
+shows delivery as unconfirmed. Explicit Check after restart reads the applied
+journal entry without sending another POST or changing the workspace.
