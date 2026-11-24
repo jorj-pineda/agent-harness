@@ -80,6 +80,7 @@ let reviewInFlight = false;
 let continuationTurnId = null;
 const pendingStorageKey = "panel_pending_request";
 const reversalStorageKey = "panel_pending_reversal";
+let pendingReversalRaw = null;
 let pendingReversal = null;
 let reversalStatus = null;
 let reversalPairAvailable = false;
@@ -1090,7 +1091,9 @@ function submitReversal() {
   try {
     request = { user_id: userId, run_id: reviewTarget.runId,
       path: els.reversalPath.value, request_id: crypto.randomUUID() };
-    localStorage.setItem(reversalStorageKey, JSON.stringify(request));
+    const raw = JSON.stringify(request);
+    localStorage.setItem(reversalStorageKey, raw);
+    pendingReversalRaw = raw;
   } catch (_) {
     addErrorMessage("Could not retain exact reversal input. No file action was submitted.");
     return;
@@ -1103,6 +1106,14 @@ function submitReversal() {
 
 async function postReversal(request) {
   if (recoveryWorkBlocked() || busy || reviewInFlight || pendingRequest) return;
+  try {
+    if (pendingReversalRaw === null || localStorage.getItem(reversalStorageKey) !== pendingReversalRaw) {
+      throw new Error("Retained reversal changed");
+    }
+  } catch (_) {
+    els.reversalResults.replaceChildren(el("p", "review-note", "Retained reversal storage changed or is unavailable. Reload or inspect the saved outcome before retrying."));
+    return;
+  }
   setBusy(true);
   sessionUsable = false;
   reversalStatus = null;
@@ -1161,6 +1172,7 @@ function restoreReversal() {
       throw new Error("Invalid retained reversal");
     }
     pendingReversal = request;
+    pendingReversalRaw = raw;
     sessionUsable = false;
     addErrorMessage("Retained reversal restored for inspection. Reload submitted no file action. Forgetting a key does not reconcile its outcome.");
   } catch (_) {
@@ -1310,6 +1322,7 @@ els.forgetReversal.addEventListener("click", () => {
   try { localStorage.removeItem(reversalStorageKey); }
   catch (_) { addErrorMessage("Could not forget retained reversal; inspect its outcome before new work."); return; }
   pendingReversal = null;
+  pendingReversalRaw = null;
   reversalRecoveryBlocked = false;
   reversalStatus = null;
   els.reversalResults.replaceChildren();
