@@ -520,16 +520,20 @@ class AgentClient:
     def memory_note(self, user_id: str, fact_id: int) -> dict[str, Any]:
         resp = httpx.get(f"{self._base}/memory/{fact_id}", params={"user_id": user_id}, timeout=30)
         resp.raise_for_status()
-        record = dict(resp.json())
-        note = record.get("note") or {}
+        record = resp.json()
+        if not isinstance(record, dict) or not isinstance(record.get("note"), dict):
+            raise ValueError("Unsupported memory detail response; inspect memory.")
+        note = record["note"]
         text = record.get("text")
         if not isinstance(text, str):
             raise ValueError("Missing memory note text")
         encoded = text.encode("utf-8")
         if (
-            note.get("id") != fact_id
+            type(note.get("id")) is not int
+            or note["id"] != fact_id
             or len(encoded) > 4096
-            or note.get("fact_bytes") != len(encoded)
+            or type(note.get("fact_bytes")) is not int
+            or note["fact_bytes"] != len(encoded)
             or note.get("fact_sha256") != hashlib.sha256(encoded).hexdigest()
         ):
             raise ValueError("Mismatched memory detail response; inspect memory.")
