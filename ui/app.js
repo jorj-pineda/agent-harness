@@ -1221,6 +1221,15 @@ function showRun(record) {
   setBusy(false);
 }
 
+function hasSavedRunIdentity(record) {
+  return typeof record?.run_id === "string" && record.run_id.length > 0 &&
+    record.request?.user_id === userId &&
+    typeof record.request.session_id === "string" && record.request.session_id.length > 0 &&
+    typeof record.request.request_id === "string" && record.request.request_id.length > 0 &&
+    typeof record.request.message === "string" &&
+    ["running", "finished", "cancelled", "failed", "interrupted"].includes(record.status);
+}
+
 async function inspectRun(runId) {
   if (busy) return;
   setBusy(true);
@@ -1228,7 +1237,9 @@ async function inspectRun(runId) {
     const query = new URLSearchParams({ user_id: userId });
     const resp = await fetch(`/runs/${encodeURIComponent(runId)}?${query}`);
     if (!resp.ok) throw new Error(`Run lookup failed (${resp.status})`);
-    showRun(await resp.json());
+    const record = await resp.json();
+    if (!hasSavedRunIdentity(record) || record.run_id !== runId) throw new Error("Saved run identity mismatch");
+    showRun(record);
   } catch (err) {
     addErrorMessage(String(err));
   } finally { setBusy(false); }
