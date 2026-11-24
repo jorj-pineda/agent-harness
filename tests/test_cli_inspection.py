@@ -137,3 +137,17 @@ def test_cli_saved_policy_missing_or_malformed_is_unknown(value, capsys):
 def test_cli_saved_policy_false_is_explicit_standard(capsys):
     show_tool_policy(False)
     assert "saved_tool_policy=standard" in capsys.readouterr().out
+
+
+@pytest.mark.parametrize("session_id", [None, True, 42, "", "  "])
+def test_normal_chat_refuses_invalid_created_session_id(session_id):
+    response = httpx.Response(
+        200,
+        json={"session_id": session_id},
+        request=httpx.Request("POST", "http://test/sessions"),
+    )
+    with patch("httpx.post", return_value=response) as post:
+        result = CliRunner().invoke(app, ["chat"], input="hello\n")
+    assert result.exit_code == 1
+    assert "session ID" in result.output
+    post.assert_called_once()

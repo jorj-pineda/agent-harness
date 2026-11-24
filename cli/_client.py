@@ -172,7 +172,10 @@ class AgentClient:
                 "Server did not acknowledge an inspection-only session. No chat was sent; "
                 "use a server supporting this policy. No automatic retry."
             )
-        return str(data["session_id"])
+        session_id = data.get("session_id") if isinstance(data, dict) else None
+        if not isinstance(session_id, str) or not session_id.strip():
+            raise ValueError("Server did not return a valid session ID. No chat was sent.")
+        return session_id
 
     def continue_session(
         self,
