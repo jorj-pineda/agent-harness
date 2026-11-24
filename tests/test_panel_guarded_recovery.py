@@ -25,6 +25,7 @@ const {webcrypto}=require('node:crypto');
 const data=JSON.parse(fs.readFileSync(process.argv[3],'utf8'));
 const root=process.argv[2],storage=new Map([['panel_user_id','dev']]);
 const key='panel_pending_recovery_v1';
+const turnKey='panel_pending_request';
 class Node {
   constructor(tag) { this.tag=tag;this.children=[];this.events={};this.value='';this._text='';this.checked=false;
     this.dataset={};this.classList={add(){},remove(){}}; }
@@ -50,9 +51,9 @@ function boot(){
     localStorage:{getItem:k=>storage.get(k)??null,setItem:(k,v)=>{if(writeFailure)throw Error('storage denied');storage.set(k,v);},removeItem:k=>storage.delete(k)},
     crypto:{subtle:webcrypto.subtle,randomUUID:()=>data.running.request.request_id},TextEncoder,AbortController,URLSearchParams,
     setTimeout,clearTimeout,window:{},
-    fetch:async(url,options={})=>{calls.push({url,options});assert(storage.has(key),'intent must persist before network');
+    fetch:async(url,options={})=>{calls.push({url,options});assert(storage.has(key) || storage.has(turnKey),'intent must persist before network');
       if(typeof next==='function')return next(url,options);
-      return{ok:true,text:async()=>JSON.stringify(next)};
+      return{ok:true,text:async()=>JSON.stringify(next),json:async()=>clone(next)};
     },
   });
   vm.runInContext(fs.readFileSync(root+'/app.js','utf8'),context);
@@ -143,6 +144,23 @@ const bypass=async panel=>{
   assert.equal(p.calls.length,0);await bypass(p);await clear(p);
   storage.set(key,retained);p=boot();storage.set(key,retained+' ');await p.get('retry-recovery').fire('click');
   assert.equal(p.calls.length,0);assert(p.context.recoverySubmitPanel.blocksWork());await clear(p);
+  const turn={user_id:'dev',session_id:'session-1',request_id:'turn-1',message:'Review this'};
+  const savedTurn={run_id:'run-1',request:turn,status:'finished',response:null};
+  storage.set(turnKey,JSON.stringify(turn));
+  for (const record of [
+    {...savedTurn,run_id:'different'},
+    {...savedTurn,request:{...turn,user_id:'other'}},
+    {...savedTurn,status:'unknown'},
+  ]) {
+    p=boot();next=record;
+    await vm.runInContext('inspectRun("run-1")',p.context);
+    assert.equal(p.calls.length,1);
+    assert.equal(p.calls[0].url,'/runs/run-1?user_id=dev');
+    assert.match(p.get('messages').textContent,/Saved run identity mismatch/);
+    assert.equal(vm.runInContext('reviewTarget',p.context),null);
+    assert.equal(storage.get(turnKey),JSON.stringify(turn));
+  }
+  storage.delete(turnKey);
   console.log('Actual app + panel guarded submission/restart/retry/cancel contract passed.');
 })().catch(error=>{console.error(error);process.exit(1);});
 """
