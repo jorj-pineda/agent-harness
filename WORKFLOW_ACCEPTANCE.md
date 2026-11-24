@@ -168,3 +168,7 @@ Rendered browser and release candidate acceptance remain open.
 If the panel loses the successful reversal response, it retains the request and
 shows delivery as unconfirmed. Explicit Check after restart reads the applied
 journal entry without sending another POST or changing the workspace.
+
+An explicit Retry after a lost response and restart sends the exact retained POST.
+The panel shows the existing journal outcome, disables further retry, and
+preserves edits made after the original reversal settled.
