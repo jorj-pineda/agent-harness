@@ -103,3 +103,30 @@ def test_cli_rejects_wrong_continuation_identity():
     assert "Submitted fork" not in result.output
     posted.assert_called_once()
     looked.assert_not_called()
+
+
+@pytest.mark.parametrize("field,value", [("run_id", 42), ("run_id", " "), ("status", "unknown")])
+def test_cli_rejects_malformed_continuation_record(field, value):
+    record = {
+        "run_id": "valid-run",
+        "status": "running",
+        "request": {
+            "user_id": "dev",
+            "request_id": "cli-once",
+            "session_id": "fork",
+            "message": "Explain a.py",
+            "continuation_source": {
+                "session_id": "s1",
+                "turn_id": "t1",
+                "acknowledge_uncaptured_state": True,
+            },
+        },
+    }
+    record[field] = value
+    response = httpx.Response(202, json=record, request=httpx.Request("POST", "http://test"))
+    with patch("httpx.post", return_value=response) as posted, patch("httpx.get") as looked:
+        result = runner.invoke(app, args())
+    assert result.exit_code == 1
+    assert "Submission outcome may be unknown" in result.output
+    posted.assert_called_once()
+    looked.assert_not_called()

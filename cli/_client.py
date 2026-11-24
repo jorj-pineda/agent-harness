@@ -197,8 +197,11 @@ class AgentClient:
         }
         resp = httpx.post(f"{self._base}/sessions/{session_id}/continue", json=payload, timeout=30)
         resp.raise_for_status()
-        record = dict(resp.json())
-        request = record.get("request", {})
+        record = resp.json()
+        if not isinstance(record, dict):
+            raise ValueError("Unsupported continuation response; inspect the keyed run.")
+        identity = _SavedRunIdentity.model_validate(record)
+        request = record["request"]
         expected_source = {
             "session_id": session_id,
             "turn_id": expected_turn_id,
@@ -211,9 +214,9 @@ class AgentClient:
             or request.get("provider") != provider
             or request.get("continuation_source") != expected_source
             or request["continuation_source"].get("acknowledge_uncaptured_state") is not True
-            or not request.get("session_id")
-            or request.get("session_id") == session_id
-            or not record.get("run_id")
+            or not identity.request.session_id.strip()
+            or identity.request.session_id == session_id
+            or not identity.run_id.strip()
         ):
             raise ValueError("Mismatched continuation response; inspect the keyed run.")
         return record
