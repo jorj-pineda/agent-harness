@@ -106,7 +106,15 @@ async function waitForPanelIdle() {
     console.log(JSON.stringify({ calls, retained }));
     return;
   }
-  if (action === 'reverse-check') {
+  if (action === 'reverse-reload-after-forget') {
+    assert(!storage.has(reversalKey));
+    assert(!get('new-session').disabled);
+    assert(get('check-reversal').disabled);
+    assert(get('retry-reversal').disabled);
+    console.log(JSON.stringify({ calls }));
+    return;
+  }
+  if (action === 'reverse-check-and-forget') {
     const retained = storage.get(reversalKey);
     const { request_id, user_id } = JSON.parse(retained);
     assert(get('new-session').disabled);
@@ -120,6 +128,15 @@ async function waitForPanelIdle() {
     assert.match(get('reversal-results').textContent, new RegExp(`Saved reversal: ${status}`));
     assert(get('retry-reversal').disabled);
     assert.equal(storage.get(reversalKey), retained);
+    assert(get('new-session').disabled);
+    assert(!get('forget-reversal').disabled);
+    await get('forget-reversal').fire('click');
+    assert.equal(calls.length, 1, 'forgetting sends no request');
+    assert(!storage.has(reversalKey));
+    assert(!get('new-session').disabled);
+    assert(get('check-reversal').disabled);
+    assert(get('retry-reversal').disabled);
+    fs.writeFileSync(statePath, JSON.stringify([...storage]));
     console.log(JSON.stringify({ calls, retained }));
     return;
   }

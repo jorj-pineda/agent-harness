@@ -258,7 +258,8 @@ def test_panel_reverses_one_saved_file_over_http(tmp_path, scenario, retry):
             assert replayed["calls"] == [result["calls"][1]]
             assert target.read_bytes() == target_bytes
             assert stat.S_IMODE(target.stat().st_mode) == 0o604
-        checked = panel(tmp_path, data, url, "reverse-check")
+        checked = panel(tmp_path, data, url, "reverse-check-and-forget")
+        assert panel(tmp_path, data, url, "reverse-reload-after-forget")["calls"] == []
         assert checked["retained"] == result["retained"]
         assert (
             api.get(
