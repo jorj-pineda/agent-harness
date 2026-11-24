@@ -1063,7 +1063,8 @@ function canonicalReversalPath(path) {
 
 function matchingReversal(record, request) {
   const actual = record?.request;
-  return !!record?.revert_id && ["pending", "applied", "rejected", "uncertain", "interrupted"].includes(record.status) &&
+  return typeof record?.revert_id === "string" && record.revert_id.trim().length > 0 &&
+    ["pending", "applied", "rejected", "uncertain", "interrupted"].includes(record.status) &&
     actual?.user_id === request.user_id && actual?.run_id === request.run_id &&
     actual?.path === request.path && actual?.request_id === request.request_id;
 }
