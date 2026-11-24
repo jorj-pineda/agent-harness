@@ -161,6 +161,36 @@ const bypass=async panel=>{
     assert.equal(storage.get(turnKey),JSON.stringify(turn));
   }
   storage.delete(turnKey);
+  const continuation={...turn,kind:'continuation',expected_turn_id:'source-turn',
+    acknowledge_uncaptured_state:true,fork_session_id:'fork-session'};
+  const fork={...savedTurn,request:{...turn,session_id:'fork-session',continuation_source:{
+    session_id:turn.session_id,turn_id:'source-turn',acknowledge_uncaptured_state:true,
+  }}};
+  for (const [pending,records] of [
+    [turn,[{...savedTurn,request:{...turn,message:'different'}}]],
+    [turn,[{...savedTurn,request:{...turn,provider:'other'}}]],
+    [turn,[{...savedTurn,request:{...turn,recovery_source:{}}}]],
+    [turn,[savedTurn,savedTurn]],
+    [continuation,[{...fork,request:{...fork.request,session_id:'different-fork'}}]],
+    [continuation,[{...fork,request:{...fork.request,continuation_source:{
+      ...fork.request.continuation_source,turn_id:'different-turn',
+    }}}]],
+  ]) {
+    const raw=JSON.stringify(pending);
+    storage.set(turnKey,raw);p=boot();next=records;
+    await p.get('check-run').fire('click');
+    assert.equal(p.calls.length,1);
+    assert.equal(p.calls[0].url,'/runs?user_id=dev&request_id=turn-1');
+    assert.match(p.get('messages').textContent,/does not match the retained submission/);
+    assert.equal(vm.runInContext('reviewTarget',p.context),null);
+    assert.equal(storage.get(turnKey),raw);
+  }
+  for (const [pending,record] of [[turn,savedTurn],[continuation,fork]]) {
+    storage.set(turnKey,JSON.stringify(pending));p=boot();next=[record];
+    await p.get('check-run').fire('click');
+    assert.equal(vm.runInContext('reviewTarget.runId',p.context),record.run_id);
+    assert(!storage.has(turnKey));
+  }
   console.log('Actual app + panel guarded submission/restart/retry/cancel contract passed.');
 })().catch(error=>{console.error(error);process.exit(1);});
 """

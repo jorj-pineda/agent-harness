@@ -1265,13 +1265,34 @@ async function loadHistory() {
   finally { setBusy(false); }
 }
 
+function matchesPendingRun(record, pending) {
+  if (!hasSavedRunIdentity(record)) return false;
+  const actual = record.request;
+  if (actual.user_id !== pending.user_id || actual.request_id !== pending.request_id ||
+      actual.message !== pending.message || (actual.provider ?? null) !== (pending.provider ?? null) ||
+      actual.recovery_source != null) return false;
+  if (pending.kind !== "continuation") {
+    return actual.session_id === pending.session_id && actual.continuation_source == null;
+  }
+  const source = actual.continuation_source;
+  return actual.session_id !== pending.session_id &&
+    (pending.fork_session_id == null || actual.session_id === pending.fork_session_id) &&
+    source?.session_id === pending.session_id && source.turn_id === pending.expected_turn_id &&
+    source.acknowledge_uncaptured_state === true;
+}
+
 async function checkPending() {
   if (busy || !pendingRequest) return;
   setBusy(true);
   try {
     const records = await getRuns({ request_id: pendingRequest.request_id });
-    if (records.length) showRun(records[0]);
-    else addErrorMessage("No saved run found. Explicit Retry submission will reuse the retained input and key.");
+    if (Array.isArray(records) && records.length === 0) {
+      addErrorMessage("No saved run found. Explicit Retry submission will reuse the retained input and key.");
+    } else if (Array.isArray(records) && records.length === 1 && matchesPendingRun(records[0], pendingRequest)) {
+      showRun(records[0]);
+    } else {
+      addErrorMessage("Saved run does not match the retained submission. The retained request is still available.");
+    }
   } catch (err) { addErrorMessage(String(err)); }
   finally { setBusy(false); }
 }
