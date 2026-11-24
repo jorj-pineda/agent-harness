@@ -51,9 +51,9 @@ function boot(){
     localStorage:{getItem:k=>storage.get(k)??null,setItem:(k,v)=>{if(writeFailure)throw Error('storage denied');storage.set(k,v);},removeItem:k=>storage.delete(k)},
     crypto:{subtle:webcrypto.subtle,randomUUID:()=>data.running.request.request_id},TextEncoder,AbortController,URLSearchParams,
     setTimeout,clearTimeout,window:{},
-    fetch:async(url,options={})=>{calls.push({url,options});assert(storage.has(key),'intent must persist before network');
+    fetch:async(url,options={})=>{calls.push({url,options});assert(storage.has(key) || storage.has(reversalKey),'intent must persist before network');
       if(typeof next==='function')return next(url,options);
-      return{ok:true,text:async()=>JSON.stringify(next)};
+      return{ok:true,text:async()=>JSON.stringify(next),json:async()=>clone(next)};
     },
   });
   vm.runInContext(fs.readFileSync(root+'/app.js','utf8'),context);
@@ -172,6 +172,27 @@ const bypass=async panel=>{
     assert.match(p.get('reversal-results').textContent,/storage changed or is unavailable/);
     assert(p.get('new-session').disabled);
     assert.equal(storage.get(reversalKey)??null,changed);
+  }
+  storage.delete(reversalKey);
+  // Check must confirm a journal identity before showing a successful outcome.
+  for (const revertId of [true, 42, {}, '   ', 'journal-1']) {
+    storage.set(reversalKey,reversalRaw);
+    p=boot();
+    next={revert_id:revertId,request:reversal,status:'applied'};
+    await p.get('check-reversal').fire('click');
+    assert.deepEqual(p.calls.map(call=>[call.url,call.options.method]),[
+      ['/file-reverts?user_id=dev&request_id=undo',undefined],
+    ]);
+    const result=p.get('reversal-results').textContent;
+    if (revertId==='journal-1') {
+      assert.match(result,/Saved reversal: applied/);
+      assert.match(result,/Journal: journal-1;/);
+    } else {
+      assert.match(result,/outcome unavailable or mismatched/);
+      assert(!result.includes('Saved reversal: applied'));
+    }
+    assert.equal(storage.get(reversalKey),reversalRaw);
+    assert(p.get('new-session').disabled);
   }
   storage.delete(reversalKey);
   console.log('Actual app + panel guarded submission/restart/retry/cancel contract passed.');
