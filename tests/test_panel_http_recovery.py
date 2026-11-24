@@ -199,7 +199,7 @@ def test_panel_posts_once_and_checks_saved_recovery_after_api_restart(tmp_path, 
 
 
 @pytest.mark.skipif(shutil.which("node") is None, reason="Node needed for panel HTTP contract")
-@pytest.mark.parametrize("scenario", ["applied", "stale_reversal"])
+@pytest.mark.parametrize("scenario", ["applied", "stale_reversal", "lost_reversal_response"])
 def test_panel_reverses_one_saved_file_over_http(tmp_path, scenario):
     data = source(tmp_path)
     data["scenario"] = scenario
