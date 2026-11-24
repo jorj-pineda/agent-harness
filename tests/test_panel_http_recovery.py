@@ -21,6 +21,7 @@ def panel(tmp_path, data, url, action):
                 "url": url,
                 "proposal": {k: data["approval"][k] for k in ("spans", "message")},
                 "scenario": data.get("scenario"),
+                "revert_id": data.get("revert_id"),
                 "source": data["record"],
                 "target": str(data["root"] / "a.py"),
             }
@@ -251,6 +252,7 @@ def test_panel_reverses_one_saved_file_over_http(tmp_path, scenario, retry):
         overrides=saved_source_settings(tmp_path),
     ) as (url, api):
         if retry:
+            data["revert_id"] = saved["revert_id"]
             replayed = panel(tmp_path, data, url, "reverse-retry")
             assert replayed["retained"] == result["retained"]
             assert replayed["calls"] == [result["calls"][1]]

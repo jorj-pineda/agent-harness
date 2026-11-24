@@ -96,7 +96,9 @@ async function waitForPanelIdle() {
     await waitForPanelIdle();
     assert.equal(calls.length, 1);
     assert.equal(calls[0].method, 'POST');
-    assert.match(get('reversal-results').textContent, /Saved reversal: applied/);
+    const result = get('reversal-results').textContent;
+    assert.match(result, /Saved reversal: applied/);
+    assert(result.includes(`Journal: ${data.revert_id};`));
     assert(get('retry-reversal').disabled);
     await get('retry-reversal').fire('click');
     assert.equal(calls.length, 1, 'resolved outcome prevents another POST');
