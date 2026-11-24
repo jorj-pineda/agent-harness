@@ -1153,9 +1153,10 @@ async function inspectReversal() {
 
 function restoreReversal() {
   try {
-    const request = JSON.parse(localStorage.getItem(reversalStorageKey));
-    if (!request) return;
-    if (request.user_id !== userId || typeof request.run_id !== "string" || !request.run_id ||
+    const raw = localStorage.getItem(reversalStorageKey);
+    if (raw === null) return;
+    const request = JSON.parse(raw);
+    if (request?.user_id !== userId || typeof request.run_id !== "string" || !request.run_id ||
         typeof request.request_id !== "string" || !/^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/.test(request.request_id) || !canonicalReversalPath(request.path)) {
       throw new Error("Invalid retained reversal");
     }
