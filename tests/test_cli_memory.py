@@ -2,6 +2,7 @@ import json
 from unittest.mock import patch
 
 import httpx
+import pytest
 from fastapi.testclient import TestClient
 from typer.testing import CliRunner
 
@@ -258,3 +259,29 @@ def test_cli_invalid_replacement_files_never_dispatch(tmp_path):
         result = runner.invoke(app, [*common, "--replacement-file", str(exact)])
         assert result.exit_code == 1 and "Outcome may be unknown" in result.output
         assert put.call_count == 1
+
+
+@pytest.mark.parametrize("bad_id", [True, 1.0, "1"])
+@pytest.mark.parametrize("action", ["delete", "correct", "scope"])
+def test_cli_memory_mutations_require_integer_acknowledged_id(action, bad_id):
+    digest = "a" * 64
+    args = {
+        "delete": ["memory-delete", "1"],
+        "correct": ["memory-correct", "1", "replacement"],
+        "scope": ["memory-scope", "1", "--from-global", "--to-workspace", "/a"],
+    }[action]
+    record = {
+        "delete": {"status": "deleted", "fact_id": bad_id, "scope_note": "saved"},
+        "correct": {"status": "corrected", "note": {"id": bad_id}, "scope_note": "saved"},
+        "scope": {
+            "status": "reclassified",
+            "note": {"id": bad_id, "workspace_root": "/a", "fact_sha256": digest},
+            "scope_note": "saved",
+        },
+    }[action]
+    response = httpx.Response(200, json=record, request=httpx.Request("PUT", "http://test"))
+    with patch("httpx.request", return_value=response) as sent:
+        result = runner.invoke(app, [*args, "--expected-sha256", digest])
+    assert result.exit_code == 1, result.output
+    assert "Outcome may be unknown" in result.output
+    sent.assert_called_once()

@@ -450,7 +450,12 @@ class AgentClient:
         )
         resp.raise_for_status()
         record = dict(resp.json())
-        if record.get("status") != "deleted" or record.get("fact_id") != fact_id:
+        returned_id = record.get("fact_id")
+        if (
+            record.get("status") != "deleted"
+            or type(returned_id) is not int
+            or returned_id != fact_id
+        ):
             raise ValueError("Mismatched memory deletion response; inspect memory.")
         return record
 
@@ -469,7 +474,13 @@ class AgentClient:
         )
         resp.raise_for_status()
         record = dict(resp.json())
-        if record.get("status") != "corrected" or (record.get("note") or {}).get("id") != fact_id:
+        note = record.get("note")
+        returned_id = note.get("id") if isinstance(note, dict) else None
+        if (
+            record.get("status") != "corrected"
+            or type(returned_id) is not int
+            or returned_id != fact_id
+        ):
             raise ValueError("Mismatched memory correction response; inspect memory.")
         return record
 
@@ -497,7 +508,8 @@ class AgentClient:
         note = record.get("note") or {}
         if (
             record.get("status") != "reclassified"
-            or note.get("id") != fact_id
+            or type(note.get("id")) is not int
+            or note["id"] != fact_id
             or "workspace_root" not in note
             or note["workspace_root"] != workspace_root
             or note.get("fact_sha256") != expected_fact_sha256
