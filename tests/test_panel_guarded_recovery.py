@@ -191,6 +191,22 @@ const bypass=async panel=>{
     assert.equal(vm.runInContext('reviewTarget.runId',p.context),record.run_id);
     assert(!storage.has(turnKey));
   }
+  // Viewing history can display another run without adopting it as retained work.
+  for (const [pending,record] of [
+    [turn,{...savedTurn,request:{...turn,message:'different'}}],
+    [continuation,{...fork,status:'running',request:{...fork.request,session_id:'different-fork'}}],
+  ]) {
+    const raw=JSON.stringify(pending);
+    storage.set(turnKey,raw);p=boot();next=record;
+    await vm.runInContext('inspectRun("run-1")',p.context);
+    assert.equal(vm.runInContext('reviewTarget.runId',p.context),record.run_id);
+    assert.equal(storage.get(turnKey),raw);
+    assert.deepEqual(JSON.parse(vm.runInContext('JSON.stringify(pendingRequest)',p.context)),pending);
+    assert(p.get('new-session').disabled);
+  }
+  storage.set(turnKey,JSON.stringify(continuation));p=boot();next=fork;
+  await vm.runInContext('inspectRun("run-1")',p.context);
+  assert(!storage.has(turnKey));
   console.log('Actual app + panel guarded submission/restart/retry/cancel contract passed.');
 })().catch(error=>{console.error(error);process.exit(1);});
 """
