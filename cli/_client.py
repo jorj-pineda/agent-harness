@@ -1157,7 +1157,8 @@ class AgentClient:
             timeout=120,
         )
         data = resp.json()
-        if isinstance(data, dict) and data.get("revert_id") is not None:
+        if isinstance(data, dict) and "revert_id" in data:
+            identity = _RevertJournalIdentity.model_validate(data)
             expected = {
                 "user_id": user_id,
                 "run_id": run_id,
@@ -1171,7 +1172,11 @@ class AgentClient:
                 "uncertain": 503,
                 "interrupted": 409,
             }
-            if data.get("request") != expected or codes.get(data.get("status")) != resp.status_code:
+            if (
+                not identity.revert_id.strip()
+                or data.get("request") != expected
+                or codes[identity.status] != resp.status_code
+            ):
                 raise ValueError("Mismatched revert response; inspect the keyed journal.")
             return data
         resp.raise_for_status()

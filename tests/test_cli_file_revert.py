@@ -2,6 +2,7 @@ import json
 from unittest.mock import patch
 
 import httpx
+import pytest
 from fastapi.testclient import TestClient
 from typer.testing import CliRunner
 
@@ -93,6 +94,30 @@ def test_cli_rejects_wrong_file_response_without_claiming_success_or_retrying():
     with patch("httpx.post", return_value=response) as posted, patch("httpx.get") as looked:
         result = runner.invoke(app, ["revert-file", "r1", "a.py", "--request-id", "known-key"])
     assert result.exit_code == 1
+    assert "status=applied" not in result.output
+    posted.assert_called_once()
+    looked.assert_not_called()
+
+
+@pytest.mark.parametrize("field,value", [("revert_id", 42), ("revert_id", " "), ("scope_note", [])])
+def test_cli_refuses_malformed_revert_success_records(field, value):
+    record = {
+        "revert_id": "journal",
+        "status": "applied",
+        "scope_note": "Saved reversal",
+        "request": {
+            "user_id": "cli-user",
+            "run_id": "r1",
+            "path": "a.py",
+            "request_id": "known-key",
+        },
+    }
+    record[field] = value
+    response = httpx.Response(200, json=record, request=httpx.Request("POST", "http://test"))
+    with patch("httpx.post", return_value=response) as posted, patch("httpx.get") as looked:
+        result = runner.invoke(app, ["revert-file", "r1", "a.py", "--request-id", "known-key"])
+    assert result.exit_code == 1
+    assert "outcome may be unknown" in result.output
     assert "status=applied" not in result.output
     posted.assert_called_once()
     looked.assert_not_called()
