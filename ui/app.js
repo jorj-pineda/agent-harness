@@ -1186,7 +1186,8 @@ async function getRuns(params = {}) {
 function showRun(record) {
   // Viewing history never makes a saved session executable.
   selectReviewTarget(record);
-  if (pendingRequest?.request_id === record.request.request_id && pendingRequest.kind === "continuation") {
+  const matchesRetained = pendingRequest != null && matchesPendingRun(record, pendingRequest);
+  if (matchesRetained && pendingRequest.kind === "continuation") {
     pendingRequest.fork_session_id = record.request.session_id;
     try { localStorage.setItem(pendingStorageKey, JSON.stringify(pendingRequest)); }
     catch (_) { addErrorMessage("Could not retain fork identity. Inspect the request key in history after reload."); }
@@ -1213,7 +1214,7 @@ function showRun(record) {
     record.run_id, `lifecycle: ${record.status}`, `request: ${record.request.request_id}`,
     `model: ${record.configured_model || "unrecorded"}`,
   ]));
-  if (pendingRequest?.request_id === record.request.request_id && record.status !== "running") {
+  if (matchesRetained && record.status !== "running") {
     clearPending();
     uncertain = false;
     cancelRequested = false;
