@@ -159,6 +159,21 @@ const bypass=async panel=>{
     assert(!p.get('new-session').disabled);
     assert.equal(p.calls.length,0);
   }
+  const reversal={user_id:'dev',run_id:'run',path:'a.py',request_id:'undo'};
+  const reversalRaw=JSON.stringify(reversal);
+  for (const changed of [null, reversalRaw+' ', JSON.stringify({...reversal,request_id:'other'})]) {
+    storage.set(reversalKey,reversalRaw);
+    p=boot();
+    assert(!p.get('retry-reversal').disabled);
+    if (changed===null) storage.delete(reversalKey);
+    else storage.set(reversalKey,changed);
+    await p.get('retry-reversal').fire('click');
+    assert.equal(p.calls.length,0);
+    assert.match(p.get('reversal-results').textContent,/storage changed or is unavailable/);
+    assert(p.get('new-session').disabled);
+    assert.equal(storage.get(reversalKey)??null,changed);
+  }
+  storage.delete(reversalKey);
   console.log('Actual app + panel guarded submission/restart/retry/cancel contract passed.');
 })().catch(error=>{console.error(error);process.exit(1);});
 """
