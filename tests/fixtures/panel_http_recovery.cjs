@@ -33,6 +33,7 @@ class Node {
   focus() {}
 }
 const ids = new Map(), calls = [];
+let droppedReversalStatus;
 const get = id => {
   if (!ids.has(id)) ids.set(id, new Node('div'));
   return ids.get(id);
@@ -66,6 +67,11 @@ const context = vm.createContext({
     if (data.scenario === 'lost_response' && action === 'submit' && path.endsWith('/recover')) {
       await response.text(); // Server acknowledged; hide only this delivery from the client.
       throw Error('fixture response delivery loss');
+    }
+    if (data.scenario === 'lost_reversal_response' && action === 'reverse' && path.endsWith('/revert-file')) {
+      await response.text();
+      droppedReversalStatus = response.status;
+      throw Error('fixture reversal response delivery loss');
     }
     return response;
   },
@@ -124,6 +130,11 @@ for (const name of ['app.js', 'recovery.js', 'recovery-submit.js']) {
     if (data.scenario === 'stale_reversal') {
       assert.match(result, /Saved reversal: rejected/);
       assert.match(result, /no reversal was applied/);
+    } else if (data.scenario === 'lost_reversal_response') {
+      assert.equal(droppedReversalStatus, 200);
+      assert.match(result, /Reversal delivery not confirmed/);
+      assert(!get('check-reversal').disabled);
+      assert(!get('retry-reversal').disabled);
     } else {
       assert.match(result, /Saved reversal: applied/);
     }
