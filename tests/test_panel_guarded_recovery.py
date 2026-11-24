@@ -25,6 +25,7 @@ const {webcrypto}=require('node:crypto');
 const data=JSON.parse(fs.readFileSync(process.argv[3],'utf8'));
 const root=process.argv[2],storage=new Map([['panel_user_id','dev']]);
 const key='panel_pending_recovery_v1';
+const reversalKey='panel_pending_reversal';
 class Node {
   constructor(tag) { this.tag=tag;this.children=[];this.events={};this.value='';this._text='';this.checked=false;
     this.dataset={};this.classList={add(){},remove(){}}; }
@@ -143,6 +144,21 @@ const bypass=async panel=>{
   assert.equal(p.calls.length,0);await bypass(p);await clear(p);
   storage.set(key,retained);p=boot();storage.set(key,retained+' ');await p.get('retry-recovery').fire('click');
   assert.equal(p.calls.length,0);assert(p.context.recoverySubmitPanel.blocksWork());await clear(p);
+  // A present but invalid reversal record blocks edits until explicitly forgotten.
+  for (const raw of ['', 'null', 'false', '0', '""', '{broken']) {
+    storage.set(reversalKey,raw);
+    p=boot();
+    assert(p.get('new-session').disabled, JSON.stringify(raw));
+    assert(p.get('retry-reversal').disabled);
+    assert(p.get('check-reversal').disabled);
+    await p.get('retry-reversal').fire('click');
+    assert.equal(p.calls.length,0);
+    assert.equal(storage.get(reversalKey),raw);
+    await p.get('forget-reversal').fire('click');
+    assert(!storage.has(reversalKey));
+    assert(!p.get('new-session').disabled);
+    assert.equal(p.calls.length,0);
+  }
   console.log('Actual app + panel guarded submission/restart/retry/cancel contract passed.');
 })().catch(error=>{console.error(error);process.exit(1);});
 """
