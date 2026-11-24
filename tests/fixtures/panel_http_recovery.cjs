@@ -108,6 +108,8 @@ async function waitForPanelIdle() {
   }
   if (action === 'reverse-reload-after-forget') {
     assert(!storage.has(reversalKey));
+    assert.equal(storage.get('panel_user_id'), 'dev');
+    assert.equal(vm.runInContext('userId', context), 'dev');
     assert(!get('new-session').disabled);
     assert(get('check-reversal').disabled);
     assert(get('retry-reversal').disabled);
@@ -130,7 +132,10 @@ async function waitForPanelIdle() {
     assert.equal(storage.get(reversalKey), retained);
     assert(get('new-session').disabled);
     assert(!get('forget-reversal').disabled);
+    const expectedStorage = new Map(storage);
+    expectedStorage.delete(reversalKey);
     await get('forget-reversal').fire('click');
+    assert.deepEqual(storage, expectedStorage);
     assert.equal(calls.length, 1, 'forgetting sends no request');
     assert(!storage.has(reversalKey));
     assert(!get('new-session').disabled);
