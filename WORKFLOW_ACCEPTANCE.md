@@ -172,3 +172,7 @@ journal entry without sending another POST or changing the workspace.
 An explicit Retry after a lost response and restart sends the exact retained POST.
 The panel shows the existing journal outcome, disables further retry, and
 preserves edits made after the original reversal settled.
+
+After explicit Check displays the saved outcome, Forget clears the local
+reversal key and enables New Session. The panel sends no request when forgetting
+or reloading, and later workspace edits, source records and the journal survive.
