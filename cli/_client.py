@@ -91,10 +91,14 @@ class _WorkspaceReview(BaseModel):
 
 class _ConfigurationComparisonState(BaseModel):
     status: Literal["matching", "changed", "unknown", "not_recorded", "unavailable"]
+    changed_fields: list[str] = Field(strict=True)
+    unknown_fields: list[str] = Field(strict=True)
 
 
 class _ContextReviewState(BaseModel):
     status: Literal["estimated_fit", "blocked", "unbounded_context", "not_checked"]
+    estimated_prompt_tokens: int | None = Field(ge=0, strict=True)
+    includes_proposed_message: bool = Field(strict=True)
 
 
 class _TranscriptReviewState(BaseModel):
@@ -107,6 +111,7 @@ class _ConfigurationReviewState(BaseModel):
     resume_supported: bool = Field(default=False, strict=True)
     configuration: _ConfigurationComparisonState | None = None
     context: _ContextReviewState | None = None
+    scope_note: str = Field(min_length=1, strict=True)
     transcript: _TranscriptReviewState | None = None
 
 
