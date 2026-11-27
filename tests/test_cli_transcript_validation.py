@@ -41,6 +41,9 @@ def review():
             "issues": [{"message_index": 9, "code": "orphan_tool_result"}],
         },
         {"issues_truncated": True},
+        {"scope_note": None},
+        {"scope_note": ""},
+        {"scope_note": ["structure only"]},
     ],
 )
 def test_bad_review_refused_before_printing_structure_status(changes):

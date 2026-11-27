@@ -74,6 +74,7 @@ class _TranscriptReview(BaseModel):
     issues: list[_TranscriptIssue]
     issues_truncated: bool = Field(strict=True)
     read_only: bool = Field(default=True, strict=True)
+    scope_note: str = Field(min_length=1, strict=True)
 
 
 class _WorkspaceReview(BaseModel):
