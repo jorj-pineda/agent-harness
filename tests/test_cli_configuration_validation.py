@@ -31,6 +31,22 @@ def review():
         {"configuration": {"status": "compatible"}},
         {"transcript": {"status": "repaired"}},
         {"context": {"status": "guaranteed_fit"}},
+        {"context": {"status": "blocked"}},
+        {
+            "context": {
+                "status": "estimated_fit",
+                "estimated_prompt_tokens": True,
+                "includes_proposed_message": True,
+            }
+        },
+        {
+            "configuration": {
+                "status": "matching",
+                "changed_fields": [],
+                "unknown_fields": "workspace",
+            }
+        },
+        {"scope_note": None},
     ],
 )
 def test_unsupported_review_refused_before_status_display_without_retry(changes):
