@@ -28,13 +28,25 @@ def record():
 
 
 @pytest.mark.parametrize("command", ["checkpoint-create", "checkpoint", "checkpoints"])
-@pytest.mark.parametrize("fault", ["session", "identifier", "container"])
+@pytest.mark.parametrize(
+    "fault", ["session", "identifier", "container", "bytes", "files", "root", "time", "restore"]
+)
 def test_checkpoint_response_refused_before_display_without_retry(command, fault):
     data = record()
     if fault == "session":
         data["session_id"] = "other-session"
     elif fault == "identifier":
         data["checkpoint_id"] = None
+    elif fault == "bytes":
+        data["byte_count"] = -1
+    elif fault == "files":
+        data["file_count"] = True
+    elif fault == "root":
+        data.pop("root")
+    elif fault == "time":
+        data["captured_at"] = None
+    elif fault == "restore":
+        data["restore_supported"] = True
     else:
         data = ["private-marker"]
     body = [data] if command == "checkpoints" and fault != "container" else data

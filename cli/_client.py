@@ -54,6 +54,11 @@ class _RevertJournalIdentity(BaseModel):
 class _CheckpointIdentity(BaseModel):
     checkpoint_id: str = Field(min_length=1, strict=True)
     session_id: str = Field(min_length=1, strict=True)
+    file_count: int = Field(ge=0, strict=True)
+    byte_count: int = Field(ge=0, strict=True)
+    root: str = Field(min_length=1, strict=True)
+    captured_at: str = Field(min_length=1, strict=True)
+    restore_supported: Literal[False] = False
 
 
 class _ToolProgressIdentity(BaseModel):
@@ -994,8 +999,10 @@ class AgentClient:
             identity = _CheckpointIdentity.model_validate(record)
         except ValueError as exc:
             raise ValueError("Unsupported checkpoint metadata response") from exc
-        if identity.session_id != session_id or (
-            checkpoint_id is not None and identity.checkpoint_id != checkpoint_id
+        if (
+            record.get("restore_supported", False) is not False
+            or identity.session_id != session_id
+            or (checkpoint_id is not None and identity.checkpoint_id != checkpoint_id)
         ):
             raise ValueError("Mismatched checkpoint metadata response")
         return record
