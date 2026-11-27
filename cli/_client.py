@@ -1292,8 +1292,13 @@ class AgentClient:
             raise ValueError("Unsupported workspace review response") from exc
         paths = (review.added, review.modified, review.deleted)
         counts = (review.added_count, review.modified_count, review.deleted_count)
+        ignored = record.get("ignored_entries")
+        any_changes = sum(counts) > 0 or (
+            isinstance(ignored, dict) and ignored.get("status") == "changed"
+        )
         if (
-            not review.read_only
+            (review.status == "changed") != any_changes
+            or not review.read_only
             or any(count < len(entries) for count, entries in zip(counts, paths, strict=True))
             or sum(map(len, paths)) > max_paths
             or review.paths_truncated != (sum(counts) > sum(map(len, paths)))
