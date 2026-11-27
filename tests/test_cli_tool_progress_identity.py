@@ -27,7 +27,17 @@ def progress():
 
 @pytest.mark.parametrize(
     "field,value",
-    [("run_id", "other"), ("run_id", None), ("coverage", "complete"), ("read_only", False)],
+    [
+        ("run_id", "other"),
+        ("run_id", None),
+        ("coverage", "complete"),
+        ("read_only", False),
+        ("observed_events", True),
+        ("observed_events", 1),
+        ("events_truncated", True),
+        ("events", [{"sequence": 1, "tool": "read_file"}]),
+        ("scope_note", None),
+    ],
 )
 def test_invalid_progress_is_rejected_before_json_display(field, value):
     data = progress()
