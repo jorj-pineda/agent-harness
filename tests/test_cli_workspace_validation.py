@@ -35,6 +35,9 @@ def review():
         {"modified_count": 0},
         {"modified": "a.py"},
         {"modified_count": 2},
+        {"status": "unchanged"},
+        {"status": "unavailable"},
+        {"modified": [], "modified_count": 0},
     ],
 )
 def test_bad_workspace_evidence_refused_before_display(changes):
@@ -69,3 +72,14 @@ def test_truncated_paths_and_unknown_mode_evidence_are_preserved():
     response = httpx.Response(200, json=data, request=httpx.Request("GET", "http://fixture"))
     with patch("httpx.get", return_value=response):
         assert AgentClient().workspace_review("dev", "s1", max_paths=1) == data
+
+
+def test_changes_to_ignored_entry_metadata_can_explain_changed_status():
+    data = review() | {
+        "modified": [],
+        "modified_count": 0,
+        "ignored_entries": {"status": "changed", "modified": [".git"]},
+    }
+    response = httpx.Response(200, json=data, request=httpx.Request("GET", "http://fixture"))
+    with patch("httpx.get", return_value=response):
+        assert AgentClient().workspace_review("dev", "s1") == data
