@@ -56,10 +56,21 @@ class _CheckpointIdentity(BaseModel):
     session_id: str = Field(min_length=1, strict=True)
 
 
+class _SavedToolProgressEvent(BaseModel):
+    sequence: int = Field(ge=1, strict=True)
+    type: Literal["tool_start", "tool_end"]
+    tool: str = Field(min_length=1, strict=True)
+    observed_at: str = Field(min_length=1, strict=True)
+
+
 class _ToolProgressIdentity(BaseModel):
     run_id: str = Field(min_length=1, strict=True)
     coverage: Literal["recorded", "not_recorded"]
     read_only: Literal[True] = True
+    observed_events: int = Field(ge=0, strict=True)
+    events: list[_SavedToolProgressEvent] = Field(max_length=200)
+    events_truncated: bool = Field(strict=True)
+    scope_note: str = Field(min_length=1, strict=True)
 
 
 class _TranscriptIssue(BaseModel):
@@ -980,8 +991,15 @@ class AgentClient:
             identity = _ToolProgressIdentity.model_validate(record)
         except ValueError as exc:
             raise ValueError("Unsupported tool progress response") from exc
-        if identity.run_id != run_id:
-            raise ValueError("Mismatched tool progress response")
+        event_count = len(identity.events)
+        if (
+            identity.run_id != run_id
+            or identity.observed_events < event_count
+            or identity.events_truncated != (identity.observed_events > event_count)
+            or (identity.coverage == "not_recorded" and identity.observed_events != 0)
+            or any(event.sequence != index for index, event in enumerate(identity.events, 1))
+        ):
+            raise ValueError("Mismatched or inconsistent tool progress response")
         return record
 
     @staticmethod
