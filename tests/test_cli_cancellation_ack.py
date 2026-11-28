@@ -151,3 +151,17 @@ def test_cli_cancel_real_api_then_restart_reads_final_evidence_preserving_user_w
         post.assert_not_called()
     assert len(calls) == 1
     assert target.read_text() == "pre_existing = 'keep'\n"
+
+
+@pytest.mark.parametrize("interactive", [False, True])
+def test_cli_cancellation_ack_escapes_terminal_controls(interactive):
+    with patch("cli.main.AgentClient") as factory:
+        client = factory.return_value
+        client.create_session.return_value = "s1"
+        client.chat.side_effect = KeyboardInterrupt()
+        client.cancel.return_value = "Requested\x1b[2J"
+        result = runner.invoke(app, ["chat"] if interactive else ["cancel", "s1"], input="fix\n")
+    assert result.exit_code == 0, result.output
+    assert "Requested\\u001b[2J" in result.output
+    assert "\x1b" not in result.output
+    client.cancel.assert_called_once()
