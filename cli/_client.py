@@ -591,8 +591,10 @@ class AgentClient:
             or record.get("run_id") != run_id
             or record.get("run_status") not in {"finished", "cancelled", "failed", "interrupted"}
             or type(record.get("final_response_available")) is not bool
-            or record.get("max_serialized_bytes") != 32768
+            or type(record.get("max_serialized_bytes")) is not int
+            or record["max_serialized_bytes"] != 32768
             or not isinstance(record.get("source_record_sha256"), str)
+            or re.fullmatch(r"[0-9a-f]{64}", record["source_record_sha256"]) is None
             or not isinstance(record.get("scope_note"), str)
         ):
             raise ValueError("Unsupported recovery review response")
