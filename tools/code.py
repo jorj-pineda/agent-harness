@@ -809,8 +809,17 @@ async def _grep_ripgrep(
         raise ToolError(f"rg failed: {proc.stderr.strip() or proc.stdout.strip()}")
 
     hits: list[dict[str, Any]] = []
-    for line in proc.stdout.splitlines():
-        parsed = _parse_rg_line(workspace, line)
+    offset = 0
+    while offset < len(proc.stdout):
+        filename_end = proc.stdout.find("\x00", offset)
+        if filename_end < 0:
+            break
+        # The filename can contain LF, but the match text ends at the next LF.
+        line_end = proc.stdout.find("\n", filename_end + 1)
+        if line_end < 0:
+            line_end = len(proc.stdout)
+        parsed = _parse_rg_line(workspace, proc.stdout[offset:line_end].removesuffix("\r"))
+        offset = line_end + 1
         if parsed is not None:
             hits.append(parsed)
             if len(hits) > MAX_GREP_HITS:
