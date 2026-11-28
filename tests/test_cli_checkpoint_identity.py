@@ -98,3 +98,16 @@ def test_valid_metadata_is_returned_unchanged_and_empty_page_stays_empty():
     with patch("httpx.get", return_value=response), patch("httpx.post") as post:
         assert AgentClient().checkpoints("dev", "s1") == []
     post.assert_not_called()
+
+
+@pytest.mark.parametrize("limit,second_id", [(1, "cp2"), (2, "cp1")])
+def test_checkpoint_list_rejects_overfull_and_duplicate_pages(limit, second_id):
+    body = [record(), record() | {"checkpoint_id": second_id}]
+    response = httpx.Response(
+        200, json=body, request=httpx.Request("GET", "http://fixture/checkpoints")
+    )
+    with patch("httpx.get", return_value=response) as get:
+        result = runner.invoke(app, ["checkpoints", "s1", "--limit", str(limit), "--json"])
+    assert result.exit_code == 1
+    assert '"checkpoint_id"' not in result.output
+    get.assert_called_once()
