@@ -1198,9 +1198,10 @@ class AgentClient:
             timeout=30,
         )
         resp.raise_for_status()
-        record = dict(resp.json())
+        record = resp.json()
         if (
-            record.get("session_id") != session_id
+            not isinstance(record, dict)
+            or record.get("session_id") != session_id
             or record.get("status")
             not in {"inspected", "partial", "unavailable", "busy", "no_workspace"}
             or record.get("read_only") is not True
@@ -1216,7 +1217,7 @@ class AgentClient:
             if not isinstance(suggestion, dict) or any(
                 not isinstance(suggestion.get(key), list)
                 or not suggestion[key]
-                or not all(isinstance(value, str) for value in suggestion[key])
+                or not all(isinstance(value, str) and value.strip() for value in suggestion[key])
                 for key in ("argv", "evidence")
             ):
                 raise ValueError("Invalid check suggestion")

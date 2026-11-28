@@ -95,6 +95,8 @@ def test_cli_status_issues_and_terminal_escaping(status):
         ("issues", [None]),
         ("suggestions", [{"argv": "private-marker", "evidence": []}]),
         ("scope_note", None),
+        ("suggestions", [{"argv": [""], "evidence": ["pyproject.toml"]}]),
+        ("suggestions", [{"argv": ["pytest"], "evidence": [" "]}]),
     ],
 )
 def test_cli_rejects_inconsistent_response_before_output(field, value):
@@ -119,3 +121,15 @@ def test_cli_empty_and_private_transport_errors_never_retry():
             result = runner.invoke(app, ["check-suggestions", "sid"])
             assert result.exit_code == 1 and "private-marker" not in result.output
             assert "No automatic retry" in result.output and get.call_count == 1
+
+
+def test_cli_check_suggestions_rejects_array_of_object_pairs():
+    data = CheckSuggestions(status="inspected", session_id="sid").model_dump()
+    response = httpx.Response(
+        200, json=list(data.items()), request=httpx.Request("GET", "http://fixture")
+    )
+    with patch("httpx.get", return_value=response) as get:
+        result = runner.invoke(app, ["check-suggestions", "sid", "--json"])
+    assert result.exit_code == 1
+    assert '"session_id"' not in result.output
+    get.assert_called_once()
