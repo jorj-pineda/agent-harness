@@ -459,8 +459,9 @@ def test_check_recovers_review_without_resubmission() -> None:
         client = mock.return_value
         client.create_session.return_value = "s1"
         client.chat.side_effect = httpx.ReadTimeout("lost response")
-        client.runs.return_value = [
-            _saved_run(
+
+        def lookup(user_id, *, request_id):
+            record = _saved_run(
                 response={
                     "answer": "Partial",
                     "completion_status": "incomplete",
@@ -468,7 +469,10 @@ def test_check_recovers_review_without_resubmission() -> None:
                     "workspace_changes": {"diffs": [{"path": "a.py", "diff": "-old\n+new\n"}]},
                 }
             )
-        ]
+            record["request"].update(user_id=user_id, request_id=request_id)
+            return [record]
+
+        client.runs.side_effect = lookup
         result = runner.invoke(app, ["chat"], input="Fix\n/check\nnew edit\n")
     assert result.exit_code == 0, result.output
     assert "status=incomplete checks=failed" in result.output
@@ -478,6 +482,36 @@ def test_check_recovers_review_without_resubmission() -> None:
     client.runs.assert_called_once_with(
         "cli-user", request_id=client.chat.call_args.kwargs["request_id"]
     )
+
+
+@pytest.mark.parametrize(
+    "changes",
+    [
+        {"session_id": "different"},
+        {"message": "different"},
+        {"provider": "other"},
+        {"continuation_source": {}},
+        {"recovery_source": {}},
+    ],
+)
+def test_check_keeps_pending_when_saved_request_differs(changes):
+    with patch("cli.main.AgentClient") as mock:
+        client = mock.return_value
+        client.create_session.return_value = "s1"
+        client.chat.side_effect = httpx.ReadTimeout("lost response")
+
+        def lookup(user_id, *, request_id):
+            record = _saved_run(response={"answer": "unrelated result"})
+            record["request"].update(user_id=user_id, request_id=request_id, **changes)
+            return [record]
+
+        client.runs.side_effect = lookup
+        result = runner.invoke(app, ["chat"], input="Fix\n/check\nnew task\n/quit\n")
+    assert result.exit_code == 0, result.output
+    assert "does not match the uncertain submission" in result.output
+    assert "before starting new work" in result.output
+    assert "unrelated result" not in result.output
+    client.chat.assert_called_once()
 
 
 @pytest.mark.parametrize("status", ["running", "failed", "interrupted", "cancelled"])

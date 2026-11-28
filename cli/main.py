@@ -148,8 +148,22 @@ def chat(
                 if not records:
                     typer.echo("No saved run found. /retry uses the same submission key.")
                     continue
-                show_run(records[0])
-                if records[0]["status"] != "running":
+                record = records[0]
+                request = record["request"]
+                if (
+                    len(records) != 1
+                    or request["user_id"] != user_id
+                    or request["session_id"] != session_id
+                    or request["request_id"] != pending[0]
+                    or request.get("message") != pending[1]
+                    or request.get("provider") != provider
+                    or request.get("continuation_source") is not None
+                    or request.get("recovery_source") is not None
+                ):
+                    typer.echo("Saved run does not match the uncertain submission.", err=True)
+                    continue
+                show_run(record)
+                if record["status"] != "running":
                     typer.echo("Review only. Start a new session after inspecting the workspace.")
                     break
             except Exception as exc:
