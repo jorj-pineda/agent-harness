@@ -1019,9 +1019,12 @@ class AgentClient:
         )
         resp.raise_for_status()
         records = resp.json()
-        if not isinstance(records, list):
+        if not isinstance(records, list) or len(records) > limit:
             raise ValueError("Unsupported checkpoint list response")
-        return [self._validate_checkpoint_lookup(record, session_id) for record in records]
+        validated = [self._validate_checkpoint_lookup(record, session_id) for record in records]
+        if len({record["checkpoint_id"] for record in validated}) != len(validated):
+            raise ValueError("Checkpoint page contains duplicate captures")
+        return validated
 
     def checkpoint(self, user_id: str, session_id: str, checkpoint_id: str) -> dict[str, Any]:
         resp = httpx.get(
