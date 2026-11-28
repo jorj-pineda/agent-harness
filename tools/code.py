@@ -427,7 +427,11 @@ def build_code_tools(
         return await _run_git(workspace, cmd, command_env, inherit_environment)
 
     def write_file(args: WriteFileInput) -> dict[str, Any]:
-        log.info("code_tool=write_file path=%s bytes=%d", args.path, len(args.content.encode()))
+        try:
+            encoded = args.content.encode("utf-8")
+        except UnicodeEncodeError as exc:
+            raise ToolError("write_file requires valid UTF-8 text.") from exc
+        log.info("code_tool=write_file path=%s bytes=%d", args.path, len(encoded))
         try:
             target = workspace.resolve(args.path, must_exist=False)
         except WorkspaceError as exc:
@@ -435,7 +439,6 @@ def build_code_tools(
         if target.is_dir():
             raise ToolError(f"Refusing to write a directory path: {args.path}")
 
-        encoded = args.content.encode("utf-8")
         if len(encoded) > MAX_WRITE_BYTES:
             raise ToolError(f"Content exceeds {MAX_WRITE_BYTES} bytes.")
 
