@@ -7,6 +7,7 @@ from unittest.mock import patch
 import pytest
 from typer.testing import CliRunner
 
+from cli._client import TurnSummary
 from cli.main import app
 
 runner = CliRunner()
@@ -96,3 +97,25 @@ def test_json_display_keeps_original_control_bytes(command, args):
         result = runner.invoke(app, [command, *args, "--json"])
     assert result.exit_code == 0, result.output
     assert json.loads(result.output) == data
+
+
+def test_live_chat_escapes_turn_evidence_without_altering_the_result():
+    turn = TurnSummary(
+        answer=CONTROL + "\nsecond line",
+        confidence=None,
+        escalated=False,
+        provider="scripted",
+        latency_ms=1,
+        tool_errors=[CONTROL],
+        workspace_changes={"diffs": [{"path": "a.py", "diff": CONTROL}]},
+    )
+    original = deepcopy(turn)
+    with patch("cli.main.AgentClient") as client:
+        client.return_value.create_session.return_value = "s1"
+        client.return_value.chat.return_value = turn
+        result = runner.invoke(app, ["chat"], input="inspect\n/quit\n")
+    assert result.exit_code == 0, result.output
+    assert "\x1b" not in result.output
+    assert "café\\u001b" in result.output
+    assert "\nsecond line" in result.output
+    assert turn == original

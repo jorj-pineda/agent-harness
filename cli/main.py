@@ -215,14 +215,17 @@ def show_ignored_entries(data: dict[str, Any] | None) -> None:
 
 def show_turn(result: TurnSummary) -> None:
     if result.run_id:
-        typer.echo(f"  run_id={result.run_id}")
-    typer.echo(f"\n{result.answer}\n")
-    typer.echo(f"  status={result.completion_status} checks={result.verification_status}")
+        typer.echo(f"  run_id={_terminal_record(result.run_id)}")
+    typer.echo(f"\n{_terminal_record(result.answer)}\n")
+    typer.echo(
+        f"  status={_terminal_record(result.completion_status)}"
+        f" checks={_terminal_record(result.verification_status)}"
+    )
     if result.completion_reason:
-        typer.echo(f"  reason={result.completion_reason}")
+        typer.echo(f"  reason={_terminal_record(result.completion_reason)}")
     typer.echo(
         f"  escalated={result.escalated}"
-        f"  provider={result.provider}"
+        f"  provider={_terminal_record(result.provider)}"
         f"  latency={result.latency_ms:.0f}ms"
     )
     typer.echo(
@@ -233,7 +236,7 @@ def show_turn(result: TurnSummary) -> None:
     typer.echo("  Completion records how the run ended; passed checks cover only the checks run.")
     if result.files_touched:
         typer.echo(f"  files_touched={result.files_touched}")
-    changes = result.workspace_changes
+    changes = _terminal_record(result.workspace_changes)
     if changes.get("status") == "tracked":
         for kind in ("added", "modified", "deleted"):
             if changes.get(kind):
@@ -250,7 +253,7 @@ def show_turn(result: TurnSummary) -> None:
             typer.echo(entry.get("diff", ""), nl=False)
     if result.token_usage:
         typer.echo(f"  token_usage={result.token_usage}")
-    for check in result.check_attempts:
+    for check in _terminal_record(result.check_attempts):
         typer.echo(
             f"  check={check.get('argv')} status={check.get('status')} "
             f"exit={check.get('exit_code')} relevant={check.get('relevant')} "
@@ -259,7 +262,7 @@ def show_turn(result: TurnSummary) -> None:
         if check.get("error"):
             typer.echo(f"  check_error={check['error']}")
     for error in result.tool_errors:
-        typer.echo(f"  tool_error={error}")
+        typer.echo(f"  tool_error={_terminal_record(error)}")
     score = "n/a" if result.confidence is None else f"{result.confidence:.2f}"
     typer.echo(f"  legacy_evidence_score={score} (tool heuristic; not patch correctness)")
     typer.echo()
