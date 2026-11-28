@@ -104,10 +104,10 @@ def chat(
             options["inspection_only"] = True
         session_id = client.create_session(user_id, workspace, **options)
     except Exception as exc:
-        typer.echo(f"Error: could not create session — {exc}", err=True)
+        typer.echo(f"Error: could not create session — {_terminal_record(str(exc))}", err=True)
         raise typer.Exit(code=1) from exc
 
-    typer.echo(f"Connected  session={session_id}")
+    typer.echo(f"Connected  session={_terminal_record(session_id)}")
     if inspection_only:
         typer.echo(
             "Tool policy: inspection only (server acknowledged). No model commands, file edits "
@@ -179,7 +179,7 @@ def chat(
             typer.echo("Inspect saved session review after cleanup. Bye.")
             break
         except Exception as exc:
-            typer.echo(f"  error: {exc}", err=True)
+            typer.echo(f"  error: {_terminal_record(str(exc))}", err=True)
             typer.echo(
                 "Outcome unknown. /check reads saved state; "
                 "/retry repeats only this keyed submission."

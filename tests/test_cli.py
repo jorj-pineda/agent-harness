@@ -774,3 +774,20 @@ def test_tool_progress_command_only_reads_bounded_metadata():
     assert get.call_args.args[0].endswith("/runs/r1/tool-progress")
     assert get.call_args.kwargs["params"] == {"user_id": "dev"}
     post.assert_not_called()
+
+
+@pytest.mark.parametrize("failure", ["create_session", "chat"])
+def test_chat_diagnostics_escape_terminal_controls(failure):
+    with patch("cli.main.AgentClient") as factory:
+        client = factory.return_value
+        client.create_session.return_value = "session\x1b[2J"
+        getattr(client, failure).side_effect = ValueError("unavailable\x1b[2J")
+        result = runner.invoke(app, ["chat"], input="inspect\n/quit\n")
+    assert "\x1b" not in result.output
+    assert "unavailable\\u001b[2J" in result.output
+    if failure == "chat":
+        assert "session\\u001b[2J" in result.output
+        assert "Outcome unknown" in result.output
+    else:
+        assert result.exit_code == 1
+        client.chat.assert_not_called()
