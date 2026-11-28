@@ -105,6 +105,9 @@ def test_missing_final_human_and_json_do_not_invent_work_or_completion():
         ("diffs", [None]),
         ("objective", None),
         ("scope_note", None),
+        ("source_record_sha256", "not-a-digest"),
+        ("source_record_sha256", "A" * 64),
+        ("max_serialized_bytes", 32768.0),
     ],
 )
 def test_bad_envelopes_fail_before_human_or_json_output(field, value):
