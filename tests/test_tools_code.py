@@ -59,6 +59,22 @@ async def test_grep_repo_handles_single_file_option_pattern_and_colon_path(tmp_p
     assert hits == [{"path": "module:one.py", "line": 2, "text": "-needle: found"}]
 
 
+async def test_grep_repo_keeps_newlines_in_ripgrep_filenames(tmp_path: Path) -> None:
+    if not shutil.which("rg"):
+        pytest.skip("ripgrep is required for this regression")
+    name = "line\nbreak.py"
+    (tmp_path / name).write_bytes(b"needle first\r\nmiss\nneedle last")
+    (tmp_path / "other.py").write_text("needle also\n")
+    reg = ToolRegistry()
+    register_code_tools(reg, workspace=Workspace(root=tmp_path))
+    hits = await reg.invoke("grep_repo", {"pattern": "needle"})
+    assert sorted((hit["path"], hit["line"], hit["text"]) for hit in hits) == [
+        (name, 1, "needle first"),
+        (name, 3, "needle last"),
+        ("other.py", 1, "needle also"),
+    ]
+
+
 async def test_read_file_large_file_in_bounded_slices_and_hash(tmp_path: Path) -> None:
     target = tmp_path / "large.py"
     target.write_bytes(b"line\n" * 60_000)
