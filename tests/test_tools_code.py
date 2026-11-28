@@ -347,6 +347,18 @@ async def test_write_file_rejects_escape(registry: ToolRegistry) -> None:
         )
 
 
+async def test_write_file_invalid_utf8_leaves_workspace_untouched(tmp_path: Path) -> None:
+    existing = tmp_path / "existing.txt"
+    existing.write_text("original")
+    reg = ToolRegistry()
+    register_code_tools(reg, workspace=Workspace(root=tmp_path))
+    for name in ("existing.txt", "missing/new.txt"):
+        with pytest.raises(ToolError, match="valid UTF-8"):
+            await reg.invoke("write_file", {"path": name, "content": "\ud800"})
+    assert existing.read_text() == "original"
+    assert not (tmp_path / "missing").exists()
+
+
 async def test_run_command_pytest_on_fixture(workspace: Workspace, registry: ToolRegistry) -> None:
     result = await registry.invoke(
         "run_command",
