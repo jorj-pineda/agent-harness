@@ -16,6 +16,7 @@ import stat
 import tempfile
 from collections.abc import Iterator, Mapping
 from fnmatch import fnmatch
+from io import BytesIO
 from pathlib import Path
 from typing import Any, BinaryIO
 from uuid import uuid4
@@ -860,8 +861,10 @@ def _grep_python(
                 "results are incomplete. Narrow the path or glob, or install ripgrep."
             )
         bytes_read += len(raw)
-        text = raw.decode("utf-8", errors="replace")
-        for line_no, line in enumerate(text.splitlines(), start=1):
+        for line_no, raw_line in enumerate(BytesIO(raw), start=1):
+            line = raw_line.decode("utf-8", errors="replace")
+            if line.endswith("\n"):
+                line = line[:-1].removesuffix("\r")
             if regex.search(line):
                 hits.append(
                     {

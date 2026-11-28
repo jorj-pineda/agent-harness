@@ -79,6 +79,17 @@ async def test_read_file_large_file_in_bounded_slices_and_hash(tmp_path: Path) -
         await reg.invoke("read_file", {"path": "large.py"})
 
 
+async def test_grep_fallback_line_numbers_match_read_file(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setattr("tools.code.shutil.which", lambda _name: None)
+    (tmp_path / "source.txt").write_bytes("first\r\nleft\rright\u2028needle\nplain\n".encode())
+    reg = ToolRegistry()
+    register_code_tools(reg, workspace=Workspace(root=tmp_path))
+    hits = await reg.invoke("grep_repo", {"pattern": "needle"})
+    assert hits == [{"path": "source.txt", "line": 2, "text": "left\rright\u2028needle"}]
+    selected = await reg.invoke("read_file", {"path": "source.txt", "start_line": 2, "end_line": 2})
+    assert selected["content"] == hits[0]["text"]
+
+
 async def test_read_file_empty_and_oversized_selected_line(tmp_path: Path) -> None:
     (tmp_path / "empty.py").write_bytes(b"")
     (tmp_path / "long.py").write_bytes(b"a" * 256_001)
