@@ -63,7 +63,7 @@ def cancel(
     except Exception as exc:
         typer.echo(_cancellation_failure(exc), err=True)
         raise typer.Exit(code=1) from exc
-    typer.echo(detail)
+    typer.echo(_terminal_record(detail))
 
 
 @app.command()
@@ -173,7 +173,7 @@ def chat(
             result = client.chat(user_id, session_id, message, provider, request_id=request_id)
         except KeyboardInterrupt:
             try:
-                typer.echo(client.cancel(user_id, session_id))
+                typer.echo(_terminal_record(client.cancel(user_id, session_id)))
             except Exception as exc:
                 typer.echo(_cancellation_failure(exc), err=True)
             typer.echo("Inspect saved session review after cleanup. Bye.")
