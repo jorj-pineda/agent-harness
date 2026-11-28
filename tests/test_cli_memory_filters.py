@@ -70,3 +70,15 @@ def test_invalid_cli_namespace_combinations_never_dispatch():
         ]:
             assert runner.invoke(app, ["memory", *args]).exit_code != 0
         get.assert_not_called()
+
+
+def test_memory_page_scope_note_escapes_controls_only_in_terminal_display():
+    page = {"notes": [], "scope_note": "Review\x1b[2J"}
+    with patch("cli.main.AgentClient") as client:
+        client.return_value.memory.return_value = page
+        human = runner.invoke(app, ["memory"])
+        raw = runner.invoke(app, ["memory", "--json"])
+    assert human.exit_code == raw.exit_code == 0
+    assert "\x1b" not in human.output
+    assert "Review\\u001b[2J" in human.output
+    assert json.loads(raw.output) == page

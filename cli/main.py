@@ -678,7 +678,7 @@ def memory(
             f"Next page: --before-id {page['next_before_id']} "
             "(keep the same namespace/root filters)"
         )
-    typer.echo(page["scope_note"])
+    typer.echo(_terminal_record(page["scope_note"]))
 
 
 @app.command()
@@ -712,7 +712,7 @@ def memory_scope(
         raise typer.Exit(code=1) from exc
     typer.echo(
         f"Memory note {fact_id} scope={json.dumps(record['note']['workspace_root'])}. "
-        f"{record['scope_note']}"
+        f"{_terminal_record(record['scope_note'])}"
     )
 
 
@@ -748,7 +748,7 @@ def memory_note(
         f"updated={json.dumps(note.get('updated_at'))} "
         f"source_turn={json.dumps(note.get('source_turn_id'))}"
     )
-    typer.echo(record["scope_note"])
+    typer.echo(_terminal_record(record["scope_note"]))
 
 
 @app.command()
@@ -770,7 +770,7 @@ def memory_delete(
             err=True,
         )
         raise typer.Exit(code=1) from exc
-    typer.echo(f"Deleted memory note {record['fact_id']}. {record['scope_note']}")
+    typer.echo(f"Deleted memory note {record['fact_id']}. {_terminal_record(record['scope_note'])}")
 
 
 @app.command()
@@ -813,7 +813,9 @@ def memory_correct(
             err=True,
         )
         raise typer.Exit(code=1) from exc
-    typer.echo(f"Corrected memory note {record['note']['id']}. {record['scope_note']}")
+    typer.echo(
+        f"Corrected memory note {record['note']['id']}. {_terminal_record(record['scope_note'])}"
+    )
 
 
 @app.command()
