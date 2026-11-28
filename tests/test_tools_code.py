@@ -90,6 +90,18 @@ async def test_read_file_empty_and_oversized_selected_line(tmp_path: Path) -> No
         await reg.invoke("read_file", {"path": "long.py", "start_line": 1, "end_line": 1})
 
 
+async def test_grep_fallback_skips_discovered_file_symlink_aliases(
+    tmp_path: Path, monkeypatch
+) -> None:
+    monkeypatch.setattr("tools.code.shutil.which", lambda _name: None)
+    (tmp_path / "source.txt").write_text("needle\n")
+    (tmp_path / "alias.txt").symlink_to("source.txt")
+    reg = ToolRegistry()
+    register_code_tools(reg, workspace=Workspace(root=tmp_path))
+    hits = await reg.invoke("grep_repo", {"pattern": "needle"})
+    assert hits == [{"path": "source.txt", "line": 1, "text": "needle"}]
+
+
 async def test_replace_text_returns_diff_and_refuses_stale_or_ambiguous_edits(
     tmp_path: Path,
 ) -> None:

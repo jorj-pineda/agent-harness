@@ -895,8 +895,11 @@ def _iter_files(workspace: Workspace, target: Path) -> Iterator[Path]:
             and not (current / name).is_symlink()
         )
         for name in sorted(files):
+            candidate = current / name
+            if candidate.is_symlink():
+                continue
             try:
-                path = workspace.resolve(str(current / name))
+                path = workspace.resolve(str(candidate))
             except WorkspaceError:
                 continue
             if path.is_file():
