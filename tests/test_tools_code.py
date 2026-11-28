@@ -330,6 +330,23 @@ async def test_git_status_on_initialized_repo(git_repo: Path) -> None:
     assert "tracked.txt" in result["stdout"] or result["stdout"] == ""
 
 
+@pytest.fixture
+def pathspec_repo(git_repo: Path) -> Path:
+    for name in ("file[1].py", "file1.py"):
+        (git_repo / name).write_text("original\n")
+        subprocess.run(["git", "add", "--", name], cwd=git_repo, check=True)
+        (git_repo / name).write_text(f"changed {name}\n")
+    return git_repo
+
+
+async def test_git_diff_uses_literal_path_with_glob_characters(pathspec_repo: Path) -> None:
+    reg = ToolRegistry()
+    register_code_tools(reg, workspace=Workspace(root=pathspec_repo))
+    result = await reg.invoke("git_diff", {"path": "file[1].py"})
+    assert "+changed file[1].py" in result["stdout"]
+    assert "file1.py" not in result["stdout"]
+
+
 async def test_write_file_jailed_to_workspace(workspace: Workspace, registry: ToolRegistry) -> None:
     result = await registry.invoke(
         "write_file",

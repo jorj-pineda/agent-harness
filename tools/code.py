@@ -421,7 +421,7 @@ def build_code_tools(
             try:
                 resolved = workspace.resolve(args.path, must_exist=False)
                 cmd.append("--")
-                cmd.append(workspace.relative_str(resolved))
+                cmd.append(f":(literal){workspace.relative_str(resolved)}")
             except WorkspaceError as exc:
                 raise _workspace_error(exc) from exc
         return await _run_git(workspace, cmd, command_env, inherit_environment)
