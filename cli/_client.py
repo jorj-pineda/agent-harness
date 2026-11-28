@@ -13,6 +13,7 @@ import math
 import re
 import uuid
 from dataclasses import dataclass, field
+from itertools import pairwise
 from typing import Any, Literal
 
 import httpx
@@ -431,7 +432,29 @@ class AgentClient:
             params["workspace_root"] = workspace_root
         resp = httpx.get(f"{self._base}/memory", params=params, timeout=30)
         resp.raise_for_status()
-        return dict(resp.json())
+        page = resp.json()
+        if not isinstance(page, dict):
+            raise ValueError("Invalid memory page")
+        notes = page.get("notes")
+        if not isinstance(notes, list) or len(notes) > limit:
+            raise ValueError("Invalid memory page")
+        note_ids: list[int] = []
+        for note in notes:
+            note_id = note.get("id") if isinstance(note, dict) else None
+            if (
+                type(note_id) is not int
+                or note_id < 1
+                or (before_id is not None and note_id >= before_id)
+            ):
+                raise ValueError("Memory note does not match the requested page")
+            note_ids.append(note_id)
+        cursor = page.get("next_before_id")
+        if any(first <= second for first, second in pairwise(note_ids)) or (
+            cursor is not None
+            and (type(cursor) is not int or not note_ids or cursor != note_ids[-1])
+        ):
+            raise ValueError("Invalid memory page order or cursor")
+        return page
 
     def delete_memory(
         self, user_id: str, fact_id: int, expected_fact_sha256: str

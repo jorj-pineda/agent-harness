@@ -1,6 +1,8 @@
 import json
 from unittest.mock import patch
 
+import httpx
+import pytest
 from fastapi.testclient import TestClient
 from typer.testing import CliRunner
 
@@ -70,3 +72,17 @@ def test_invalid_cli_namespace_combinations_never_dispatch():
         ]:
             assert runner.invoke(app, ["memory", *args]).exit_code != 0
         get.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "ids,cursor", [([4, 4], None), ([3, 4], None), ([5], None), ([4], True), ([4, 3], 4)]
+)
+def test_cli_memory_rejects_inconsistent_page_ids_and_cursor(ids, cursor):
+    page = {"notes": [{"id": item} for item in ids], "next_before_id": cursor}
+    response = httpx.Response(200, json=page, request=httpx.Request("GET", "http://fixture"))
+    with patch("httpx.get", return_value=response) as get:
+        result = CliRunner().invoke(app, ["memory", "--before-id", "5", "--json"])
+    assert result.exit_code == 1
+    assert "Memory lookup failed" in result.output
+    assert '"notes"' not in result.output
+    get.assert_called_once()
