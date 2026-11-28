@@ -92,3 +92,20 @@ def test_valid_record_and_empty_list_preserve_existing_json_contract():
     response = httpx.Response(200, json=[], request=httpx.Request("GET", "http://server/runs"))
     with patch("httpx.get", return_value=response):
         assert AgentClient().runs("dev", request_id="missing") == []
+
+
+@pytest.mark.parametrize("limit,second_id", [(1, "r2"), (2, "r1")])
+def test_run_list_rejects_overfull_and_duplicate_pages(limit, second_id):
+    first = record()
+    second = record()
+    second["run_id"] = second_id
+    second["request"]["request_id"] = "key2"
+    response = httpx.Response(
+        200, json=[first, second], request=httpx.Request("GET", "http://fixture/runs")
+    )
+    with patch("httpx.get", return_value=response) as get:
+        result = runner.invoke(app, ["runs", "--user-id", "dev", "--limit", str(limit)])
+    assert result.exit_code == 1
+    assert "Run lookup failed" in result.output
+    assert "r1 interrupted" not in result.output
+    get.assert_called_once()
