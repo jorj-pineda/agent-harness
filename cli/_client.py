@@ -559,12 +559,15 @@ class AgentClient:
         resp = httpx.get(f"{self._base}/runs", params=params, timeout=30)
         resp.raise_for_status()
         records = resp.json()
-        if not isinstance(records, list):
+        if not isinstance(records, list) or len(records) > limit:
             raise ValueError("Unsupported saved run list response")
-        return [
+        validated = [
             self._validate_run_lookup(record, user_id, session_id=session_id, request_id=request_id)
             for record in records
         ]
+        if len({record["run_id"] for record in validated}) != len(validated):
+            raise ValueError("Saved run page contains duplicate runs")
+        return validated
 
     def run(self, user_id: str, run_id: str) -> dict[str, Any]:
         resp = httpx.get(f"{self._base}/runs/{run_id}", params={"user_id": user_id}, timeout=30)
